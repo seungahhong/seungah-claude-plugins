@@ -1,0 +1,19 @@
+{
+  "name": "frontend-guidelines",
+  "version": "1.2.0",
+  "description": "소프트웨어 개발 전 과정을 지원하는 멀티 에이전트 스킬 모음. 계획 수립, 아키텍처 설계, 설계 검증, 요구사항 분석, TDD, 웹접근성, 시맨틱 HTML, SEO/GEO 최적화까지 체계적인 개발 워크플로우를 제공합니다.",
+  "author": {
+    "name": "seungah.hong",
+    "email": "seungah1030@gmail.com"
+  },
+  "tags": [
+    "claude-code",
+    "plugin",
+    "multi-agent",
+    "orchestration",
+    "automation",
+    "prd",
+    "frontend-guidelines",
+    "analyst"
+  ]
+}

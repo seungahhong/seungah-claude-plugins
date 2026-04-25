@@ -1,0 +1,17 @@
+{
+  "description": "FE개발2팀 코드 품질 자동 수정 훅. Claude Code 응답 완료 후 git 변경 파일에 대해 eslint --fix → stylelint --fix → prettier --write 순으로 자동 수정합니다. 각 도구가 프로젝트의 node_modules에 설치되어 있지 않으면 건너뜁니다.",
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/stop-lint.sh",
+            "timeout": 60
+          }
+        ]
+      }
+    ]
+  }
+}
