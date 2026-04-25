@@ -77,7 +77,7 @@ description: 프론트엔드 개발 전체 워크플로우를 오케스트레이
 
 ### Phase 1: Research 커맨드 실행 — 요구사항 분석
 
-`./commands/workflow/research.md`를 읽고 그 프로세스를 따라 요구사항 분석을 수행한다.
+`./commands/research.md`를 읽고 그 프로세스를 따라 요구사항 분석을 수행한다.
 
 research 커맨드는 5단계(초기 분석 → grill-me 인터뷰 → 리서치 → 명세 작성 → 확인)로 구성된다. **각 단계를 완료할 때마다 결과를 사용자에게 보여주고, 승인을 받은 뒤 다음 단계로 진행한다.** 전체 질문이나 분석 결과를 한꺼번에 제시하지 않는다.
 
@@ -107,7 +107,7 @@ Phase 1 완료 시:
 
 ### Phase 2: PRD 커맨드 실행 — 개발 요구사항 정의서 작성
 
-`./commands/workflow/prd.md`를 읽고 그 프로세스를 따라 PRD를 작성한다. Phase 1에서 수집한 요구사항 명세 전문을 입력으로 사용한다.
+`./commands/prd.md`를 읽고 그 프로세스를 따라 PRD를 작성한다. Phase 1에서 수집한 요구사항 명세 전문을 입력으로 사용한다.
 
 PRD 커맨드는 내부적으로 planner, architecture, critic 각각을 서브에이전트로 spawn하여 루프를 돌린다.
 
@@ -168,7 +168,7 @@ Step 1에서 사용자의 응답을 받은 **이후에** 추가 스킬 여부를
 
 ---
 
-`./commands/workflow/frontend-guidelines.md`를 읽고 그 프로세스를 따라 가이드라인 기반 개발을 진행한다. Phase 1의 요구사항 명세 전문과 Phase 2의 확정된 PRD 전문을 입력으로 사용한다.
+`./commands/frontend-guidelines.md`를 읽고 그 프로세스를 따라 가이드라인 기반 개발을 진행한다. Phase 1의 요구사항 명세 전문과 Phase 2의 확정된 PRD 전문을 입력으로 사용한다.
 
 frontend-guidelines 커맨드는 내부적으로 선택된 스킬(Step 1에서 선택한 기본 스킬 + Step 2에서 추가한 스킬) 각각을 서브에이전트로 spawn하여 병렬 실행한 뒤 통합한다.
 
@@ -211,7 +211,7 @@ E2E 브라우저 검증을 진행할까요?
 
 ---
 
-`./commands/workflow/verifier.md`를 읽고 그 프로세스를 따라 E2E 검증을 수행한다.
+`./commands/verifier.md`를 읽고 그 프로세스를 따라 E2E 검증을 수행한다.
 
 verifier 커맨드는 내부적으로 e2e-verifier 스킬을 로드하여 PRD 인수 조건에서 검증 시나리오를 생성하고, 사용자가 선택한 브라우저 자동화 도구(Chrome MCP / Playwright MCP / Agent-Browser)로 실제 브라우저에서 시나리오를 실행한다.
 
@@ -224,7 +224,7 @@ Agent 도구를 사용하여 **E2E 검증 서브에이전트**를 spawn한다.
 ```
 1. Phase 2에서 확정된 PRD의 인수 조건 전문
 2. Phase 3에서 변경된 파일 목록 (git diff --name-only)
-3. 커맨드 경로: ./commands/workflow/verifier.md — 이 커맨드의 프로세스를 따를 것
+3. 커맨드 경로: ./commands/verifier.md — 이 커맨드의 프로세스를 따를 것
 4. 산출물 요청: 시나리오별 PASS/FAIL 결과, 실패 항목 상세, 성공률
 ```
 
