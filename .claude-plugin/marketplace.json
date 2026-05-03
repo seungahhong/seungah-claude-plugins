@@ -28,6 +28,25 @@
       ],
       "category": "workflow",
       "strict": false
+    },
+    {
+      "name": "harness-generator",
+      "description": "도메인 무관 하네스(에이전트 팀 + 스킬 + 오케스트레이터) 자동 생성 메타 플러그인. 7단계 프로세스(감사 → 도메인 분석 → 아키텍처 → 에이전트 정의 → 스킬 작성 → 오케스트레이션 → 검증/진화)로 다단계 워크플로우를 체계적으로 구성합니다.",
+      "source": "./plugins/harness-generator",
+      "version": "0.1.0",
+      "author": { "name": "seungah.hong" },
+      "tags": [
+        "claude-code",
+        "plugin",
+        "meta-skill",
+        "harness",
+        "orchestration",
+        "multi-agent",
+        "automation",
+        "generator"
+      ],
+      "category": "meta",
+      "strict": false
     }
   ]
 }
