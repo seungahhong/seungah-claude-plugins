@@ -1,6 +1,51 @@
 {
-  "description": "FE개발2팀 코드 품질 자동 수정 훅. Claude Code 응답 완료 후 git 변경 파일에 대해 eslint --fix → stylelint --fix → prettier --write 순으로 자동 수정합니다. 각 도구가 프로젝트의 node_modules에 설치되어 있지 않으면 건너뜁니다.",
+  "description": "Frontend-harness 훅 설정. 위험 명령 차단(PreToolUse), 민감 파일 생성 차단(Write guard), 스킬 중복 방지(SKILL.md guard), 파일 수정 후 자동 린트(PostToolUse), 응답 완료 후 린트 체인(Stop), 의존성 변경 알림(FileChanged).",
   "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/guard.sh",
+            "timeout": 10
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/write-guard.sh",
+            "timeout": 10
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "pathPattern": "**/SKILL.md",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/skill-dedup.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/stop-lint.sh",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
     "Stop": [
       {
         "matcher": "",
@@ -9,6 +54,18 @@
             "type": "command",
             "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/stop-lint.sh",
             "timeout": 60
+          }
+        ]
+      }
+    ],
+    "FileChanged": [
+      {
+        "matcher": "package.json",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/package-changed.sh",
+            "timeout": 10
           }
         ]
       }
