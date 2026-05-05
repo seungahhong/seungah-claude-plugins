@@ -8,6 +8,7 @@
 |--------|-------------|
 | [`frontend-harness`](#plugin-frontend-harness) | 프론트엔드 개발 워크플로우용 멀티에이전트 스킬 모음 (Planning, Implementation, Quality, Verification) |
 | [`harness-generator`](#plugin-harness-generator) | 도메인 무관 하네스(에이전트 팀 + 스킬 + 오케스트레이터) 자동 생성 메타 플러그인 |
+| [`git-harness`](#plugin-git-harness) | Git 워크플로우 멀티 에이전트 스킬 모음 (한국어 커밋 메시지 작성, 다각도 PR 리뷰) |
 
 ---
 
@@ -75,6 +76,19 @@
 | Skill | Command | Description |
 |-------|---------|-------------|
 | **Harness Generator** | `/harness-generator` | 7단계 메타 프로세스(감사 → 도메인 분석 → 아키텍처 → 에이전트 정의 → 스킬 작성 → 오케스트레이션 → 검증/진화)로 도메인용 하네스를 한 묶음으로 설계·생성합니다. 재실행, 보완, 기존 하네스 수정/감사에도 사용합니다 |
+
+---
+
+## Plugin: `git-harness`
+
+Git 워크플로우를 지원하는 스킬 모음입니다. 한국어 커밋 메시지 작성과 다각도 PR 리뷰를 지원합니다.
+
+### Skills
+
+| Skill | Command | Description |
+|-------|---------|-------------|
+| **Commit** | `/commit` | `이슈번호 type: 제목` 형식의 한국어 커밋 메시지를 작성합니다. 명령형 제목과 함께, 필요 시 요약/배경/설계/영향/테스트 시나리오 본문을 자동 구성합니다. Secrets 검사와 보호 브랜치 경고를 포함합니다 |
+| **PR Review** | `/pr-review` | 변경된 코드를 코드 품질·버그·보안·테스트·코드 간소화(`/simplify`) 관점으로 다각도 리뷰하고 통합 리포트를 생성합니다. 신뢰도 80 이상 이슈만 보고하며, `[must]`/`[want]`/`[imo]`/`[ask]`/`[nits]`/`[info]` 라벨로 분류된 리뷰 코멘트를 만듭니다 |
 
 ---
 
@@ -163,6 +177,12 @@ plugins/
       plugin.json
     skills/
       harness-generator/                                 # 하네스(에이전트팀+스킬+오케스트레이터) 자동 생성 메타 스킬 (+ references/)
+  git-harness/                                           # [독립 플러그인] Git 워크플로우 멀티 에이전트 스킬 모음
+    .claude-plugin/
+      plugin.json
+    skills/
+      commit/                                            # 한국어 커밋 메시지 작성 스킬
+      pr-review/                                         # PR 통합 리뷰 스킬 (코드/버그/보안/테스트/간소화)
 ```
 
 ## License

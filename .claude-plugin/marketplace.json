@@ -47,6 +47,25 @@
       ],
       "category": "meta",
       "strict": false
+    },
+    {
+      "name": "git-harness",
+      "description": "Git 워크플로우 멀티 에이전트 스킬 모음. 한국어 커밋 메시지 작성(`이슈번호 type: 제목` 형식)과 다각도 PR 리뷰(코드 품질, 버그, 보안, 테스트, 코드 간소화)를 지원합니다.",
+      "source": "./plugins/git-harness",
+      "version": "0.1.0",
+      "author": { "name": "seungah.hong" },
+      "tags": [
+        "claude-code",
+        "plugin",
+        "git",
+        "commit",
+        "pr-review",
+        "code-review",
+        "multi-agent",
+        "automation"
+      ],
+      "category": "workflow",
+      "strict": false
     }
   ]
 }

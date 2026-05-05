@@ -35,6 +35,12 @@ plugins/
       plugin.json
     skills/
       harness-generator/                                 # 하네스(에이전트팀+스킬+오케스트레이터) 자동 생성 메타 스킬 (+ references/)
+  git-harness/                                           # [독립 플러그인] Git 워크플로우 멀티 에이전트 스킬 모음
+    .claude-plugin/
+      plugin.json
+    skills/
+      commit/                                            # 한국어 커밋 메시지 작성 스킬 (`이슈번호 type: 제목` 형식)
+      pr-review/                                         # PR 통합 리뷰 스킬 (코드 품질, 버그, 보안, 테스트, 코드 간소화)
 ```
 
 ## Skills
@@ -58,6 +64,13 @@ plugins/
 | Skill | Command | Description |
 |-------|---------|-------------|
 | Harness Generator | `/harness-generator` | 도메인 무관 하네스(에이전트팀 + 스킬 + 오케스트레이터) 자동 생성 — 7단계 메타 프로세스 (감사 → 도메인 분석 → 아키텍처 → 에이전트 정의 → 스킬 작성 → 오케스트레이션 → 검증/진화) |
+
+### Plugin: `git-harness`
+
+| Skill | Command | Description |
+|-------|---------|-------------|
+| Commit | `/commit` | 한국어 커밋 메시지 작성 (`이슈번호 type: 제목` 형식, 명령형 제목, 필요 시 요약/영향/테스트 시나리오 본문 포함) |
+| PR Review | `/pr-review` | PR 통합 리뷰 — 코드 품질, 버그, 보안, 테스트, 코드 간소화(`/simplify`)를 다각도로 점검하고 `[must]`/`[want]`/`[imo]`/`[ask]`/`[nits]`/`[info]` 라벨 코멘트 생성 |
 
 ## Commands
 
@@ -86,4 +99,4 @@ plugins/
 - 훅 스크립트는 `plugins/<plugin-name>/hooks/` 하위에 배치하고 `hooks.json`에서 참조
 - 스킬/커맨드 설명은 한국어로 작성
 - 스킬 간 교차 참조 시 상대 경로 사용 (예: `../a11y/SKILL.md`)
-- 메타/도메인 무관 스킬은 `frontend-harness`에 두지 않고 별도 플러그인으로 분리 (예: `harness-generator`)
+- 메타/도메인 무관 스킬은 `frontend-harness`에 두지 않고 별도 플러그인으로 분리 (예: `harness-generator`, `git-harness`)
