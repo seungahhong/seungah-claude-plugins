@@ -12,11 +12,13 @@ plugins/
     .claude-plugin/
       plugin.json                                        # 플러그인 메타데이터 (이름, 버전, 키워드, 스킬/에이전트 경로)
     commands/                                            # 커스텀 커맨드 디렉토리
-      orchestrator.md                                    # 전체 워크플로우 오케스트레이터 (research → prd → frontend-guidelines → verifier)
+      orchestrator.md                                    # 전체 워크플로우 오케스트레이터 (research → prd → develop → review → verify)
       research.md                                        # 요구사항 분석 (grill-me 서브에이전트 활용)
       prd.md                                             # PRD 작성 (planner → architecture → critic 서브에이전트 루프)
-      frontend-guidelines.md                             # 프론트엔드 가이드라인 (a11y + semantic-html + seo-geo + tdd 서브에이전트)
+      frontend-guidelines.md                             # Develop 단계 — 프론트엔드 가이드라인 (a11y + semantic-html + seo-geo + tdd 서브에이전트)
+      review.md                                          # Review — /simplify + /review + security-audit + lighthouse + qa-inspector 5개 관점 병렬 + 재리뷰 루프
       verifier.md                                        # E2E 브라우저 검증 (e2e-verifier 스킬 기반)
+      verify.md                                          # Verify 통합 — E2E 브라우저 검증 + 타입/빌드 검사
     hooks/                                               # 플러그인 훅 디렉토리
       hooks.json                                         # Stop 훅 설정 (lint 체인 자동 실행)
       stop-lint.sh                                       # eslint → stylelint → prettier 자동 수정 스크립트
@@ -30,6 +32,9 @@ plugins/
       semantic-html/                                     # 시맨틱 HTML 점검
       seo-geo-optimizer/                                 # SEO/GEO 최적화 (+ references/)
       e2e-verifier/                                      # E2E 브라우저 검증 (+ references/)
+      lighthouse-performance/                            # Lighthouse 기반 Core Web Vitals 측정
+      qa-inspector/                                      # 모듈 간 경계면 불일치 검증 (+ references/)
+      security-audit/                                    # OWASP Top 10 보안 감사 (+ references/)
   harness-generator/                                     # [독립 플러그인] 도메인 무관 하네스 자동 생성 메타 플러그인
     .claude-plugin/
       plugin.json
@@ -58,6 +63,9 @@ plugins/
 | Semantic HTML | `/semantic-html` | 시맨틱 태그 사용 점검/개선 |
 | SEO/GEO | `/seo-geo-optimizer` | 검색엔진 + AI 검색 최적화 |
 | E2E Verifier | `/e2e-verifier` | Chrome MCP / Playwright MCP / Agent-Browser 기반 브라우저 검증 |
+| Lighthouse Performance | `/lighthouse-performance` | Lighthouse CLI 기반 Core Web Vitals(LCP, CLS, INP, TTFB, FCP) 측정 및 개선 방안 |
+| QA Inspector | `/qa-inspector` | API 응답↔훅 타입, 라우팅, 상태 전이, 데이터 흐름 교차 비교로 경계면 불일치 탐지 |
+| Security Audit | `/security-audit` | OWASP Top 10 코드 분석, npm audit 의존성 스캔, 보안 헤더·시크릿 탐지 |
 
 ### Plugin: `harness-generator`
 
@@ -76,11 +84,13 @@ plugins/
 
 | Command | File | Description |
 |---------|------|-------------|
-| Orchestrator | `/orchestrator` | research → prd → frontend-guidelines → verifier 순차 실행 후 통합 리포트 생성 |
+| Orchestrator | `/orchestrator` | research → prd → develop → **review → verify** 6단계 순차 실행 후 통합 리포트 생성. Review는 /simplify + /review + security-audit + lighthouse + qa-inspector 5개 관점 중 사용자 선택 항목만 병렬 + 재리뷰 루프. Verify는 E2E + 타입/빌드. 정적 분석을 먼저 끝낸 뒤 비싼 E2E를 실행. 커밋은 git-harness로 별도 진행 |
 | Research | `/research` | grill-me 스킬을 서브에이전트로 실행하여 요구사항 분석 및 명세 도출 |
 | PRD | `/prd` | planner → architecture → critic 서브에이전트 루프로 개발 요구사항 정의서 작성 |
-| Frontend Guidelines | `/frontend-guidelines` | a11y, semantic-html, seo-geo, tdd 스킬을 서브에이전트로 병렬 실행하여 가이드라인 제공 |
-| Verifier | `/verifier` | e2e-verifier 스킬을 로드하여 PRD 인수 조건 기반 브라우저 검증 수행 |
+| Frontend Guidelines | `/frontend-guidelines` | a11y, semantic-html, seo-geo, tdd 스킬을 서브에이전트로 병렬 실행하여 가이드라인 기반 개발(Develop) 진행 |
+| Verifier | `/verifier` | e2e-verifier 스킬을 로드하여 PRD 인수 조건 기반 E2E 브라우저 검증 수행 |
+| Verify | `/verify` | E2E 브라우저 검증(verifier.md 활용) + 타입/빌드 검사(`tsc --noEmit`, `npm run build`)를 통합 실행 |
+| Review | `/review` | /simplify(간소화) + 빌트인 /review(PR 리뷰) + security-audit(보안) + lighthouse-performance(성능) + qa-inspector(정합성) 5개 관점 중 **사용자가 선택한 항목만 병렬 spawn**(단일 메시지 동시 실행) → 통합 결과 통보 → 수정 적용 → 재리뷰 루프(최대 3회). 커밋은 git-harness `/commit` |
 
 ## Hooks
 
