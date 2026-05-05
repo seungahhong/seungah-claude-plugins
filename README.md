@@ -6,12 +6,12 @@
 
 | Plugin | Description |
 |--------|-------------|
-| [`frontend-guidelines`](#plugin-frontend-guidelines) | 프론트엔드 개발 워크플로우용 멀티에이전트 스킬 모음 (Planning, Implementation, Quality, Verification) |
+| [`frontend-harness`](#plugin-frontend-harness) | 프론트엔드 개발 워크플로우용 멀티에이전트 스킬 모음 (Planning, Implementation, Quality, Verification) |
 | [`harness-generator`](#plugin-harness-generator) | 도메인 무관 하네스(에이전트 팀 + 스킬 + 오케스트레이터) 자동 생성 메타 플러그인 |
 
 ---
 
-## Plugin: `frontend-guidelines`
+## Plugin: `frontend-harness`
 
 프론트엔드 개발 전 과정을 지원하는 스킬과 커맨드, 훅을 제공하는 플러그인입니다.
 
@@ -136,7 +136,7 @@ claude plugin add seungahhong/seungah-claude-plugins
 .claude-plugin/
   marketplace.json                                       # 마켓플레이스 리스팅 정보 (plugins 배열)
 plugins/
-  frontend-guidelines/                                   # 플러그인 루트
+  frontend-harness/                                      # 플러그인 루트
     .claude-plugin/
       plugin.json                                        # 플러그인 메타데이터
     commands/

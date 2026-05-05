@@ -1,4 +1,4 @@
-# Frontend Guidelines - Dev Workflow Multi-Agent Skills
+# Frontend Harness - Dev Workflow Multi-Agent Skills
 
 소프트웨어 개발 전 과정을 지원하는 Claude Code 스킬 플러그인.
 
@@ -8,7 +8,7 @@
 .claude-plugin/                                          # 마켓플레이스 등록 메타데이터
   marketplace.json                                       # 리스팅 정보 (owner, metadata, plugins)
 plugins/
-  frontend-guidelines/                                   # 플러그인 루트
+  frontend-harness/                                      # 플러그인 루트
     .claude-plugin/
       plugin.json                                        # 플러그인 메타데이터 (이름, 버전, 키워드, 스킬/에이전트 경로)
     commands/                                            # 커스텀 커맨드 디렉토리
@@ -39,7 +39,7 @@ plugins/
 
 ## Skills
 
-### Plugin: `frontend-guidelines`
+### Plugin: `frontend-harness`
 
 | Skill | Command | Description |
 |-------|---------|-------------|
@@ -86,4 +86,4 @@ plugins/
 - 훅 스크립트는 `plugins/<plugin-name>/hooks/` 하위에 배치하고 `hooks.json`에서 참조
 - 스킬/커맨드 설명은 한국어로 작성
 - 스킬 간 교차 참조 시 상대 경로 사용 (예: `../a11y/SKILL.md`)
-- 메타/도메인 무관 스킬은 `frontend-guidelines`에 두지 않고 별도 플러그인으로 분리 (예: `harness-generator`)
+- 메타/도메인 무관 스킬은 `frontend-harness`에 두지 않고 별도 플러그인으로 분리 (예: `harness-generator`)
