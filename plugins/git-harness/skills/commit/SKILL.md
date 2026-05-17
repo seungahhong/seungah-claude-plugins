@@ -1,7 +1,7 @@
 ---
 name: commit
 description: "Git commit 메시지 작성 스킬. 한국어 명령형으로 작성하며, `이슈번호 type: 제목` 형식을 따른다. 사용자가 '커밋', 'commit', '커밋 메시지', '변경사항 커밋', '커밋해줘' 등을 언급할 때 사용한다."
-allowed-tools: Bash(git status:*), Bash(git diff:*), Bash(git branch:*), Bash(git log:*), Bash(git add:*), Bash(git commit:*), Bash(git restore:*), Read
+allowed-tools: Bash(git status:*), Bash(git diff:*), Bash(git branch:*), Bash(git log:*), Bash(git add:*), Bash(git commit:*), Bash(git restore:*), Bash(git push:*), Read
 disable-model-invocation: true
 ---
 
@@ -170,6 +170,7 @@ FRONTEND-2345 fix: 무한스크롤 중복 요청 수정
 5. 본문 필요 여부 판단 (1.4)
 6. Validation (4)
 7. 사용자에게 프리뷰 → 승인 후 커밋
+8. 커밋 후 push 여부 문의 → 사용자 요청 시 push (6)
 
 본문 없는 경우:
 
@@ -220,5 +221,63 @@ git commit -F /tmp/commit-message.txt
 1. 전체 커밋 메시지 프리뷰
 2. 커밋 명령어
 3. 사용자에게 다음 두 선택지를 제시한다 — 직접 `git commit`을 실행하지 않는다
-   - **1) 승인** — 커밋을 실행한다
+   - **1) 승인** — 커밋을 실행한 뒤 6) 단계(Push)로 이동한다
    - **2) 거절** — 사용자의 피드백을 반영하여 메시지를 수정한 뒤 다시 프리뷰한다
+
+---
+
+## 6) Push
+
+커밋이 실행된 직후에만 이 단계로 들어온다. 거절된 경우에는 건너뛴다.
+
+원격 저장소로의 push는 되돌리기 어려운 작업이므로, 절대로 자동으로 실행하지 않는다.
+반드시 사용자에게 확인을 받은 뒤에만 실행한다.
+
+### 6.1) 사전 확인
+
+push 여부 문의 전에 다음을 확인한다:
+
+```bash
+git status -sb
+```
+
+출력에서 다음 정보를 사용자에게 함께 보여준다:
+
+- 현재 브랜치 이름
+- upstream(원격 추적 브랜치) 설정 여부와 이름
+- ahead/behind 카운트
+
+### 6.2) 사용자 문의
+
+커밋이 성공적으로 완료되었음을 알린 뒤, 다음 선택지를 제시한다:
+
+- **1) Push** — `git push`를 실행한다
+- **2) Skip** — push 없이 종료한다
+
+사용자가 명시적으로 push를 요청하기 전에는 어떠한 push 명령도 실행하지 않는다.
+
+### 6.3) Push 실행
+
+사용자가 push를 선택한 경우:
+
+- upstream이 설정되어 있으면: `git push`
+- upstream이 없으면 (`git status -sb`에서 origin/<branch> 표기가 없는 경우): `git push -u origin <현재-브랜치>`
+
+```bash
+git push
+```
+
+또는 최초 push:
+
+```bash
+git push -u origin <branch-name>
+```
+
+### 6.4) 금지 사항
+
+- `--force`, `--force-with-lease`, `--no-verify` 등 위험 플래그는 사용자가 명시적으로 요청하지 않는 한 절대 사용하지 않는다.
+- `main`/`master`로의 push는 0) 단계에서 이미 중단되어 이 단계에 도달하지 않아야 한다. 만약 도달했다면 한 번 더 사용자에게 확인을 받는다.
+
+### 6.5) 결과 보고
+
+push 결과(성공/실패, 원격 브랜치, 변경된 커밋 수)를 간략히 사용자에게 알린다. 실패 시 원인(예: `non-fast-forward`, 권한 문제)을 그대로 전달하고 임의로 재시도하지 않는다.
