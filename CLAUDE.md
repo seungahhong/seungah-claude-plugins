@@ -46,6 +46,20 @@ plugins/
     skills/
       commit/                                            # 한국어 커밋 메시지 작성 스킬 (`이슈번호 type: 제목` 형식)
       pr-review/                                         # PR 통합 리뷰 스킬 (코드 품질, 버그, 보안, 테스트, 코드 간소화)
+  doc-harness/                                           # [독립 플러그인] 코드베이스+브랜치 기준 문서 자동 생성 하네스
+    .claude-plugin/
+      plugin.json
+    CLAUDE.md                                            # 하네스 포인터 + 변경 이력
+    agents/                                              # 에이전트 정의 (서브에이전트 spawn 대상, model: opus)
+      context-collector.md                               # git diff·브랜치 비교·코드 구조 수집
+      doc-section-writer.md                              # 단일 섹션(배경/기술스펙/변경사항/테스트/영향) 작성, 병렬 호출
+      doc-assembler.md                                   # 섹션 통합 + 요약·목차 생성
+      doc-verifier.md                                    # 완성도 채점 (컨텍스트 격리, grading.json)
+    skills/
+      branch-doc-orchestrator/                           # 진입점 오케스트레이터 (수집→팬아웃→조립→검증 루프)
+      branch-context-collection/                         # 브랜치 컨텍스트 수집 방법론
+      doc-section-writing/                               # 섹션별 작성 방법론 (배경·기술스펙·변경사항·테스트·영향)
+      doc-completeness-check/                             # 완성도 검증 루브릭 (+ references/)
 ```
 
 ## Skills
@@ -79,6 +93,17 @@ plugins/
 |-------|---------|-------------|
 | Commit | `/commit` | 한국어 커밋 메시지 작성 (`이슈번호 type: 제목` 형식, 명령형 제목, 필요 시 요약/영향/테스트 시나리오 본문 포함) |
 | PR Review | `/pr-review` | PR 통합 리뷰 — 코드 품질, 버그, 보안, 테스트, 코드 간소화(`/simplify`)를 다각도로 점검하고 `[must]`/`[want]`/`[imo]`/`[ask]`/`[nits]`/`[info]` 라벨 코멘트 생성 |
+
+### Plugin: `doc-harness`
+
+| Skill | Command | Description |
+|-------|---------|-------------|
+| Branch Doc Orchestrator | `/branch-doc-orchestrator` | 코드베이스 + 브랜치(git diff) 기준 문서 자동 생성 진입점. 수집 → 섹션 분석(배경·기술스펙·변경사항·테스트·영향) 병렬 → 조립 → 완성도 검증 루프(최대 2회). 산출: `_docs/branch-doc-{branch}-{date}.md` + 완성도 요약 |
+| Branch Context Collection | `/branch-context-collection` | 현재 브랜치 ↔ 기본 브랜치 자동 감지 + git diff·커밋·코드 구조·테스트 현황을 단일 컨텍스트(`context.md` + `meta.json`)로 수집 |
+| Doc Section Writing | `/doc-section-writing` | 수집 컨텍스트 기반으로 개별 섹션(배경/기술스펙/변경사항/테스트/영향) 작성 방법론 — 섹션별 필수 요소·형식·흔한 실패 정의 |
+| Doc Completeness Check | `/doc-completeness-check` | 생성 문서를 필수 목차·충실도·정합성 루브릭으로 채점, `grading.json`(`verdict: pass/revise`) 산출 |
+
+> `doc-harness`는 에이전트 정의 파일(`agents/`)을 사용하는 첫 플러그인이다 — `context-collector`, `doc-section-writer`, `doc-assembler`, `doc-verifier`를 서브에이전트로 spawn한다(모두 `model: "opus"`).
 
 ## Commands
 

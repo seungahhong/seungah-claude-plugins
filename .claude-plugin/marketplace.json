@@ -72,6 +72,26 @@
       ],
       "category": "workflow",
       "strict": false
+    },
+    {
+      "name": "doc-harness",
+      "description": "코드베이스와 브랜치(git diff)를 기준으로 기술 문서를 자동 생성하는 멀티 에이전트 하네스. 컨텍스트 수집 → 섹션 분석(배경·기술스펙·변경사항·테스트) 병렬 → 문서 조립 → 완성도 검증 루프로 배경/목차/기술스펙/변경사항/테스트를 포함한 문서를 생성하고 완성도를 검증합니다.",
+      "source": "./plugins/doc-harness",
+      "version": "0.1.0",
+      "author": { "name": "seungah.hong" },
+      "tags": [
+        "claude-code",
+        "plugin",
+        "documentation",
+        "git",
+        "branch",
+        "diff",
+        "multi-agent",
+        "orchestration",
+        "automation"
+      ],
+      "category": "workflow",
+      "strict": false
     }
   ]
 }
