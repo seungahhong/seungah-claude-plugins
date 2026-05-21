@@ -198,7 +198,7 @@ plugins/
     .claude-plugin/
       plugin.json
     skills/
-      harness-generator/                                 # 하네스(에이전트팀+스킬+오케스트레이터) 자동 생성 메타 스킬 (+ references/)
+      harness-generator/                                 # 하네스(에이전트팀+스킬+오케스트레이터) 자동 생성 제너레이터 스킬 (+ references/)
   git-harness/                                           # [독립 플러그인] Git 워크플로우 멀티 에이전트 스킬 모음
     .claude-plugin/
       plugin.json
