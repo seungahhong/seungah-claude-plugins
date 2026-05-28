@@ -1,0 +1,61 @@
+{
+  "skill_name": "harness-evolver",
+  "description": "harness-evolver 진입 오케스트레이터의 동작 흐름을 검증하는 시나리오 평가 큐. 실제 트리거는 trigger-eval.json으로 검증하고, 본 파일은 트리거된 이후의 Phase 흐름을 채점한다.",
+  "evals": [
+    {
+      "id": 1,
+      "name": "트리거-누락-단일-결함",
+      "prompt": "어제 PR 리뷰 받을 때 doc-harness의 /branch-doc-orchestrator 가 '브랜치 문서 만들어줘' 라고 했는데 두 번이나 트리거 안 됐어. description부터 손보고 싶은데",
+      "expected_path": [
+        "Phase 0: _workspace/ 없음 → 초기 실행",
+        "Phase 1: 대상 = plugins/doc-harness/skills/branch-doc-orchestrator/, 결함 = 트리거 누락 1건",
+        "Phase 2-1: trajectory 없음 → 사용자 묘사 정규화",
+        "Phase 2-2: failure-diagnostician 1명 spawn → target.kind: description, evidence 인용",
+        "Phase 3: skill-refiner 1회 → change_kind: description + trigger_eval JSON 동봉",
+        "Phase 4: 사용자 게이트 (accepted/rejected/deferred)",
+        "Phase 5: Edit으로 patch 적용",
+        "Phase 6: 인접 스킬 description 키워드 충돌 점검",
+        "Phase 7: evolution-historian → history.jsonl + recurring-patterns.md 갱신"
+      ],
+      "assertions": [
+        {"id": "single-diagnosis", "text": "결함 1건만 spawn되어야 한다"},
+        {"id": "evidence-required", "text": "diagnosis.json의 evidence 배열에 최소 1개 인용이 있어야 한다"},
+        {"id": "trigger-eval-bundled", "text": "description 수정이므로 trigger_eval JSON이 함께 생성되어야 한다"},
+        {"id": "no-auto-apply", "text": "Phase 4 사용자 게이트 전에 Edit 호출이 없어야 한다"}
+      ]
+    },
+    {
+      "id": 2,
+      "name": "임계치-도달-구조-재설계-권고",
+      "prompt": "frontend-harness의 review 스킬이 또 안 먹어. 이미 세 번째인데 본문 말고 구조를 봐야 할 거 같아",
+      "preconditions": [
+        "evolution-memory/recurring-patterns.md의 needs_attention에 plugins/frontend-harness/skills/review/SKILL.md 가 3회 누적되어 있다고 가정"
+      ],
+      "expected_path": [
+        "Phase 0: recurring-patterns.md 임계치 감지",
+        "Phase 1 직후: 사용자에게 '본문 패치 vs 구조 재설계' 옵션 제시 후 중단",
+        "사용자가 '구조 재설계' 선택 시 harness-generator 호출 안내 후 종료"
+      ],
+      "assertions": [
+        {"id": "early-bail", "text": "Phase 2-2 진단 spawn 전에 사용자 게이트가 발생해야 한다"},
+        {"id": "redirect-suggestion", "text": "harness-generator 재실행 권고가 포함되어야 한다"}
+      ]
+    },
+    {
+      "id": 3,
+      "name": "증거-부족-skip",
+      "prompt": "그냥 뭔가 느낌이 안 좋아. 우리 하네스 좀 고쳐줘",
+      "expected_path": [
+        "Phase 0: 초기 실행",
+        "Phase 1: 대상/결함 묘사 부족 → 인터뷰 1회 (대상 식별)",
+        "사용자가 구체화 못하면 trajectory 묘사도 부족 → 진단가가 severity: unknown + needs_user_input: true 반환",
+        "skill-refiner는 change_kind: skip 으로 patch 만들지 않음",
+        "Phase 4: 사용자에게 추가 증거 요청"
+      ],
+      "assertions": [
+        {"id": "no-fake-patch", "text": "증거 부족 시 추측 patch가 생성되지 않아야 한다 (change_kind: skip)"},
+        {"id": "needs-user-input", "text": "diagnosis.json의 needs_user_input: true 가 사용자에게 노출되어야 한다"}
+      ]
+    }
+  ]
+}

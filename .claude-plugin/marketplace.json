@@ -92,6 +92,26 @@
       ],
       "category": "workflow",
       "strict": false
+    },
+    {
+      "name": "harness-evolver",
+      "description": "사용자가 사용 중인 임의의 하네스 스킬에서 문제가 보고되면 해당 대상 하네스를 자율적으로 개선하는 메타-개선 플러그인. 특정 하네스나 도메인에 종속되지 않으며, 사용자가 지정한 어떤 하네스든 입력으로 받아 동작합니다. Evolver 루프(trajectory → curated memory → autonomous refinement)와 skill-creator의 eval-driven iteration을 결합해, 결함 1건 = 진단 1건 = 패치 1건 단위로 처리하고 반복 패턴은 영속 메모리에 큐레이션합니다.",
+      "source": "./plugins/harness-evolver",
+      "version": "0.1.0",
+      "author": { "name": "seungah.hong" },
+      "tags": [
+        "claude-code",
+        "plugin",
+        "meta-skill",
+        "harness",
+        "self-improvement",
+        "trajectory",
+        "evolution",
+        "skill-creator",
+        "multi-agent"
+      ],
+      "category": "meta",
+      "strict": false
     }
   ]
 }

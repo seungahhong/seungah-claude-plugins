@@ -9,6 +9,8 @@
 | [`frontend-harness`](#plugin-frontend-harness) | 프론트엔드 개발 워크플로우용 멀티에이전트 스킬 모음 (Planning, Implementation, Quality, Security, Performance, QA, Verification) |
 | [`harness-generator`](#plugin-harness-generator) | 도메인 무관 하네스(에이전트 팀 + 스킬 + 오케스트레이터) 자동 생성 메타 플러그인 |
 | [`git-harness`](#plugin-git-harness) | Git 워크플로우 멀티 에이전트 스킬 모음 (한국어 커밋 메시지 작성, 다각도 PR 리뷰) |
+| [`doc-harness`](#plugin-doc-harness) | 코드베이스 + 브랜치(git diff) 기준 기술 문서 자동 생성 하네스 (수집 → 섹션 분석 병렬 → 조립 → 완성도 검증 루프) |
+| [`harness-evolver`](#plugin-harness-evolver) | 사용자가 사용 중인 임의의 하네스 스킬에서 보고된 문제를 진단·개선하는 메타-개선 플러그인 (Evolver 루프 + skill-creator eval iteration 결합) |
 
 ---
 
@@ -102,6 +104,66 @@ Git 워크플로우를 지원하는 스킬 모음입니다. 한국어 커밋 메
 
 ---
 
+## Plugin: `doc-harness`
+
+코드베이스와 현재 브랜치(git diff)를 기준으로 배경·목차·기술스펙·변경사항·테스트·영향을 포함한 단일 기술 문서를 자동 생성하고 완성도를 검증하는 하네스입니다. `agents/` 정의 파일을 사용하는 첫 플러그인으로, 4명의 에이전트가 서브에이전트로 동작합니다 (모두 `model: "opus"`).
+
+### Skills
+
+| Skill | Command | Description |
+|-------|---------|-------------|
+| **Branch Doc Orchestrator** | `/branch-doc-orchestrator` | 진입점 오케스트레이터. 수집 → 섹션 분석(배경·기술스펙·변경사항·테스트·영향) 병렬 → 조립 → 완성도 검증 루프(최대 2회). 산출: `_docs/branch-doc-{branch}-{date}.md` + 완성도 요약 |
+| **Branch Context Collection** | `/branch-context-collection` | 현재 브랜치 ↔ 기본 브랜치 자동 감지 + git diff·커밋·코드 구조·테스트 현황을 단일 컨텍스트(`context.md` + `meta.json`)로 수집 |
+| **Doc Section Writing** | `/doc-section-writing` | 수집 컨텍스트 기반 개별 섹션(배경/기술스펙/변경사항/테스트/영향) 작성 방법론 — 섹션별 필수 요소·형식·흔한 실패 정의 |
+| **Doc Completeness Check** | `/doc-completeness-check` | 생성 문서를 필수 목차·충실도·정합성 루브릭으로 채점하고 `grading.json`(`verdict: pass/revise`) 산출 |
+
+### Agents
+
+| Agent | Description |
+|-------|-------------|
+| **context-collector** | git diff·브랜치 비교·코드 구조 수집 |
+| **doc-section-writer** | 단일 섹션 작성 (병렬 호출 대상) |
+| **doc-assembler** | 섹션 통합 + 요약/목차 생성 |
+| **doc-verifier** | 완성도 채점 (컨텍스트 격리, `grading.json`) |
+
+---
+
+## Plugin: `harness-evolver`
+
+사용자가 사용 중인 **임의의 하네스 스킬**에서 트리거 누락·반복 우회·에이전트 실패 등 문제가 보고되면, 대상 하네스를 진단하고 자율 개선하는 메타-개선 플러그인입니다. **특정 플러그인이나 도메인에 종속되지 않으며**, 사용자가 지목한 어떤 하네스든 입력으로 받습니다.
+
+설계는 Evolver 루프(`trajectory → curated memory → autonomous skill refinement`)와 skill-creator의 eval-driven iteration을 결합한 형태이며, **결함 1건 = 진단 1건 = 패치 1건** 단위로 분리해 추적합니다. 모든 patch는 사용자 승인 게이트 통과 후에만 적용됩니다 (자동 적용 금지).
+
+### Skills
+
+| Skill | Command | Description |
+|-------|---------|-------------|
+| **Harness Evolver** | `/harness-evolver` | 진입점 오케스트레이터. 캡처 → 결함별 병렬 진단 → 진단별 순차 개선(patch + 트리거/회귀 평가) → 사용자 게이트 → 적용 → `evolution-memory/` 누적. 같은 표적 3회 누적 시 본문 patch 거절 + 구조 재설계(`harness-generator`) 권고 |
+| **Trajectory Capture** | `/trajectory-capture` | 하네스 실행의 도구 호출·산출물·상태를 시간순 정규화(`*.jsonl` + 표). 사실/해석 분리, payload 적재 금지 |
+| **Failure Diagnosis** | `/failure-diagnosis` | 결함의 root cause 진단 루브릭 — 5신호(재요청/반복 우회/에이전트 실패/스키마 불일치/Why 부재) → 5표적(description/skill body/agent/orchestrator/skill body 재작성) 매핑, 증거 인용 + severity/confidence |
+| **Eval-Driven Refinement** | `/eval-driven-refinement` | skill-creator 4원칙(generalize/lean/why-first/bundle) 기반 patch 생성. description 수정 시 should-trigger/should-not-trigger 8–10개씩 동봉, Risks 필수, 자동 적용 금지 |
+
+### Agents
+
+| Agent | Description |
+|-------|-------------|
+| **trajectory-analyst** | 실행 궤적 정규화 (사실/해석 분리, payload 적재 금지) |
+| **failure-diagnostician** | 결함 1건당 root cause 진단 (5신호 → 5표적 매핑, 증거 인용 필수) |
+| **skill-refiner** | skill-creator 원칙 기반 patch 생성 (직접 파일 수정 금지, patch 안만 생성) |
+| **evolution-historian** | `evolution-memory/` 큐레이션 + 반복 패턴 nudge (임계치 3회 시 구조 재설계 신호) |
+
+### 진화 영속 메모리
+
+대상 하네스의 플러그인 루트에 `evolution-memory/` 디렉토리가 생성되어 회차 간 패턴이 누적됩니다:
+
+- `history.jsonl` — 회차별 진단/패치/결정 ledger
+- `recurring-patterns.md` — 표적별 카운트 + `needs_attention` 섹션
+- `patches/{date}-{target-slug}.md` — 적용된 패치 사본
+
+> `harness-evolver`와 `harness-generator`의 책임 경계: 신규 하네스 구축은 `harness-generator`, 이미 사용 중인 하네스의 문제 개선은 `harness-evolver`. 단발 스킬 작성/평가는 마켓플레이스 공식 `skill-creator` 사용.
+
+---
+
 ## Recommended Workflow
 
 ### 스킬 단위 실행
@@ -149,6 +211,16 @@ Phase 6. 통합 리포트 생성                   # 전 단계 결과 통합
 
 [후속 단계, 별도 호출]
 /commit (git-harness)
+/branch-doc-orchestrator (doc-harness)    # 브랜치 기준 기술 문서 자동 생성
+```
+
+### 메타 워크플로우 — 하네스 자체를 다루기
+
+```
+/harness-generator           # 0. 신규 도메인용 하네스(에이전트+스킬+오케스트레이터) 한 묶음 생성
+    ↓ (사용 중 문제 발견 시)
+/harness-evolver             # N. 대상 하네스를 캡처·진단·개선 + evolution-memory/ 누적
+                             #    동일 표적 3회 누적 시 → /harness-generator 재실행 권고
 ```
 
 ## Installation
@@ -205,6 +277,34 @@ plugins/
     skills/
       commit/                                            # 한국어 커밋 메시지 작성 스킬
       pr-review/                                         # PR 통합 리뷰 스킬 (코드/버그/보안/테스트/간소화)
+  doc-harness/                                           # [독립 플러그인] 코드베이스+브랜치 기준 문서 자동 생성 하네스
+    .claude-plugin/
+      plugin.json
+    CLAUDE.md                                            # 하네스 포인터 + 변경 이력
+    agents/
+      context-collector.md                               # git diff·브랜치 비교·코드 구조 수집
+      doc-section-writer.md                              # 단일 섹션 작성 (병렬 호출)
+      doc-assembler.md                                   # 섹션 통합 + 요약·목차 생성
+      doc-verifier.md                                    # 완성도 채점 (컨텍스트 격리, grading.json)
+    skills/
+      branch-doc-orchestrator/                           # 진입점 오케스트레이터 (수집→팬아웃→조립→검증 루프)
+      branch-context-collection/                         # 브랜치 컨텍스트 수집 방법론
+      doc-section-writing/                               # 섹션별 작성 방법론
+      doc-completeness-check/                             # 완성도 검증 루브릭 (+ references/)
+  harness-evolver/                                       # [독립 플러그인] 사용자가 사용 중인 임의의 하네스 스킬에서 보고된 문제를 진단·개선하는 메타-개선 플러그인 (특정 플러그인/도메인 비종속)
+    .claude-plugin/
+      plugin.json
+    CLAUDE.md                                            # 하네스 포인터 + 변경 이력
+    agents/
+      trajectory-analyst.md                              # 실행 궤적 정규화 (사실/해석 분리)
+      failure-diagnostician.md                           # 결함 1건당 root cause 진단 (5신호 → 5표적)
+      skill-refiner.md                                   # skill-creator 원칙 기반 patch 생성 (자동 적용 금지)
+      evolution-historian.md                             # evolution-memory/ 큐레이션 + 반복 패턴 nudge
+    skills/
+      harness-evolver/                                   # 진입점 오케스트레이터 (캡처→팬아웃 진단→순차 개선→게이트→적용→메모리) (+ references/)
+      trajectory-capture/                                # 궤적 정규화 방법론
+      failure-diagnosis/                                 # 결함 진단 루브릭
+      eval-driven-refinement/                            # patch + 트리거/회귀 평가 생성 방법론
 ```
 
 ## License

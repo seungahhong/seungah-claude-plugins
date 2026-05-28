@@ -60,6 +60,20 @@ plugins/
       branch-context-collection/                         # 브랜치 컨텍스트 수집 방법론
       doc-section-writing/                               # 섹션별 작성 방법론 (배경·기술스펙·변경사항·테스트·영향)
       doc-completeness-check/                             # 완성도 검증 루브릭 (+ references/)
+  harness-evolver/                                       # [독립 플러그인] 사용자가 사용 중인 임의의 하네스 스킬에서 발생한 문제를 진단·개선하는 메타-개선 플러그인 (특정 플러그인/도메인 비종속)
+    .claude-plugin/
+      plugin.json
+    CLAUDE.md                                            # 하네스 포인터 + 변경 이력
+    agents/
+      trajectory-analyst.md                              # 실행 궤적 정규화 (사실/해석 분리)
+      failure-diagnostician.md                           # 결함 1건당 root cause 진단 (5신호 → 5표적 매핑)
+      skill-refiner.md                                   # skill-creator 원칙 기반 patch 생성 (자동 적용 금지)
+      evolution-historian.md                             # evolution-memory/ 큐레이션 + 반복 패턴 nudge
+    skills/
+      harness-evolver/                                   # 진입점 오케스트레이터 (캡처 → 팬아웃 진단 → 순차 개선 → 게이트 → 적용 → 메모리) (+ references/)
+      trajectory-capture/                                # 궤적 정규화 방법론
+      failure-diagnosis/                                 # 결함 진단 루브릭
+      eval-driven-refinement/                            # patch + 트리거/회귀 평가 생성 방법론
 ```
 
 ## Skills
@@ -105,6 +119,17 @@ plugins/
 
 > `doc-harness`는 에이전트 정의 파일(`agents/`)을 사용하는 첫 플러그인이다 — `context-collector`, `doc-section-writer`, `doc-assembler`, `doc-verifier`를 서브에이전트로 spawn한다(모두 `model: "opus"`).
 
+### Plugin: `harness-evolver`
+
+| Skill | Command | Description |
+|-------|---------|-------------|
+| Harness Evolver | `/harness-evolver` | 사용자가 사용 중인 임의의 하네스 스킬에서 문제가 보고되면, 대상 하네스의 실행 궤적을 캡처·진단해 자율 진화시키는 메타 오케스트레이터(특정 플러그인/도메인 비종속). 캡처 → 결함별 병렬 진단 → 진단별 순차 개선(patch + 트리거/회귀 평가) → 사용자 게이트 → 적용 → `evolution-memory/` 누적. 결함 1건 = 진단 1건 = 패치 1건. 자동 적용 금지(사용자 승인 필수). 같은 표적 3회 누적 시 본문 patch 거절 + 구조 재설계 권고 |
+| Trajectory Capture | `/trajectory-capture` | 하네스 실행의 도구 호출·산출물·상태를 시간순 정규화(`*.jsonl` + 표). 사실/해석 분리, payload 적재 금지 |
+| Failure Diagnosis | `/failure-diagnosis` | 결함의 root cause 진단 루브릭 — 5신호(재요청/우회/에이전트 실패/스키마 불일치/Why 부재) → 5표적(description/skill body/agent/orchestrator/skill body 재작성) 매핑, 증거 인용 + severity/confidence |
+| Eval-Driven Refinement | `/eval-driven-refinement` | skill-creator 4원칙(generalize/lean/why-first/bundle) 기반 patch 생성. description 수정 시 should-trigger/should-not-trigger 8–10개씩 동봉, Risks 필수, 자동 적용 금지(patch만 생성) |
+
+> `harness-evolver`는 Evolver 루프(`trajectory → curated memory → autonomous refinement`)와 skill-creator의 eval-driven iteration을 결합한 메타-개선 플러그인이다. 4명의 에이전트(`trajectory-analyst`, `failure-diagnostician`, `skill-refiner`, `evolution-historian`)와 `evolution-memory/` 영속 디렉토리로 회차 간 패턴을 큐레이션한다(모두 `model: "opus"`).
+
 ## Commands
 
 | Command | File | Description |
@@ -134,4 +159,5 @@ plugins/
 - 훅 스크립트는 `plugins/<plugin-name>/hooks/` 하위에 배치하고 `hooks.json`에서 참조
 - 스킬/커맨드 설명은 한국어로 작성
 - 스킬 간 교차 참조 시 상대 경로 사용 (예: `../a11y/SKILL.md`)
-- 메타/도메인 무관 스킬은 `frontend-harness`에 두지 않고 별도 플러그인으로 분리 (예: `harness-generator`, `git-harness`)
+- 메타/도메인 무관 스킬은 `frontend-harness`에 두지 않고 별도 플러그인으로 분리 (예: `harness-generator`, `git-harness`, `doc-harness`, `harness-evolver`)
+- 4개 이상의 에이전트가 협업하는 하네스(예: `doc-harness`, `harness-evolver`)는 `agents/{name}.md` 정의 파일을 두고 모든 Agent 호출에 `model: "opus"` 명시
