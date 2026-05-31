@@ -59,7 +59,7 @@ description: 하네스 실행 1회차의 도구 호출·산출물·상태를 시
 
 | step | phase | agent | tool | input_summary | output_ref | status | wall_ms |
 | ---- | ----- | ----- | ---- | ------------- | ---------- | ------ | ------- |
-| 1 | phase1 | orchestrator | AskUserQuestion | 대상 하네스 선택 | – | ok | 1200 |
+| 1 | phase1 | orchestrator | AskUserQuestion | 평가 스코프 선택(repo-wide/plugin) | – | ok | 1200 |
 | 2 | phase2-1 | trajectory-analyst | – | trace 1건 | _workspace/phase2_trajectory_facts.json | ok | 4800 |
 ```
 

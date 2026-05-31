@@ -78,5 +78,45 @@
     "query": "그냥 fibonacci 함수 하나 만들어줘",
     "should_trigger": null,
     "rationale": "일반 코드 작성. 어떤 트리거도 잡혀선 안 됨"
+  },
+  {
+    "query": "우리 레포 하네스 스킬들 전체 한번 평가해줘. 어디가 약하고 트리거 누락 있는지 훑어줘",
+    "should_trigger": "harness-evolver",
+    "rationale": "현재 적용 중인 프로젝트(레포) 전역 평가 = repo-wide 스코프. 정확히 evolver 영역"
+  },
+  {
+    "query": "doc-harness 플러그인 전체 점검해줘. 스킬이랑 에이전트, plugin.json 까지 다 봐줘",
+    "should_trigger": "harness-evolver",
+    "rationale": "단일 플러그인 전체(에이전트·plugin.json 포함) 심층 평가 = plugin 스코프 opt-in. evolver 영역"
+  },
+  {
+    "query": "이 PR 컴포넌트 코드 좀 평가/리뷰해줘. 버그나 개선점 위주로",
+    "should_trigger": null,
+    "rationale": "일반 코드 리뷰. '평가' 단어가 있어도 대상이 하네스/레포/플러그인이 아니라 앱 코드 → evolver 트리거 금지 (near-miss 가드)"
+  },
+  {
+    "query": "이 결제 함수 성능 좀 평가해줘. 어디가 느린지 봐줘",
+    "should_trigger": null,
+    "rationale": "앱 코드 성능 평가. 대상이 하네스가 아닌 함수 → evolver 금지 (near-miss 가드)"
+  },
+  {
+    "query": "디자인 시안 두 개 중 어느 게 더 나은지 평가해줘",
+    "should_trigger": null,
+    "rationale": "디자인 평가. '평가' 표면 키워드지만 하네스/레포/플러그인과 무관 → evolver 금지 (near-miss 가드)"
+  },
+  {
+    "query": "이번 스프린트 회고 평가 좀 정리해줘",
+    "should_trigger": null,
+    "rationale": "프로세스/회고 평가. 하네스 자산이 대상이 아님 → evolver 금지 (near-miss 가드)"
+  },
+  {
+    "query": "이 기획 문서 초안 평가해줘. 빠진 부분 있나",
+    "should_trigger": null,
+    "rationale": "문서 평가. 하네스/스킬 정의 파일이 아닌 일반 문서 → evolver 금지 (near-miss 가드)"
+  },
+  {
+    "query": "이 로그인 API 보안 점검해줘. 취약점 있는지",
+    "should_trigger": "security-audit",
+    "rationale": "앱 보안 점검. '점검' 표면 키워드지만 대상이 앱 코드 보안 → security-audit 라우팅, evolver 아님 (near-miss 가드)"
   }
 ]

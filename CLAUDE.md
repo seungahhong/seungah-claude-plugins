@@ -60,7 +60,7 @@ plugins/
       branch-context-collection/                         # 브랜치 컨텍스트 수집 방법론
       doc-section-writing/                               # 섹션별 작성 방법론 (배경·기술스펙·변경사항·테스트·영향)
       doc-completeness-check/                             # 완성도 검증 루브릭 (+ references/)
-  harness-evolver/                                       # [독립 플러그인] 사용자가 사용 중인 임의의 하네스 스킬에서 발생한 문제를 진단·개선하는 메타-개선 플러그인 (특정 플러그인/도메인 비종속)
+  harness-evolver/                                       # [독립 플러그인] 사용자가 사용 중인 임의의 하네스 스킬에서 발생한 문제를 진단·개선하는 메타-개선 플러그인 (특정 플러그인/도메인 비종속, 기본 repo-wide 평가 / 단일 플러그인 opt-in)
     .claude-plugin/
       plugin.json
     CLAUDE.md                                            # 하네스 포인터 + 변경 이력
@@ -123,12 +123,12 @@ plugins/
 
 | Skill | Command | Description |
 |-------|---------|-------------|
-| Harness Evolver | `/harness-evolver` | 사용자가 사용 중인 임의의 하네스 스킬에서 문제가 보고되면, 대상 하네스의 실행 궤적을 캡처·진단해 자율 진화시키는 메타 오케스트레이터(특정 플러그인/도메인 비종속). 캡처 → 결함별 병렬 진단 → 진단별 순차 개선(patch + 트리거/회귀 평가) → 사용자 게이트 → 적용 → `evolution-memory/` 누적. 결함 1건 = 진단 1건 = 패치 1건. 자동 적용 금지(사용자 승인 필수). 같은 표적 3회 누적 시 본문 patch 거절 + 구조 재설계 권고 |
+| Harness Evolver | `/harness-evolver` | 사용자가 사용 중인 임의의 하네스 스킬에서 문제가 보고되면, 대상 하네스의 실행 궤적을 캡처·진단해 자율 진화시키는 메타 오케스트레이터(특정 플러그인/도메인 비종속). 캡처 → 결함별 병렬 진단 → 진단별 순차 개선(patch + 트리거/회귀 평가) → 사용자 게이트 → 적용 → `evolution-memory/` 누적. 결함 1건 = 진단 1건 = 패치 1건. 자동 적용 금지(사용자 승인 필수). 같은 표적 3회 누적 시 본문 patch 거절 + 구조 재설계 권고. **평가 스코프**는 매 회차 Phase 1에서 확정 — 기본은 현재 프로젝트(이 레포) 전역(루트 CLAUDE.md + 모든 플러그인 SKILL.md, 패치는 CLAUDE.md/SKILL.md 한정, `repo-wide`), 단일 플러그인 전체(plugin.json·agents·hooks·commands 포함) 심층 평가는 명시 요청 시(`plugin`). repo-wide 경계 밖 표적은 `scope-escalation` 으로 plugin 모드 재실행 권고 |
 | Trajectory Capture | `/trajectory-capture` | 하네스 실행의 도구 호출·산출물·상태를 시간순 정규화(`*.jsonl` + 표). 사실/해석 분리, payload 적재 금지 |
-| Failure Diagnosis | `/failure-diagnosis` | 결함의 root cause 진단 루브릭 — 5신호(재요청/우회/에이전트 실패/스키마 불일치/Why 부재) → 5표적(description/skill body/agent/orchestrator/skill body 재작성) 매핑, 증거 인용 + severity/confidence |
+| Failure Diagnosis | `/failure-diagnosis` | 결함의 root cause 진단 루브릭 — 5신호(재요청/우회/에이전트 실패/스키마 불일치/Why 부재) → 5표적(description/skill body/agent/orchestrator/skill body 재작성) 매핑(+ 루트 CLAUDE.md 추가 표적, kind: claude-md), 증거 인용 + severity/confidence |
 | Eval-Driven Refinement | `/eval-driven-refinement` | skill-creator 4원칙(generalize/lean/why-first/bundle) 기반 patch 생성. description 수정 시 should-trigger/should-not-trigger 8–10개씩 동봉, Risks 필수, 자동 적용 금지(patch만 생성) |
 
-> `harness-evolver`는 Evolver 루프(`trajectory → curated memory → autonomous refinement`)와 skill-creator의 eval-driven iteration을 결합한 메타-개선 플러그인이다. 4명의 에이전트(`trajectory-analyst`, `failure-diagnostician`, `skill-refiner`, `evolution-historian`)와 `evolution-memory/` 영속 디렉토리로 회차 간 패턴을 큐레이션한다(모두 `model: "opus"`).
+> `harness-evolver`는 Evolver 루프(`trajectory → curated memory → autonomous refinement`)와 skill-creator의 eval-driven iteration을 결합한 메타-개선 플러그인이다. 4명의 에이전트(`trajectory-analyst`, `failure-diagnostician`, `skill-refiner`, `evolution-historian`)와 `evolution-memory/` 영속 디렉토리로 회차 간 패턴을 큐레이션한다(모두 `model: "opus"`). `evolution-memory/` 위치는 평가 스코프에 따라 갈린다 — `repo-wide`(기본)면 `.claude/evolution-memory/`, `plugin`(opt-in)이면 해당 플러그인 루트.
 
 ## Commands
 

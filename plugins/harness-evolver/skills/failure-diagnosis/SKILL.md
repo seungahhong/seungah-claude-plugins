@@ -1,6 +1,6 @@
 ---
 name: failure-diagnosis
-description: 하네스(스킬·에이전트·오케스트레이터) 실행에서 발생한 결함을 정규화된 trajectory를 근거로 root cause로 식별·분류하는 진단 루브릭 스킬. 주로 harness-evolver Phase 2-2에서 failure-diagnostician 에이전트가 따른다. 5가지 결함 신호(트리거 누락/반복 우회/에이전트 실패/스키마 불일치/Why 부재)와 5가지 수정 표적의 매핑, 증거 인용 규칙, severity·confidence 기준을 정의한다. 사용자가 "하네스 결함 진단", "이 스킬 왜 안 트리거됐는지", "오케스트레이터 root cause", "하네스 패턴 분석" 등을 말할 때 트리거된다. 코드 자체의 일반 디버깅에는 사용하지 않는다.
+description: 하네스(스킬·에이전트·오케스트레이터) 실행에서 발생한 결함을 정규화된 trajectory를 근거로 root cause로 식별·분류하는 진단 루브릭 스킬. 주로 harness-evolver Phase 2-2에서 failure-diagnostician 에이전트가 따른다. 5가지 결함 신호(트리거 누락/반복 우회/에이전트 실패/스키마 불일치/Why 부재)와 5가지 수정 표적의 매핑(+ 프로젝트 지침 루트 CLAUDE.md 추가 표적), 증거 인용 규칙, severity·confidence 기준을 정의한다. 사용자가 "하네스 결함 진단", "이 스킬 왜 안 트리거됐는지", "오케스트레이터 root cause", "하네스 패턴 분석" 등을 말할 때 트리거된다. 코드 자체의 일반 디버깅에는 사용하지 않는다.
 ---
 
 # Failure Diagnosis — 결함 진단 루브릭
@@ -43,8 +43,8 @@ description: 하네스(스킬·에이전트·오케스트레이터) 실행에서
 
 **Why:** 오케스트레이터가 단계 간 입력/출력 스키마를 명시하지 않았거나, 변환 단계를 두지 않음.
 
-**표적:** 오케스트레이터 스킬의 Phase 정의.
-**진단 보고:** `target.kind: "orchestrator"`, `target.section: "Phase X → Y 데이터 전달"`.
+**표적:** 오케스트레이터의 Phase 정의.
+**진단 보고:** `target.kind: "orchestrator"`, `target.section: "Phase X → Y 데이터 전달"`. (오케스트레이터가 `SKILL.md`면 repo-wide 경계 안, `commands/*.md`면 경계 밖 → `scope_status: "plugin-only"`.)
 
 ### 신호 5: 도구 결과가 의도와 빗나감
 
@@ -52,6 +52,25 @@ description: 하네스(스킬·에이전트·오케스트레이터) 실행에서
 
 **표적:** 스킬 본문의 결박형 절. Why를 박은 일반 원리로 재작성 권고.
 **진단 보고:** `target.kind: "skill"`, `change_kind_hint: "why-first-rewrite"`.
+
+## 평가 스코프와 표적 경계 (orchestrator가 주입)
+
+오케스트레이터가 `평가 스코프`(`repo-wide` | `plugin:<plugin>`)를 진단 프롬프트에 주입한다. root cause 분류는 스코프와 무관하게 정직하게 하되, **표적이 그 스코프의 패치 경계 안인지**를 `target.scope_status` 로 표시한다.
+
+| 스코프 | 패치 경계 (in-boundary) | 경계 밖 (plugin-only) |
+| ----- | --------------------- | ------------------- |
+| `repo-wide` (기본) | 루트 `CLAUDE.md`, 임의 플러그인의 `skills/*/SKILL.md` | `agents/*.md`, `commands/*.md`, `hooks/*`, `plugin.json`, 플러그인별 `CLAUDE.md` |
+| `plugin:<plugin>` | 그 플러그인의 모든 파일 | (없음 — 그 플러그인 밖은 애초에 진단 대상 아님) |
+
+- 표적이 경계 안이면 `target.scope_status: "in-boundary"`.
+- `repo-wide` 인데 진짜 원인이 경계 밖 표적(위 표 plugin-only 칸 — `agents/*.md`·`commands/*.md`·`hooks/*`·`plugin.json`·플러그인별 `CLAUDE.md`)이면 — **원인을 숨기지 말고 그대로 보고**하되 `target.scope_status: "plugin-only"` 를 단다. refiner가 patch 대신 `scope-escalation` 으로 처리한다(plugin 모드 재실행하면 그때 패치 가능). (신호 3의 `agents/*.md` 표적, 신호 4가 `commands/*.md` 오케스트레이터인 경우는 repo-wide에서 항상 `plugin-only`.)
+- **out-of-scope (어느 스코프에서도 patch 불가):** 레포 루트 메타데이터 `.claude-plugin/marketplace.json` 은 어떤 플러그인 디렉토리에도 속하지 않아 plugin 모드 재실행으로도 패치할 수 없다 — 결함 원인이면 `target.scope_status: "out-of-scope"` 로 표시하고, refiner는 patch/`scope-escalation` 없이 `change_kind: "blocked"` 로 "사용자 직접 수정"을 권고한다.
+
+### 추가 표적: 프로젝트 지침 (CLAUDE.md)
+
+5신호가 스킬·에이전트·오케스트레이터의 *행동* 결함이라면, **프로젝트 전역 규칙(루트 `CLAUDE.md`)이 반복적으로 잘못된 행동을 유발**하는 결함도 있다 (예: 컨벤션이 모호/상충해 여러 스킬이 같은 곳에서 어긋남).
+
+**표적:** 루트 `CLAUDE.md`. **진단 보고:** `target.kind: "claude-md"`, `target.path: "CLAUDE.md"` — repo-wide 패치 경계 안이다. (플러그인별 `CLAUDE.md` 는 plugin 모드 전용.)
 
 ## 증거 인용 규칙 (Evidence)
 
@@ -99,7 +118,8 @@ description: 하네스(스킬·에이전트·오케스트레이터) 실행에서
   "target": {
     "kind": "description",
     "path": "plugins/{대상-플러그인}/skills/{대상-스킬}/SKILL.md",
-    "section": "frontmatter.description"
+    "section": "frontmatter.description",
+    "scope_status": "in-boundary"
   },
   "evidence": [
     {"step": 3, "quote": "user_input: '<사용자 표현>' → no skill triggered"}
@@ -118,6 +138,7 @@ description: 하네스(스킬·에이전트·오케스트레이터) 실행에서
 - **두 결함 묶음** — 한 진단에 두 표적이 들어감. 분리 후 재호출.
 - **증거 없는 단정** — `evidence: []` 인데 `severity: high`. 강등하라.
 - **추측을 채움** — 모르면서 root cause를 채움. unknown + needs_user_input 으로 응답.
+- **스코프 경계 왜곡** — repo-wide에서 진짜 원인이 `agents/`·`commands/`·`hooks/`·`plugin.json` 인데 패치 가능하게 보이려고 `SKILL.md` 로 억지 매핑하거나, 반대로 경계 밖 표적에 `scope_status: "plugin-only"` 를 안 단 것. 원인은 정직하게 짚고 경계만 표시한다.
 
 ## 협업
 

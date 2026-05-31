@@ -8,20 +8,23 @@
       "prompt": "어제 PR 리뷰 받을 때 doc-harness의 /branch-doc-orchestrator 가 '브랜치 문서 만들어줘' 라고 했는데 두 번이나 트리거 안 됐어. description부터 손보고 싶은데",
       "expected_path": [
         "Phase 0: _workspace/ 없음 → 초기 실행",
-        "Phase 1: 대상 = plugins/doc-harness/skills/branch-doc-orchestrator/, 결함 = 트리거 누락 1건",
+        "Phase 1: 스코프 질문 → repo-wide(기본) 선택. 대상 = plugins/doc-harness/skills/branch-doc-orchestrator/SKILL.md(SKILL.md=경계 안), 결함 = 트리거 누락 1건",
         "Phase 2-1: trajectory 없음 → 사용자 묘사 정규화",
-        "Phase 2-2: failure-diagnostician 1명 spawn → target.kind: description, evidence 인용",
+        "Phase 2-2: failure-diagnostician 1명 spawn → target.kind: description, target.scope_status: in-boundary, evidence 인용",
         "Phase 3: skill-refiner 1회 → change_kind: description + trigger_eval JSON 동봉",
         "Phase 4: 사용자 게이트 (accepted/rejected/deferred)",
-        "Phase 5: Edit으로 patch 적용",
+        "Phase 5: 스코프 경계 재확인(SKILL.md→통과) 후 Edit으로 patch 적용",
         "Phase 6: 인접 스킬 description 키워드 충돌 점검",
-        "Phase 7: evolution-historian → history.jsonl + recurring-patterns.md 갱신"
+        "Phase 7: evolution-historian → .claude/evolution-memory/ history.jsonl + recurring-patterns.md 갱신"
       ],
       "assertions": [
+        {"id": "scope-resolved", "text": "Phase 1에서 스코프(repo-wide/plugin)가 명시 확정되어야 한다"},
         {"id": "single-diagnosis", "text": "결함 1건만 spawn되어야 한다"},
         {"id": "evidence-required", "text": "diagnosis.json의 evidence 배열에 최소 1개 인용이 있어야 한다"},
+        {"id": "in-boundary", "text": "SKILL.md 표적이므로 scope_status: in-boundary 이고 patch가 생성되어야 한다"},
         {"id": "trigger-eval-bundled", "text": "description 수정이므로 trigger_eval JSON이 함께 생성되어야 한다"},
-        {"id": "no-auto-apply", "text": "Phase 4 사용자 게이트 전에 Edit 호출이 없어야 한다"}
+        {"id": "no-auto-apply", "text": "Phase 4 사용자 게이트 전에 Edit 호출이 없어야 한다"},
+        {"id": "memory-location", "text": "repo-wide이므로 evolution-memory가 .claude/ 하위에 기록되어야 한다"}
       ]
     },
     {
@@ -29,10 +32,11 @@
       "name": "임계치-도달-구조-재설계-권고",
       "prompt": "frontend-harness의 review 스킬이 또 안 먹어. 이미 세 번째인데 본문 말고 구조를 봐야 할 거 같아",
       "preconditions": [
-        "evolution-memory/recurring-patterns.md의 needs_attention에 plugins/frontend-harness/skills/review/SKILL.md 가 3회 누적되어 있다고 가정"
+        "스코프 = repo-wide(기본)이므로 .claude/evolution-memory/recurring-patterns.md의 needs_attention에 plugins/frontend-harness/skills/review/SKILL.md 가 3회 누적되어 있다고 가정"
       ],
       "expected_path": [
-        "Phase 0: recurring-patterns.md 임계치 감지",
+        "Phase 1: 스코프 질문 → repo-wide(기본). 스코프에 맞는 .claude/evolution-memory/recurring-patterns.md 읽음",
+        "Phase 0/1: recurring-patterns.md 임계치(≥3) 감지",
         "Phase 1 직후: 사용자에게 '본문 패치 vs 구조 재설계' 옵션 제시 후 중단",
         "사용자가 '구조 재설계' 선택 시 harness-generator 호출 안내 후 종료"
       ],
@@ -55,6 +59,40 @@
       "assertions": [
         {"id": "no-fake-patch", "text": "증거 부족 시 추측 patch가 생성되지 않아야 한다 (change_kind: skip)"},
         {"id": "needs-user-input", "text": "diagnosis.json의 needs_user_input: true 가 사용자에게 노출되어야 한다"}
+      ]
+    },
+    {
+      "id": 4,
+      "name": "repo-wide-경계밖-scope-escalation",
+      "prompt": "전체 점검해줘. /orchestrator 가 Phase 4 Review 단계에서 매번 멈춰",
+      "expected_path": [
+        "Phase 1: 스코프 질문 → repo-wide(기본) 선택. 결함 = /orchestrator Phase 4 실패",
+        "Phase 2-2: 표적 = plugins/frontend-harness/commands/orchestrator.md(커맨드 파일). target.scope_status: plugin-only (repo-wide 패치 경계 밖)",
+        "Phase 3: skill-refiner → change_kind: scope-escalation (patch 미생성, 표적 경로 보존)",
+        "Phase 4: '이 결함은 frontend-harness 단일 플러그인 평가 모드에서만 고칠 수 있습니다 — 재실행할까요?' 노출",
+        "사용자 수락 시: Phase 1부터 plugin: frontend-harness 로 재진입 → commands/orchestrator.md 패치 가능"
+      ],
+      "assertions": [
+        {"id": "out-of-boundary-flagged", "text": "커맨드 파일 표적은 repo-wide에서 scope_status: plugin-only 로 표시되어야 한다"},
+        {"id": "no-patch-out-of-scope", "text": "경계 밖 표적에는 patch가 생성되지 않고 change_kind: scope-escalation 이어야 한다"},
+        {"id": "escalation-surfaced", "text": "Phase 4에 단일 플러그인 평가 모드 재실행 선택지가 노출되어야 한다"},
+        {"id": "no-boundary-bypass", "text": "원인을 SKILL.md로 억지 매핑해 우회 patch하지 않아야 한다"}
+      ]
+    },
+    {
+      "id": 5,
+      "name": "plugin-모드-단일-플러그인-심층",
+      "prompt": "doc-harness 플러그인 전체 평가해줘. 에이전트들 사이에 스키마가 자꾸 안 맞아",
+      "expected_path": [
+        "Phase 1: 스코프 질문 → 단일 플러그인 + doc-harness 확정 → plugin: doc-harness. 대상 = plugins/doc-harness/ 전체",
+        "Phase 2-2: 표적이 agents/*.md 든 plugin.json 이든 skills/*/SKILL.md 든 모두 scope_status: in-boundary (그 플러그인 내부)",
+        "Phase 3~5: 경계 안이므로 정상 patch (agents/*.md 도 수정 가능)",
+        "Phase 7: plugins/doc-harness/evolution-memory/ 에 누적"
+      ],
+      "assertions": [
+        {"id": "plugin-scope-confirmed", "text": "Phase 1에서 plugin 스코프 + 대상 플러그인(doc-harness)이 명시 확정되어야 한다"},
+        {"id": "agents-in-boundary", "text": "plugin 모드에서는 agents/*.md·plugin.json 등 그 플러그인의 모든 파일이 in-boundary 여야 한다"},
+        {"id": "plugin-local-memory", "text": "evolution-memory가 plugins/doc-harness/ 하위에 기록되어야 한다"}
       ]
     }
   ]
