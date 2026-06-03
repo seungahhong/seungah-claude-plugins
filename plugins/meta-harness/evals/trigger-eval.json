@@ -1,0 +1,82 @@
+[
+  {
+    "query": "방금 그 방향 말고 다시 해줘. 왜 그렇게 갔는지 이번 세션 보고 쓰던 스킬 고쳐줘",
+    "should_trigger": true
+  },
+  {
+    "query": "이거 보강해줘. 왜 부족했는지 진단해서 루트 CLAUDE.md랑 그 스킬 고도화해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "이 실수 반복 안 하게 지금 쓰던 스킬 본문 고도화해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "지금 세션에서 방금 한 동작 보고 루트 지침(CLAUDE.md) 업데이트해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "이 _docs/feat-x-spec.md 부실한데, 이거 만든 에이전트랑 skill을 찾아서 고쳐줘",
+    "should_trigger": true
+  },
+  {
+    "query": "이 산출물 만든 skill이 뭔지 역추적해서 그 정의 고도화해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "이 플러그인 자체가 잘못 가고 있어. plugin.json까지 포함해서 plugin 전체 고쳐줘",
+    "should_trigger": true
+  },
+  {
+    "query": "이전 후보들 source/score/trace 파일로 깔아두고 grep해서 다음 후보 제안해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "정합은 올리되 본문 비용은 안 늘리게 Pareto 유지하면서 패치 후보 뽑아줘",
+    "should_trigger": true
+  },
+  {
+    "query": "왜 이렇게 동작했는지 진단하고 하네스(CLAUDE.md/SKILL.md) 고도화해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "새 하네스랑 에이전트 팀을 처음부터 만들어줘. 분석→설계→실행→검증 단계로",
+    "should_trigger": false
+  },
+  {
+    "query": "스킬 하나 새로 작성하고 벤치마크까지 해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 PR 코드 리뷰해줘. 버그 있나 봐줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 기능 관련 기술 문서 새로 생성해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "settings.json 설정 좀 바꿔줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이번 분기 OKR 목표 평가 좀 정리해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 trajectory를 시간순 표로 정규화만 해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 함수 좀 리팩터링해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "테스트 깨진 거 고쳐줘",
+    "should_trigger": false
+  },
+  {
+    "query": "커밋 메시지 써줘",
+    "should_trigger": false
+  }
+]

@@ -9,8 +9,7 @@
 | [`frontend-harness`](#plugin-frontend-harness) | 프론트엔드 개발 워크플로우용 멀티에이전트 스킬 모음 (Planning, Implementation, Quality, Security, Performance, QA, Verification) |
 | [`harness-generator`](#plugin-harness-generator) | 도메인 무관 하네스(에이전트 팀 + 스킬 + 오케스트레이터) 자동 생성 메타 플러그인 |
 | [`git-harness`](#plugin-git-harness) | Git 워크플로우 멀티 에이전트 스킬 모음 (한국어 커밋 메시지 작성, 다각도 PR 리뷰) |
-| [`doc-harness`](#plugin-doc-harness) | 코드베이스 + 브랜치(git diff) 기준 기술 문서 자동 생성 하네스 (수집 → 섹션 분석 병렬 → 조립 → 완성도 검증 루프) |
-| [`harness-evolver`](#plugin-harness-evolver) | 사용자가 사용 중인 임의의 하네스 스킬에서 보고된 문제를 진단·개선하는 메타-개선 플러그인 (Evolver 루프 + skill-creator eval iteration 결합) |
+| [`meta-harness`](#plugin-meta-harness) | Meta-Harness 논문(arXiv 2603.28052v1) 기반 메타 하네스 엔지니어링 플러그인 (full-trace experience store + causal reasoning + Pareto 비후퇴, 사용자 승인 게이트) |
 
 ---
 
@@ -100,67 +99,39 @@ Git 워크플로우를 지원하는 스킬 모음입니다. 한국어 커밋 메
 | Skill | Command | Description |
 |-------|---------|-------------|
 | **Commit** | `/commit` | `이슈번호 type: 제목` 형식의 한국어 커밋 메시지를 작성합니다. 명령형 제목과 함께, 필요 시 요약/배경/설계/영향/테스트 시나리오 본문을 자동 구성합니다. Secrets 검사와 보호 브랜치 경고를 포함합니다 |
-| **PR Review** | `/pr-review` | 변경된 코드를 코드 품질·버그·보안·테스트·코드 간소화(`/simplify`) 관점으로 다각도 리뷰하고 통합 리포트를 생성합니다. 신뢰도 80 이상 이슈만 보고하며, `[must]`/`[want]`/`[imo]`/`[ask]`/`[nits]`/`[info]` 라벨로 분류된 리뷰 코멘트를 만듭니다 |
+| **Review to PR** | `/review-to-pr` | 변경 파일 기반 **리뷰 → 커밋 → PR 생성** 올인원 워크플로우. Commit/PR 각 단계에서 `/simplify` + `/review`를 자동 수행하고 수정을 적용한 뒤 커밋 또는 PR을 생성합니다 |
 
 ---
 
-## Plugin: `doc-harness`
+## Plugin: `meta-harness`
 
-코드베이스와 현재 브랜치(git diff)를 기준으로 배경·목차·기술스펙·변경사항·테스트·영향을 포함한 단일 기술 문서를 자동 생성하고 완성도를 검증하는 하네스입니다. `agents/` 정의 파일을 사용하는 첫 플러그인으로, 4명의 에이전트가 서브에이전트로 동작합니다 (모두 `model: "opus"`).
+하네스(루트 CLAUDE.md + SKILL.md + agents + commands + hooks = "LLM 주위의 코드")의 결함을 **압축 요약이 아닌 full-trace experience store**로 진단·개선하는 메타 하네스 엔지니어링 플러그인입니다. "Meta-Harness: End-to-End Optimization of Model Harnesses"(arXiv 2603.28052v1)를 토대로, proposer가 raw trace를 직접 `grep`/`cat`으로 조회해 causal reasoning으로 root cause를 진단합니다. 모든 patch는 사용자 승인 게이트 통과 후에만 적용됩니다 (자동 적용 금지). `agents/` 정의 파일로 4명의 에이전트가 서브에이전트로 동작합니다 (모두 `model: "opus"`).
+
+트리거는 세 가지입니다 — R1 현세션 redirect·보강, R2 plugin 자체 개선, R3 외부 .md 산출물의 생산 에이전트/skill 역추적.
 
 ### Skills
 
 | Skill | Command | Description |
 |-------|---------|-------------|
-| **Branch Doc Orchestrator** | `/branch-doc-orchestrator` | 진입점 오케스트레이터. 수집 → 섹션 분석(배경·기술스펙·변경사항·테스트·영향) 병렬 → 조립 → 완성도 검증 루프(최대 2회). 산출: `_docs/branch-doc-{branch}-{date}.md` + 완성도 요약 |
-| **Branch Context Collection** | `/branch-context-collection` | 현재 브랜치 ↔ 기본 브랜치 자동 감지 + git diff·커밋·코드 구조·테스트 현황을 단일 컨텍스트(`context.md` + `meta.json`)로 수집 |
-| **Doc Section Writing** | `/doc-section-writing` | 수집 컨텍스트 기반 개별 섹션(배경/기술스펙/변경사항/테스트/영향) 작성 방법론 — 섹션별 필수 요소·형식·흔한 실패 정의 |
-| **Doc Completeness Check** | `/doc-completeness-check` | 생성 문서를 필수 목차·충실도·정합성 루브릭으로 채점하고 `grading.json`(`verdict: pass/revise`) 산출 |
+| **Meta-Harness** | `/meta-harness` | 진입점 오케스트레이터. R1 현세션 redirect/보강 · R2 plugin 개선 · R3 외부 .md 역추적 트리거. Phase 0~8 + R4 보고, **사용자 승인 게이트(자동 적용 금지)** |
+| **Session Signal Capture** | `/session-signal-capture` | R1 현세션 발화·직전 산출물·active skill + R3 외부 .md를 **요약 없이 원형 trace로** 캡처. R3는 산출물 출처를 3단 폴백(경로 규약 → 메타마커 → 구조·문체+git blame)으로 역추적 + confidence |
+| **Causal Diagnosis** | `/causal-diagnosis` | experience-store raw trace를 grep/cat로 직접 조회해 confound 격리 → 단독검증 → why-first로 root cause 진단(근거는 trace step/경로 인용) |
+| **Pareto Refinement** | `/pareto-refinement` | additive-first → compose(직교 승리만) → transfer로 4축(behavior-alignment·rule-body-cost·trigger-precision·generalization) Pareto **비후퇴** 패치 생성 (patch만, 자동 적용 금지) |
 
 ### Agents
 
 | Agent | Description |
 |-------|-------------|
-| **context-collector** | git diff·브랜치 비교·코드 구조 수집 |
-| **doc-section-writer** | 단일 섹션 작성 (병렬 호출 대상) |
-| **doc-assembler** | 섹션 통합 + 요약/목차 생성 |
-| **doc-verifier** | 완성도 채점 (컨텍스트 격리, `grading.json`) |
+| **trace-capturer** | 현세션 신호 + 외부 .md → 원형 trace 정규화 (요약 금지, R3 3단 폴백 출처 역추적) |
+| **failure-diagnostician** | 결함 1건당 root cause 진단 (병렬, raw trace grep/cat 직접 조회, confound 격리) |
+| **pareto-refiner** | additive-first → compose → transfer patch 생성 (자동 적용 금지) |
+| **experience-historian** | experience-store 큐레이션 (history/index/pareto/recurring) |
 
----
+### Experience Store
 
-## Plugin: `harness-evolver`
+대상 스코프에 따라 `experience-store/` 디렉토리가 생성되어 회차 간 full-trace와 패턴이 누적됩니다 (repo-wide 기본 `.claude/experience-store/`, plugin opt-in `plugins/{target}/experience-store/`). proposer는 이 raw trace를 직접 조회합니다 (논문 Table 3: full-trace가 요약 기반보다 우월).
 
-사용자가 사용 중인 **임의의 하네스 스킬**에서 트리거 누락·반복 우회·에이전트 실패 등 문제가 보고되면, 대상 하네스를 진단하고 자율 개선하는 메타-개선 플러그인입니다. **특정 플러그인이나 도메인에 종속되지 않으며**, 사용자가 지목한 어떤 하네스든 입력으로 받습니다.
-
-설계는 Evolver 루프(`trajectory → curated memory → autonomous skill refinement`)와 skill-creator의 eval-driven iteration을 결합한 형태이며, **결함 1건 = 진단 1건 = 패치 1건** 단위로 분리해 추적합니다. 모든 patch는 사용자 승인 게이트 통과 후에만 적용됩니다 (자동 적용 금지).
-
-### Skills
-
-| Skill | Command | Description |
-|-------|---------|-------------|
-| **Harness Evolver** | `/harness-evolver` | 진입점 오케스트레이터. 캡처 → 결함별 병렬 진단 → 진단별 순차 개선(patch + 트리거/회귀 평가) → 사용자 게이트 → 적용 → `evolution-memory/` 누적. 같은 표적 3회 누적 시 본문 patch 거절 + 구조 재설계(`harness-generator`) 권고 |
-| **Trajectory Capture** | `/trajectory-capture` | 하네스 실행의 도구 호출·산출물·상태를 시간순 정규화(`*.jsonl` + 표). 사실/해석 분리, payload 적재 금지 |
-| **Failure Diagnosis** | `/failure-diagnosis` | 결함의 root cause 진단 루브릭 — 5신호(재요청/반복 우회/에이전트 실패/스키마 불일치/Why 부재) → 5표적(description/skill body/agent/orchestrator/skill body 재작성) 매핑, 증거 인용 + severity/confidence |
-| **Eval-Driven Refinement** | `/eval-driven-refinement` | skill-creator 4원칙(generalize/lean/why-first/bundle) 기반 patch 생성. description 수정 시 should-trigger/should-not-trigger 8–10개씩 동봉, Risks 필수, 자동 적용 금지 |
-
-### Agents
-
-| Agent | Description |
-|-------|-------------|
-| **trajectory-analyst** | 실행 궤적 정규화 (사실/해석 분리, payload 적재 금지) |
-| **failure-diagnostician** | 결함 1건당 root cause 진단 (5신호 → 5표적 매핑, 증거 인용 필수) |
-| **skill-refiner** | skill-creator 원칙 기반 patch 생성 (직접 파일 수정 금지, patch 안만 생성) |
-| **evolution-historian** | `evolution-memory/` 큐레이션 + 반복 패턴 nudge (임계치 3회 시 구조 재설계 신호) |
-
-### 진화 영속 메모리
-
-대상 하네스의 플러그인 루트에 `evolution-memory/` 디렉토리가 생성되어 회차 간 패턴이 누적됩니다:
-
-- `history.jsonl` — 회차별 진단/패치/결정 ledger
-- `recurring-patterns.md` — 표적별 카운트 + `needs_attention` 섹션
-- `patches/{date}-{target-slug}.md` — 적용된 패치 사본
-
-> `harness-evolver`와 `harness-generator`의 책임 경계: 신규 하네스 구축은 `harness-generator`, 이미 사용 중인 하네스의 문제 개선은 `harness-evolver`. 단발 스킬 작성/평가는 마켓플레이스 공식 `skill-creator` 사용.
+> `meta-harness`와 `harness-generator`의 책임 경계: 신규 하네스 구축은 `harness-generator`, 이미 사용 중인 하네스의 문제 진단·개선은 `meta-harness`. 단발 스킬 작성/평가는 마켓플레이스 공식 `skill-creator` 사용.
 
 ---
 
@@ -211,7 +182,6 @@ Phase 6. 통합 리포트 생성                   # 전 단계 결과 통합
 
 [후속 단계, 별도 호출]
 /commit (git-harness)
-/branch-doc-orchestrator (doc-harness)    # 브랜치 기준 기술 문서 자동 생성
 ```
 
 ### 메타 워크플로우 — 하네스 자체를 다루기
@@ -219,8 +189,8 @@ Phase 6. 통합 리포트 생성                   # 전 단계 결과 통합
 ```
 /harness-generator           # 0. 신규 도메인용 하네스(에이전트+스킬+오케스트레이터) 한 묶음 생성
     ↓ (사용 중 문제 발견 시)
-/harness-evolver             # N. 대상 하네스를 캡처·진단·개선 + evolution-memory/ 누적
-                             #    동일 표적 3회 누적 시 → /harness-generator 재실행 권고
+/meta-harness                # N. 대상 하네스를 full-trace로 캡처·진단·개선 + experience-store/ 누적
+                             #    동일 표적 반복 시 → /harness-generator 재실행 권고
 ```
 
 ## Installation
@@ -276,35 +246,23 @@ plugins/
       plugin.json
     skills/
       commit/                                            # 한국어 커밋 메시지 작성 스킬
-      pr-review/                                         # PR 통합 리뷰 스킬 (코드/버그/보안/테스트/간소화)
-  doc-harness/                                           # [독립 플러그인] 코드베이스+브랜치 기준 문서 자동 생성 하네스
+      review-to-pr/                                      # 리뷰 → 커밋 → PR 생성 올인원 워크플로우 스킬
+  meta-harness/                                          # [독립 플러그인] Meta-Harness 논문(arXiv 2603.28052v1) 기반 메타 하네스 엔지니어링 (full-trace experience store + causal reasoning + Pareto 비후퇴, 사용자 승인 게이트)
     .claude-plugin/
       plugin.json
     CLAUDE.md                                            # 하네스 포인터 + 변경 이력
-    agents/
-      context-collector.md                               # git diff·브랜치 비교·코드 구조 수집
-      doc-section-writer.md                              # 단일 섹션 작성 (병렬 호출)
-      doc-assembler.md                                   # 섹션 통합 + 요약·목차 생성
-      doc-verifier.md                                    # 완성도 채점 (컨텍스트 격리, grading.json)
+    README.md                                            # 사용자용 개요
+    agents/                                              # 모두 model: "opus"
+      trace-capturer.md                                  # 현세션 신호 + 외부 .md → 원형 trace 정규화 (요약 금지)
+      failure-diagnostician.md                           # 결함 1건당 root cause 진단 (병렬, raw trace 직접 조회)
+      pareto-refiner.md                                  # additive-first → compose → transfer patch 생성 (자동 적용 금지)
+      experience-historian.md                            # experience-store 큐레이션 (history/index/pareto/recurring)
     skills/
-      branch-doc-orchestrator/                           # 진입점 오케스트레이터 (수집→팬아웃→조립→검증 루프)
-      branch-context-collection/                         # 브랜치 컨텍스트 수집 방법론
-      doc-section-writing/                               # 섹션별 작성 방법론
-      doc-completeness-check/                             # 완성도 검증 루브릭 (+ references/)
-  harness-evolver/                                       # [독립 플러그인] 사용자가 사용 중인 임의의 하네스 스킬에서 보고된 문제를 진단·개선하는 메타-개선 플러그인 (특정 플러그인/도메인 비종속)
-    .claude-plugin/
-      plugin.json
-    CLAUDE.md                                            # 하네스 포인터 + 변경 이력
-    agents/
-      trajectory-analyst.md                              # 실행 궤적 정규화 (사실/해석 분리)
-      failure-diagnostician.md                           # 결함 1건당 root cause 진단 (5신호 → 5표적)
-      skill-refiner.md                                   # skill-creator 원칙 기반 patch 생성 (자동 적용 금지)
-      evolution-historian.md                             # evolution-memory/ 큐레이션 + 반복 패턴 nudge
-    skills/
-      harness-evolver/                                   # 진입점 오케스트레이터 (캡처→팬아웃 진단→순차 개선→게이트→적용→메모리) (+ references/)
-      trajectory-capture/                                # 궤적 정규화 방법론
-      failure-diagnosis/                                 # 결함 진단 루브릭
-      eval-driven-refinement/                            # patch + 트리거/회귀 평가 생성 방법론
+      meta-harness/                                      # 진입점 오케스트레이터 (Phase 0~8 + R4 보고) (+ references/)
+      session-signal-capture/                            # R1/R3 신호 캡처 방법론 (원본 보존)
+      causal-diagnosis/                                  # full-trace 기반 causal 진단 루브릭
+      pareto-refinement/                                 # Pareto/additive patch 생성 방법론
+    evals/                                               # acceptance assertion + 트리거 평가 + dry-run 리포트
 ```
 
 ## License

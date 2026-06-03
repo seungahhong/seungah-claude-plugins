@@ -1,0 +1,92 @@
+{
+  "eval_metadata": {
+    "eval_id": "meta-harness-acceptance",
+    "eval_name": "meta-harness 오케스트레이터 수용 평가",
+    "prompt": "현 세션의 redirect/보강 발화와 세션 외부 .md 산출물을 트리거로, 압축 요약이 아닌 full-trace experience store를 grep/cat로 직접 조회해 하네스(루트 CLAUDE.md + 각 SKILL.md + agents/*.md + commands/*.md + hooks)의 결함 root cause를 causal-reasoning으로 진단하고, Pareto frontier(behavior-alignment·rule-body-cost·trigger-precision·generalization)를 후퇴시키지 않는 패치를 사용자 승인 게이트 하에 제안한다. 본 평가는 Phase 0~8 + R4 흐름이 계약의 불변식(full-trace 보존, single-defect=single-patch, additive-first-on-regression, lightweight validation precedes eval, no-auto-apply, proposer-owns-diagnosis, scope/trigger eval bundling, R3 역추적·게이트·보고)을 준수하는지 채점한다.",
+    "assertions": [
+      {
+        "text": "[R1/asset-target-declared] Phase 1에서 트리거 유형(R1 현세션 redirect·보강 / R2 plugin 심층 / R3 외부 .md 역추적)과 스코프(repo-wide 기본 / plugin opt-in)가 한 번에 한 질문으로 확정되고, 패치 표적이 하네스 자산(루트 CLAUDE.md + SKILL.md, plugin 모드면 그 플러그인 전체)으로 명시 선언되어야 한다.",
+        "passed": true,
+        "evidence": "skills/meta-harness/SKILL.md Phase 1 (L71-75): '1. 트리거 유형 판별 — R1/R2/R3 ... 모호하면 한 번에 한 질문으로 확인', '2. 스코프 확정 — repo-wide(기본)/plugin(opt-in) ... 한 번에 한 질문'. 패치 표적 경계는 동 파일 '평가 스코프' 표(L34-37): repo-wide=루트 CLAUDE.md + 임의 SKILL.md만, plugin=지목 플러그인 모든 파일. references/scope-and-targets.md L3,L9-10 '스코프는 Phase 1에서 한 번에 한 질문으로 확정' + 패치허용표적 표가 표적 명시 선언을 강제."
+      },
+      {
+        "text": "[R2/full-trace-preserved] Phase 2 trace-capturer가 redirect 발화 원문·직전 산출물·active SKILL(또는 R3 .md 전문)을 .claude/experience-store/{run}/{candidate}/traces/*.jsonl 에 원형으로 적재하고, traces/에는 절대 요약/payload 누락을 넣지 않아야 한다(Table 3 full 56.7 vs summary 38.7 — 요약화는 퇴화).",
+        "passed": true,
+        "evidence": "skills/meta-harness/SKILL.md Phase 2 (L79) 'raw trace를 traces/*.jsonl에 원형 적재(요약·payload 누락 금지)' + 핵심원칙 (L43) 'full-trace 보존 — store에 요약을 넣는 순간 Table 3의 Scores+Summary로 퇴화. traces/는 원본'. agents/trace-capturer.md Work Principle 1 (L17-22) '원본 보존 — 요약·payload 누락은 금지(제1원칙)' + Output 1 (L64) 'content는 ... 원문. 잘라내지 말라'. skills/session-signal-capture/SKILL.md L12-14 '신호를 요약하지 말고 원형으로 적재' + 흔한 실패 표(L90) '경로로 날림'. 위치 .claude/experience-store/ 확인: references/experience-store-schema.md L19."
+      },
+      {
+        "text": "[R2/prior-candidates-navigable] experience-store의 index.json(navigable 포인터: run/candidate 경로·카운트·최신갱신)과 pareto.json으로 과거 후보 source/score/trace를 grep/cat으로 직접 선택 조회할 수 있어야 한다. 요약은 index.json/recurring-patterns.md(navigation)에만 두고 traces/는 항상 원본이어야 한다.",
+        "passed": true,
+        "evidence": "references/experience-store-schema.md index.json 스키마 (L68-99) trace_glob·score_path·nav_summary 포인터 제공 + L101 'nav_summary는 navigation 힌트일 뿐 ... 원본은 trace_glob 참조' + 제1불변식 (L5-13) '요약은 navigation 보조물(index.json, recurring-patterns.md)에만'. agents/experience-historian.md Work Principles (L14) '요약은 navigation에만, traces/는 원본' + Output (L33) 'index.json — navigable 포인터' + Collaboration (L52) 'index 포인터는 grep/cat으로 raw trace까지 곧장 도달 가능'. skills/meta-harness/SKILL.md Phase 8 (L164) '요약은 index/recurring(navigation)에만. traces/는 절대 건드리지 않는다'."
+      },
+      {
+        "text": "[R3/no-auto-apply] 모든 patch는 자동 적용이 절대 금지되고, Phase 6 사용자 승인 게이트를 통과한 accepted 결함만 Phase 7에서 오케스트레이터가 Edit/Write로 적용해야 한다. Phase 6 이전에 표적 자산에 대한 Edit/Write 호출이 없어야 한다.",
+        "passed": true,
+        "evidence": "skills/meta-harness/SKILL.md Phase 4 (L121) 'patch만 생성, 자동 적용 금지' + 핵심원칙 (L44) '자동 적용 금지 — 모든 patch는 Phase 6 사용자 승인 게이트 통과 후에만 오케스트레이터가 적용' + Phase 6 (L145-147) 게이트에서 accepted/rejected/deferred 수집 + Phase 7 (L149) '적용(accepted만)'. agents/pareto-refiner.md Core Role (L12-13) '너는 어떤 파일도 Edit/Write로 수정하지 않는다 ... proposer가 직접 쓰면 게이트를 우회' + Work Principle 2 (L23) 'Edit/Write/Bash로 표적 파일을 수정하면 안 된다. 읽기만 허용'. skills/pareto-refinement/SKILL.md L14 'eval은 proposer 밖에서 돌아야 confound가 안 생긴다'."
+      },
+      {
+        "text": "[R3/additive-first-on-regression] pareto-refiner는 regression(과거 회차에서 동일 표적이 후퇴) 신호를 raw trace 재확인 후 additive-first로 전환하고(기존 본문 삭제 대신 가산), 직교 승리만 compose하며, run 간 transfer는 raw trace 재확인을 거쳐야 한다.",
+        "passed": true,
+        "evidence": "skills/pareto-refinement/SKILL.md 핵심전략 3단계 (L29-47): 1단계 additive-first 'regression이 반복되는 표적이면 destructive edit을 기본 거절', 2단계 compose '각각 단독으로 검증 통과한 것만 합성', 3단계 transfer '요약만 보고 옮기지 않는다 ... traces/*.jsonl 원본을 grep/cat로 재확인한 뒤 적용'. agents/pareto-refiner.md Work Principle 4 (L32-35) 동일. skills/meta-harness/SKILL.md Phase 4 (L121,L132) 'additive-first → compose(직교 승리만) → transfer(raw trace 재확인 후)' + 핵심원칙 additive-first (L46)."
+      },
+      {
+        "text": "[R3/single-defect-single-patch] 결함 1건 = 진단 1건 = 패치 1건 원칙을 지켜, 한 진단이 다수 결함을 뭉뚱그리거나 하나의 patch.md가 여러 무관 표적을 묶지 않아야 한다(검증된 직교 패치 compose는 예외).",
+        "passed": true,
+        "evidence": "skills/meta-harness/SKILL.md 핵심원칙 (L45) '결함 1건 = 진단 1건 = 패치 1건 — 진단·개선 단위를 결함 단위로 고정'. agents/failure-diagnostician.md Core Role (L10) '딱 하나의 결함을 끝까지 ... 여러 결함을 한 번에 섞지 않는다'. agents/pareto-refiner.md Core Role (L11) '결함 1건 = 진단 1건 = 패치 1건'. agents/trace-capturer.md Work Principle 4 (L40) '결함을 임의로 합치지 않는다(결함 1건 = 진단 1건 원칙을 캡처 단계에서부터)'. compose 예외는 '검증된 직교 패치만'(skills/pareto-refinement/SKILL.md bundle 재정의 L25-27)."
+      },
+      {
+        "text": "[R4/proposer-owns-diagnosis] 무엇을/어떻게 고칠지(parent/mutation 선택)를 오케스트레이터에 하드코딩하지 않고 proposer 에이전트(failure-diagnostician 진단 → pareto-refiner 개선)에게 위임해야 한다. 5신호→5표적 분류는 navigation 힌트로만 쓰고 고정 critique 포맷으로 강제하지 않아야 한다.",
+        "passed": true,
+        "evidence": "skills/meta-harness/SKILL.md 실행모드 (L30) 'outer loop 최소화 — 무엇을/어떻게 고칠지를 하드코딩하지 않고 proposer 에이전트에게 위임' + 핵심원칙 (L49) 'outer-loop 최소화 — parent/mutation 선택을 proposer에게 위임'. skills/causal-diagnosis/SKILL.md L12 '5신호→5표적 표는 고정 critique 포맷이 아니라 navigation 힌트' + L48 '결론은 trace가 정한다' + 흔한실패 '고정 포맷 강제'(L126). agents/failure-diagnostician.md L14 '분류 신호는 navigation 힌트로만 쓰고, 고정 critique 포맷에 끼워 맞추지 않는다'. agents/pareto-refiner.md L16 'outer loop 최소화 — 고정된 mutation 규칙을 따르지 말고'."
+      },
+      {
+        "text": "[R4/lightweight-validation-precedes-eval] Phase 5 lightweight validation(frontmatter name/description-only 파싱, 상호참조 경로 존재, 트리거 충돌, Why-없는 MUST/NEVER 정적 점검)이 비싼 적용/평가 전에 값싸게 실행되어 interface-invalid 후보를 탈락시켜야 한다.",
+        "passed": true,
+        "evidence": "skills/meta-harness/SKILL.md Phase 5 (L141-143) '비싼 적용 전에 값싸게 거른다. frontmatter 파싱(name/description만 존재하는가), 상호참조 경로 존재, 트리거 충돌, Why-없는 MUST/NEVER 정적 점검. interface-invalid 후보는 탈락'. Phase 5가 Phase 6(게이트)·Phase 7(적용=비싼 단계) 앞에 위치. references/experience-store-schema.md score.json (L131-149) lightweight_validation verdict interface-valid|interface-invalid, 'invalid면 비싼 적용 전에 후보 탈락(Phase 5)'. skills/pareto-refinement/SKILL.md L64 'trigger_eval 없는 description patch는 Phase 5에서 탈락'."
+      },
+      {
+        "text": "[Meta-Harness/pareto-not-regressed] 채택 후보는 4축(behavior-alignment max·rule-body-cost min·trigger-precision max·generalization max) 중 어느 축도 frontier를 후퇴시키지 않아야 한다. 본문 길이·MUST/NEVER 결박 수 증가가 정합 이득 없이 들어오면 reject되어야 한다.",
+        "passed": true,
+        "evidence": "references/pareto-axes.md 4축 정의 (L11-16) 방향(max/min) 명시 + 비후퇴 채택규칙 (L47-56) '어느 축도 현 frontier를 후퇴시키지 않아야' + reject 예시 (L58-73) 'cand-skill-3: rule-body-cost 41→52(MUST 3개)인데 alignment 0.82→0.70 하락 → reject' + 규칙 한 줄(L73) '본문 길이·결박 수 증가가 정합 이득 없이 들어오면 reject'. skills/meta-harness/SKILL.md 핵심원칙 (L48) 'Pareto 비후퇴'. agents/pareto-refiner.md Work Principle 5 (L37-42) '어느 축도 후퇴해선 안 된다 ... 후퇴 축이 하나라도 있으면 자기검열로 폐기'. skills/pareto-refinement/SKILL.md L49-60 비후퇴 자가 점검."
+      },
+      {
+        "text": "[레포정합성/scope-and-trigger-eval-bundled] repo-wide 패치 경계(루트 CLAUDE.md + SKILL.md만)를 지켜 경계 밖(agents/·commands/·hooks/·plugin.json·플러그인별 CLAUDE.md)은 change_kind:scope-escalation, 레포 루트 메타(marketplace.json 등)는 change_kind:blocked로 처리하고, description 수정 patch에는 trigger_eval(should-trigger/should-not 각 8~10개)이 반드시 동봉되어야 한다.",
+        "passed": true,
+        "evidence": "references/scope-and-targets.md 표적 판정규칙 (L16-20): in-boundary=루트 CLAUDE.md/SKILL.md, scope-escalation=agents/·commands/·hooks/·plugin.json·플러그인별 CLAUDE.md(patch 안 만듦), out-of-scope/blocked=marketplace.json 등. skills/meta-harness/SKILL.md 평가스코프 (L39) 동일 + 에러정책 (L192-193). agents/pareto-refiner.md Work Principle 3 (L25-30) + Error Handling (L88-91). trigger_eval 동봉: skills/pareto-refinement/SKILL.md L62-64 'should-trigger 8~10개, should-not-trigger 8~10개 ... trigger_eval 없는 description patch는 Phase 5에서 탈락' + agents/pareto-refiner.md Work Principle 7 (L46) '각 8~10개'. skills/meta-harness/SKILL.md Phase 4 (L136) 'description 수정 시 trigger_eval(should-trigger/should-not 8~10개)'."
+      },
+      {
+        "text": "[R3R4-보고] 완료 후 R4 최종 보고로 '무엇/왜/어디' 3축 표(트리거R · 표적 · 변경종류 · 왜문제였나+근거(trace step/파일 경로 인용) · 결정 a/r/d · 적용✓)가 반드시 사용자에게 출력되어야 한다.",
+        "passed": true,
+        "evidence": "skills/meta-harness/SKILL.md '마지막 — R4 최종 보고 (필수)' (L169-175): '무엇을/왜/어디를 고도화했는지 3축 표로 반드시 출력' + 표 헤더 '트리거(R) | 표적(kind·path) | 변경 종류 | 왜 문제였나 (+근거 step/path) | 결정(a/r/d) | 적용' + 예시 행. 테스트 시나리오 (L209,L216)에서 정상/에러 흐름 모두 'R4 3축 표 출력'으로 종료. README.md L24 동일 요약."
+      },
+      {
+        "text": "[R3/gate-decision] Phase 6 게이트는 결함별 accepted/rejected/deferred를 수집하고(일부만 결정해도 진행), why를 먼저 보여주며, confidence:low(특히 R3 .md 역추적)면 출처 확인 질문을 선행하고 scope-escalation/반복패턴(같은 표적 ≥3) 경고를 노출해야 한다.",
+        "passed": true,
+        "evidence": "skills/meta-harness/SKILL.md Phase 6 (L145-147): '결함별로 why를 먼저 보여준 뒤 accepted/rejected/deferred를 수집한다(일부만 결정해도 진행). confidence:low(특히 R3 역추적)면 출처 확인 질문을 선행. scope-escalation·반복 패턴(≥3) 경고를 노출. 결정은 _workspace/{run}/{run}_decisions.json에 기록'. 테스트 시나리오 에러흐름 (L215) 'confidence:low → 출처 확인 질문 선행 ... deferred ... plugin 모드 재실행 권고'. agents/failure-diagnostician.md Error Handling (L67-68) needs_user_input/R3 출처 confidence low 전파. skills/session-signal-capture/SKILL.md L50,L100 'confidence: low면 ... 출처 확인 질문 선행 플래그'."
+      }
+    ]
+  },
+  "summary": {
+    "total": 12,
+    "passed": 12,
+    "failed": 0,
+    "pass_rate": 1.0,
+    "method": "design-conformance dry-run (런타임 실행 아님). shipped SKILL.md/agents/references가 각 assertion의 동작을 강제·명세하는지를 file:line/섹션 인용으로 판정.",
+    "trigger_eval": {
+      "should_trigger_total": 10,
+      "should_trigger_correct": 10,
+      "should_not_trigger_total": 10,
+      "should_not_trigger_correct": 10,
+      "misclassifications": 0,
+      "note": "description의 '발동' 절(R1/R2/R3 + Pareto/grep/진단 발화)이 10개 should_trigger 쿼리를 거의 verbatim 포섭하고, '발동하지 않는다' 절(신규 하네스/스킬 작성·벤치마크/PR 리뷰/문서 생성/settings/OKR/정규화만/리팩터링/테스트 수정/커밋)이 10개 should_not_trigger 쿼리를 거의 verbatim 포섭. 경계 충돌 없음."
+    },
+    "structural_checks": {
+      "frontmatter_name_description_only": "pass (4개 SKILL.md 모두 name/description만)",
+      "skill_body_under_500_lines": "pass (meta-harness 226 / causal-diagnosis 127 / pareto-refinement 140 / session-signal-capture 100)",
+      "agent_calls_model_opus": "pass (오케스트레이터 6개 Agent() 호출 전부 model=\"opus\")",
+      "no_dead_links": "pass (references 4개·sibling skill 3개·agent 상대참조 모두 실파일 해석)",
+      "commands_hooks_absent": "pass (commands/·hooks/ 미생성, 총 18파일)"
+    },
+    "verdict": "PASS — 12/12 assertion 충족, 트리거 오분류 0건, 구조 점검 a~e 전부 통과."
+  }
+}

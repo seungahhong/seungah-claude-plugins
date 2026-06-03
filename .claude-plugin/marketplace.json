@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "분석 → 설계 → 개발 → 리뷰 → 검증까지, 소프트웨어 개발 전 과정을 지원하는 멀티 에이전트 스킬·커맨드·훅 모음. 정적 분석 5개 관점(간소화·코드 리뷰·보안·성능·정합성) 중 사용자 선택 항목 병렬 + 재리뷰 루프와 E2E·타입/빌드 검증을 포함합니다.",
-    "version": "1.3.0",
+    "version": "1.4.0",
     "homepage": "https://github.com/seungahhong/seungah-claude-plugins"
   },
   "plugins": [
@@ -74,29 +74,9 @@
       "strict": false
     },
     {
-      "name": "doc-harness",
-      "description": "코드베이스와 브랜치(git diff)를 기준으로 기술 문서를 자동 생성하는 멀티 에이전트 하네스. 컨텍스트 수집 → 섹션 분석(배경·기술스펙·변경사항·테스트) 병렬 → 문서 조립 → 완성도 검증 루프로 배경/목차/기술스펙/변경사항/테스트를 포함한 문서를 생성하고 완성도를 검증합니다.",
-      "source": "./plugins/doc-harness",
-      "version": "0.1.0",
-      "author": { "name": "seungah.hong" },
-      "tags": [
-        "claude-code",
-        "plugin",
-        "documentation",
-        "git",
-        "branch",
-        "diff",
-        "multi-agent",
-        "orchestration",
-        "automation"
-      ],
-      "category": "workflow",
-      "strict": false
-    },
-    {
-      "name": "harness-evolver",
-      "description": "사용자가 사용 중인 임의의 하네스 스킬에서 문제가 보고되면 해당 대상 하네스를 자율적으로 개선하는 메타-개선 플러그인. 특정 하네스나 도메인에 종속되지 않으며, 사용자가 지정한 어떤 하네스든 입력으로 받아 동작합니다. Evolver 루프(trajectory → curated memory → autonomous refinement)와 skill-creator의 eval-driven iteration을 결합해, 결함 1건 = 진단 1건 = 패치 1건 단위로 처리하고 반복 패턴은 영속 메모리에 큐레이션합니다.",
-      "source": "./plugins/harness-evolver",
+      "name": "meta-harness",
+      "description": "Meta-Harness 논문(arXiv 2603.28052v1) 기반 메타 하네스 엔지니어링 플러그인. 하네스(루트 CLAUDE.md + SKILL.md + agents + commands + hooks = 'LLM 주위의 코드')의 결함을, 압축 요약이 아닌 full-trace experience store를 grep/cat로 직접 조회해 causal reasoning(confound 격리 → additive-first → compose → transfer)으로 진단합니다. 현 세션 redirect·보강(R1), 플러그인 자체 개선(R2), 외부 .md 산출물의 생산 에이전트/skill 역추적(R3)을 트리거로 받아, behavior-alignment·rule-body-cost·trigger-precision·generalization 4축 Pareto frontier를 후퇴시키지 않는 패치를 사용자 승인 게이트 하에서만 제안·적용하고, 무엇을/왜/어디를 고도화했는지 보고합니다(R4).",
+      "source": "./plugins/meta-harness",
       "version": "0.1.0",
       "author": { "name": "seungah.hong" },
       "tags": [
@@ -104,10 +84,12 @@
         "plugin",
         "meta-skill",
         "harness",
+        "meta-harness",
         "self-improvement",
-        "trajectory",
-        "evolution",
-        "skill-creator",
+        "full-trace",
+        "experience-store",
+        "causal-reasoning",
+        "pareto",
         "multi-agent"
       ],
       "category": "meta",

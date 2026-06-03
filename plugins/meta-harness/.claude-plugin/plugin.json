@@ -1,0 +1,22 @@
+{
+  "name": "meta-harness",
+  "version": "0.1.0",
+  "description": "현 세션의 redirect/보강 발화(R1)와 외부 .md 산출물(R3), 그리고 plugin 자체의 잘못된 방향(R2)을 트리거로, 압축 요약이 아닌 full-trace experience store를 grep/cat로 직접 조회해 하네스(루트 CLAUDE.md + 각 SKILL.md + agents/*.md + commands/*.md + hooks = 'LLM 주위의 코드')의 결함 root cause를 causal reasoning(confound 격리 → 단독검증 → 위험평가)으로 진단하고, behavior-alignment·rule-body-cost·trigger-precision·generalization 4축 Pareto frontier를 후퇴시키지 않는 패치를 사용자 승인 게이트 하에서만 제안·적용하는 메타 하네스 엔지니어링 플러그인. 'Meta-Harness: End-to-End Optimization of Model Harnesses'(arXiv 2603.28052v1)의 full-trace 보존 우월성(Table 3)과 outer-loop 최소화·proposer 위임을 핵심 원칙으로 차용한다.",
+  "author": {
+    "name": "seungah.hong",
+    "email": "seungah1030@gmail.com"
+  },
+  "tags": [
+    "claude-code",
+    "plugin",
+    "meta-skill",
+    "harness",
+    "meta-harness",
+    "self-improvement",
+    "full-trace",
+    "experience-store",
+    "causal-reasoning",
+    "pareto",
+    "multi-agent"
+  ]
+}
