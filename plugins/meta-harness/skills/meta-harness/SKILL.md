@@ -34,7 +34,7 @@ description: >-
 | 모드 | 발동 | 패치 표적 경계 | experience-store 위치 |
 |------|------|----------------|----------------------|
 | `repo-wide`(기본) | 기본값 | 루트 CLAUDE.md + 임의 SKILL.md **만** | `.claude/experience-store/` |
-| `plugin`(opt-in) | 명시 요청 시 | 지목 플러그인의 **모든** 파일 | `plugins/{target}/experience-store/` |
+| `plugin`(opt-in) | 명시 요청 시 | 지목 플러그인의 **모든** 파일 | `.claude/plugin-store/{target}/` |
 
 repo-wide 경계 밖(agents/·commands/·hooks/·plugin.json·플러그인별 CLAUDE.md)은 patch 없이 `scope-escalation`(plugin 모드 재실행 권고). 레포 루트 메타(`.claude-plugin/marketplace.json` 등)는 `out-of-scope` → `blocked`(사용자 직접). 상세는 [references/scope-and-targets.md](./references/scope-and-targets.md).
 
@@ -48,10 +48,21 @@ repo-wide 경계 밖(agents/·commands/·hooks/·plugin.json·플러그인별 CL
 - **Pareto 비후퇴** — 채택 후보는 4축(behavior-alignment·rule-body-cost·trigger-precision·generalization) 어느 것도 frontier를 후퇴시키지 않는다. 상세는 [references/pareto-axes.md](./references/pareto-axes.md).
 - **outer-loop 최소화** — parent/mutation 선택을 proposer에게 위임한다.
 
+## 연구 근거 원칙 (claude 특화 — 진단·개선에 적용)
+
+아래는 1차 출처(Anthropic 엔지니어링 문서 / peer-reviewed 논문)에 근거해 도입한 운영 원칙이다. 기존 안전장치를 우회하지 않으며, 적용은 항상 승인 게이트·Pareto 비후퇴를 거친다. 각 원칙의 1차 출처는 항목별 괄호에 인라인 표기한다.
+
+- **F1 병렬은 조건부(독립성·가치 게이트).** 단계 내 항목이 **독립적**일 때만 동적 워크플로우(orchestrator-workers)로 병렬 팬아웃한다(Phase 3 진단이 canonical). 직전 산출에 의존하면 순차(Phase 4), append-only 공유 상태면 단건(Phase 8). 멀티에이전트는 토큰 비용이 크므로 저가치 단건엔 순차가 낫다. (근거: *Building effective agents* / *multi-agent research system*)
+- **P1 중복 규칙 제거 = Pareto 승리.** 제품 기본 동작과 겹치거나 모델이 이미 하는 걸 또 지시하는 잉여 규칙(over-prompting)은 정합 이득 없이 rule-body-cost만 올린다 → 제거 후보로 진단한다(삭제는 승인 게이트 필수). (근거: context engineering — 최소·고신호·"Claude는 이미 똑똑하다"; '모델 향상→중복 제거' 프레이밍은 직접 문장이 아니라 **간접 도출**)
+- **P2 안전장치 보호.** 승인 게이트·Pareto 비후퇴·full-trace 보존·검증 Phase·경계 재확인은 patch로 **삭제·약화하지 않는다**(자기개선 효능엔 반례·수렴보장 부재). (근거: arXiv 2303.11366 / 2507.19457)
+- **P3 경량 경로(작은 작업).** 단건·저위험 변경(예: description 오타 1건)은 전체 Phase 0~8을 강제하지 않고 필요한 Phase만 거친다(progressive disclosure). (근거: Agent Skills — conditional details / just-in-time)
+- **P4 반복 절차 → Skill.** 같은 절차가 누적(≥3 needs_attention)되면 본문 규칙을 더하기보다 Skill 추출을 권고한다(사실은 지침에·절차는 Skill에). (근거: Agent Skills best-practices)
+- **P5 전역 지침은 최소·고신호.** 루트 CLAUDE.md/전역 지침엔 **안정적인 사실·원칙만** 두고 절차·가변 세부는 Skill/reference로 내린다(*최소 ≠ 짧게* — minimal does not necessarily mean short). (근거: context engineering — optimal token set / right altitude)
+
 ## 산출물 배치 규약
 
-- **experience-store**(영속) — `.claude/experience-store/`(repo-wide) 또는 `plugins/{target}/experience-store/`(plugin). `history.jsonl`·`index.json`·`pareto.json`·`recurring-patterns.md`·`patches/`·`{run}/{candidate}/{harness,score.json,traces/}`.
-- **_workspace**(휘발) — `_workspace/{run}/{phase}_*.json`·`*_decisions.json`·`{run}_summary.md`. 새 실행 시 직전 회차는 `_workspace_prev/`로 이동.
+- **experience-store**(영속) — `.claude/experience-store/`(repo-wide) 또는 `.claude/plugin-store/{target}/`(plugin). `history.jsonl`·`index.json`·`pareto.json`·`recurring-patterns.md`·`patches/`·`{run}/{candidate}/{harness,score.json,traces/}`.
+- **_workspace**(휘발) — `.claude/_workspace/{run}/{phase}_*.json`·`*_decisions.json`·`{run}_summary.md`. 새 실행 시 직전 회차는 `.claude/_workspace_prev/`로 이동.
 
 상세 스키마는 [references/experience-store-schema.md](./references/experience-store-schema.md), 실행 유형 판별은 [references/execution-types.md](./references/execution-types.md).
 
@@ -59,12 +70,12 @@ repo-wide 경계 밖(agents/·commands/·hooks/·plugin.json·플러그인별 CL
 
 ## Phase 0 — 컨텍스트 확인
 
-`experience-store/`와 `_workspace/`를 검사해 실행 유형을 자동 판별한다.
+`experience-store/`와 `.claude/_workspace/`를 검사해 실행 유형을 자동 판별한다.
 
 - store·workspace 모두 없음 → **초기**
 - store 있고 workspace 비었음 → **신규 회차**
 - 진행 중 workspace 잔존 → **부분 재실행**
-- 명시적 새 실행 요청 → **새 실행**(직전 workspace를 `_workspace_prev/`로 이동)
+- 명시적 새 실행 요청 → **새 실행**(직전 workspace를 `.claude/_workspace_prev/`로 이동)
 
 판별 후 1줄로 보고한다. 예: `[Phase 0] 신규 회차 (run-2026-06-03-01). 직전 store 3 candidate 존재.`
 
@@ -73,6 +84,7 @@ repo-wide 경계 밖(agents/·commands/·hooks/·plugin.json·플러그인별 CL
 1. **트리거 유형 판별** — R1(현세션 redirect·보강) / R2(plugin 심층) / R3(외부 .md 역추적) 중 무엇인지 결정한다. 모호하면 한 번에 한 질문으로 확인한다.
 2. **스코프 확정** — repo-wide(기본) / plugin(opt-in). R2거나 사용자가 특정 플러그인 심층을 명시하면 plugin. 한 번에 한 질문.
 3. **warm-start** — `recurring-patterns.md`의 `needs_attention`(≥3) 표적을 먼저 읽어 이번 회차 경고 후보로 적재한다.
+4. **fast-path 판정 (P3 경량 경로)** — 결함이 **단건·저위험**(예: description 오타 1건, 상호참조 경로 한 줄)이면 경량 경로로 라우팅한다: Phase 3 병렬 팬아웃을 **단건 진단**으로 축약하고 Phase 8 큐레이션·warm-start를 생략 가능으로 둔다. **단, 안전장치는 fast-path에서도 생략 금지** — Phase 5 검증·Phase 6 승인 게이트·Phase 7 경계 재확인은 항상 거친다(P2). (근거: progressive disclosure / just-in-time)
 
 ## Phase 2 — 신호 캡처 (trace-capturer 1회)
 
@@ -89,7 +101,7 @@ Agent(
   [입력] R1: redirect 발화 원문 + 직전 산출물 경로 + active SKILL 경로
          R3: 대상 .md 경로(전문) — 3단 폴백으로 출처 에이전트/skill 역추적 + confidence 부여
   [산출] {store-root}/{run}/{candidate}/traces/*.jsonl 에 원형 raw trace 적재(요약 금지).
-         출처 역추적 결과는 _workspace/{run}/phase2_origin.json 에 confidence와 함께 기록.
+         출처 역추적 결과는 .claude/_workspace/{run}/phase2_origin.json 에 confidence와 함께 기록.
   """
 )
 ```
@@ -108,7 +120,7 @@ Agent(
   [결함] defect-{n}: {한 줄 요약}
   [조회] {store-root}/{run}/{candidate}/traces/*.jsonl 를 grep/cat 직접 선택 조회.
          confound(두 실패의 공통 변경) 먼저 의심.
-  [산출] _workspace/{run}/phase3_diag_{n}.json
+  [산출] .claude/_workspace/{run}/phase3_diag_{n}.json
          {target_kind, target_path, scope_status, root_cause, evidence:[step/path], severity, confidence}
   """
 )
@@ -127,11 +139,11 @@ Agent(
   prompt="""
   [스킬 경로] plugins/meta-harness/skills/pareto-refinement/SKILL.md 방법론을 따른다.
   [평가 스코프] {repo-wide|plugin:{target}}  ← scope-escalation/out-of-scope 표적은 patch 대신 change_kind만.
-  [진단] _workspace/{run}/phase3_diag_{n}.json
-  [직전 patch 결과] _workspace/{run}/phase4_patch_{n-1}.json (없으면 생략)
+  [진단] .claude/_workspace/{run}/phase3_diag_{n}.json
+  [직전 patch 결과] .claude/_workspace/{run}/phase4_patch_{n-1}.json (없으면 생략)
   [전략] additive-first → compose(직교 승리만) → transfer(raw trace 재확인 후).
          같은 표적 3회 누적 → 본문 patch 거절, change_kind:"structural-redesign-required".
-  [산출] _workspace/{run}/phase4_patch_{n}.json
+  [산출] .claude/_workspace/{run}/phase4_patch_{n}.json
          + {store-root}/{run}/{candidate}/ 후보 자산 + score.json(assertion + Pareto 좌표)
          patch.md = unified-diff(±3줄). description 수정 시 trigger_eval(should-trigger/should-not 8~10개).
   """
@@ -140,11 +152,11 @@ Agent(
 
 ## Phase 5 — lightweight validation (오케스트레이터 직접)
 
-비싼 적용 전 값싸게 거른다. **frontmatter 파싱**(name/description만 존재하는가), **상호참조 경로 존재**, **트리거 충돌**, **Why-없는 MUST/NEVER** 정적 점검. `interface-invalid` 후보는 탈락시키고 사유를 `_workspace/{run}/phase5_validation.json`에 남긴다.
+비싼 적용 전 값싸게 거른다. **frontmatter 파싱**(name/description만 존재하는가), **상호참조 경로 존재**, **트리거 충돌**, **Why-없는 MUST/NEVER** 정적 점검. `interface-invalid` 후보는 탈락시키고 사유를 `.claude/_workspace/{run}/phase5_validation.json`에 남긴다.
 
 ## Phase 6 — 사용자 승인 게이트 (필수)
 
-결함별로 **why를 먼저** 보여준 뒤 accepted/rejected/deferred를 수집한다(일부만 결정해도 진행). `confidence:low`(특히 R3 역추적)면 **출처 확인 질문을 선행**한다. `scope-escalation`·반복 패턴(≥3) 경고를 노출한다. 결정은 `_workspace/{run}/{run}_decisions.json`에 기록한다.
+결함별로 **why를 먼저** 보여준 뒤 accepted/rejected/deferred를 수집한다(일부만 결정해도 진행). `confidence:low`(특히 R3 역추적)면 **출처 확인 질문을 선행**한다. `scope-escalation`·반복 패턴(≥3) 경고를 노출한다. 결정은 `.claude/_workspace/{run}/{run}_decisions.json`에 기록한다.
 
 ## Phase 7 — 적용 (accepted만)
 
@@ -157,7 +169,7 @@ Agent(
   subagent_type="experience-historian", model="opus",
   prompt="""
   [평가 스코프] {repo-wide|plugin:{target}}  → store-root 결정.
-  [입력] _workspace/{run}/ 전체 + 적용 결정.
+  [입력] .claude/_workspace/{run}/ 전체 + 적용 결정.
   [산출] {store-root}/history.jsonl(append-only) + index.json(navigable 포인터)
          + pareto.json(빈도×severity frontier 재계산)
          + recurring-patterns.md(표적별 카운트 + needs_attention ≥3 nudge)
@@ -180,7 +192,7 @@ Agent(
 
 | 방식 | 용도 | 위치 |
 |------|------|------|
-| 파일 기반 | Phase 간 휘발 산출(진단/패치/결정) | `_workspace/{run}/*.json` |
+| 파일 기반 | Phase 간 휘발 산출(진단/패치/결정) | `.claude/_workspace/{run}/*.json` |
 | 반환 기반 | 에이전트 1회 호출 즉시 요약 회신(분기 판단용) | 에이전트 final message |
 | 영속 store | 회차 간 transfer 대상(raw trace·ledger·frontier) | `{store-root}/...` |
 

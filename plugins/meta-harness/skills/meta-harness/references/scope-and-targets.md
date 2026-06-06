@@ -7,7 +7,7 @@
 | 스코프 | 기본/옵트인 | 진단대상(읽기·root cause 추적) | 패치허용표적(Edit/Write 가능) | experience-store 위치 |
 |---|---|---|---|---|
 | **repo-wide** | 기본 | 루트 CLAUDE.md + 모든 플러그인 SKILL.md + (맥락 이해용으로) agents/·commands/·hooks/·plugin.json 읽기 | **루트 CLAUDE.md + 임의 SKILL.md 만** | `.claude/experience-store/` |
-| **plugin** | opt-in(명시 요청 시) | 지목 플러그인의 모든 파일 | 지목 플러그인의 **모든 파일**(plugin.json·agents/·commands/·hooks/·각 SKILL.md·플러그인별 CLAUDE.md) | `plugins/{target}/experience-store/` |
+| **plugin** | opt-in(명시 요청 시) | 지목 플러그인의 모든 파일 | 지목 플러그인의 **모든 파일**(plugin.json·agents/·commands/·hooks/·각 SKILL.md·플러그인별 CLAUDE.md) | `.claude/plugin-store/{target}/` |
 
 repo-wide에서 agents/·hooks/ 등을 **읽되 패치하지 않는** 이유: 결함의 원인이 에이전트 정의에 있더라도, repo-wide 기본 모드에서 사용자가 승인한 건 "지침·스킬 본문 고도화"까지다. 더 깊은 자산 수정은 의도를 다시 확인(plugin 모드 재실행)해야 안전하다.
 

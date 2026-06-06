@@ -62,7 +62,7 @@
       {
         "text": "[R3/gate-decision] Phase 6 게이트는 결함별 accepted/rejected/deferred를 수집하고(일부만 결정해도 진행), why를 먼저 보여주며, confidence:low(특히 R3 .md 역추적)면 출처 확인 질문을 선행하고 scope-escalation/반복패턴(같은 표적 ≥3) 경고를 노출해야 한다.",
         "passed": true,
-        "evidence": "skills/meta-harness/SKILL.md Phase 6 (L145-147): '결함별로 why를 먼저 보여준 뒤 accepted/rejected/deferred를 수집한다(일부만 결정해도 진행). confidence:low(특히 R3 역추적)면 출처 확인 질문을 선행. scope-escalation·반복 패턴(≥3) 경고를 노출. 결정은 _workspace/{run}/{run}_decisions.json에 기록'. 테스트 시나리오 에러흐름 (L215) 'confidence:low → 출처 확인 질문 선행 ... deferred ... plugin 모드 재실행 권고'. agents/failure-diagnostician.md Error Handling (L67-68) needs_user_input/R3 출처 confidence low 전파. skills/session-signal-capture/SKILL.md L50,L100 'confidence: low면 ... 출처 확인 질문 선행 플래그'."
+        "evidence": "skills/meta-harness/SKILL.md Phase 6 (L145-147): '결함별로 why를 먼저 보여준 뒤 accepted/rejected/deferred를 수집한다(일부만 결정해도 진행). confidence:low(특히 R3 역추적)면 출처 확인 질문을 선행. scope-escalation·반복 패턴(≥3) 경고를 노출. 결정은 .claude/_workspace/{run}/{run}_decisions.json에 기록'. 테스트 시나리오 에러흐름 (L215) 'confidence:low → 출처 확인 질문 선행 ... deferred ... plugin 모드 재실행 권고'. agents/failure-diagnostician.md Error Handling (L67-68) needs_user_input/R3 출처 confidence low 전파. skills/session-signal-capture/SKILL.md L50,L100 'confidence: low면 ... 출처 확인 질문 선행 플래그'."
       }
     ]
   },

@@ -38,7 +38,7 @@ active SKILL 식별 단서: 직전 응답이 따른 절차/포맷, 사용자가 
 
 | 단계 | 방법 | confidence |
 | ---- | ---- | ---------- |
-| ① 산출 경로 규약 매칭 | 파일이 놓인 경로가 특정 하네스의 산출 규약과 일치하는가. 예: `_docs/*-spec.md`, `_workspace/*`, `experience-store/*` — 어느 하네스/스킬이 그 경로에 쓰는지 CLAUDE.md/SKILL.md 규약으로 대조 | **high** |
+| ① 산출 경로 규약 매칭 | 파일이 놓인 경로가 특정 하네스의 산출 규약과 일치하는가. 예: `_docs/*-spec.md`, `.claude/_workspace/*`, `experience-store/*` — 어느 하네스/스킬이 그 경로에 쓰는지 CLAUDE.md/SKILL.md 규약으로 대조 | **high** |
 | ② 파일 내 메타마커 | 파일 안 `generated-by:`, frontmatter, 푸터 서명, 섹션 템플릿 등 생성 주체를 명시한 마커 | **high** |
 | ③ 구조·문체 + git 이력 | 섹션 구성·어조·표 포맷을 후보 스킬의 출력 스키마와 비교 + `git log`/`git blame`으로 생성 커밋·작성자 추적 | **medium / low** |
 
@@ -51,7 +51,7 @@ active SKILL 식별 단서: 직전 응답이 따른 절차/포맷, 사용자가 
 
 ## 출력 — trace JSONL 1줄 스키마
 
-`trace-capturer`는 신호 1건당 1줄을 `.claude/experience-store/{run}/{candidate}/traces/{signal}.jsonl`(repo-wide) 또는 `plugins/{target}/experience-store/...`(plugin)에 append한다.
+`trace-capturer`는 신호 1건당 1줄을 `.claude/experience-store/{run}/{candidate}/traces/{signal}.jsonl`(repo-wide) 또는 `.claude/plugin-store/{target}/...`(plugin)에 append한다.
 
 ```
 {ts, actor, kind, ref, raw, confidence?, source_evidence?, candidates?}

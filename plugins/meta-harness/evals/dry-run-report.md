@@ -12,7 +12,7 @@
 
 | Phase | 기대 입력 | 기대 산출 | 본문 매핑(파일·줄) | 입출력 매칭 | dead link |
 | ----- | -------- | -------- | ------------------- | ---------- | --------- |
-| 0 컨텍스트 확인 | experience-store/·_workspace/ 유무 | 실행유형(초기/신규/부분/새) 1줄 보고 | SKILL.md L60-69 + references/execution-types.md 판별표 L7-12 | OK — 4유형 분기·보고형식 정의 | OK (execution-types.md 존재) |
+| 0 컨텍스트 확인 | experience-store/·.claude/_workspace/ 유무 | 실행유형(초기/신규/부분/새) 1줄 보고 | SKILL.md L60-69 + references/execution-types.md 판별표 L7-12 | OK — 4유형 분기·보고형식 정의 | OK (execution-types.md 존재) |
 | 1 트리거·스코프 확정 | 사용자 발화 / 외부 .md | R1·R2·R3 + repo-wide/plugin + warm-start | SKILL.md L71-75 + scope-and-targets.md L3 | OK — '한 번에 한 질문' 2회 명시 | OK |
 | 2 신호 캡처 | redirect 원문·직전 산출물·active SKILL / .md 전문 | traces/*.jsonl 원형 + (R3)3단 폴백+confidence | SKILL.md L77-95 + trace-capturer.md + session-signal-capture.md | OK — Agent 프롬프트가 산출 경로·금지(요약) 명시 | OK (session-signal-capture/SKILL.md 존재) |
 | 3 진단(병렬 ≤4~6) | raw trace(grep/cat 직접) | diagnosis: kind·scope_status·severity·confidence·evidence(step/경로) | SKILL.md L97-117 + failure-diagnostician.md + causal-diagnosis.md | OK — 한 메시지 동시 spawn·배치≤6 명시 | OK (causal-diagnosis/SKILL.md 존재) |
@@ -23,7 +23,7 @@
 | 8 experience 갱신 | 회차 결과 | history.jsonl+index.json+pareto.json+recurring-patterns.md | SKILL.md L153-167 + experience-historian.md + experience-store-schema.md | OK — append-only·요약 navigation 한정 | OK |
 | R4 최종 보고 | 회차 전체 | '무엇/왜/어디' 3축 표 | SKILL.md L169-175 | OK — 표 헤더·예시행·필수 명시 | OK |
 
-**Phase 연결 정합성**: Phase 2 산출(traces/) → Phase 3 입력(grep/cat 직접 조회) → Phase 4 입력(diagnosis_{N}.json) → Phase 5 게이트 → Phase 6 결정 → Phase 7 적용 → Phase 8 ledger. 데이터 전달 매트릭스(SKILL.md L179-187)가 휘발(_workspace)/영속(store)/반환을 분리해 누수 없음. `_workspace_prev/` 1세대 이동 규칙(execution-types.md L20-25)으로 회차 격리.
+**Phase 연결 정합성**: Phase 2 산출(traces/) → Phase 3 입력(grep/cat 직접 조회) → Phase 4 입력(diagnosis_{N}.json) → Phase 5 게이트 → Phase 6 결정 → Phase 7 적용 → Phase 8 ledger. 데이터 전달 매트릭스(SKILL.md L179-187)가 휘발(_workspace)/영속(store)/반환을 분리해 누수 없음. `.claude/_workspace_prev/` 1세대 이동 규칙(execution-types.md L20-25)으로 회차 격리.
 
 **dead link 점검 결과 (전부 OK):**
 
@@ -35,7 +35,7 @@
 - [x] `skills/session-signal-capture/SKILL.md` / `causal-diagnosis/SKILL.md` / `pareto-refinement/SKILL.md` — 3개 존재
 - [x] sibling 상대참조(`../session-signal-capture/SKILL.md` 등 SKILL.md L224-226) — 실파일 해석
 - [x] `agents/failure-diagnostician.md` L14 `../skills/causal-diagnosis/SKILL.md` — agents/ 기준 상대해석 시 plugin-root/skills/... 로 정확히 해석됨
-- [x] experience-store 경로 규약(`.claude/experience-store/` repo-wide / `plugins/{target}/experience-store/` plugin) — SKILL.md·4 agents·schema 전부 일치
+- [x] experience-store 경로 규약(`.claude/experience-store/` repo-wide / `.claude/plugin-store/{target}/` plugin) — SKILL.md·4 agents·schema 전부 일치
 - **dead link: 0건**
 
 ---

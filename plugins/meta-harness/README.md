@@ -12,7 +12,7 @@
 
 ## 어떻게 동작하나
 
-- **Phase 0 — 컨텍스트 확인**: experience-store/ 와 _workspace/ 검사로 실행유형(초기/신규회차/부분재실행/새실행) 자동 판별 후 1줄 보고.
+- **Phase 0 — 컨텍스트 확인**: experience-store/ 와 .claude/_workspace/ 검사로 실행유형(초기/신규회차/부분재실행/새실행) 자동 판별 후 1줄 보고.
 - **Phase 1 — 트리거·스코프 확정**: R1/R2/R3 판별 + repo-wide(기본)/plugin(opt-in) 스코프 확정 + recurring-patterns.md의 needs_attention warm-start 조회.
 - **Phase 2 — 신호 캡처**: trace-capturer 1회. R1=redirect 발화 원문 + 직전 산출물 + active SKILL, R3=.md 전문 + 3단 폴백 출처 역추적. raw trace를 원형 적재(요약 금지).
 - **Phase 3 — 진단**: failure-diagnostician 결함별 **병렬** 팬아웃(배치 ≤4~6). experience-store를 grep/cat 직접 조회, confound 먼저 의심, why-first(증거는 step 번호/파일 경로 인용).
@@ -25,7 +25,7 @@
 
 ## 산출물
 
-- **experience-store**: `.claude/experience-store/`(repo-wide) 또는 `plugins/{target}/experience-store/`(plugin) — history.jsonl(append-only ledger), index.json(navigable 포인터), pareto.json(frontier 좌표), recurring-patterns.md(표적별 카운트), patches/(적용 patch 사본), {run}/{candidate}/traces/*.jsonl(원본 raw trace).
+- **experience-store**: `.claude/experience-store/`(repo-wide) 또는 `.claude/plugin-store/{target}/`(plugin) — history.jsonl(append-only ledger), index.json(navigable 포인터), pareto.json(frontier 좌표), recurring-patterns.md(표적별 카운트), patches/(적용 patch 사본), {run}/{candidate}/traces/*.jsonl(원본 raw trace).
 - **patch**: unified-diff(위아래 3줄) + Pareto 좌표 + (description 수정 시) should-trigger/should-not 8~10개씩.
 - **보고**: R4 3축 표.
 
@@ -59,7 +59,7 @@
 |--------|------|------|---------------------|------|------|
 | R1 | `harness-generator/SKILL.md` | additive · 경로 절대화 규약 | 팬아웃 writer에 루트 누락 경로 전달 → cwd 기준 해석되어 레포 루트에 파일 생성 (trace step2~4) | 사용자 결정 | – |
 
-> 이 예는 **실제로 실행된 회차** `run-2026-06-03-01`의 요약이다. 전체 산출물은 `.claude/experience-store/run-2026-06-03-01/`(traces·patch·score·pareto)와 `_workspace/run-2026-06-03-01/`(진단 JSON·Phase5 검증·게이트 결정·3축 보고)에서 확인할 수 있다.
+> 이 예는 **실제로 실행된 회차** `run-2026-06-03-01`의 요약이다. 전체 산출물은 `.claude/experience-store/run-2026-06-03-01/`(traces·patch·score·pareto)와 `.claude/_workspace/run-2026-06-03-01/`(진단 JSON·Phase5 검증·게이트 결정·3축 보고)에서 확인할 수 있다.
 
 #### 예 1-적용판 — 현재 프로젝트의 루트 `CLAUDE.md` + 사용 중이던 `SKILL.md`를 실제로 변경
 
@@ -105,7 +105,7 @@ R1의 정의 그대로의 경우다 — "왜 문제였는지 검토 → **루트
 3. **판정** — 표적 = `frontend-harness/skills/a11y/SKILL.md`(skill-body, in-boundary). **배제**: 루트 `CLAUDE.md`(a11y를 구조로만 언급 — 잘못된 altitude), `semantic-html/SKILL.md`(요소 선택만 관할 — confound 격리).
 4. 이후 Phase 4~7은 위 적용판과 동일(게이트 → 승인 시 적용). **confidence가 낮을 때만** 게이트 전에 "이 파일이 맞나요?" 출처 확인이 선행된다.
 
-> **검증됨:** 이 자동 탐색은 실제로 실행해 확인했다(회차 `verify-autodiscover-01`). 사용자가 파일을 한 개도 지정하지 않은 입력에서, 진단가가 **27개 `SKILL.md`를 스캔해 `a11y/SKILL.md`를 자율 표적으로 확정**하고 무관한 후보(`CLAUDE.md`·`semantic-html`)를 근거와 함께 배제했으며, root cause를 '규칙 부재'가 아니라 '생성 시점 **enforcement 부재**'로 구분했다 — `_workspace/verify-autodiscover-01/diagnosis.json` 참조.
+> **검증됨:** 이 자동 탐색은 실제로 실행해 확인했다(회차 `verify-autodiscover-01`). 사용자가 파일을 한 개도 지정하지 않은 입력에서, 진단가가 **27개 `SKILL.md`를 스캔해 `a11y/SKILL.md`를 자율 표적으로 확정**하고 무관한 후보(`CLAUDE.md`·`semantic-html`)를 근거와 함께 배제했으며, root cause를 '규칙 부재'가 아니라 '생성 시점 **enforcement 부재**'로 구분했다 — `.claude/_workspace/verify-autodiscover-01/diagnosis.json` 참조.
 
 ### 예 2 — R3: 외부 .md 산출물의 생산 주체 고도화
 
@@ -120,7 +120,7 @@ R1의 정의 그대로의 경우다 — "왜 문제였는지 검토 → **루트
 **입력:**
 > "frontend-harness 플러그인이 자꾸 엉뚱한 스킬을 트리거해. 플러그인 전체(plugin.json·agents 포함) 들어가서 고쳐줘."
 
-**동작:** Phase 1에서 스코프를 `plugin: frontend-harness`로 확정 → 그 플러그인의 **모든 파일이 패치 경계 안** → 진단·patch가 `agents/`·`plugin.json`까지 표적 가능 → 게이트 → 적용 시 회차가 `plugins/frontend-harness/experience-store/`에 누적된다.
+**동작:** Phase 1에서 스코프를 `plugin: frontend-harness`로 확정 → 그 플러그인의 **모든 파일이 패치 경계 안** → 진단·patch가 `agents/`·`plugin.json`까지 표적 가능 → 게이트 → 적용 시 회차가 `.claude/plugin-store/frontend-harness/`에 누적된다.
 
 ### 적용까지 가려면 (Phase 7)
 
@@ -143,10 +143,23 @@ R1의 정의 그대로의 경우다 — "왜 문제였는지 검토 → **루트
 | Skill | causal-diagnosis | full-trace 기반 causal 진단 루브릭 |
 | Skill | pareto-refinement | Pareto/additive patch 생성 방법론 |
 
-## 인수
+## claude 특화된 기능 (연구 근거 기반)
 
-빌드 후 `/goal <condition>` 으로 검증한다.
+아래는 meta-harness에 더할 **claude 특화된 기능·원칙**으로, "개인 의견"이 아니라 인용된 1차 출처(Anthropic 엔지니어링 문서 / peer-reviewed 논문)에 근거해 도입한다. 모두 기존 안전선(사용자 승인 게이트 · Pareto 비후퇴 · full-trace 보존)을 거쳐 **phase 단위**로 적용한다. 이 원칙들은 SKILL.md의 `연구 근거 원칙` 섹션과 진단·개선 스킬(causal-diagnosis · pareto-refinement · experience-historian)에 **operative하게 반영**돼 있다. 각 항목의 1차 출처는 아래에 인라인 표기한다.
+
+**claude 특화된 기능 2종**
+
+- **F1. 단계별 동적 워크플로우 병렬화 (조건부)** — 단계 진행 중 **독립적으로 병렬 가능한 항목**은 orchestrator-workers 동적 워크플로우로 fan-out한다(Phase 3 진단이 canonical 대상; Phase 4는 의존성 때문에 순차 유지). 병렬은 **기본값이 아니라** 독립성·작업가치 게이트(멀티에이전트는 토큰 비용이 큼 — 벤더 self-report 기준 약 15×, 비공개 internal eval)를 통과할 때만. 근거: *Building effective agents*, *multi-agent research system*.
+- **F2. 생성 산출물 `.claude/` 외부 메모리 통합** — 진행 중 생성되는 문서/파일(휘발 `.claude/_workspace/`·plugin store·리서치/보고)을 작업 디렉토리 외부 메모리 `.claude/` 하위로 통합 적재한다(스코프별 기억 격리 불변식 보존). 근거: *Effective context engineering*(file-based memory), *Agent Skills*. ※ '`.claude`' 경로는 출처에 verbatim 없는 합리적 확장.
+
+**개선 원칙 5종** (모두 기존 Pareto 4축·게이트로 매핑)
+
+- **P1** 모델 향상으로 제품 기본기능과 **중복된 규칙**을 탐지 → 개선/삭제(= `rule-body-cost`↓ & `behavior-alignment` 유지인 Pareto 승리). 근거: context engineering '최소·고신호 / Claude는 이미 똑똑하다'(간접 도출).
+- **P2** **안전장치는 함부로 삭제하지 않는다** — 자기개선의 효능 한계(Reflexion 수렴 보장 부재, GEPA prompt bloat)가 가드레일 유지의 근거. 근거: arXiv 2303.11366 / 2507.19457.
+- **P3** 작은 작업을 느리게 하는 규칙 → **조건부 규칙**(progressive disclosure / 경량 경로). 근거: Agent Skills 'Pattern 3: Conditional details', just-in-time.
+- **P4** **반복 절차는 Skill로** — 'CLAUDE.md 섹션이 사실이 아니라 절차로 커지면 스킬화'. `recurring-patterns.md`(≥3)로 반복 근거 확인 후 추출. 근거: Agent Skills best practices.
+- **P5** 전역 지침은 **최소·고신호**(안정적 사실·원칙만; 절차는 Skill로 — *minimal ≠ short*). 근거: context engineering 'optimal set of tokens / right altitude'.
 
 ---
 
-[^1]: 근거 논문 — "Meta-Harness: End-to-End Optimization of Model Harnesses", arXiv 2603.28052v1.
+[^1]: 근거 논문 — "Meta-Harness: End-to-End Optimization of Model Harnesses", arXiv 2603.28052v1. claude 특화된 기능·원칙은 SKILL.md `연구 근거 원칙` 섹션 및 진단·개선 스킬에 operative하게 반영되며, 1차 출처는 각 항목에 인라인 표기한다.
