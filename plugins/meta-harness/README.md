@@ -143,13 +143,16 @@ R1의 정의 그대로의 경우다 — "왜 문제였는지 검토 → **루트
 | Skill | causal-diagnosis | full-trace 기반 causal 진단 루브릭 |
 | Skill | pareto-refinement | Pareto/additive patch 생성 방법론 |
 
-## claude 특화된 기능 (연구 근거 기반)
+## 연구 근거 기반 보강 (실행 모델 근거 · 기능 · 원칙)
 
-아래는 meta-harness에 더할 **claude 특화된 기능·원칙**으로, "개인 의견"이 아니라 인용된 1차 출처(Anthropic 엔지니어링 문서 / peer-reviewed 논문)에 근거해 도입한다. 모두 기존 안전선(사용자 승인 게이트 · Pareto 비후퇴 · full-trace 보존)을 거쳐 **phase 단위**로 적용한다. 이 원칙들은 SKILL.md의 `연구 근거 원칙` 섹션과 진단·개선 스킬(causal-diagnosis · pareto-refinement · experience-historian)에 **operative하게 반영**돼 있다. 각 항목의 1차 출처는 아래에 인라인 표기한다.
+아래는 meta-harness가 인용된 1차 출처(Anthropic 엔지니어링 문서 / peer-reviewed 논문)에 근거해 도입한 보강으로, "개인 의견"이 아니다. 모두 기존 안전선(사용자 승인 게이트 · Pareto 비후퇴 · full-trace 보존)을 거쳐 **phase 단위**로 적용한다. 이 보강은 SKILL.md(`실행 모드`·`연구 근거 원칙` 섹션)와 진단·개선 스킬(causal-diagnosis · pareto-refinement · experience-historian)에 **operative하게 반영**돼 있다. 각 항목의 1차 출처는 아래에 인라인 표기한다.
 
-**claude 특화된 기능 2종**
+**실행 모델 근거 1종 (F1) — 신규 기능 아님**
 
-- **F1. 단계별 동적 워크플로우 병렬화 (조건부)** — 단계 진행 중 **독립적으로 병렬 가능한 항목**은 orchestrator-workers 동적 워크플로우로 fan-out한다(Phase 3 진단이 canonical 대상; Phase 4는 의존성 때문에 순차 유지). 병렬은 **기본값이 아니라** 독립성·작업가치 게이트(멀티에이전트는 토큰 비용이 큼 — 벤더 self-report 기준 약 15×, 비공개 internal eval)를 통과할 때만. 근거: *Building effective agents*, *multi-agent research system*.
+- **F1. 조건부 병렬(orchestrator-workers) — 기존 실행 모델의 연구 근거.** *이것은 새로 더한 기능이 아니라, 초기 빌드(2026-06-03)부터 있던 실행 모델(Phase 3 병렬 / Phase 4 순차 / Phase 8 단건)을 뒷받침하는 근거다.* 단계 내 항목이 **독립적**일 때만 병렬 팬아웃하고(Phase 3 진단이 canonical — 워커 수는 결함 수로 런타임 결정), 직전 산출에 의존하면 순차(Phase 4), append-only 공유 상태면 단건(Phase 8)으로 둔다. 병렬은 **기본값이 아니라** 독립성·작업가치 게이트를 통과할 때만 적용한다. ※ 독립=병렬 / 의존=순차는 일반 오케스트레이션 원칙으로 **claude 특화성은 약하며**, "멀티에이전트 토큰 비용 약 15×"는 벤더 self-report·비공개 internal eval로 검증 가능한 1차 출처가 아니다. 근거: *Building effective agents*, *multi-agent research system*.
+
+**외부 메모리 통합 1종 (F2)**
+
 - **F2. 생성 산출물 `.claude/` 외부 메모리 통합** — 진행 중 생성되는 문서/파일(휘발 `.claude/_workspace/`·plugin store·리서치/보고)을 작업 디렉토리 외부 메모리 `.claude/` 하위로 통합 적재한다(스코프별 기억 격리 불변식 보존). 근거: *Effective context engineering*(file-based memory), *Agent Skills*. ※ '`.claude`' 경로는 출처에 verbatim 없는 합리적 확장.
 
 **개선 원칙 5종** (모두 기존 Pareto 4축·게이트로 매핑)
@@ -162,4 +165,4 @@ R1의 정의 그대로의 경우다 — "왜 문제였는지 검토 → **루트
 
 ---
 
-[^1]: 근거 논문 — "Meta-Harness: End-to-End Optimization of Model Harnesses", arXiv 2603.28052v1. claude 특화된 기능·원칙은 SKILL.md `연구 근거 원칙` 섹션 및 진단·개선 스킬에 operative하게 반영되며, 1차 출처는 각 항목에 인라인 표기한다.
+[^1]: 근거 논문 — "Meta-Harness: End-to-End Optimization of Model Harnesses", arXiv 2603.28052v1. 연구 근거 보강은 SKILL.md `실행 모드`(F1) · `연구 근거 원칙`(P1~P5) 섹션 및 진단·개선 스킬에 operative하게 반영되며, 1차 출처는 각 항목에 인라인 표기한다.

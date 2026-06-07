@@ -28,6 +28,7 @@ description: >-
 - **모든 Agent 호출에 `model: "opus"` 명시.**
 - **stall 방지.** 병렬 팬아웃(Phase 3) 한 배치는 결함 **4~6건 이하**. 각 진단 에이전트의 read 범위를 표적 자산으로 축소해 stall을 막는다.
 - **outer loop 최소화.** 무엇을/어떻게 고칠지를 하드코딩하지 않고 proposer 에이전트에게 위임한다. 더 강한 모델이 오면 자동으로 좋아진다.
+- **조건부 병렬 — 독립=병렬 / 의존=순차 / 공유상태=단건 (F1 근거).** 단계 내 항목이 **독립적**일 때만 병렬 팬아웃한다(Phase 3 진단이 canonical — 워커 수는 결함 수로 런타임 결정). 직전 산출에 의존하면 순차(Phase 4), append-only 공유 상태면 단건(Phase 8). 병렬은 기본값이 아니라 독립성·작업가치 게이트를 통과할 때만 — 멀티에이전트는 토큰 비용이 크므로 저가치 단건엔 순차가 낫다. 이는 새 기능이 아니라 초기 빌드부터의 실행 모델을 뒷받침하는 근거다. (근거: *Building effective agents* / *multi-agent research system*)
 
 ## 평가 스코프
 
@@ -52,7 +53,6 @@ repo-wide 경계 밖(agents/·commands/·hooks/·plugin.json·플러그인별 CL
 
 아래는 1차 출처(Anthropic 엔지니어링 문서 / peer-reviewed 논문)에 근거해 도입한 운영 원칙이다. 기존 안전장치를 우회하지 않으며, 적용은 항상 승인 게이트·Pareto 비후퇴를 거친다. 각 원칙의 1차 출처는 항목별 괄호에 인라인 표기한다.
 
-- **F1 병렬은 조건부(독립성·가치 게이트).** 단계 내 항목이 **독립적**일 때만 동적 워크플로우(orchestrator-workers)로 병렬 팬아웃한다(Phase 3 진단이 canonical). 직전 산출에 의존하면 순차(Phase 4), append-only 공유 상태면 단건(Phase 8). 멀티에이전트는 토큰 비용이 크므로 저가치 단건엔 순차가 낫다. (근거: *Building effective agents* / *multi-agent research system*)
 - **P1 중복 규칙 제거 = Pareto 승리.** 제품 기본 동작과 겹치거나 모델이 이미 하는 걸 또 지시하는 잉여 규칙(over-prompting)은 정합 이득 없이 rule-body-cost만 올린다 → 제거 후보로 진단한다(삭제는 승인 게이트 필수). (근거: context engineering — 최소·고신호·"Claude는 이미 똑똑하다"; '모델 향상→중복 제거' 프레이밍은 직접 문장이 아니라 **간접 도출**)
 - **P2 안전장치 보호.** 승인 게이트·Pareto 비후퇴·full-trace 보존·검증 Phase·경계 재확인은 patch로 **삭제·약화하지 않는다**(자기개선 효능엔 반례·수렴보장 부재). (근거: arXiv 2303.11366 / 2507.19457)
 - **P3 경량 경로(작은 작업).** 단건·저위험 변경(예: description 오타 1건)은 전체 Phase 0~8을 강제하지 않고 필요한 Phase만 거친다(progressive disclosure). (근거: Agent Skills — conditional details / just-in-time)
