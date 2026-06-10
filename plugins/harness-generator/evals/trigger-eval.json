@@ -1,0 +1,82 @@
+[
+  {
+    "query": "하네스 단계별로 너랑 같이 직접 하나씩 만들어가자",
+    "should_trigger": true
+  },
+  {
+    "query": "이 도메인용 오케스트레이터 하나 작성해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "분석→설계→실행→검증 단계로 새 하네스를 처음부터 만들어줘",
+    "should_trigger": true
+  },
+  {
+    "query": "에이전트 정의·스킬·오케스트레이터를 한 묶음으로 설계해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "PR 리뷰부터 배포까지 자동화하는 워크플로우 하네스 만들어줘",
+    "should_trigger": true
+  },
+  {
+    "query": "도메인용 스킬 묶음 생성해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "내가 이 스킬로 만든 하네스에 검증 단계 추가해서 보완해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "내가 만든 이 하네스 구조 감사해서 드리프트(에이전트↔오케스트레이터 불일치) 점검해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "에이전트 팀 구성해서 다단계 워크플로우 하네스를 직접 짜줘",
+    "should_trigger": true
+  },
+  {
+    "query": "이 도메인 워크플로우를 체계적으로 자동화하는 하네스 한 묶음 설계해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "후보 하네스 여러 개 뽑아 Pareto로 채점해서 제일 나은 걸로 만들어줘",
+    "should_trigger": false
+  },
+  {
+    "query": "근거(논문) 기반으로 최적 하네스를 자동 탐색해서 생성해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "에이전트팀 구성 후보들 품질·토큰비용 둘 다 보고 최적 조합 탐색해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "정확도-비용 Pareto로 하네스 후보 비교해서 골라줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이미 쓰고 있는 이 하네스 결함 진단하고 trace 기반으로 고쳐줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 하네스 보강해줘. 왜 부족했는지 보고 스킬 고도화해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "스킬 하나 새로 작성하고 벤치마크해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 PR 코드 리뷰해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 함수 좀 리팩터링해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "커밋 메시지 써줘",
+    "should_trigger": false
+  }
+]

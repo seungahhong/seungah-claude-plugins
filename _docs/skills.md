@@ -21,7 +21,17 @@
 
 | Skill | Command | Description |
 |-------|---------|-------------|
-| Harness Generator | `/harness-generator` | 도메인 무관 하네스(에이전트팀 + 스킬 + 오케스트레이터) 자동 생성 — 7단계 메타 프로세스 (감사 → 도메인 분석 → 아키텍처 → 에이전트 정의 → 스킬 작성 → 오케스트레이션 → 검증/진화) |
+| Harness Generator | `/harness-generator` | 도메인 무관 하네스(에이전트팀 + 스킬 + 오케스트레이터) **수동·인터랙티브** 생성 — 7단계 메타 프로세스 (감사 → 도메인 분석 → 아키텍처 → 에이전트 정의 → 스킬 작성 → 오케스트레이션 → 검증/진화) |
+
+### Plugin: `generator-harness`
+
+| Skill | Command | Description |
+|-------|---------|-------------|
+| Generator Harness | `/generator-harness` | 도메인 무관 하네스 **자동 탐색·평가** 생성 진입 오케스트레이터. Phase 0~8 (감사 → 도메인분석+평가셋 → 탐색공간 → 후보제안 → 채점 → 진화 → **승인 게이트** → 실체화 → 이력). 후보 N개를 lens별 제안 → 정확도-토큰비용 Pareto + 전이성 채점 → **사용자 승인(자동 실체화 금지)** → harness-generator 규약으로 실체화 |
+| Harness Search | `/harness-search` | 모듈러 탐색공간(Planning/Reasoning/Tool Use/Memory) × 패턴 × 실행모드에서 후보 하네스 제안 + recombination/mutation 진화 방법론 (harness-proposer가 따름) |
+| Harness Eval | `/harness-eval` | 평가셋 구축(대표 태스크 + 검증 가능한 assertion) + 품질×토큰비용 독립 축 Pareto 채점 + 전이성 측정 + LLM-judge 신뢰성 한계 명시 (domain-analyst·harness-evaluator가 따름) |
+
+> `generator-harness`는 deep-research(ADAS·AFlow·AgentSquare·MaAS + Anthropic 빌딩블록, 21확정/4반증)에 근거한 **자동 탐색·Pareto 평가·승인 게이트형** 하네스 생성기다. 4명의 에이전트(`domain-analyst`, `harness-proposer`, `harness-evaluator`, `harness-materializer`)를 서브에이전트로 spawn한다(모두 `model: "opus"`; 제안·채점은 병렬, 분석·실체화는 순차). **세 도구 분담** — `harness-generator`(수동 생성) · `generator-harness`(자동 탐색 생성) · `meta-harness`(기존 하네스 진단·개선). 실체화는 harness-generator 규약을 재사용하고, 모든 실체화는 **사용자 승인 게이트** 후에만 수행한다.
 
 ### Plugin: `git-harness`
 

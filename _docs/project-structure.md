@@ -31,11 +31,27 @@ plugins/
       lighthouse-performance/                            # Lighthouse 기반 Core Web Vitals 측정
       qa-inspector/                                      # 모듈 간 경계면 불일치 검증 (+ references/)
       security-audit/                                    # OWASP Top 10 보안 감사 (+ references/)
-  harness-generator/                                     # [독립 플러그인] 도메인 무관 하네스 자동 생성 메타 플러그인
+  harness-generator/                                     # [독립 플러그인] 도메인 무관 하네스 수동·인터랙티브 생성 메타 플러그인
     .claude-plugin/
       plugin.json
     skills/
-      harness-generator/                                 # 하네스(에이전트팀+스킬+오케스트레이터) 자동 생성 제너레이터 스킬 (+ references/)
+      harness-generator/                                 # 하네스(에이전트팀+스킬+오케스트레이터) 수동 생성 제너레이터 스킬 (+ references/)
+    evals/                                               # 트리거 경계 평가 (generator-harness/meta-harness와 cross-plugin reciprocal 가드)
+  generator-harness/                                     # [독립 플러그인] 도메인 무관 하네스 자동 탐색·Pareto 평가·승인 게이트형 생성 (ADAS/AFlow/AgentSquare/MaAS 근거)
+    .claude-plugin/
+      plugin.json
+    CLAUDE.md                                            # 하네스 포인터 + 3-도구 분담 + 연구 근거 + 변경 이력
+    README.md                                            # 사용자용 개요
+    agents/                                              # 모두 model: "opus"
+      domain-analyst.md                                  # 도메인 spec + 평가셋(태스크+assertion) + Pareto 축 + 전이 시나리오 (순차)
+      harness-proposer.md                                # 모듈러 탐색공간에서 lens별 후보 하네스 설계 제안 (병렬 팬아웃)
+      harness-evaluator.md                               # 후보별 품질×비용 Pareto + 전이성 + 적대적 실패모드 채점 (병렬 팬아웃)
+      harness-materializer.md                            # 승인 후보를 agents/skills/orchestrator 파일로 실체화 (harness-generator 규약 재사용, 순차)
+    skills/
+      generator-harness/                                 # 진입점 오케스트레이터 (Phase 0~8) (+ references/: research-foundations, building-blocks)
+      harness-search/                                    # 후보 제안 + evolution/recombination 방법론
+      harness-eval/                                      # 평가셋 구축 + Pareto 채점 + 전이성 방법론
+    evals/                                               # acceptance assertion(12) + 트리거 평가(20) + dry-run 리포트
   git-harness/                                           # [독립 플러그인] Git 워크플로우 멀티 에이전트 스킬 모음
     .claude-plugin/
       plugin.json
