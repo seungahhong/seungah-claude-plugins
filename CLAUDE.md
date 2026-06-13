@@ -10,16 +10,16 @@
 |--------|------|
 | `frontend-harness` | 프론트엔드 개발 워크플로우 (계획·구현·품질·보안·성능·QA·검증 스킬 + 오케스트레이터 커맨드 + lint 훅) |
 | `harness-generator` | 도메인 무관 하네스(에이전트팀+스킬+오케스트레이터) **수동·인터랙티브** 생성 메타 플러그인 |
-| `generator-harness` | 도메인 무관 하네스 **자동 탐색·평가** 생성 (후보 N개 제안 → Pareto 채점 → 승인 → 실체화, 연구 근거) |
 | `git-harness` | Git 워크플로우 (한국어 커밋 메시지, 다각도 PR 리뷰) |
 | `meta-harness` | full-trace experience store 기반 메타 하네스 엔지니어링 (causal 진단 + Pareto 비후퇴 패치, 사용자 승인 게이트) |
+| `product-spec-harness` | 기획자용 기획문서(PRD)+사용자스토리 4단계 인터랙티브 하네스 |
 
 ## 세부 문서 (`_docs/`)
 
 루트 `CLAUDE.md`는 100줄 이내 인덱스로 유지하고, 세부 내용은 아래 특징별 문서에 둔다. 작업 전 관련 문서를 먼저 참조할 것.
 
 - [`_docs/project-structure.md`](_docs/project-structure.md) — 전체 디렉토리 구조와 각 파일/스킬 역할 트리
-- [`_docs/skills.md`](_docs/skills.md) — 플러그인별 스킬 목록·커맨드·설명 (frontend-harness / harness-generator / generator-harness / git-harness / meta-harness)
+- [`_docs/skills.md`](_docs/skills.md) — 플러그인별 스킬 목록·커맨드·설명 (frontend-harness / harness-generator / git-harness / meta-harness / product-spec-harness)
 - [`_docs/commands-and-hooks.md`](_docs/commands-and-hooks.md) — frontend-harness 커맨드(orchestrator/research/prd/…/review) + Stop lint 훅
 - [`_docs/conventions.md`](_docs/conventions.md) — 마켓플레이스 등록·플러그인/스킬/커맨드 배치·교차 참조·플러그인 분리 규칙
 

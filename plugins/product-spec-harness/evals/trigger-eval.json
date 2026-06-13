@@ -1,0 +1,86 @@
+[
+  {
+    "query": "이 제품 기획문서(PRD) 작성해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "신규 기능 사용자 스토리 도출해줘. 수용기준도 같이",
+    "should_trigger": true
+  },
+  {
+    "query": "이 요구사항을 유저스토리로 풀어줘. '…로서 …하고 싶다' 형식으로",
+    "should_trigger": true
+  },
+  {
+    "query": "요구사항 정의서 만들어줘. 문제·목표·범위·성공지표 포함해서",
+    "should_trigger": true
+  },
+  {
+    "query": "제품 스펙/기획안 작성해줘. 개발 들어가기 전에 정리하려고",
+    "should_trigger": true
+  },
+  {
+    "query": "이 스토리들 수용기준을 Given/When/Then으로 정리해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "기획자 입장에서 문제 정의부터 PRD까지 단계별로 같이 만들어줘",
+    "should_trigger": true
+  },
+  {
+    "query": "PRD 핵심 요구가 스토리로 다 커버되는지 추적 매트릭스로 검증해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "이 기획문서랑 사용자 스토리 누락·모호한 데 없는지 적대적으로 리뷰해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "비즈니스 목표와 성공지표 정의하고 거기서 요구사항 뽑아줘",
+    "should_trigger": true
+  },
+  {
+    "query": "프론트엔드 개발용 PRD 작성하고 바로 구현 들어가자",
+    "should_trigger": false
+  },
+  {
+    "query": "이 화면 구현 요구사항 정리해서 React 컴포넌트로 만들어줘",
+    "should_trigger": false
+  },
+  {
+    "query": "planner로 PRD 만들고 architecture 설계까지 가서 코드 짜줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 PR 코드 리뷰하고 버그 찾아줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 도메인용 하네스(에이전트팀+오케스트레이터) 만들어줘",
+    "should_trigger": false
+  },
+  {
+    "query": "오케스트레이터 스킬 하나 새로 작성해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "변경사항 커밋 메시지 작성해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 기존 하네스 결함 진단하고 trace 기반으로 고도화해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 컴포넌트 접근성·시맨틱 HTML 점검해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "settings.json에 npm 명령 권한 추가해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "PRD 한 장만 빨리 써줘, 단계 진행 말고",
+    "should_trigger": false
+  }
+]

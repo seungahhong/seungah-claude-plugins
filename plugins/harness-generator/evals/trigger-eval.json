@@ -40,6 +40,14 @@
     "should_trigger": true
   },
   {
+    "query": "오케스트레이터 하나 작성해줘. 탐색 말고 그냥 만들어주면 돼",
+    "should_trigger": true
+  },
+  {
+    "query": "내가 만든 기존 하네스에 리뷰 에이전트 하나 추가하고 오케스트레이터에 연결해줘",
+    "should_trigger": true
+  },
+  {
     "query": "후보 하네스 여러 개 뽑아 Pareto로 채점해서 제일 나은 걸로 만들어줘",
     "should_trigger": false
   },
@@ -56,6 +64,14 @@
     "should_trigger": false
   },
   {
+    "query": "리서치 도메인 하네스를 후보 N개 탐색하고 전이성까지 보고 만들어줘",
+    "should_trigger": false
+  },
+  {
+    "query": "모듈러 탐색공간(Planning/Reasoning/Tool Use/Memory)에서 후보 제안하고 Pareto frontier 보여줘",
+    "should_trigger": false
+  },
+  {
     "query": "이미 쓰고 있는 이 하네스 결함 진단하고 trace 기반으로 고쳐줘",
     "should_trigger": false
   },
@@ -64,7 +80,15 @@
     "should_trigger": false
   },
   {
+    "query": "지금 세션 동작 보고 루트 지침 업데이트해줘",
+    "should_trigger": false
+  },
+  {
     "query": "스킬 하나 새로 작성하고 벤치마크해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "스킬 하나 description만 최적화해서 트리거 정확도 올려줘",
     "should_trigger": false
   },
   {

@@ -1,0 +1,20 @@
+{
+  "name": "product-spec-harness",
+  "version": "0.1.0",
+  "description": "기획자(PM)가 요구·문제로부터 제품 기획문서(PRD)와 사용자 스토리를 단계별로 작성·검증하는 도메인 무관 인터랙티브 멀티 에이전트 하네스. 개발 착수 전 단계의 제품 기획 산출물(문제 정의 → PRD → 사용자 스토리 → 적대적 검증)에 특화하며, 매 Phase 산출물을 사용자에게 보여주고 승인 후 진행한다. 경계: 프론트엔드 개발용 PRD·구현 요구사항·코드 작성(frontend-harness 영역)이나 코드/하네스/커밋 작업은 이 하네스의 범위가 아니다.",
+  "author": {
+    "name": "seungah.hong",
+    "email": "ssingah1030@gmail.com"
+  },
+  "tags": [
+    "claude-code",
+    "plugin",
+    "product",
+    "planning",
+    "prd",
+    "user-story",
+    "requirements",
+    "multi-agent",
+    "interactive"
+  ]
+}

@@ -2,7 +2,7 @@
   "name": "seungah-claude-plugins",
   "owner": {
     "name": "seungah.hong",
-    "email": "seungah1030@gmail.com"
+    "email": "ssingah1030@gmail.com"
   },
   "metadata": {
     "description": "분석 → 설계 → 개발 → 리뷰 → 검증까지, 소프트웨어 개발 전 과정을 지원하는 멀티 에이전트 스킬·커맨드·훅 모음. 정적 분석 5개 관점(간소화·코드 리뷰·보안·성능·정합성) 중 사용자 선택 항목 병렬 + 재리뷰 루프와 E2E·타입/빌드 검증을 포함합니다.",
@@ -37,9 +37,9 @@
     },
     {
       "name": "harness-generator",
-      "description": "도메인 무관 하네스(에이전트 팀 + 스킬 + 오케스트레이터) 자동 생성 메타 플러그인. 7단계 프로세스(감사 → 도메인 분석 → 아키텍처 → 에이전트 정의 → 스킬 작성 → 오케스트레이션 → 검증/진화)로 다단계 워크플로우를 체계적으로 구성합니다.",
+      "description": "도메인 무관 하네스(에이전트 팀 + 스킬 + 오케스트레이터)를 사람이 단계별로 직접 같이 설계·생성하는 수동·인터랙티브 메타 플러그인. 7단계 메타 프로세스(감사 → 도메인 분석 → 아키텍처 → 에이전트 정의 → 스킬 작성 → 오케스트레이션 → 검증/진화)를 매 Phase 사용자 확인과 함께 진행해 다단계 워크플로우를 체계적으로 구성·검증·진화시킵니다. 후보 N개 자동 탐색·Pareto 채점 생성과 기존 하네스의 trace 기반 진단·개선은 모두 본 플러그인의 범위가 아닙니다(각각 자동 탐색·Pareto 도메인 / trace 진단 도메인).",
       "source": "./plugins/harness-generator",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "author": { "name": "seungah.hong" },
       "tags": [
         "claude-code",
@@ -48,31 +48,8 @@
         "harness",
         "orchestration",
         "multi-agent",
-        "automation",
+        "interactive",
         "generator"
-      ],
-      "category": "meta",
-      "strict": false
-    },
-    {
-      "name": "generator-harness",
-      "description": "사용자 도메인 요구를 입력받아 '에이전트팀 + 스킬 + 오케스트레이터' 하네스를 자동으로 탐색·평가·생성하는 메타 플러그인. harness-generator의 수동 7단계와 달리, 모듈러 탐색공간(Planning·Reasoning·Tool Use·Memory)에서 후보 하네스 N개를 제안하고 정확도-토큰비용 Pareto + 도메인 전이성으로 채점한 뒤, 사용자 승인 게이트를 거쳐 최적 후보만 실체화합니다. ADAS·AFlow·AgentSquare·MaAS 등 자동 에이전트 설계 연구와 Anthropic 빌딩블록에 근거하며, 실체화는 harness-generator 작성 규약을 재사용합니다. harness-generator(수동)·meta-harness(진단)와 보완 관계입니다.",
-      "source": "./plugins/generator-harness",
-      "version": "0.1.0",
-      "author": { "name": "seungah.hong" },
-      "tags": [
-        "claude-code",
-        "plugin",
-        "meta-skill",
-        "harness",
-        "generator",
-        "harness-search",
-        "automated-design",
-        "pareto",
-        "transferability",
-        "multi-agent",
-        "orchestration",
-        "automation"
       ],
       "category": "meta",
       "strict": false
@@ -116,6 +93,26 @@
         "multi-agent"
       ],
       "category": "meta",
+      "strict": false
+    },
+    {
+      "name": "product-spec-harness",
+      "description": "기획자(PM)가 요구·문제로부터 제품 기획문서(PRD)와 사용자 스토리를 단계별로 작성·검증하는 도메인 무관 인터랙티브 멀티 에이전트 하네스. 개발 착수 전 단계의 제품 기획 산출물(문제 정의 → PRD → 사용자 스토리 → 적대적 검증)에 특화하며, 매 Phase 산출물을 사용자에게 보여주고 승인 후 진행한다. 경계: 프론트엔드 개발용 PRD·구현 요구사항·코드 작성(frontend-harness 영역)이나 코드/하네스/커밋 작업은 이 하네스의 범위가 아니다.",
+      "source": "./plugins/product-spec-harness",
+      "version": "0.1.0",
+      "author": { "name": "seungah.hong" },
+      "tags": [
+        "claude-code",
+        "plugin",
+        "product",
+        "planning",
+        "prd",
+        "user-story",
+        "requirements",
+        "multi-agent",
+        "interactive"
+      ],
+      "category": "workflow",
       "strict": false
     }
   ]

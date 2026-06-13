@@ -8,7 +8,6 @@
 |--------|-------------|
 | [`frontend-harness`](#plugin-frontend-harness) | 프론트엔드 개발 워크플로우용 멀티에이전트 스킬 모음 (Planning, Implementation, Quality, Security, Performance, QA, Verification) |
 | [`harness-generator`](#plugin-harness-generator) | 도메인 무관 하네스(에이전트 팀 + 스킬 + 오케스트레이터) **수동·인터랙티브** 생성 메타 플러그인 |
-| [`generator-harness`](#plugin-generator-harness) | 도메인 무관 하네스 **자동 탐색·평가** 생성 메타 플러그인 (후보 N개 제안 → 정확도-비용 Pareto + 전이성 채점 → 승인 게이트 → 실체화, ADAS/AFlow/AgentSquare/MaAS 근거) |
 | [`git-harness`](#plugin-git-harness) | Git 워크플로우 멀티 에이전트 스킬 모음 (한국어 커밋 메시지 작성, 다각도 PR 리뷰) |
 | [`meta-harness`](#plugin-meta-harness) | Meta-Harness 논문(arXiv 2603.28052v1) 기반 메타 하네스 엔지니어링 플러그인 (full-trace experience store + causal reasoning + Pareto 비후퇴, 사용자 승인 게이트) |
 
@@ -81,38 +80,13 @@
 
 ## Plugin: `harness-generator`
 
-특정 도메인에 종속되지 않는 멀티에이전트 하네스(에이전트 팀 + 스킬 + 오케스트레이터)를 **사람이 단계별로 직접** 설계·생성하는 메타 플러그인입니다. 새로운 도메인의 다단계 워크플로우(연구 → 설계 → 실행 → 검증)를 체계적으로 자동화하고 싶을 때 사용합니다. (자동 탐색·채점으로 최적 후보를 뽑고 싶으면 아래 `generator-harness`를 사용합니다.)
+특정 도메인에 종속되지 않는 멀티에이전트 하네스(에이전트 팀 + 스킬 + 오케스트레이터)를 **사람이 단계별로 직접** 설계·생성하는 메타 플러그인입니다. 새로운 도메인의 다단계 워크플로우(연구 → 설계 → 실행 → 검증)를 체계적으로 자동화하고 싶을 때 사용합니다.
 
 ### Skills
 
 | Skill | Command | Description |
 |-------|---------|-------------|
 | **Harness Generator** | `/harness-generator` | 7단계 메타 프로세스(감사 → 도메인 분석 → 아키텍처 → 에이전트 정의 → 스킬 작성 → 오케스트레이션 → 검증/진화)로 도메인용 하네스를 한 묶음으로 설계·생성합니다. 재실행, 보완, 기존 하네스 수정/감사에도 사용합니다 |
-
----
-
-## Plugin: `generator-harness`
-
-사용자 도메인 요구를 입력받아 하네스(에이전트 팀 + 스킬 + 오케스트레이터)를 **자동으로 탐색·평가·생성**하는 메타 플러그인입니다. `harness-generator`가 사람이 단계별로 직접 만드는 수동 생성이라면, `generator-harness`는 후보 하네스 여러 개를 제안하고 **정확도-토큰비용 Pareto + 도메인 전이성**으로 채점한 뒤 **사용자 승인**을 거쳐 최적 후보만 실체화합니다. 자동 에이전트 설계 연구(ADAS, AFlow, AgentSquare, MaAS)와 Anthropic의 컨텍스트/오케스트레이션 모범사례에 근거하며, 실체화 단계는 `harness-generator`의 작성 규약을 재사용합니다. 4명의 에이전트가 서브에이전트로 동작합니다 (모두 `model: "opus"`; 제안·채점은 병렬, 분석·실체화는 순차).
-
-### Skills
-
-| Skill | Command | Description |
-|-------|---------|-------------|
-| **Generator Harness** | `/generator-harness` | 진입점 오케스트레이터. Phase 0~8 (감사 → 도메인분석+평가셋 → 탐색공간 → 후보제안 → 채점 → 진화 → **승인 게이트** → 실체화 → 이력). 후보 N개를 lens별 제안 → Pareto + 전이성 채점 → **사용자 승인(자동 실체화 금지)** → 최적 후보 실체화 |
-| **Harness Search** | `/harness-search` | 모듈러 탐색공간(Planning/Reasoning/Tool Use/Memory) × 패턴 × 실행모드에서 후보 하네스 제안 + recombination/mutation 진화 방법론 |
-| **Harness Eval** | `/harness-eval` | 평가셋 구축(대표 태스크 + 검증 가능한 assertion) + 품질×토큰비용 독립 축 Pareto 채점 + 전이성 측정 + LLM-judge 신뢰성 한계 명시 |
-
-### Agents
-
-| Agent | 역할 |
-|-------|------|
-| `domain-analyst` | 도메인 spec + 평가셋(태스크 + assertion) + Pareto 축 + 전이 시나리오 구축 (순차) |
-| `harness-proposer` | 모듈러 탐색공간에서 lens별 후보 하네스 설계 제안 (병렬 팬아웃) |
-| `harness-evaluator` | 후보별 품질×비용 Pareto + 전이성 + 적대적 실패모드 채점 (병렬 팬아웃) |
-| `harness-materializer` | 승인 후보를 agents/skills/orchestrator 파일로 실체화 (harness-generator 규약 재사용, 순차) |
-
-> **세 도구 분담** — 신규 하네스를 *사람이 직접* 만들면 `harness-generator`, *자동 탐색·채점*으로 최적안을 뽑으면 `generator-harness`, *이미 쓰는* 하네스를 진단·개선하면 `meta-harness`. 단발 스킬 작성/평가는 마켓플레이스 공식 `skill-creator`. `generator-harness`는 "자동 탐색이 모든 도메인에서 수동 설계를 이긴다"고 주장하지 않으며(해당 일반화는 검증에서 탈락), 정답·자동채점기가 없는 개방형 도메인에서는 채점 confidence를 낮추고 승인 게이트로 보완합니다.
 
 ---
 
@@ -157,7 +131,7 @@ Git 워크플로우를 지원하는 스킬 모음입니다. 한국어 커밋 메
 
 대상 스코프에 따라 `experience-store/` 디렉토리가 생성되어 회차 간 full-trace와 패턴이 누적됩니다 (repo-wide 기본 `.claude/experience-store/`, plugin opt-in `plugins/{target}/experience-store/`). proposer는 이 raw trace를 직접 조회합니다 (논문 Table 3: full-trace가 요약 기반보다 우월).
 
-> 하네스 메타 도구 3종 책임 경계: 신규 하네스를 *사람이 직접* 만들면 `harness-generator`, *자동 탐색·Pareto 채점*으로 최적안을 뽑으면 `generator-harness`, *이미 사용 중인* 하네스의 문제 진단·개선은 `meta-harness`. 단발 스킬 작성/평가는 마켓플레이스 공식 `skill-creator` 사용.
+> 하네스 메타 도구 책임 경계: 신규 하네스를 *사람이 직접* 만들면 `harness-generator`, *이미 사용 중인* 하네스의 문제 진단·개선은 `meta-harness`. 단발 스킬 작성/평가는 마켓플레이스 공식 `skill-creator` 사용.
 
 ---
 
@@ -213,11 +187,10 @@ Phase 6. 통합 리포트 생성                   # 전 단계 결과 통합
 ### 메타 워크플로우 — 하네스 자체를 다루기
 
 ```
-/harness-generator           # 0a. 신규 하네스를 사람이 단계별로 직접 생성
-/generator-harness           # 0b. 또는 자동 탐색·Pareto 채점으로 후보 N개 중 최적안 생성 (승인 게이트)
+/harness-generator           # 0. 신규 하네스를 사람이 단계별로 직접 생성
     ↓ (사용 중 문제 발견 시)
 /meta-harness                # N. 대상 하네스를 full-trace로 캡처·진단·개선 + experience-store/ 누적
-                             #    동일 표적 반복 시 → /harness-generator 또는 /generator-harness 재실행 권고
+                             #    동일 표적 반복 시 → /harness-generator 재실행 권고
 ```
 
 ## Installation
@@ -268,17 +241,6 @@ plugins/
       plugin.json
     skills/
       harness-generator/                                 # 하네스(에이전트팀+스킬+오케스트레이터) 수동 생성 제너레이터 스킬 (+ references/)
-  generator-harness/                                     # [독립 플러그인] 도메인 무관 하네스 자동 탐색·Pareto 평가·승인 게이트형 생성 (ADAS/AFlow/AgentSquare/MaAS 근거)
-    .claude-plugin/
-      plugin.json
-    CLAUDE.md                                            # 하네스 포인터 + 3-도구 분담 + 연구 근거 + 변경 이력
-    README.md                                            # 사용자용 개요
-    agents/                                              # 모두 model: "opus" (domain-analyst·harness-proposer·harness-evaluator·harness-materializer)
-    skills/
-      generator-harness/                                 # 진입점 오케스트레이터 Phase 0~8 (+ references/: research-foundations, building-blocks)
-      harness-search/                                    # 후보 제안 + evolution/recombination 방법론
-      harness-eval/                                      # 평가셋 구축 + Pareto 채점 + 전이성 방법론
-    evals/                                               # acceptance assertion(12) + 트리거 평가(20) + dry-run 리포트
   git-harness/                                           # [독립 플러그인] Git 워크플로우 멀티 에이전트 스킬 모음
     .claude-plugin/
       plugin.json

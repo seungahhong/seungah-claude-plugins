@@ -34,24 +34,11 @@ plugins/
   harness-generator/                                     # [독립 플러그인] 도메인 무관 하네스 수동·인터랙티브 생성 메타 플러그인
     .claude-plugin/
       plugin.json
+    CLAUDE.md                                            # 하네스 포인터 + Phase 0~7 요약 + 변경 이력
+    README.md                                            # 사용자용 개요 (도구 선택 가이드 포함)
     skills/
       harness-generator/                                 # 하네스(에이전트팀+스킬+오케스트레이터) 수동 생성 제너레이터 스킬 (+ references/)
-    evals/                                               # 트리거 경계 평가 (generator-harness/meta-harness와 cross-plugin reciprocal 가드)
-  generator-harness/                                     # [독립 플러그인] 도메인 무관 하네스 자동 탐색·Pareto 평가·승인 게이트형 생성 (ADAS/AFlow/AgentSquare/MaAS 근거)
-    .claude-plugin/
-      plugin.json
-    CLAUDE.md                                            # 하네스 포인터 + 3-도구 분담 + 연구 근거 + 변경 이력
-    README.md                                            # 사용자용 개요
-    agents/                                              # 모두 model: "opus"
-      domain-analyst.md                                  # 도메인 spec + 평가셋(태스크+assertion) + Pareto 축 + 전이 시나리오 (순차)
-      harness-proposer.md                                # 모듈러 탐색공간에서 lens별 후보 하네스 설계 제안 (병렬 팬아웃)
-      harness-evaluator.md                               # 후보별 품질×비용 Pareto + 전이성 + 적대적 실패모드 채점 (병렬 팬아웃)
-      harness-materializer.md                            # 승인 후보를 agents/skills/orchestrator 파일로 실체화 (harness-generator 규약 재사용, 순차)
-    skills/
-      generator-harness/                                 # 진입점 오케스트레이터 (Phase 0~8) (+ references/: research-foundations, building-blocks)
-      harness-search/                                    # 후보 제안 + evolution/recombination 방법론
-      harness-eval/                                      # 평가셋 구축 + Pareto 채점 + 전이성 방법론
-    evals/                                               # acceptance assertion(12) + 트리거 평가(20) + dry-run 리포트
+    evals/                                               # 트리거 경계 평가 (자동 탐색·Pareto 도메인·meta-harness와 cross-plugin reciprocal 가드)
   git-harness/                                           # [독립 플러그인] Git 워크플로우 멀티 에이전트 스킬 모음
     .claude-plugin/
       plugin.json
@@ -74,4 +61,22 @@ plugins/
       causal-diagnosis/                                  # full-trace 기반 causal 진단 루브릭
       pareto-refinement/                                 # Pareto/additive patch 생성 방법론
     evals/                                               # acceptance assertion + 트리거 평가 + dry-run 리포트
+  product-spec-harness/                                  # [독립 플러그인] 기획자(PM)용 기획문서(PRD)+사용자 스토리 4단계 인터랙티브 하네스 — 개발 착수 전, 도메인 무관 (경계: frontend-harness의 prd/planner·코드/하네스/커밋 작업 제외)
+    .claude-plugin/
+      plugin.json
+    CLAUDE.md                                            # 하네스 포인터 + 4단계 요약 + 변경 이력
+    README.md                                            # 사용자용 개요·사용법·도구 경계
+    agents/                                              # 모두 model: "opus" (Phase 순차)
+      requirements-analyst.md                            # Phase 0 요구/문제/사용자 정의 (Discovery) — 문제 정의 카드
+      prd-writer.md                                      # Phase 1 기획문서(PRD) 작성 — 배경·목표·범위·요구사항·리스크·마일스톤
+      story-writer.md                                    # Phase 2 사용자 스토리 + 수용기준(Given/When/Then) + INVEST 자가점검
+      spec-reviewer.md                                   # Phase 3 적대적 검증 — 요구↔스토리 추적·INVEST·관찰성·일관성·모호 색출
+    skills/
+      product-spec/                                      # 진입점 오케스트레이터 (Phase 0~3 인터랙티브, 승인 게이트)
+        SKILL.md                                         #   오케스트레이터 본문
+        references/
+          prd-template.md                                #   PRD 표준 구조 + 작성기준
+          user-story-guide.md                            #   As a/I want/so that + Gherkin + INVEST
+    evals/
+      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 10 / should_not 10, 경계 near-miss 중심)
 ```
