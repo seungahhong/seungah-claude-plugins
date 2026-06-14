@@ -12,3 +12,4 @@
 - 메타/도메인 무관 스킬은 `frontend-harness`에 두지 않고 별도 플러그인으로 분리 (예: `harness-generator`, `git-harness`, `meta-harness`)
 - 4개 이상의 에이전트가 협업하는 하네스(예: `meta-harness`)는 `agents/{name}.md` 정의 파일을 두고 모든 Agent 호출에 `model: "opus"` 명시
 - 루트 `CLAUDE.md`는 100줄 이내로 유지하고, 세부 내용은 `_docs/` 하위 특징별 .md 파일로 분리해 참조
+- 새 하네스(플러그인) 도입·트리거 표현 변경 시, 트리거가 인접한 자매 플러그인들의 `evals/trigger-eval.json`에도 상호(reciprocal) should-not 경계 케이스를 함께 갱신한다(양방향 오발동 가드). 예: `loop-engineering` ↔ `meta-harness`/`harness-generator`/`product-spec-harness`

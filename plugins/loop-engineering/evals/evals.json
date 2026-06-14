@@ -1,0 +1,60 @@
+{
+  "eval_metadata": {
+    "eval_id": "loop-engineering-acceptance",
+    "eval_name": "loop-engineering 오케스트레이터 수용 평가 (design-conformance dry-run)",
+    "prompt": "검증 가능한 목표를 향해 작업을 자율 반복(Goal→Execute→Verify→Diagnose→Improve)으로 완성하고, 지속학습 루프(Fail→Investigate→Verify→Distill→Consult)로 같은 실수를 반복하지 않으며, 명시적 중단조건(통과·최대 반복 N·무진전 M·예산)으로 무한 루프를 막는다. 본 평가는 shipped SKILL.md·agents/*.md·references/*가 계약 불변식(검증기 우선·generator/checker 분리·재시도 전 진단·quality-gated 메모리·단일 writer·BLOCKED 분리·승인 게이트·경계)을 강제·명세하는지 file:section 인용 증거로 채점한다(런타임 실행이 아닌 정적 정합 점검).",
+    "method": "design-conformance dry-run — 런타임 실행 없이 shipped 파일이 핵심 동작을 명세·강제하는지 인용으로 검증",
+    "assertions": [
+      {
+        "text": "[Goal/verifiable-goal-first] goal-setter는 모호한 요청을 slug·관찰형 성공기준·*실행 가능한* 검증 방법·중단조건(성공·최대 반복 N·무진전 M(기본 2)·예산)·범위(In/Out)를 담은 Goal Card로 변환하고, 검증 방법 없는 기준은 채택하지 않으며, 루프 시작 전 승인 게이트를 통과해야 한다.",
+        "passed": true,
+        "evidence": "agents/goal-setter.md Work Principles '검증 가능성 우선'·'검증 방법은 실행 가능해야(검증 방법이 없는 기준은 채택하지 않는다)'·'내구적 조건 3요소'·'중단조건 명시 필수(① 성공 ② 최대 반복 N(기본 5) ③ 무진전 M회(기본 2) ④ 예산)'·'slug 도출'. Output 'Goal Card' 템플릿에 slug·성공기준·검증 방법·중단조건·범위 포함. SKILL.md Phase 0 승인 게이트 '[Phase 0] 목표·검증기·중단조건 확정 — 다음: 루프 시작(최대 N회, gated/auto). 진행할까요?' + '승인 전에는 루프를 시작하지 않는다'."
+      },
+      {
+        "text": "[Verify/generator-checker-separation] 검증은 loop-executor와 분리된 loop-verifier가 수행하고(self-critique 금지), 적대적으로 기준별 PASS/FAIL/BLOCKED을 내며 증거 없는 PASS를 금지해야 한다.",
+        "passed": true,
+        "evidence": "agents/loop-verifier.md 'generator/checker 분리(연구 근거)' 블록 '검증은 만든 에이전트와 다른 에이전트가 해야 한다 ... self-critique보다 우월' + Work Principles '적대적 검증'·'증거 필수(증거 없는 PASS는 무효)' + Output 'Verdict: PASS | FAIL | BLOCKED'. SKILL.md 내재화 원칙 '자가 검증 — 통과 판정은 사람이 아니라 loop-verifier가 증거로 한다. 증거 없는 PASS 금지'."
+      },
+      {
+        "text": "[Diagnose/diagnose-before-retry] FAIL 시 곧장 재시도하지 않고 failure-analyst가 증상≠원인을 trace 증거로 확정한 뒤 다음 반복의 접근을 직접 작성해야 한다(사람이 아니라 에이전트가 개선 프롬프트를 쓴다).",
+        "passed": true,
+        "evidence": "SKILL.md 내재화 원칙 '재시도 전 진단 — 실패하면 곧장 다시 시도하지 않는다. 다음 단계로 넘어가기 전에 원인을 파악한다(failure-analyst)'·'에이전트가 개선 프롬프트를 쓴다'. agents/failure-analyst.md Core Role·Work Principles '증상 ≠ 원인(why-first)'·'원인을 사실로 전환(Verify the diagnosis)'·'에이전트가 개선 프롬프트를 쓴다'. SKILL.md Phase 1 FAIL 분기에서 failure-analyst 호출 → next-approach 작성."
+      },
+      {
+        "text": "[Stop/explicit-stopping] 중단조건은 성공(PASS)·최대 반복 N·무진전·예산이며, 무진전은 failure-analyst가 반환한 판정을 단일 권위로 신뢰하고(같은 root cause M회), 예산은 SDK max_turns/max_budget_usd 하드캡 또는 N 프록시로 집행해 무한 루프를 구조적으로 막아야 한다.",
+        "passed": true,
+        "evidence": "SKILL.md Phase 1 step 4 '중단조건 점검 — 성공(PASS) / 반복 N 도달 / 무진전(failure-analyst가 반환한 무진전 판정을 단일 권위로 신뢰) / 예산 소진' + '예산은 SDK 실행 시 max_turns/max_budget_usd 하드캡으로 집행 ... 인터랙티브 실행에선 최대 반복 N이 유일한 하드 경계'. agents/failure-analyst.md '무진전 감지(같은 원인 M회면 ... 구조 변경 권고)'. references/loop-engineering-principles.md §5 중단조건 설계."
+      },
+      {
+        "text": "[Memory/quality-gated-distill] memory-curator는 검증된 교훈만(검증 게이트) verbatim rewrite가 아닌 추상 통찰로 distill하고, raw trace를 경쟁 baseline으로 보존하며 가역적 상태(active/candidate/conflict/retired)로 관리해야 한다. 순진한 distill의 성능 악화 위험을 인지하되 consolidation을 전면 폐기하지 않아야 한다(raw-only 가설 반박).",
+        "passed": true,
+        "evidence": "agents/memory-curator.md 'fragility 경고(연구 근거)' 블록 + Work Principles '검증된 것만 distill(검증 게이트)'·'verbatim rewrite 금지, 추상 통찰 우선'·'회귀 점검'·'가역성'·'full-trace 보존(raw를 경쟁 baseline으로)'. SKILL.md 내재화 원칙 '지속학습 메모리(quality-gated, 게이트하되 폐기 금지) ... raw-only가 최고라는 가설은 반박(0-3)됐으므로 검증된 교훈은 반드시 distill한다'. references/loop-engineering-research.md §4."
+      },
+      {
+        "text": "[Memory/consult-timing] 같은 slug 과거 run의 lessons는 1회차(iter 1)부터 consult하고(재실행 continual learning), 같은 run 내 next-approach·교훈은 2회차+에 적용하며, consult digest가 다음 Execute 입력으로 실제 전달되어야 한다(consult-before-execute).",
+        "passed": true,
+        "evidence": "agents/loop-executor.md Work Principles '메모리 consult 먼저 — 같은 goal-slug 과거 run의 lessons는 1회차(iter 1)부터 consult ... 같은 run 내 ... 2회차+에 적용'. SKILL.md Phase 1 step 0 'Consult ... 재실행이면 1회차(iter 1)부터 ... digest를 이번 Execute 입력에 싣는다' + Phase 0 재실행 감지(과거 lessons를 goal-setter 입력에 포함)."
+      },
+      {
+        "text": "[Memory/single-writer-and-ids] iterations.jsonl의 단일 writer는 memory-curator이고, 오케스트레이터가 Phase 1 초기화 때 run-id를 1회 mint해 ts와 함께 주입하며, goal.md는 오케스트레이터가 승인된 Goal Card로 write하고, goal-slug는 goal-setter가 도출해 재실행 시 재사용해야 한다.",
+        "passed": true,
+        "evidence": "SKILL.md Phase 1 초기화 '`.claude/loop-memory/{slug}/`를 확정·초기화/로드 ... goal.md로 write ... run-id를 1개 발급 ... 모든 iterations.jsonl 줄과 lessons 역참조에 이 run-id를 전달'. references/loop-memory-format.md 'memory-curator가 단일 writer로 ... append하며, run·ts는 오케스트레이터가 발급해 주입' + goal.md 'Phase 1 초기화 때 오케스트레이터가 ... write(단일 writer)' + run 필드 설명. agents/memory-curator.md Output '반복 기록(append) ... raw trace의 단일 writer는 memory-curator이며 run-id·ts는 오케스트레이터가 주입'."
+      },
+      {
+        "text": "[BLOCKED/infra-not-failure] 검증 방법 실행 불가/증거 확보 불가는 FAIL이 아니라 BLOCKED로 분리되어 failure-analyst가 아닌 goal-setter 재호출(검증 방법 보정)로 라우팅되고, 무진전·최대 반복 카운트에서 제외되어야 한다(거짓 FAIL 방지).",
+        "passed": true,
+        "evidence": "agents/loop-verifier.md Output 'BLOCKED → ... failure-analyst로 보내지 말고 Goal Card 검증 방법 보정을 요청한다 — 거짓 FAIL로 둔갑해 무진전 카운트를 오염시키지 않기 위함' + Error Handling 'BLOCKED로 분리'. SKILL.md Phase 1 step 3 'BLOCKED ... goal-setter를 재호출 ... 이 반복은 무진전·최대 반복 카운트에 산입하지 않는다' + step 4 'BLOCKED는 중단조건이 아니라 Goal Card 보정 게이트다'."
+      },
+      {
+        "text": "[Approval/observability] Phase 0 Goal Card 승인 게이트는 항상이고 auto/gated 모드를 확정하며, 매 반복 후 1줄 verdict 보고(PASS|FAIL|BLOCKED)를 내고, 요청되지 않은 사이드 에이전트나 중복 실행을 만들지 않아야 한다.",
+        "passed": true,
+        "evidence": "SKILL.md 내재화 원칙 '관찰 가능성·승인 — 시작 전 Goal Card 승인 게이트는 항상 ... 요청되지 않은 사이드 에이전트나 중복 실행을 만들지 않는다' + Phase 0 'auto/gated 확정' + Phase 1 step 5 '[Iter n] {PASS|FAIL|BLOCKED}: ... gated 모드면 다음 반복 전 승인'."
+      },
+      {
+        "text": "[Boundary/domain-and-reciprocal-guard] loop-engineering은 작업 산출물을 검증 루프로 완성하는 데 특화하고, 하네스 진단·개선(meta-harness)·하네스 생성(harness-generator)·기획(product-spec/frontend)·커밋(git-harness)·native /loop·native /goal과 경계를 두며, 자매 플러그인 evals에 reciprocal should-not 가드가 존재해야 한다.",
+        "passed": true,
+        "evidence": "SKILL.md description '발동하지 않는다 — ... native /loop ... native /goal ...' + 경계 섹션 + native /goal 관계 블록. plugin.json·marketplace.json description 경계 절. evals/trigger-eval.json should_not(meta·generator·product·/loop·/goal·단발성). 자매 reciprocal 가드: meta-harness/evals/trigger-eval.json·harness-generator/evals/trigger-eval.json·product-spec-harness/evals/trigger-eval.json에 loop-engineering 도메인 should_not 추가됨. _docs/conventions.md reciprocal 갱신 규칙."
+      }
+    ]
+  }
+}

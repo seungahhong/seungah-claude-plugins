@@ -79,4 +79,25 @@ plugins/
           user-story-guide.md                            #   As a/I want/so that + Gherkin + INVEST
     evals/
       trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 10 / should_not 10, 경계 near-miss 중심)
+  loop-engineering/                                      # [독립 플러그인] 검증 가능한 목표를 향한 자율 반복 루프 + 지속학습 메모리 멀티 에이전트 하네스 (실행 루프 Goal→Execute→Verify→Diagnose→Improve + 학습 루프 Fail→Investigate→Verify→Distill→Consult). 경계: 하네스 진단·개선(meta-harness)·하네스 생성(harness-generator)·PRD(product-spec/frontend)·커밋(git-harness)·native /loop 제외
+    .claude-plugin/
+      plugin.json
+    CLAUDE.md                                            # 하네스 포인터 + 루프 요약 + 변경 이력
+    README.md                                            # 사용자용 개요·사용법·도구 경계
+    agents/                                              # 모두 model: "opus"
+      goal-setter.md                                     # Goal — 모호한 요청 → 검증 가능한 목표(관찰형 성공기준 + 실행 가능한 검증 방법 + 중단조건)
+      loop-executor.md                                   # Execute — 목표를 향한 1회 반복 (메모리 consult + 직전 개선안 적용, 최소 변경)
+      loop-verifier.md                                   # Verify — 검증 방법 실행 → 엄격 PASS/FAIL + 증거 (적대적, 증거 없는 PASS 금지)
+      failure-analyst.md                                 # Investigate — root cause 진단(사실로 전환) + 다음 접근 작성 + 무진전 감지
+      memory-curator.md                                  # Distill/Consult — 검증된 교훈 distill, 관련 규칙 surface, raw trace 보존
+    skills/
+      loop-engineering/                                  # 진입점 오케스트레이터 (Phase 0 Goal 게이트 → Phase 1 자율 반복 루프, auto/gated)
+        SKILL.md
+        references/
+          loop-engineering-principles.md                #   두 루프·7원칙·검증기/중단조건 설계·anti-pattern·참고문헌
+          loop-memory-format.md                          #   goal.md / iterations.jsonl / lessons.md on-disk 포맷
+          loop-engineering-research.md                   #   설계 근거 deep-research dossier (출처·인용·신뢰도·caveat)
+    evals/
+      evals.json                                         # 수용 평가 (design-conformance dry-run — 핵심 불변식 file:section 인용 채점)
+      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 10 / should_not 13, 인접 하네스(meta/harness-generator/product-spec) reciprocal 가드)
 ```

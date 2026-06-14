@@ -1,0 +1,22 @@
+{
+  "name": "loop-engineering",
+  "version": "0.1.0",
+  "description": "검증 가능한 목표를 향해 작업을 자율 반복으로 완성하는 도메인 무관 멀티 에이전트 하네스. 실행 루프(Goal → Execute → Verify → Diagnose → Improve)와 지속학습 루프(Fail → Investigate → Verify → Distill → Consult)를 결합해, 사람이 프롬프트를 직접 고치는 대신 에이전트가 실패 원인을 진단하고 다음 시도의 접근을 스스로 작성하며, 검증된 교훈을 루프 메모리에 distill해 같은 실수를 반복하지 않는다. 통과(검증기 PASS)·최대 반복·무진전·예산 소진을 명시적 중단조건으로 둔다. 경계: 하네스 자체 진단·개선(meta-harness)·새 하네스 생성(harness-generator)·기획문서 작성(product-spec/frontend)·커밋/PR 리뷰(git-harness)·native /loop(시간 간격 폴링)·단순 목표 지향 자율 진행(native /goal)는 범위가 아니며, 작업 산출물(코드·문서 등)을 검증 루프로 완성하는 데 특화한다.",
+  "author": {
+    "name": "seungah.hong",
+    "email": "ssingah1030@gmail.com"
+  },
+  "tags": [
+    "claude-code",
+    "plugin",
+    "loop-engineering",
+    "agentic-loop",
+    "self-verification",
+    "continual-learning",
+    "memory",
+    "autonomous",
+    "goal-driven",
+    "multi-agent",
+    "orchestration"
+  ]
+}

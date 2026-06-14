@@ -55,3 +55,19 @@
 - **Phase 3 검증** — `spec-reviewer`. **적대적 검증**(칭찬형 금지): 요구↔스토리 추적 매트릭스(완전성) · INVEST 통과 · 수용기준 관찰성 · 목표↔요구↔스토리 일관성 · 모호/판정불가 문장 색출. 검증 리포트 + 승인(보완 시 additive-first).
 
 > `product-spec-harness`는 **개발 전 제품 기획 산출물(PRD·사용자 스토리)** 에 특화한 도메인 무관 인터랙티브 하네스다. 4명의 에이전트(`requirements-analyst`, `prd-writer`, `story-writer`, `spec-reviewer`)를 서브에이전트로 spawn한다(모두 `model: "opus"`; Phase 순차). 내재화 원칙 — 승인 게이트(미리보기 후 쓰기) · 관찰형 수용기준(Given/When/Then) · 요구↔스토리 완전성 추적 · 적대적 검증 · additive-first · 한 번에 한 질문. **경계** — 프론트엔드 개발용 PRD·구현 요구사항·코드 작성(frontend-harness의 prd/planner 영역)이나 코드/하네스/커밋 작업은 범위가 아니다(트리거 충돌 방지를 위해 description·trigger-eval에 명시).
+
+### Plugin: `loop-engineering`
+
+| Skill | Command | Description |
+|-------|---------|-------------|
+| Loop Engineering | `/loop-engineering` | 검증 가능한 목표를 향해 한 작업을 **자율 반복(loop)으로 완성**하는 진입 오케스트레이터. 실행 루프(① 목표 → ② 실행 → ③ 검증 → ④ 실패시 수정 → ⑤ 통과시 종료)와 지속학습 루프(실패 → 조사 → 검증 → 정립 → 참조)를 결합한다. Phase 0 목표 설계(Goal Card 승인 게이트, auto/gated 확정) → Phase 1 자율 반복(Execute→Verify→(FAIL)Diagnose→Distill). 중단조건(통과·최대 반복·무진전·예산)으로 무한 루프를 막는다 |
+
+5개 에이전트 구성 (모두 `model: "opus"`):
+
+- **Goal** — `goal-setter`. 모호한 요청을 **검증 가능한 목표(Goal Card)** 로 변환 — 관찰형 성공기준 + *실행 가능한* 검증 방법 + 중단조건(최대 반복·무진전·예산) + 범위(In/Out). "루프는 검증기만큼만 좋다"가 제1원칙.
+- **Execute** — `loop-executor`. 목표를 향한 **1회 반복**. 2회차+엔 메모리의 관련 교훈을 consult하고 직전 개선안을 적용해 검증기를 통과시킬 **최소 변경 1개**(confound 격리)를 시도.
+- **Verify** — `loop-verifier`. 검증 방법을 **실제로 실행**해 기준별 **엄격 PASS/FAIL + 증거**. 적대적(먼저 실패할 이유를 찾음), 증거 없는 PASS 금지.
+- **Investigate** — `failure-analyst`. FAIL 시 **재시도 전에 root cause**를 진단(증상 ≠ 원인) → trace 증거로 **사실로 전환** → **다음 반복의 접근을 직접 작성**(사람이 아니라 에이전트가 개선 프롬프트를 씀). 같은 원인 M회면 무진전 → 구조 변경 권고.
+- **Distill/Consult** — `memory-curator`. *검증된* 교훈만 **distill**해 `lessons.md`에 쌓고, 다음 반복에 관련 규칙만 **surface(consult)**. raw 반복 trace(`iterations.jsonl`)는 보존(요약 금지).
+
+> `loop-engineering`은 **주어진 작업을 검증 루프로 완성**하는 데 특화한 도메인 무관 멀티 에이전트 하네스다. 5명의 에이전트를 서브에이전트로 spawn한다(모두 `model: "opus"`). 루프 메모리는 `.claude/loop-memory/{goal-slug}/`(goal.md / iterations.jsonl / lessons.md)에 누적되어 회차·세션을 넘어 학습한다(continual learning). **경계** — 하네스 자체 진단·개선(meta-harness)·새 하네스 생성(harness-generator)·기획문서(product-spec/frontend)·커밋/PR 리뷰(git-harness)·native `/loop`(시간 간격 폴링)은 범위가 아니다. native `/goal` 위에 검증기 설계·재시도 전 진단·지속학습 메모리·무진전 감지를 구조화해 얹은 버전으로 위치한다.

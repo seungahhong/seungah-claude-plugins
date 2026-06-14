@@ -78,5 +78,13 @@
   {
     "query": "커밋 메시지 써줘",
     "should_trigger": false
+  },
+  {
+    "query": "이 작업 통과할 때까지 자율 반복으로 끝까지 완성해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "테스트 그린 될 때까지 실행-검증-수정 루프 돌려줘",
+    "should_trigger": false
   }
 ]

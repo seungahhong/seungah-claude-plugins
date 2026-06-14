@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "분석 → 설계 → 개발 → 리뷰 → 검증까지, 소프트웨어 개발 전 과정을 지원하는 멀티 에이전트 스킬·커맨드·훅 모음. 정적 분석 5개 관점(간소화·코드 리뷰·보안·성능·정합성) 중 사용자 선택 항목 병렬 + 재리뷰 루프와 E2E·타입/빌드 검증을 포함합니다.",
-    "version": "1.4.0",
+    "version": "1.5.0",
     "homepage": "https://github.com/seungahhong/seungah-claude-plugins"
   },
   "plugins": [
@@ -111,6 +111,28 @@
         "requirements",
         "multi-agent",
         "interactive"
+      ],
+      "category": "workflow",
+      "strict": false
+    },
+    {
+      "name": "loop-engineering",
+      "description": "검증 가능한 목표를 향해 한 작업을 자율 반복(loop)으로 완성하는 도메인 무관 멀티 에이전트 하네스. 실행 루프(Goal → Execute → Verify → Diagnose → Improve)와 지속학습 루프(Fail → Investigate → Verify → Distill → Consult)를 결합해, 사람이 프롬프트를 직접 고치는 대신 에이전트가 실패 원인을 진단하고 다음 시도의 접근을 스스로 작성하며, 검증된 교훈을 루프 메모리에 distill해 같은 실수를 반복하지 않는다. 통과·최대 반복·무진전·예산을 명시적 중단조건으로 무한 루프를 막는다. 경계: 하네스 자체 진단·개선(meta-harness)·새 하네스 생성(harness-generator)·기획문서(product-spec/frontend)·커밋/PR 리뷰(git-harness)·native /loop(시간 간격 폴링)는 범위가 아니며, 작업 산출물(코드·문서 등)을 검증 루프로 완성하는 데 특화한다.",
+      "source": "./plugins/loop-engineering",
+      "version": "0.1.0",
+      "author": { "name": "seungah.hong" },
+      "tags": [
+        "claude-code",
+        "plugin",
+        "loop-engineering",
+        "agentic-loop",
+        "self-verification",
+        "continual-learning",
+        "memory",
+        "autonomous",
+        "goal-driven",
+        "multi-agent",
+        "orchestration"
       ],
       "category": "workflow",
       "strict": false
