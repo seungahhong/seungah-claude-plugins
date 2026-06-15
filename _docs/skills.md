@@ -71,3 +71,15 @@
 - **Distill/Consult** — `memory-curator`. *검증된* 교훈만 **distill**해 `lessons.md`에 쌓고, 다음 반복에 관련 규칙만 **surface(consult)**. raw 반복 trace(`iterations.jsonl`)는 보존(요약 금지).
 
 > `loop-engineering`은 **주어진 작업을 검증 루프로 완성**하는 데 특화한 도메인 무관 멀티 에이전트 하네스다. 5명의 에이전트를 서브에이전트로 spawn한다(모두 `model: "opus"`). 루프 메모리는 `.claude/loop-memory/{goal-slug}/`(goal.md / iterations.jsonl / lessons.md)에 누적되어 회차·세션을 넘어 학습한다(continual learning). **경계** — 하네스 자체 진단·개선(meta-harness)·새 하네스 생성(harness-generator)·기획문서(product-spec/frontend)·커밋/PR 리뷰(git-harness)·native `/loop`(시간 간격 폴링)은 범위가 아니다. native `/goal` 위에 검증기 설계·재시도 전 진단·지속학습 메모리·무진전 감지를 구조화해 얹은 버전으로 위치한다.
+
+### Plugin: `review-harness`
+
+| 스킬·커맨드 | Command | Description |
+|-------------|---------|-------------|
+| Handoff Review (커맨드) | `/handoff-review` | 오케스트레이터(진입점). 넘어온 상류 산출물에 해당하는 게이트(dor/design/contract/test-coverage)를 사용자에게 선택받아 **병렬 실행**하고, 게이트별 판정을 **착수 준비도(Readiness) 통합 리포트** + 각 팀(기획/디자인/BE/QA)에 되돌릴 질문으로 묶는다. 하나라도 Blocker면 착수 보류로 시작 |
+| DoR Review | `/dor-review` | 기획 산출물(PRD/유저스토리/인수조건/티켓) 착수 준비도 — DoR 게이트 · INVEST 스코어카드(Testable·Independent=0이면 차단) · GWT 완결성(음성/엣지/에러/빈/권한 경로) · 모호성 린트 · 의존성/계약 참조 |
+| Design Handoff Review | `/design-handoff-review` | 디자인 핸드오프(Figma MCP·스펙) 사각지대 — 검증에러/에러페이지/로딩/빈/요소 상태 누락 · 토큰·변수 바인딩 · 컴포넌트↔코드(Code Connect) 매핑 · 상태별 oracle |
+| Contract Review | `/contract-review` | API 계약(OpenAPI/스키마) FE 착수 전 — 엔드포인트 완결성(spectral) · 배포 계약 대비 breaking-change diff(oasdiff)·SemVer 권고 · 소비자(CDC/Pact) 커버리지 · 코드↔spec drift |
+| Test Coverage Review | `/test-coverage-review` | QA 상류(인수조건↔테스트) 커버리지 — 인수조건 테스트가능성(Gherkin 변환) · AC↔테스트 매핑(스펙없는 테스트/검증없는 스펙) · 커버리지 채점(LLM-as-judge) · 누락 음성/엣지 시나리오 발굴 |
+
+> `review-harness`는 코드 착수 *전* **상류 산출물(기획·디자인·API 계약·QA 인수조건)** 을 핸드오프 시점에 '착수 게이트'로 검수하는 데 특화한 도메인 무관 하네스다. 4개 게이트 스킬은 모두 `disable-model-invocation: true`(명시 호출 또는 `handoff-review`가 spawn)·`allowed-tools`에 Edit/Write 없음(읽기 위주, 산출물 직접 수정 금지)이다. `handoff-review` 오케스트레이터는 선택된 게이트를 한 메시지에서 병렬 spawn한다(`frontend-harness`의 `/review` 패턴과 동일). **내재화 원칙** — Shift-Left(상류 게이트) · Honesty Guardrail(검증된 2025+ 근거만 등급과 함께 인용, '개선 N%' 약속 금지, baseline-before-target, 반증된 신화 수치 인용 금지) · LLM 자동탐지는 사람 검토를 보조(이상적 템플릿 과대탐지 경향 인지). **경계** — 완성된 코드 리뷰(`frontend-harness` `/review`·qa-inspector·security-audit) · PRD·스토리 *작성*(`product-spec-harness`) · 커밋/PR 리뷰(`git-harness`) · 하네스 자체 진단(`meta-harness`)은 범위가 아니며, 트리거 충돌 방지를 위해 description·`evals/trigger-eval.json`에 명시한다.

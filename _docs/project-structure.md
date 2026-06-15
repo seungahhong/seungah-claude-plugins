@@ -100,4 +100,18 @@ plugins/
     evals/
       evals.json                                         # 수용 평가 (design-conformance dry-run — 핵심 불변식 file:section 인용 채점)
       trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 10 / should_not 13, 인접 하네스(meta/harness-generator/product-spec) reciprocal 가드)
+  review-harness/                                        # [독립 플러그인] 코드 착수 *전* 상류 산출물(기획·디자인·API 계약·QA 인수조건) 핸드오프 게이트 검수. 경계: 완성 코드 리뷰(frontend-harness)·PRD/스토리 작성(product-spec)·커밋/PR(git-harness)·하네스 진단(meta-harness) 제외
+    .claude-plugin/
+      plugin.json
+    CLAUDE.md                                            # 하네스 포인터 + 4개 게이트 요약 + 변경 이력
+    README.md                                            # 사용자용 개요·사용법·도구 경계·정직성 가드레일
+    commands/
+      handoff-review.md                                  # 오케스트레이터(진입점) — 게이트 선택 → 병렬 실행 → 착수 준비도(Readiness) 통합 리포트
+    skills/                                              # 모두 disable-model-invocation: true · allowed-tools에 Edit/Write 없음(읽기 위주)
+      dor-review/                                        # 기획 DoR 게이트 (DoR·INVEST·GWT 완결성·모호성 린트·의존성 참조)
+      design-handoff-review/                             # 디자인 핸드오프 사각지대 (상태 누락·토큰 바인딩·컴포넌트↔코드 매핑·상태별 oracle, Figma MCP)
+      contract-review/                                   # API 계약 게이트 (엔드포인트 완결성·breaking-change diff·소비자(CDC) 커버리지·코드↔spec drift)
+      test-coverage-review/                              # 인수조건↔테스트 커버리지 (테스트가능성·AC↔테스트 매핑·커버리지 채점·누락 시나리오 발굴)
+    evals/
+      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 14 / should_not 11, 자매 하네스(frontend/product-spec/git/meta) reciprocal 가드)
 ```

@@ -1,0 +1,135 @@
+---
+name: handoff-review
+description: "개발 착수 *전* 상류 산출물의 핸드오프 게이트를 통합 실행하는 오케스트레이터 커맨드. dor-review(기획 DoR)·design-handoff-review(디자인 사각지대)·contract-review(API 계약 완결성/breaking change)·test-coverage-review(인수조건↔테스트 커버리지) 4개 게이트 중, 넘어온 산출물에 해당하는 항목을 사용자에게 선택받아 병렬로 실행하고, '착수 준비도(Readiness)' 통합 리포트와 기획·디자인·BE에 되돌릴 질문 목록을 산출한다. '핸드오프 리뷰', '착수 게이트', '착수 준비됐나', '상류 산출물 검수', 'DoR', '디자인 핸드오프', 'API 계약 검수', '인수조건 커버리지' 등에 반응한다. 완성된 코드 리뷰는 frontend-harness `/review`, PRD·스토리 *작성*은 product-spec-harness `/product-spec`, 커밋/PR 리뷰는 git-harness가 담당하므로 중복하지 않는다."
+allowed-tools: Bash, Read, Grep, Glob, Agent
+---
+
+# Handoff Review — 착수 전 상류 산출물 통합 게이트
+
+기획→개발, 디자인→개발, BE→FE, QA→개발으로 **넘어오는 상류 산출물**을 코드 착수 *전*에 게이트로 검수한다. AI가 코드 작성을 자동화할수록 결함은 '작성'이 아니라 **상류 스펙 품질과 리뷰**에서 발생한다. 이 커맨드는 해당 산출물에 맞는 게이트를 골라 병렬 실행하고, **착수해도 안전한가(Readiness)** 를 통합 판정한다.
+
+> **경계.** 이 커맨드는 *상류 산출물*을 검수한다. 완성된 **코드** 리뷰는 `frontend-harness`의 `/review`(품질·보안·성능·정합성)가, PRD·사용자 스토리 *작성*은 `product-spec-harness`의 `/product-spec`이, 커밋/PR 리뷰는 `git-harness`가 담당한다. 중복 실행하지 않는다.
+
+## 4개 게이트 한눈에
+
+| 게이트 | 스킬 | 대상 산출물 | 잡는 것 | PASS 의미 |
+| --- | --- | --- | --- | --- |
+| **기획 DoR** | `dor-review` | PRD·유저스토리·인수조건·Jira 티켓 | 모호성, 음성경로 누락, INVEST 미달, 의존성 미식별 | "FE/BE/QA가 추측 없이 착수 가능" |
+| **디자인 핸드오프** | `design-handoff-review` | Figma 프레임·디자인 스펙·토큰·Code Connect | happy-path만, 에러/로딩/빈/요소 상태 누락, 토큰 미바인딩 | "디자이너 의도 추측 없이 구현 가능" |
+| **API 계약** | `contract-review` | OpenAPI/스키마, Pact 기대 | 엔드포인트 미완결, breaking change, 소비자 미커버, 코드↔spec drift | "FE가 계약만 보고 mock으로 병렬 착수 가능" |
+| **테스트 커버리지** | `test-coverage-review` | 인수조건↔테스트(Gherkin/feature) | 테스트 불가 AC, AC↔테스트 미매핑, 음성·엣지 시나리오 누락 | "인수조건이 실행가능 스펙으로 정의됨" |
+
+네 게이트는 SDLC의 서로 다른 상류 핸드오프를 덮는다. 한 기능이 여러 산출물을 동시에 넘긴다면(예: 스토리 + Figma + 계약) 해당 게이트들을 **함께** 돌려야 사각지대가 사라진다.
+
+## 실행 절차
+
+### Phase 0: 산출물 식별 및 게이트 선택
+
+1. **산출물 자동 탐지(보조).** 저장소에서 어떤 상류 산출물이 있는지 신호를 모은다(없으면 사용자에게 직접 입력받는다).
+
+```bash
+# 기획/인수조건 산출물
+grep -rln 'As a\|로서\|인수\s*조건\|Acceptance\|Given\|When\|Then' --include="*.md" --include="*.feature" --include="*.story" . 2>/dev/null | grep -v node_modules | head -20
+# API 계약
+find . -type f \( -name "openapi.*" -o -name "swagger.*" -o -name "*.openapi.y*ml" \) -not -path "*/node_modules/*" 2>/dev/null | head -20
+# 테스트 흔적
+git ls-files 2>/dev/null | grep -E '\.(feature|story)$|\.(test|spec)\.(t|j)sx?$|\.cy\.(t|j)sx?$|e2e' | head -20
+```
+
+디자인(Figma) 산출물은 저장소에 없을 수 있으므로 사용자에게 파일/URL 또는 스펙 문서를 요청한다.
+
+2. **게이트 선택(필수).** 다음을 제시하고 사용자가 답할 때까지 다음 Phase로 진행하지 않는다.
+
+```
+[Handoff Review] 착수 전 상류 산출물 게이트를 실행합니다.
+
+검수할 핸드오프를 선택해주세요:
+  □ 1. dor-review            — 기획 산출물(PRD/스토리/인수조건) 착수 준비도(DoR)
+  □ 2. design-handoff-review — 디자인 핸드오프(Figma/스펙) 사각지대·상태 누락
+  □ 3. contract-review       — API 계약(OpenAPI) 완결성·breaking change·소비자 커버리지
+  □ 4. test-coverage-review  — 인수조건↔테스트 커버리지·음성/엣지 시나리오
+
+선택 방법:
+- 복수 선택 가능 (예: "1, 3, 4")
+- 전체: "전체" 또는 "1, 2, 3, 4"
+- 최소 1개 이상 선택
+- 자동 탐지 결과상 해당 산출물이 없으면 그 게이트는 회색 처리하고 사유를 안내
+```
+
+선택 해석 규칙은 `frontend-harness`의 `/review`와 동일하다(번호 목록/전체/단일, 빈 선택·범위 밖은 재안내, 선택 결과를 한 번 더 확인).
+
+3. **각 게이트의 입력 모드 확인.** 선택된 게이트별로 그 스킬의 Phase 0이 요구하는 모드(단일/문서전체/변경 기반 등)와 입력(파일 경로·티켓·Figma URL·기준 계약 등)을 한 번에 모아 확인한다.
+
+### Phase 1: 선택 게이트 병렬 실행
+
+**Phase 0에서 선택된 게이트만** **하나의 어시스턴트 메시지 안에서 동시에** Agent로 spawn한다. 선택이 1개일 때만 단일 spawn으로 축소되고, 그 외에는 항상 병렬을 유지한다(순차 실행 금지).
+
+각 서브에이전트는 해당 스킬의 SKILL.md 절차를 그대로 따르게 한다.
+
+- **1번** → `./skills/dor-review/SKILL.md`
+- **2번** → `./skills/design-handoff-review/SKILL.md`
+- **3번** → `./skills/contract-review/SKILL.md`
+- **4번** → `./skills/test-coverage-review/SKILL.md`
+
+병렬 실행 규칙:
+
+- 미선택 게이트는 spawn하지 않는다(결과 표에서 "⏭️ (미선택)").
+- 각 게이트의 산출물(게이트 판정·되돌릴 질문·미해결 항목)을 모두 받기 전에는 다음 Phase로 넘어가지 않는다.
+- 한 게이트가 실패해도 나머지 결과는 보존하고 실패 사유를 보고한다.
+- 게이트 스킬은 **읽기 위주**다. 산출물(PRD/디자인/계약/AC)을 임의로 수정하지 않는다 — 보강 항목은 구체적으로 제시하되 합의·수정은 해당 팀(기획/디자인/BE/QA)이 한다.
+
+### Phase 2: 착수 준비도(Readiness) 통합 리포트
+
+선택된 게이트의 결과를 한 곳에 모아 통합 판정한다.
+
+```markdown
+# Handoff Review — 착수 준비도(Readiness) 통합 결과
+
+## 대상
+- 기능/스토리: <식별자>
+- 실행 게이트: dor / design / contract / test-coverage (선택분)
+
+## 게이트별 판정
+
+| 게이트 | 판정 | Blocker | 보완 권장 | 핵심 미해결 |
+| --- | --- | --- | --- | --- |
+| 기획 DoR | ✅ PASS / ⚠️ 보완 / ❌ 보류 | N | N | ... |
+| 디자인 핸드오프 | ... | N | N | ... |
+| API 계약 | ✅ UNBLOCKED / ❌ BLOCKED | N | N | ... |
+| 테스트 커버리지 | ✅ 통과 / ❌ 보류 | N | N | ... |
+
+## 통합 되돌릴 질문 (출처별)
+
+- (기획) ❓ ...
+- (디자인) ❓ ...
+- (BE/계약) ❓ ...
+- (QA) ❓ ...
+
+## 종합 착수 판정
+
+| 항목 | 결과 |
+| --- | --- |
+| 선택 게이트 중 BLOCK/보류 | N / M |
+| **착수 가능** | **YES / 보완 후 / NO** |
+
+판정 기준: 선택된 게이트 중 하나라도 Blocker(착수 차단/BLOCKED) 가 있으면 종합은 **착수 보류**로 시작한다. 모두 PASS여야 **착수 가능(YES)**.
+
+## 다음 단계
+- [ ] 되돌릴 질문을 각 팀(기획/디자인/BE/QA)에 전달, 회신 후 해당 게이트 재실행
+- [ ] 보완 완료 후: 구현은 `frontend-harness`(develop→`/review`→verify), 커밋은 `git-harness`
+```
+
+## 사용자 소통
+
+- Phase 0에서 게이트 선택을 반드시 먼저 받는다. 자동 탐지만으로 강제 실행하지 않는다.
+- 각 게이트의 입력(Figma URL·기준 계약 등)은 Phase 0에서 한 번에 모아 확인하고 이후 재질문하지 않는다.
+- Blocker(착수 차단/BLOCKED) 발견 시 즉시 사용자에게 알린다.
+- 정량 수치를 보고할 때는 각 스킬의 Honesty Guardrail을 따른다 — 검증된 2025+ 근거만 등급과 함께 인용하고 '개선 N%'를 약속하지 않는다(효과는 조직이 baseline으로 측정).
+
+## 병렬 실행 안티패턴
+
+- ❌ 게이트를 "적으니까" 순차로 돌리기 — 선택 수와 무관하게 항상 병렬(1개일 때만 단일 spawn)
+- ❌ 한 게이트 결과를 다른 게이트의 입력으로 넣기 — 게이트는 독립 평가
+- ❌ Phase 0 선택 없이 4개 모두 spawn
+- ❌ 게이트 스킬이 산출물(PRD/디자인/계약)을 직접 수정 — 읽기 위주, 수정은 해당 팀
+- ❌ 코드 대상 리뷰를 이 커맨드에서 수행 — `frontend-harness /review`로 인계

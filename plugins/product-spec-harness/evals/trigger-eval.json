@@ -86,5 +86,13 @@
   {
     "query": "성공 기준 정하고 통과할 때까지 자율 반복으로 충족시켜줘",
     "should_trigger": false
+  },
+  {
+    "query": "이미 작성된 이 PRD/유저스토리가 착수 준비됐는지 DoR 게이트로 검수하고 모호·누락 짚어줘",
+    "should_trigger": false
+  },
+  {
+    "query": "넘어온 인수조건이 테스트 가능한지, 음성·엣지 경로 빠졌는지 핸드오프 게이트로 점검해줘",
+    "should_trigger": false
   }
 ]

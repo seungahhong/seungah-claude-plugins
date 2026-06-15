@@ -5,8 +5,8 @@
     "email": "ssingah1030@gmail.com"
   },
   "metadata": {
-    "description": "분석 → 설계 → 개발 → 리뷰 → 검증까지, 소프트웨어 개발 전 과정을 지원하는 멀티 에이전트 스킬·커맨드·훅 모음. 정적 분석 5개 관점(간소화·코드 리뷰·보안·성능·정합성) 중 사용자 선택 항목 병렬 + 재리뷰 루프와 E2E·타입/빌드 검증을 포함합니다.",
-    "version": "1.5.0",
+    "description": "분석 → 설계 → 개발 → 리뷰 → 검증까지, 소프트웨어 개발 전 과정을 지원하는 멀티 에이전트 스킬·커맨드·훅 모음. 정적 분석 5개 관점(간소화·코드 리뷰·보안·성능·정합성) 중 사용자 선택 항목 병렬 + 재리뷰 루프와 E2E·타입/빌드 검증, 그리고 코드 착수 *전* 상류 산출물(기획·디자인·API 계약·QA 인수조건) 핸드오프 게이트 검수를 포함합니다.",
+    "version": "1.6.0",
     "homepage": "https://github.com/seungahhong/seungah-claude-plugins"
   },
   "plugins": [
@@ -133,6 +133,28 @@
         "goal-driven",
         "multi-agent",
         "orchestration"
+      ],
+      "category": "workflow",
+      "strict": false
+    },
+    {
+      "name": "review-harness",
+      "description": "개발 착수 *전* 상류 산출물(기획·디자인·API 계약·QA 인수조건)을 핸드오프 시점에 '착수 게이트'로 검수하는 도메인 무관 멀티 에이전트 하네스. AI가 코드 작성을 자동화할수록 병목은 '작성'이 아니라 상류 스펙 품질·리뷰로 이동한다는 전제 아래, 4개 게이트 스킬(dor-review·design-handoff-review·contract-review·test-coverage-review)과 handoff-review 오케스트레이터로 모호성·누락·사각지대·breaking change를 코드 착수 전에 잡아 다운스트림 재작업을 줄인다. 정량 수치는 검증된 2025+ 근거만 등급(GOLD/SILVER/BRONZE)과 함께 인용하고 '개선 N%'를 약속하지 않는다(baseline-before-target). 경계: 완성된 코드 리뷰(frontend-harness)·PRD/스토리 작성(product-spec-harness)·커밋/PR 리뷰(git-harness)·하네스 진단(meta-harness)은 범위가 아니며, 상류 산출물의 준비도/완결성 게이트 검수에 특화한다.",
+      "source": "./plugins/review-harness",
+      "version": "0.1.0",
+      "author": { "name": "seungah.hong" },
+      "tags": [
+        "claude-code",
+        "plugin",
+        "review-harness",
+        "handoff-gate",
+        "definition-of-ready",
+        "shift-left",
+        "design-handoff",
+        "contract-first",
+        "test-coverage",
+        "multi-agent",
+        "quality-gate"
       ],
       "category": "workflow",
       "strict": false

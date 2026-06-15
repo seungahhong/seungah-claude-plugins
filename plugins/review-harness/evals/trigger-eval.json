@@ -1,0 +1,102 @@
+[
+  {
+    "query": "이 유저스토리/인수조건 착수 준비됐는지 DoR 게이트로 검수해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "이 PRD 모호하거나 빠진 데 없는지 착수 전에 점검하고 기획에 되돌릴 질문 만들어줘",
+    "should_trigger": true
+  },
+  {
+    "query": "인수조건이 Given-When-Then으로 테스트 가능한지, 음성·엣지 경로 빠졌는지 봐줘",
+    "should_trigger": true
+  },
+  {
+    "query": "이 Figma 핸드오프에 에러/로딩/빈 상태 누락 없는지 디자인 사각지대 검수해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "피그마 디자인 토큰 바인딩이랑 Code Connect 컴포넌트 매핑 점검해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "이 OpenAPI 계약 완결성 점검하고 FE가 mock으로 착수해도 되는지 봐줘",
+    "should_trigger": true
+  },
+  {
+    "query": "배포된 계약 대비 이번 변경에 breaking change 있는지 분류하고 SemVer 권고해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "소비자(Pact) 기대가 공급자 spec에 다 커버되는지 contract 게이트로 대조해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "인수조건이랑 테스트가 1:1로 매핑되는지, 누락된 음성 시나리오 발굴해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "테스트 커버리지 게이트로 AC↔테스트 갭이랑 엣지 케이스 누락 점검해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "개발 착수 전에 기획·디자인·계약 산출물이 준비됐는지 핸드오프 게이트로 통합 검수해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "이 스토리 INVEST로 채점하고 Testable·Independent 미달이면 착수 차단 판정해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "이 계약 spec이랑 실제 코드 사이 drift(미문서/유령 엔드포인트) 있는지 점검해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "넘어온 디자인 스펙으로 추측 없이 구현 가능한지, 빠진 상태별 oracle 목록화해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "이 PR 코드 리뷰하고 버그·보안·성능 문제 찾아줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 컴포넌트 접근성·시맨틱 HTML 점검하고 코드 고쳐줘",
+    "should_trigger": false
+  },
+  {
+    "query": "새 제품 기획문서(PRD)랑 사용자 스토리를 처음부터 작성해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "요구사항 인터뷰부터 PRD 초안까지 단계별로 같이 만들어줘",
+    "should_trigger": false
+  },
+  {
+    "query": "변경사항 커밋 메시지 작성하고 PR 올려줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 기존 하네스 결함을 trace 기반으로 진단하고 스킬을 고도화해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 도메인용 하네스(에이전트팀+오케스트레이터)를 새로 만들어줘",
+    "should_trigger": false
+  },
+  {
+    "query": "성공 기준 정하고 통과할 때까지 자율 반복으로 충족시켜줘",
+    "should_trigger": false
+  },
+  {
+    "query": "settings.json에 npm 명령 권한 추가해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이미 구현된 코드의 API 응답↔훅 타입 경계면 불일치를 qa-inspector로 검증해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 실제 OpenAPI 엔드포인트를 호출해서 응답이 스펙대로 오는지 실행해서 테스트해줘",
+    "should_trigger": false
+  }
+]
