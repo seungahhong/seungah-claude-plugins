@@ -68,7 +68,7 @@ plugins/
     README.md                                            # 사용자용 개요·사용법·도구 경계·입력 모드
     agents/                                              # 모두 model: "opus" (Phase 순차)
       requirements-analyst.md                            # Phase 0 요구/문제/사용자 정의 (Discovery) — 기획안 있으면 카드 추출, 없으면 인터뷰
-      dor-evaluator.md                                   # Phase 1 원본 기획안 DoR 평가 (모드 A·조건부·생성 전 선행) — # DoR Review 결과 + 보강 체크리스트 채팅 제시, 보강점을 PRD·스토리에 반영 (저장은 마무리 opt-in)
+      dor-evaluator.md                                   # Phase 1 원본 기획안 DoR 평가 (모드 A 진입질문 필수·생성 전 선행) — # DoR Review 결과 + 보강 체크리스트 채팅 제시, 보강점을 PRD·스토리에 반영 (저장은 마무리 opt-in)
       prd-writer.md                                      # Phase 2 기획문서(PRD) 작성 — 배경·목표·범위·요구사항·리스크·마일스톤 (Phase 1 보강점 반영)
       story-writer.md                                    # Phase 3 사용자 스토리 + 수용기준(Given/When/Then) + INVEST 자가점검 (Phase 1 보강점 반영)
       spec-reviewer.md                                   # Phase 4 적대적 검증 — 요구↔스토리 추적·INVEST·관찰성·일관성·모호 색출 (채팅만, 파일 저장 안 함)
