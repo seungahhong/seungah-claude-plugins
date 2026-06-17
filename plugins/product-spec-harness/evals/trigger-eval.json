@@ -40,6 +40,18 @@
     "should_trigger": true
   },
   {
+    "query": "이 기획안 줄게, 이걸로 PRD랑 사용자 스토리 만들어줘",
+    "should_trigger": true
+  },
+  {
+    "query": "기획 초안 정리해서 PRD·유저스토리로 풀고, 원본 기획안 착수 준비도(DoR)도 평가해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "이 기획안으로 PRD/스토리 뽑은 다음, 기획안에서 뭘 보강해야 하는지 DoR 체크리스트로 알려줘",
+    "should_trigger": true
+  },
+  {
     "query": "프론트엔드 개발용 PRD 작성하고 바로 구현 들어가자",
     "should_trigger": false
   },

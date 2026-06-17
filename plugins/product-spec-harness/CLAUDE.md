@@ -1,6 +1,6 @@
 # product-spec-harness
 
-기획자(PM)가 요구·문제로부터 **제품 기획문서(PRD)와 사용자 스토리**를 4단계 인터랙티브로 작성·검증하는 도메인 무관 멀티 에이전트 하네스 (개발 착수 *전* 단계).
+기획자(PM)가 요구·문제(또는 **기획안 초안**)로부터 **제품 기획문서(PRD)와 사용자 스토리**를 5단계 인터랙티브로 작성·검증하는 도메인 무관 멀티 에이전트 하네스 (개발 착수 *전* 단계). 기획안이 주어지면 **생성 전에 원본 기획안의 착수 준비도(DoR)를 먼저 평가**(Phase 1)해 보강점을 PRD·스토리에 반영한다.
 
 사용자용 개요·사용법은 [README.md](README.md) 참조.
 
@@ -10,47 +10,59 @@
 product-spec-harness/
 ├── .claude-plugin/
 │   └── plugin.json
-├── CLAUDE.md                      # (이 문서) 하네스 포인터 + 4단계 요약 + 변경 이력
-├── README.md                      # 사용자용 개요·사용법·도구 경계
+├── CLAUDE.md                      # (이 문서) 하네스 포인터 + 5단계 요약 + 변경 이력
+├── README.md                      # 사용자용 개요·사용법·도구 경계·입력 모드
 ├── agents/
-│   ├── requirements-analyst.md    # Phase 0 요구/문제/사용자 정의
-│   ├── prd-writer.md              # Phase 1 기획문서(PRD) 작성
-│   ├── story-writer.md            # Phase 2 사용자 스토리 + 수용기준
-│   └── spec-reviewer.md           # Phase 3 적대적 검증
+│   ├── requirements-analyst.md    # Phase 0 요구/문제/사용자 정의 (기획안 있으면 카드 추출)
+│   ├── dor-evaluator.md           # Phase 1 원본 기획안 DoR 평가 (모드 A·조건부·생성 전 선행, 채팅 제시·즉시 저장 안 함)
+│   ├── prd-writer.md              # Phase 2 기획문서(PRD) 작성 (Phase 1 보강점 반영)
+│   ├── story-writer.md            # Phase 3 사용자 스토리 + 수용기준 (Phase 1 보강점 반영)
+│   └── spec-reviewer.md           # Phase 4 적대적 검증 (채팅 표시만, 파일 저장 안 함)
 ├── skills/
 │   └── product-spec/
-│       ├── SKILL.md               # 오케스트레이터(진입점, 4 Phase 인터랙티브)
+│       ├── SKILL.md               # 오케스트레이터(진입점, 5 Phase 인터랙티브, 입력 모드 A/B)
 │       └── references/
 │           ├── prd-template.md        # PRD 표준 구조 + 작성기준
-│           └── user-story-guide.md    # As a/I want/so that + Gherkin + INVEST
+│           ├── user-story-guide.md    # As a/I want/so that + Gherkin + INVEST
+│           └── dor-review-rubric.md   # DoR 평가 루브릭 내재화(# DoR Review 결과·체크리스트·Honesty Guardrail·2025+ 근거)
 └── evals/
     └── trigger-eval.json
 ```
 
-## 4단계 Phase 요약
+## 5단계 Phase 요약
 
 | Phase | 이름 | 호출 에이전트 | 핵심 산출물 | 게이트 |
 |-------|------|---------------|-------------|--------|
-| 0 | 요구/문제 정의 (Discovery) | requirements-analyst | 문제 정의 카드 (problem / target_users / goals / constraints / success_metrics) | 한 번에 1질문 인터뷰 → 승인 |
-| 1 | 기획문서(PRD) 작성 | prd-writer | PRD (배경·문제 / 목표·성공지표 / 범위 In·Out / 핵심 요구사항(기능·비기능) / 가정·리스크 / 마일스톤) | 쓰기 전 미리보기 승인 |
-| 2 | 사용자 스토리 도출 | story-writer | 스토리("…로서 …하고 싶다, 왜냐하면 …") + 수용기준(Given/When/Then) + INVEST 자가점검 | 승인 |
-| 3 | 검증 | spec-reviewer | 검증 리포트 (요구↔스토리 추적 매트릭스 / INVEST / 수용기준 관찰성 / 일관성 / 모호·판정불가 색출) | 검증 리포트 + 승인 (보완 시 additive-first) |
+| 0 | 요구/문제 정의 (Discovery) | requirements-analyst | 문제 정의 카드 (problem / target_users / goals / constraints / success_metrics) | 기획안 있으면 추출, 없으면 한 번에 1질문 인터뷰 → 승인 |
+| 1 | 기획안 DoR 평가 (모드 A·조건부·생성 전 선행) | dor-evaluator | `# DoR Review 결과` (DoR 게이트 · INVEST 스코어카드 · GWT 완결성 · 모호성 린트 · 의존성) + **보강 체크리스트** — **채팅 제시, 즉시 저장 안 함** | 평가 동의(예/아니오), 결과를 PRD/스토리에 반영 |
+| 2 | 기획문서(PRD) 작성 | prd-writer | PRD (배경·문제 / 목표·성공지표 / 범위 In·Out / 핵심 요구사항(기능·비기능) / 가정·리스크 / 마일스톤) — Phase 1 보강점 반영 | 쓰기 전 미리보기 승인 |
+| 3 | 사용자 스토리 도출 | story-writer | 스토리("…로서 …하고 싶다, 왜냐하면 …") + 수용기준(Given/When/Then) + INVEST 자가점검 — Phase 1 보강점 반영 | 승인 |
+| 4 | 적대적 검증 | spec-reviewer | 검증 리포트 (요구↔스토리 추적 매트릭스 / INVEST / 수용기준 관찰성 / 일관성 / 모호·판정불가 색출) — **채팅 표시만, 파일 저장 안 함** | 리포트 + 승인 (보완 시 additive-first, PRD/스토리에 반영) |
+| 마무리 | 기획안 DoR 평가 결과 저장 (opt-in) | (오케스트레이터) | Phase 1 평가 결과 → `product-spec-review.md` | **PRD·스토리 생성 후 사용자가 저장을 선택할 때만** 저장 |
 
 매 Phase 종료 시 보고 형식: `[Phase N] {핵심결정} — 다음: {다음}. 진행할까요?`
+
+> **입력 모드** — (A) 기획안 입력: 기획안에서 문제 정의를 추출(Phase 0) → 생성 전 원본 기획안 DoR 평가(Phase 1, 동의 시) → 보강점 반영해 PRD·스토리 반드시 생성 → 적대적 검증. (B) 인터뷰: 기획안이 없으면 Phase 1을 건너뛰고, 마무리에서 동의 시 생성 산출물을 대상으로 DoR 평가·저장 선택 적용.
+> **Phase 1 vs 4** — Phase 1은 *원본 기획안*을 생성 *전*에 DoR로 평가(피드백을 PRD·스토리에 반영, 채팅 제시), Phase 4는 *생성 산출물*(PRD·스토리)을 적대적 검증(파일 저장 안 함). 대상이 다르다.
+> **저장 정책** — `product-spec-review.md`(Phase 1 평가 결과)는 PRD·스토리 생성 후 마무리에서 사용자가 저장을 선택할 때만 기록. 적대적 검증(Phase 4) 리포트는 저장하지 않음.
 
 ## Conventions
 
 - **승인 게이트**: 매 Phase 종료 시 핵심 산출물 + 1줄 보고를 제시하고, 파일을 쓰기 전 미리보기로 사용자 승인을 받은 뒤에만 진행한다.
 - **관찰형 수용기준**: 사용자 스토리 수용기준과 success_metrics는 제3자가 관찰로 판정 가능한 Given/When/Then으로 작성한다. "좋다/만족" 같은 판정불가 문장 금지.
 - **완전성·추적**: 모든 PRD 핵심 요구가 ≥1개 스토리로 커버되는지 요구↔스토리 매트릭스로 추적한다.
-- **적대적 검증**: Phase 3는 칭찬형 금지 — 누락·모호·비일관을 능동적으로 캔다.
+- **적대적 검증**: Phase 4는 칭찬형 금지 — 누락·모호·비일관을 능동적으로 캔다. **리포트는 채팅으로만 제시하고 파일로 저장하지 않는다**(결함은 additive-first로 PRD·스토리에 반영).
+- **기획안 DoR 평가 내재화**: Phase 1(생성 전 선행)은 원본 기획안을 착수 준비도(DoR) 관점에서 평가해 `# DoR Review 결과` + 보강 체크리스트를 **채팅으로 제시**하고 그 보강점을 PRD·스토리 생성에 반영한다. 방법론은 외부 플러그인을 참조하지 않고 `references/dor-review-rubric.md`에 **내재화**한다(외부 의존 없음 — 이 플러그인만 설치해도 독립 동작). 조건부(사용자 평가 동의 시). **파일 저장(`product-spec-review.md`)은 PRD·스토리 생성 후 마무리에서 사용자가 저장을 선택할 때만** 수행(평가 시점 즉시 저장 금지). Honesty Guardrail(검증된 등급·출처 수치만, '개선 N%' 약속 금지)을 따른다.
+- **기획안 입력 모드**: 기획안(초안)을 인자/대화로 주면 Phase 0에서 카드를 추출하고 PRD·스토리를 **반드시 생성**한다(생성 생략 금지).
 - **additive-first**: 합의된 PRD/스토리를 보완할 때 기존 항목을 뒤엎기 전에 비파괴 추가·완화를 먼저 제안한다.
-- **인터뷰성**: 한 번에 한 질문. jargon은 1줄 정의를 곁들인다.
-- **경계**: 이 하네스는 '기획자의 제품 기획(도메인 무관, 개발 전)'이다. 프론트엔드 개발용 PRD·구현 요구사항·코드 작성(frontend-harness의 prd/planner 영역)이나 코드/하네스/커밋 작업은 범위 밖이다.
-- 4개 에이전트 협업 하네스이므로 오케스트레이터 SKILL.md의 모든 Agent 호출에 `model: "opus"`를 명시한다.
+- **인터뷰성**: 한 번에 한 질문. jargon(INVEST·Gherkin·DoR)은 1줄 정의를 곁들인다.
+- **경계**: 이 하네스는 '기획자의 제품 기획(도메인 무관, 개발 전)'이다. 프론트엔드 화면 구현·기술 설계용 PRD·구현 요구사항·코드 작성, 코드/하네스/커밋 작업, 그리고 *이미 완성된* 상류 산출물을 핸드오프 게이트로 검수만 하는 작업은 범위 밖이다.
+- **독립성**: 이 플러그인은 단독 설치로 동작하며, 다른 마켓플레이스 플러그인을 참조·의존하지 않는다(DoR 평가 방법론은 `references/dor-review-rubric.md`에 내재화).
+- 5개 에이전트 협업 하네스이므로 오케스트레이터 SKILL.md의 모든 Agent 호출에 `model: "opus"`를 명시한다.
 
 ## Change History
 
 | 날짜 | 변경 | 내용 |
 |------|------|------|
 | 2026-06-13 | 플러그인 신설 | 기획자용 기획문서·사용자스토리 4단계 인터랙티브 하네스 |
+| 2026-06-17 | 기획안 입력 + DoR 평가 내재화 | (1) 기획안을 인자로 받으면 카드 추출 후 PRD·스토리 생성. (2) `dor-evaluator` + `references/dor-review-rubric.md`(DoR 방법론 내재화) 신설 — **Phase 1(생성 전 선행)** 에서 원본 기획안 DoR 평가 → `# DoR Review 결과`·보강 체크리스트를 채팅 제시, 보강점을 PRD·스토리 생성에 반영. (3) `product-spec-review.md` 저장은 **PRD·스토리 생성 후 사용자가 저장을 선택할 때만**(즉시 저장 안 함). (4) 적대적 검증은 Phase 4(최종)로, 리포트는 파일 저장 안 함(채팅만). 4→5단계, v0.2.0 |

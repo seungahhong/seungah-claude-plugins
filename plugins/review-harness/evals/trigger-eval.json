@@ -72,6 +72,10 @@
     "should_trigger": false
   },
   {
+    "query": "이 기획안으로 PRD·사용자 스토리를 만들고 마지막에 원본 기획안 DoR까지 평가해줘",
+    "should_trigger": false
+  },
+  {
     "query": "변경사항 커밋 메시지 작성하고 PR 올려줘",
     "should_trigger": false
   },

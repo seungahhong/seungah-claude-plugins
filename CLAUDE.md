@@ -12,7 +12,7 @@
 | `harness-generator` | 도메인 무관 하네스(에이전트팀+스킬+오케스트레이터) **수동·인터랙티브** 생성 메타 플러그인 |
 | `git-harness` | Git 워크플로우 (한국어 커밋 메시지, 다각도 PR 리뷰) |
 | `meta-harness` | full-trace experience store 기반 메타 하네스 엔지니어링 (causal 진단 + Pareto 비후퇴 패치, 사용자 승인 게이트) |
-| `product-spec-harness` | 기획자용 기획문서(PRD)+사용자스토리 4단계 인터랙티브 하네스 |
+| `product-spec-harness` | 기획자용 기획문서(PRD)+사용자스토리 5단계 인터랙티브 하네스 (기획안 인자 입력 → 카드 추출 → 생성 전 기획안 DoR 평가 내재화 → 보강점 반영 PRD·스토리 생성 → 적대적 검증; DoR 결과는 생성 후 opt-in으로 `product-spec-review.md` 저장) |
 | `loop-engineering` | 검증 가능한 목표를 향한 자율 반복 루프(Goal→Execute→Verify→Diagnose→Improve) + 지속학습 메모리(Fail→Investigate→Verify→Distill→Consult) 멀티 에이전트 하네스 |
 | `review-harness` | 코드 착수 *전* 상류 산출물(기획 DoR·디자인 핸드오프·API 계약·QA 인수조건) 핸드오프 게이트 검수 (4개 게이트 스킬 + handoff-review 오케스트레이터, 2025+ 근거·정직성 가드레일) |
 
