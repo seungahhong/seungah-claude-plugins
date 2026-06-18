@@ -45,7 +45,7 @@ plugins/
     skills/
       commit/                                            # 한국어 커밋 메시지 작성 스킬 (`이슈번호 type: 제목` 형식)
       review-to-pr/                                      # 리뷰 → 커밋 → PR 생성 올인원 워크플로우 스킬 (/simplify + /review 내장)
-  meta-harness/                                          # [독립 플러그인] Meta-Harness 논문(arXiv 2603.28052v1) 기반 메타 하네스 엔지니어링 — full-trace experience store + causal reasoning + Pareto 비후퇴, 사용자 승인 게이트 (R1 현세션 redirect/보강 · R2 plugin 개선 · R3 외부 .md 역추적)
+  meta-harness/                                          # [독립 플러그인] Meta-Harness 논문(arXiv 2603.28052v1) 기반 메타 하네스 엔지니어링 — full-trace experience store + causal reasoning + Pareto 비후퇴, 사용자 승인 게이트 (R1 현세션 redirect/보강 · R2 plugin 개선 · R3 외부 .md 역추적). self-heal 캡처 훅(UserPromptSubmit)이 '수정/보강' 발화를 signals 레인에 원형 적재 → 추후 healer가 소비(적용은 승인 게이트 후)
     .claude-plugin/
       plugin.json
     CLAUDE.md                                            # 하네스 포인터 + 변경 이력
@@ -60,6 +60,9 @@ plugins/
       session-signal-capture/                            # R1/R3 신호 캡처 방법론 (원본 보존)
       causal-diagnosis/                                  # full-trace 기반 causal 진단 루브릭
       pareto-refinement/                                 # Pareto/additive patch 생성 방법론
+    hooks/                                               # 플러그인 훅 (self-heal 캡처)
+      hooks.json                                         # UserPromptSubmit 훅 설정
+      self-heal-capture.sh                               # '수정/보강/방향전환' 발화 → signals 레인 원형 적재 (캡처 전용·비차단, cross-session)
     evals/                                               # acceptance assertion + 트리거 평가 + dry-run 리포트
   product-spec-harness/                                  # [독립 플러그인] 기획자(PM)용 기획문서(PRD)+사용자 스토리 5단계 인터랙티브 하네스 + 기획안 DoR 평가(내재화·외부 의존 없음, 단독 동작) — 개발 착수 전, 도메인 무관 (입력 모드 A 기획안/B 인터뷰; 경계: 프론트엔드 화면 구현·기술 설계·코드/하네스/커밋·완성 산출물 핸드오프 게이트 검수 제외)
     .claude-plugin/

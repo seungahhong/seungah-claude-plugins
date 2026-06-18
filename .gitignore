@@ -1,4 +1,10 @@
 # claude
 .settings.local.json
 
+# claude 런타임 메모리 (per-user 산출물 — 경로·세션ID·raw trace 포함, 버전관리 제외)
+.claude/experience-store/
+.claude/_workspace/
+.claude/_workspace_prev/
+.claude/plugin-store/
+
 .DS_Store

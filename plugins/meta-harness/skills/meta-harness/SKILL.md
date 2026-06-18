@@ -83,12 +83,14 @@ repo-wide 경계 밖(agents/·commands/·hooks/·plugin.json·플러그인별 CL
 
 1. **트리거 유형 판별** — R1(현세션 redirect·보강) / R2(plugin 심층) / R3(외부 .md 역추적) 중 무엇인지 결정한다. 모호하면 한 번에 한 질문으로 확인한다.
 2. **스코프 확정** — repo-wide(기본) / plugin(opt-in). R2거나 사용자가 특정 플러그인 심층을 명시하면 plugin. 한 번에 한 질문.
-3. **warm-start** — `recurring-patterns.md`의 `needs_attention`(≥3) 표적을 먼저 읽어 이번 회차 경고 후보로 적재한다.
+3. **warm-start** — `recurring-patterns.md`의 `needs_attention`(≥3) 표적을 먼저 읽어 이번 회차 경고 후보로 적재한다. 추가로 **`signals/*.jsonl`(UserPromptSubmit 훅이 과거 세션에 적재한 미소비 redirect/fix/augment 발화)** 을 읽어 이번 회차 결함 후보로 끌어온다 — 사용자가 지금 명시 트리거하지 않아도, 누적 신호가 있으면 "이전에 '…수정해줘'라고 하신 N건을 지금 진단할까요?"로 1줄 제안한다. 소비한 신호는 Phase 8에서 `index.json`에 소비 회차 포인터를 남겨 중복 재진단을 막는다(원본 signals 줄은 보존).
 4. **fast-path 판정 (P3 경량 경로)** — 결함이 **단건·저위험**(예: description 오타 1건, 상호참조 경로 한 줄)이면 경량 경로로 라우팅한다: Phase 3 병렬 팬아웃을 **단건 진단**으로 축약하고 Phase 8 큐레이션·warm-start를 생략 가능으로 둔다. **단, 안전장치는 fast-path에서도 생략 금지** — Phase 5 검증·Phase 6 승인 게이트·Phase 7 경계 재확인은 항상 거친다(P2). (근거: progressive disclosure / just-in-time)
 
 ## Phase 2 — 신호 캡처 (trace-capturer 1회)
 
 R1: redirect 발화 **원문** + 직전 AI 산출물 + active SKILL을 시간순 원형 trace로 정규화한다. R3: 대상 .md 전문 + 3단 폴백 출처 역추적(① 산출 경로 규약 매칭 high → ② 파일 내 generated-by/메타마커 high → ③ 구조·문체 + git blame medium/low). raw trace를 `traces/*.jsonl`에 **원형 적재(요약·payload 누락 금지)**.
+
+> **signals 레인 소비(cross-session)** — Phase 1 warm-start가 `signals/*.jsonl`의 미소비 발화를 이번 회차 후보로 끌어온 경우, trace-capturer에 그 signal의 `raw`(발화 원문)와 `transcript_path`를 함께 넘긴다. trace-capturer는 `transcript_path`를 역추적해 그 시점의 직전 산출물·active SKILL을 `traces/*.jsonl`로 정규화한다(원형 보존). 즉 훅이 적재한 신호는 **회차를 시작시키는 입력**일 뿐, 그 자체로 진단·패치가 아니다 — 진단은 Phase 3, 적용은 Phase 6 승인 게이트 통과 후 Phase 7에서만. 스키마는 [references/experience-store-schema.md](./references/experience-store-schema.md)의 `signals/*.jsonl` 참조.
 
 ```
 Agent(
@@ -174,6 +176,7 @@ Agent(
          + pareto.json(빈도×severity frontier 재계산)
          + recurring-patterns.md(표적별 카운트 + needs_attention ≥3 nudge)
   [불변식] 요약은 index/recurring(navigation)에만. traces/는 절대 건드리지 않는다(원본 보존).
+           이번 회차가 소비한 signals/*.jsonl 발화는 index.json에 소비 회차 포인터로 표시(중복 재진단 방지) — 단 원본 signals 줄은 보존, 삭제·수정 금지.
   """
 )
 ```

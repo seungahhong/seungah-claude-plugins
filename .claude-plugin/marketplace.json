@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "분석 → 설계 → 개발 → 리뷰 → 검증까지, 소프트웨어 개발 전 과정을 지원하는 멀티 에이전트 스킬·커맨드·훅 모음. 정적 분석 5개 관점(간소화·코드 리뷰·보안·성능·정합성) 중 사용자 선택 항목 병렬 + 재리뷰 루프와 E2E·타입/빌드 검증, 그리고 코드 착수 *전* 상류 산출물(기획·디자인·API 계약·QA 인수조건) 핸드오프 게이트 검수를 포함합니다.",
-    "version": "1.7.0",
+    "version": "1.8.0",
     "homepage": "https://github.com/seungahhong/seungah-claude-plugins"
   },
   "plugins": [
@@ -75,9 +75,9 @@
     },
     {
       "name": "meta-harness",
-      "description": "Meta-Harness 논문(arXiv 2603.28052v1) 기반 메타 하네스 엔지니어링 플러그인. 하네스(루트 CLAUDE.md + SKILL.md + agents + commands + hooks = 'LLM 주위의 코드')의 결함을, 압축 요약이 아닌 full-trace experience store를 grep/cat로 직접 조회해 causal reasoning(confound 격리 → additive-first → compose → transfer)으로 진단합니다. 현 세션 redirect·보강(R1), 플러그인 자체 개선(R2), 외부 .md 산출물의 생산 에이전트/skill 역추적(R3)을 트리거로 받아, behavior-alignment·rule-body-cost·trigger-precision·generalization 4축 Pareto frontier를 후퇴시키지 않는 패치를 사용자 승인 게이트 하에서만 제안·적용하고, 무엇을/왜/어디를 고도화했는지 보고합니다(R4).",
+      "description": "Meta-Harness 논문(arXiv 2603.28052v1) 기반 메타 하네스 엔지니어링 플러그인. 하네스(루트 CLAUDE.md + SKILL.md + agents + commands + hooks = 'LLM 주위의 코드')의 결함을, 압축 요약이 아닌 full-trace experience store를 grep/cat로 직접 조회해 causal reasoning(confound 격리 → additive-first → compose → transfer)으로 진단합니다. 현 세션 redirect·보강(R1), 플러그인 자체 개선(R2), 외부 .md 산출물의 생산 에이전트/skill 역추적(R3)을 트리거로 받아, behavior-alignment·rule-body-cost·trigger-precision·generalization 4축 Pareto frontier를 후퇴시키지 않는 패치를 사용자 승인 게이트 하에서만 제안·적용하고, 무엇을/왜/어디를 고도화했는지 보고합니다(R4). self-heal 캡처 훅(UserPromptSubmit)이 사용자의 '수정/보강/방향전환' 발화를 세션 중 experience-store의 signals 레인에 원형으로 적재(캡처 전용·비차단)해, 추후 회차의 healer가 그 누적 신호를 진단·패치에 사용합니다(적용은 항상 승인 게이트 후).",
       "source": "./plugins/meta-harness",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "author": { "name": "seungah.hong" },
       "tags": [
         "claude-code",

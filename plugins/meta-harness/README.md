@@ -23,6 +23,15 @@
 - **Phase 8 — experience-historian**: history.jsonl + index.json + pareto.json + recurring-patterns.md 갱신.
 - **R4 최종 보고(필수)**: '무엇 / 왜 / 어디' 3축 표(트리거R · 표적 · 변경종류 · 왜문제였나+근거 · 결정 a/r/d · 적용✓).
 
+## self-heal 캡처 훅 (UserPromptSubmit)
+
+`/meta-harness`를 매번 명시 트리거하지 않아도, 사용자의 **"수정해줘 / 고쳐 / 다시 해줘 / 틀렸 / 보강 / 방향 다시"**(+ 영어 fix/redo/revise…) 발화를 `hooks/self-heal-capture.sh`(UserPromptSubmit 훅)가 세션 중 자동 감지해, experience-store의 **signals 레인**(`.claude/experience-store/signals/<날짜>.jsonl`)에 **발화 원형 그대로**(요약 금지) 적재한다.
+
+- **캡처 전용·비차단** — 훅은 적재만 한다. 어떤 파일도 스스로 고치지 않으며(항상 exit 0), 사용자 흐름을 막지 않는다. 매칭되지 않은 일반 프롬프트는 무시한다.
+- **세션을 가로지르는 기억** — 지금 트리거하지 않아도 신호가 누적된다. **추후 `/meta-harness`(healer) 실행 시** Phase 1 warm-start가 미소비 신호를 끌어와 "이전에 '…수정해줘'라고 하신 N건을 지금 진단할까요?"로 제안하고, 동의하면 Phase 2가 그 발화의 `transcript_path`를 역추적해 직전 산출물·active SKILL을 원형 trace로 정규화한다.
+- **안전 경계** — 훅이 적재한 신호는 *회차를 시작시키는 입력*일 뿐이다. 실제 진단(Phase 3)·적용(Phase 7)은 기존 **사용자 승인 게이트(Phase 6)** 를 그대로 통과해야 한다. 즉 "기억했다가 추후 healer가 환경/플러그인을 고친다"가 **자동 수정이 아니라 승인 게이트와 함께** 성립한다.
+- 트리거 문구는 환경변수 `SELF_HEAL_PATTERNS`로 교체할 수 있다.
+
 ## 산출물
 
 - **experience-store**: `.claude/experience-store/`(repo-wide) 또는 `.claude/plugin-store/{target}/`(plugin) — history.jsonl(append-only ledger), index.json(navigable 포인터), pareto.json(frontier 좌표), recurring-patterns.md(표적별 카운트), patches/(적용 patch 사본), {run}/{candidate}/traces/*.jsonl(원본 raw trace).
@@ -140,6 +149,7 @@ R1의 정의 그대로의 경우다 — "왜 문제였는지 검토 → **루트
 | Agent | experience-historian | experience-store 큐레이션(history/index/pareto/recurring) |
 | Skill | meta-harness | 진입 오케스트레이터(Phase 0~8 + R4) |
 | Skill | session-signal-capture | R1/R3 신호 캡처 방법론(원본 보존) |
+| Hook | self-heal-capture (UserPromptSubmit) | 사용자의 수정/보강/방향전환 발화를 signals 레인에 원형 적재(캡처 전용·비차단, cross-session) |
 | Skill | causal-diagnosis | full-trace 기반 causal 진단 루브릭 |
 | Skill | pareto-refinement | Pareto/additive patch 생성 방법론 |
 

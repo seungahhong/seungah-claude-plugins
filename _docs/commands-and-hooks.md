@@ -16,4 +16,5 @@
 
 | Hook | Trigger | Description |
 |------|---------|-------------|
-| stop-lint | `Stop` | Claude Code 응답 완료 시 git 변경 파일에 대해 eslint --fix → stylelint --fix → prettier --write 순으로 자동 수정 (모노레포 지원, 도구 미설치 시 건너뜀) |
+| stop-lint (frontend-harness) | `Stop` | Claude Code 응답 완료 시 git 변경 파일에 대해 eslint --fix → stylelint --fix → prettier --write 순으로 자동 수정 (모노레포 지원, 도구 미설치 시 건너뜀) |
+| self-heal-capture (meta-harness) | `UserPromptSubmit` | 사용자의 '수정/고쳐/다시/틀렸/보강/방향 다시'(+ 영어) 발화를 감지해 `.claude/experience-store/signals/<날짜>.jsonl`에 발화 **원형 적재**(요약 금지·캡처 전용·항상 exit 0). 추후 `/meta-harness`(healer)가 누적 신호를 진단·패치에 사용(적용은 승인 게이트 후). 비매칭 프롬프트는 무시. 트리거 문구는 env `SELF_HEAL_PATTERNS`로 교체 가능 |
