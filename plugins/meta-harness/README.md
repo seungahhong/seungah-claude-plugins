@@ -66,7 +66,7 @@
 
 | 트리거 | 표적 | 변경 | 왜 문제였나 (+근거) | 결정 | 적용 |
 |--------|------|------|---------------------|------|------|
-| R1 | `harness-generator/SKILL.md` | additive · 경로 절대화 규약 | 팬아웃 writer에 루트 누락 경로 전달 → cwd 기준 해석되어 레포 루트에 파일 생성 (trace step2~4) | 사용자 결정 | – |
+| R1 | 하네스 생성 방법론 SKILL.md | additive · 경로 절대화 규약 | 팬아웃 writer에 루트 누락 경로 전달 → cwd 기준 해석되어 레포 루트에 파일 생성 (trace step2~4) | 사용자 결정 | – |
 
 > 이 예는 **실제로 실행된 회차** `run-2026-06-03-01`의 요약이다. 전체 산출물은 `.claude/experience-store/run-2026-06-03-01/`(traces·patch·score·pareto)와 `.claude/_workspace/run-2026-06-03-01/`(진단 JSON·Phase5 검증·게이트 결정·3축 보고)에서 확인할 수 있다.
 
@@ -86,7 +86,7 @@ R1의 정의 그대로의 경우다 — "왜 문제였는지 검토 → **루트
 + - 인터랙티브 요소(button·a·아이콘 버튼)에는 접근 가능한 이름(aria-label 또는 연결된 label)을 항상 부여한다 — 누락 시 스크린리더가 "버튼"으로만 읽어 조작 의도를 잃는다.
 ```
 
-`plugins/frontend-harness/skills/a11y/SKILL.md` (점검 항목 + Why 추가):
+대상 스킬 `plugins/<target-plugin>/skills/a11y/SKILL.md` (점검 항목 + Why 추가):
 ```diff
 + - **인터랙티브 요소 이름 점검(필수)** — button·a·input·role="button" 각각에 접근 가능한 이름이 있는지 확인한다.
 +   - **Why:** 아이콘 전용 버튼은 보이는 텍스트가 없어, aria-label이 없으면 스크린리더가 역할만 읽고 무엇을 하는 버튼인지 전달하지 못한다.
@@ -111,10 +111,10 @@ R1의 정의 그대로의 경우다 — "왜 문제였는지 검토 → **루트
 **plugin이 표적을 찾는 방법:**
 1. **Phase 2** — `trace-capturer`가 직전 AI 산출물(aria-label 누락 컴포넌트)과 redirect 발화를 원형 trace로 적재하고, 직전 산출이 따른 절차로 **active skill을 추론**한다.
 2. **Phase 3** — `failure-diagnostician`가 표적을 외부에서 받지 않고 **레포를 직접 스캔**한다: `plugins/*/skills/*/SKILL.md` 전체를 결함 키워드(`aria-label`·`접근 가능한 이름`·`아이콘 버튼`)로 grep → 후보를 정독·대조해 표적을 확정한다.
-3. **판정** — 표적 = `frontend-harness/skills/a11y/SKILL.md`(skill-body, in-boundary). **배제**: 루트 `CLAUDE.md`(a11y를 구조로만 언급 — 잘못된 altitude), `semantic-html/SKILL.md`(요소 선택만 관할 — confound 격리).
+3. **판정** — 표적 = `<target-plugin>/skills/a11y/SKILL.md`(skill-body, in-boundary). **배제**: 루트 `CLAUDE.md`(a11y를 구조로만 언급 — 잘못된 altitude), 같은 플러그인의 다른 스킬(요소 선택만 관할 — confound 격리).
 4. 이후 Phase 4~7은 위 적용판과 동일(게이트 → 승인 시 적용). **confidence가 낮을 때만** 게이트 전에 "이 파일이 맞나요?" 출처 확인이 선행된다.
 
-> **검증됨:** 이 자동 탐색은 실제로 실행해 확인했다(회차 `verify-autodiscover-01`). 사용자가 파일을 한 개도 지정하지 않은 입력에서, 진단가가 **27개 `SKILL.md`를 스캔해 `a11y/SKILL.md`를 자율 표적으로 확정**하고 무관한 후보(`CLAUDE.md`·`semantic-html`)를 근거와 함께 배제했으며, root cause를 '규칙 부재'가 아니라 '생성 시점 **enforcement 부재**'로 구분했다 — `.claude/_workspace/verify-autodiscover-01/diagnosis.json` 참조.
+> **검증됨:** 이 자동 탐색은 실제로 실행해 확인했다(회차 `verify-autodiscover-01`). 사용자가 파일을 한 개도 지정하지 않은 입력에서, 진단가가 **27개 `SKILL.md`를 스캔해 `a11y/SKILL.md`를 자율 표적으로 확정**하고 무관한 후보(`CLAUDE.md`·요소 선택만 관할하는 인접 스킬)를 근거와 함께 배제했으며, root cause를 '규칙 부재'가 아니라 '생성 시점 **enforcement 부재**'로 구분했다 — `.claude/_workspace/verify-autodiscover-01/diagnosis.json` 참조.
 
 ### 예 2 — R3: 외부 .md 산출물의 생산 주체 고도화
 
@@ -127,9 +127,9 @@ R1의 정의 그대로의 경우다 — "왜 문제였는지 검토 → **루트
 ### 예 3 — R2: 플러그인 자체 심층 개선
 
 **입력:**
-> "frontend-harness 플러그인이 자꾸 엉뚱한 스킬을 트리거해. 플러그인 전체(plugin.json·agents 포함) 들어가서 고쳐줘."
+> "이 플러그인이 자꾸 엉뚱한 스킬을 트리거해. 플러그인 전체(plugin.json·agents 포함) 들어가서 고쳐줘."
 
-**동작:** Phase 1에서 스코프를 `plugin: frontend-harness`로 확정 → 그 플러그인의 **모든 파일이 패치 경계 안** → 진단·patch가 `agents/`·`plugin.json`까지 표적 가능 → 게이트 → 적용 시 회차가 `.claude/plugin-store/frontend-harness/`에 누적된다.
+**동작:** Phase 1에서 스코프를 `plugin: <target-plugin>`로 확정 → 그 플러그인의 **모든 파일이 패치 경계 안** → 진단·patch가 `agents/`·`plugin.json`까지 표적 가능 → 게이트 → 적용 시 회차가 `.claude/plugin-store/<target-plugin>/`에 누적된다.
 
 ### 적용까지 가려면 (Phase 7)
 

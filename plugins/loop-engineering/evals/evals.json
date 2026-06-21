@@ -51,9 +51,9 @@
         "evidence": "SKILL.md 내재화 원칙 '관찰 가능성·승인 — 시작 전 Goal Card 승인 게이트는 항상 ... 요청되지 않은 사이드 에이전트나 중복 실행을 만들지 않는다' + Phase 0 'auto/gated 확정' + Phase 1 step 5 '[Iter n] {PASS|FAIL|BLOCKED}: ... gated 모드면 다음 반복 전 승인'."
       },
       {
-        "text": "[Boundary/domain-and-reciprocal-guard] loop-engineering은 작업 산출물을 검증 루프로 완성하는 데 특화하고, 하네스 진단·개선(meta-harness)·하네스 생성(harness-generator)·기획(product-spec/frontend)·커밋(git-harness)·native /loop·native /goal과 경계를 두며, 자매 플러그인 evals에 reciprocal should-not 가드가 존재해야 한다.",
+        "text": "[Boundary/domain-guard] loop-engineering은 작업 산출물을 검증 루프로 완성하는 데 특화하고, 하네스 진단·개선·하네스 생성·기획문서(PRD)·커밋/PR 리뷰·native /loop·native /goal과 경계를 두며, 인접 도메인 요청에는 발동하지 않도록 should-not 가드를 둔다.",
         "passed": true,
-        "evidence": "SKILL.md description '발동하지 않는다 — ... native /loop ... native /goal ...' + 경계 섹션 + native /goal 관계 블록. plugin.json·marketplace.json description 경계 절. evals/trigger-eval.json should_not(meta·generator·product·/loop·/goal·단발성). 자매 reciprocal 가드: meta-harness/evals/trigger-eval.json·harness-generator/evals/trigger-eval.json·product-spec-harness/evals/trigger-eval.json에 loop-engineering 도메인 should_not 추가됨. _docs/conventions.md reciprocal 갱신 규칙."
+        "evidence": "SKILL.md description '발동하지 않는다 — ... native /loop ... native /goal ...' + 경계 섹션 + native /goal 관계 블록. plugin.json description 경계 절. evals/trigger-eval.json should_not(하네스 진단·개선·하네스 생성·기획·커밋/PR 리뷰·/loop·/goal·단발성)."
       }
     ]
   }

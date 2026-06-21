@@ -1,6 +1,6 @@
 ---
 name: handoff-review
-description: "개발 착수 *전* 상류 산출물의 핸드오프 게이트를 통합 실행하는 오케스트레이터 커맨드. dor-review(기획 DoR)·design-handoff-review(디자인 사각지대)·contract-review(API 계약 완결성/breaking change)·test-coverage-review(인수조건↔테스트 커버리지) 4개 게이트 중, 넘어온 산출물에 해당하는 항목을 사용자에게 선택받아 병렬로 실행하고, '착수 준비도(Readiness)' 통합 리포트와 기획·디자인·BE에 되돌릴 질문 목록을 산출한다. '핸드오프 리뷰', '착수 게이트', '착수 준비됐나', '상류 산출물 검수', 'DoR', '디자인 핸드오프', 'API 계약 검수', '인수조건 커버리지' 등에 반응한다. 완성된 코드 리뷰는 frontend-harness `/review`, PRD·스토리 *작성*은 product-spec-harness `/product-spec`, 커밋/PR 리뷰는 git-harness가 담당하므로 중복하지 않는다."
+description: "개발 착수 *전* 상류 산출물의 핸드오프 게이트를 통합 실행하는 오케스트레이터 커맨드. dor-review(기획 DoR)·design-handoff-review(디자인 사각지대)·contract-review(API 계약 완결성/breaking change)·test-coverage-review(인수조건↔테스트 커버리지) 4개 게이트 중, 넘어온 산출물에 해당하는 항목을 사용자에게 선택받아 병렬로 실행하고, '착수 준비도(Readiness)' 통합 리포트와 기획·디자인·BE에 되돌릴 질문 목록을 산출한다. '핸드오프 리뷰', '착수 게이트', '착수 준비됐나', '상류 산출물 검수', 'DoR', '디자인 핸드오프', 'API 계약 검수', '인수조건 커버리지' 등에 반응한다. 완성된 코드 리뷰, PRD·스토리 *작성*, 커밋/PR 리뷰는 이 커맨드의 범위 밖이므로 중복하지 않는다."
 allowed-tools: Bash, Read, Grep, Glob, Agent
 ---
 
@@ -8,7 +8,7 @@ allowed-tools: Bash, Read, Grep, Glob, Agent
 
 기획→개발, 디자인→개발, BE→FE, QA→개발으로 **넘어오는 상류 산출물**을 코드 착수 *전*에 게이트로 검수한다. AI가 코드 작성을 자동화할수록 결함은 '작성'이 아니라 **상류 스펙 품질과 리뷰**에서 발생한다. 이 커맨드는 해당 산출물에 맞는 게이트를 골라 병렬 실행하고, **착수해도 안전한가(Readiness)** 를 통합 판정한다.
 
-> **경계.** 이 커맨드는 *상류 산출물*을 검수한다. 완성된 **코드** 리뷰는 `frontend-harness`의 `/review`(품질·보안·성능·정합성)가, PRD·사용자 스토리 *작성*은 `product-spec-harness`의 `/product-spec`이, 커밋/PR 리뷰는 `git-harness`가 담당한다. 중복 실행하지 않는다.
+> **경계.** 이 커맨드는 *상류 산출물*을 검수한다. 완성된 **코드** 리뷰(품질·보안·성능·정합성), PRD·사용자 스토리 *작성*, 커밋/PR 리뷰는 이 커맨드의 범위 밖이며 별도 워크플로로 처리한다. 중복 실행하지 않는다.
 
 ## 4개 게이트 한눈에
 
@@ -56,7 +56,7 @@ git ls-files 2>/dev/null | grep -E '\.(feature|story)$|\.(test|spec)\.(t|j)sx?$|
 - 자동 탐지 결과상 해당 산출물이 없으면 그 게이트는 회색 처리하고 사유를 안내
 ```
 
-선택 해석 규칙은 `frontend-harness`의 `/review`와 동일하다(번호 목록/전체/단일, 빈 선택·범위 밖은 재안내, 선택 결과를 한 번 더 확인).
+선택 해석 규칙(번호 목록/전체/단일, 빈 선택·범위 밖은 재안내, 선택 결과를 한 번 더 확인)을 따른다.
 
 3. **각 게이트의 입력 모드 확인.** 선택된 게이트별로 그 스킬의 Phase 0이 요구하는 모드(단일/문서전체/변경 기반 등)와 입력(파일 경로·티켓·Figma URL·기준 계약 등)을 한 번에 모아 확인한다.
 
@@ -116,7 +116,7 @@ git ls-files 2>/dev/null | grep -E '\.(feature|story)$|\.(test|spec)\.(t|j)sx?$|
 
 ## 다음 단계
 - [ ] 되돌릴 질문을 각 팀(기획/디자인/BE/QA)에 전달, 회신 후 해당 게이트 재실행
-- [ ] 보완 완료 후: 구현은 `frontend-harness`(develop→`/review`→verify), 커밋은 `git-harness`
+- [ ] 보완 완료 후: 구현·코드 리뷰·커밋은 이 커맨드의 범위 밖이므로 별도 구현/리뷰/커밋 워크플로로 인계
 ```
 
 ## 사용자 소통
@@ -132,4 +132,4 @@ git ls-files 2>/dev/null | grep -E '\.(feature|story)$|\.(test|spec)\.(t|j)sx?$|
 - ❌ 한 게이트 결과를 다른 게이트의 입력으로 넣기 — 게이트는 독립 평가
 - ❌ Phase 0 선택 없이 4개 모두 spawn
 - ❌ 게이트 스킬이 산출물(PRD/디자인/계약)을 직접 수정 — 읽기 위주, 수정은 해당 팀
-- ❌ 코드 대상 리뷰를 이 커맨드에서 수행 — `frontend-harness /review`로 인계
+- ❌ 코드 대상 리뷰를 이 커맨드에서 수행 — 별도 코드 리뷰 워크플로로 인계

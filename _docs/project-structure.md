@@ -31,6 +31,7 @@ plugins/
       lighthouse-performance/                            # Lighthouse 기반 Core Web Vitals 측정
       qa-inspector/                                      # 모듈 간 경계면 불일치 검증 (+ references/)
       security-audit/                                    # OWASP Top 10 보안 감사 (+ references/)
+      figma-extract/                                     # Figma 링크→디자인 컨텍스트 추출/파일화 (metadata 노드맵 우선→대상 노드 상세 추출→.claude/design/ json·spec·png 산출, 부모엔 경로+요약만; 코드 생성 안 함, 단독 동작) (+ references/) 
   harness-generator/                                     # [독립 플러그인] 도메인 무관 하네스 수동·인터랙티브 생성 메타 플러그인
     .claude-plugin/
       plugin.json
@@ -104,7 +105,7 @@ plugins/
           loop-engineering-research.md                   #   설계 근거 deep-research dossier (출처·인용·신뢰도·caveat)
     evals/
       evals.json                                         # 수용 평가 (design-conformance dry-run — 핵심 불변식 file:section 인용 채점)
-      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 10 / should_not 13, 인접 하네스(meta/harness-generator/product-spec) reciprocal 가드)
+      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 10 / should_not 15, 인접 하네스(meta/harness-generator/product-spec) reciprocal 가드)
   review-harness/                                        # [독립 플러그인] 코드 착수 *전* 상류 산출물(기획·디자인·API 계약·QA 인수조건) 핸드오프 게이트 검수. 경계: 완성 코드 리뷰(frontend-harness)·PRD/스토리 작성(product-spec)·커밋/PR(git-harness)·하네스 진단(meta-harness) 제외
     .claude-plugin/
       plugin.json
@@ -118,5 +119,63 @@ plugins/
       contract-review/                                   # API 계약 게이트 (엔드포인트 완결성·breaking-change diff·소비자(CDC) 커버리지·코드↔spec drift)
       test-coverage-review/                              # 인수조건↔테스트 커버리지 (테스트가능성·AC↔테스트 매핑·커버리지 채점·누락 시나리오 발굴)
     evals/
-      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 14 / should_not 11, 자매 하네스(frontend/product-spec/git/meta) reciprocal 가드)
+      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 14 / should_not 13, 자매 하네스(frontend/product-spec/git/meta) reciprocal 가드)
+  ops-harness/                                           # [독립 플러그인] 프로덕션 운영·인시던트 대응·관측성 하네스. AIOpsLab 4단계(탐지→국소화→RCA→완화). 경계: 하네스 진단(meta)·검증루프(loop)·코드리뷰(frontend/git)·상류 핸드오프(review)·PRD(product-spec) 제외
+    .claude-plugin/
+      plugin.json
+    CLAUDE.md                                            # 하네스 포인터 + 4단계(L1–L4) 요약 + 변경 이력
+    README.md                                            # 사용자용 개요·사용법·도구 경계
+    agents/                                              # 모두 model: "opus"
+      incident-detector.md                               # L1 Detection — 이상 탐지·트리아지(RED/USE)
+      incident-localizer.md                              # L2 Localization — traces 우선 범인 후보 국소화
+      root-cause-analyst.md                              # L3 RCA — 인과사슬 확정(anti-anchoring 가드 + Straight-Shot 폴백)
+      mitigation-planner.md                              # L4 Mitigation — 완화안 + 위험/롤백/blast radius + DQ 채점(사람 집행)
+    skills/
+      ops-harness/                                       # 진입점 오케스트레이터 (Phase 0 텔레메트리 확보 → L1→L4 게이트)
+        SKILL.md
+        references/
+          ops-harness-principles.md                      #   4단계·역할분리·DQ·RCA 가드레일·anti-pattern
+          incident-response-research.md                  #   설계 근거 dossier (출처·등급·인용·CAVEAT)
+    evals/
+      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 11 / should_not 11, 인접 하네스 reciprocal 가드)
+  backend-harness/                                       # [독립 플러그인] 백엔드/API 실행 기반 검증 구현 하네스 + test-generator 스킬. 경계: 계약 검수(review-harness/contract-review)·FE(frontend)·PRD(product-spec)·커밋(git)·하네스 진단(meta)·자율 반복(loop) 제외
+    .claude-plugin/
+      plugin.json
+    CLAUDE.md                                            # 하네스 포인터 + 5단계 요약 + 변경 이력
+    README.md                                            # 사용자용 개요·사용법·도구 경계
+    agents/                                              # 모두 model: "opus"
+      be-architect.md                                    # 설계 — 서비스 경계·API 계약·데이터 모델/마이그레이션 + 검증 후크·환경 요구사항
+      env-provisioner.md                                 # 환경 — 빌드·실행·테스트 가능 상태 확보(최대 병목, 독립 1급 단계)
+      be-implementer.md                                  # 구현 — API·서비스 로직·DB 스키마/마이그레이션(계약 준수)
+      be-verifier.md                                     # 검증 — 실행 기반 PASS/FAIL·빌드/테스트 재실행·고커버리지·reward-hacking 가드
+    skills/
+      backend-harness/                                   # 진입점 오케스트레이터 (Phase 0~4 + 승인 게이트)
+        SKILL.md
+        references/
+          backend-harness-principles.md                  #   6원칙·anti-pattern·env 독립 근거·인접 하네스 경계
+          backend-harness-research.md                    #   설계 근거 dossier (출처·등급·CAVEAT)
+      test-generator/                                    # 실행기반 테스트 생성+수리 루프 스킬(model-invocable)
+        SKILL.md
+        references/
+          test-generator-guide.md                        #   공진화 루프·5 경험적 수리 템플릿·커버리지 게이트·judge 캘리브레이션
+    evals/
+      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 11 / should_not 11, 인접 하네스 reciprocal 가드)
+  cicd-harness/                                          # [독립 플러그인] 코드 커밋→프로덕션 전달 파이프라인 CI/CD·DevOps·릴리스·IaC 하네스. 경계: 배포 이후 인시던트(ops)·BE 구현(backend)·빌드그린 반복(loop)·커밋/PR(git)·계약검수(review) 제외
+    .claude-plugin/
+      plugin.json
+    CLAUDE.md                                            # 하네스 포인터 + 4단계 요약 + 변경 이력
+    README.md                                            # 사용자용 개요·사용법·도구 경계
+    agents/                                              # 모두 model: "opus"
+      pipeline-architect.md                              # Phase 1 — CI 파이프라인·릴리스 전략 설계/검수(제안만)
+      iac-reviewer.md                                    # Phase 2 — IaC 검증(terraform plan 실행검증 + OPA policy-as-code 결정론적 게이트)
+      release-gatekeeper.md                              # Phase 3 — 릴리스·배포 결정(flaky·rollback·feature-flag·canary, trust-tier 단계적 자율)
+      delivery-verifier.md                               # Phase 4 — 전달 안정성 가드(DORA 통제: 테스트 자동화·작은 배치, defense-in-depth 승인)
+    skills/
+      cicd-harness/                                      # 진입점 오케스트레이터 (Phase 0 범위·trust-tier → P1→P4 게이트)
+        SKILL.md
+        references/
+          cicd-harness-principles.md                     #   4단계·defense-in-depth·policy-as-code·trust-tier·DORA·anti-pattern
+          cicd-harness-research.md                       #   설계 근거 dossier (출처·등급·CAVEAT·DORA 반증 nuance)
+    evals/
+      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 11 / should_not 13, 인접 하네스 reciprocal 가드)
 ```

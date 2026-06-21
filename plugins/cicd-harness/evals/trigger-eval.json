@@ -1,0 +1,98 @@
+[
+  {
+    "query": "우리 CI 파이프라인 build/test 게이트 설계하고 기존 워크플로도 검수해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "배포 파이프라인이랑 릴리스 전략(dev→stg→prod 승격 방식) 구성해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "이 Terraform 변경 terraform plan이랑 OPA 정책으로 결정론적으로 검증해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "IaC 변경이 정책 위반 없는지 policy-as-code로 게이트하고 위험한 destroy 있는지 봐줘",
+    "should_trigger": true
+  },
+  {
+    "query": "카나리 언제 다음 단계로 승격할지, 악화하면 롤백할지 위험도 따라 게이트 잡아줘",
+    "should_trigger": true
+  },
+  {
+    "query": "feature-flag 점진 노출 비율이랑 flaky 테스트 의사결정을 위험도별로 처리해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "AI로 변경량이 느는데 전달 안정성 통제(강한 테스트 자동화·작은 배치) 갖춰졌는지 점검해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "build/test 게이트로 머지를 실제로 막는 CI 파이프라인 만들어줘. 자기보고 말고 실제 통과로",
+    "should_trigger": true
+  },
+  {
+    "query": "코드 커밋부터 프로덕션까지 전달 파이프라인을 게이트 사슬로 오케스트레이션해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "릴리스 배포 결정을 에이전트가 직접 apply 말고 사람 사전 승인 받게 제안 형태로만 만들어줘",
+    "should_trigger": true
+  },
+  {
+    "query": "blue-green 배포 게이트랑 롤백 절차·blast radius까지 트러스트 티어로 정리해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "프로덕션 장애 났어. 어디가 문제인지 텔레메트리로 진단하고 RCA·완화까지 운영 대응해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "배포 이후 에러율 스파이크랑 SLO 위반 인시던트 탐지·국소화·원인분석해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "백엔드 API랑 DB 스키마를 설계부터 실행 검증까지 처음부터 구현해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 빌드 그린 될 때까지 검증 가능한 목표 정하고 자율 반복으로 끝까지 완성해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 테스트 통과할 때까지 실행→검증→실패시 원인 진단→다시 고치기 루프로 반복해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "변경사항 커밋 메시지 작성하고 다각도로 PR 리뷰해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "완성된 API 계약(spec) 검수하고 breaking change 있는지 핸드오프 게이트로 점검해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "제품 기획문서(PRD)랑 사용자 스토리 작성해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 프론트엔드 컴포넌트 화면 구현하고 접근성·시맨틱 HTML 점검해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 기존 하네스(루트 CLAUDE.md/SKILL.md/agents) 결함을 실행 trace로 진단하고 고도화해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 도메인용 하네스(에이전트팀+오케스트레이터) 새로 만들어줘",
+    "should_trigger": false
+  },
+  {
+    "query": "5분마다 배포 상태 폴링해서 반복 실행해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "settings.json에 terraform CLI 명령 권한 추가해줘",
+    "should_trigger": false
+  }
+]

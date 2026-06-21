@@ -96,11 +96,19 @@
     "should_trigger": false
   },
   {
-    "query": "이미 구현된 코드의 API 응답↔훅 타입 경계면 불일치를 qa-inspector로 검증해줘",
+    "query": "이미 구현된 코드의 API 응답↔훅 타입 경계면 불일치를 검증해줘",
     "should_trigger": false
   },
   {
     "query": "이 실제 OpenAPI 엔드포인트를 호출해서 응답이 스펙대로 오는지 실행해서 테스트해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "백엔드 API랑 DB 마이그레이션을 실제로 설계·구현해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 Figma 디자인을 실제 프론트엔드 코드로 생성·구현해줘",
     "should_trigger": false
   }
 ]

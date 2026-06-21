@@ -1,0 +1,24 @@
+{
+  "name": "cicd-harness",
+  "version": "0.1.0",
+  "description": "코드 커밋부터 프로덕션까지의 전달(delivery) 파이프라인을 오케스트레이션하는 CI/CD·DevOps·릴리스·IaC 멀티 에이전트 하네스. CI 파이프라인(build/test 게이트) 설계·검수 → IaC·환경(terraform plan + OPA policy-as-code 결정론적 검증) → 릴리스·배포 결정(canary 승격·rollback·feature-flag·flaky 해석, trust-tier 단계적 자율) → 전달 안정성 가드(DORA 통제: 강한 테스트 자동화·작은 배치)의 4단계를 매 단계 승인 게이트로 묶는다. 핵심 안전장치 셋: ① defense-in-depth — 기본 읽기 전용, 어떤 쓰기/apply/deploy도 사람 사전 승인(safe-outputs) 후 *제안→사람 집행*, 에이전트가 인프라를 직접 변경하거나 배포를 자동 실행하지 않는다; ② policy-as-code 결정론적 게이트 — IaC는 terraform plan(실행 검증) + OPA(정책 강제)처럼 결정론적 검증을 통과해야 하고 LLM 판단만으로 통과시키지 않는다; ③ trust-tier 단계적 자율 — 의사결정 위험도별로 자율 수준을 단계화(낮은 위험=제안+자동 게이트, 높은 위험=사람 필수). 4개 전문 에이전트(pipeline-architect / iac-reviewer / release-gatekeeper / delivery-verifier)가 역할 분리로 협업한다. 범위 밖(이 하네스가 다루지 않음): 배포 *이후* 의 런타임 인시던트 탐지·RCA·완화(이 하네스는 배포 *까지*/배포 게이트), 백엔드/API 코드 *구현*, 검증 가능한 목표를 통과까지 자율 반복(빌드 그린까지 반복), 커밋 메시지·PR 리뷰, 완성된 API 계약 검수, 기획문서(PRD) 작성, 프론트엔드 화면·컴포넌트, 하네스 자체 진단, 새 하네스 생성, 시간 간격 폴링 재실행. cicd-harness는 *코드 커밋→프로덕션*의 전달 파이프라인(CI/CD·릴리스·IaC·배포 게이트)에 특화한다.",
+  "author": {
+    "name": "seungah.hong",
+    "email": "ssingah1030@gmail.com"
+  },
+  "tags": [
+    "claude-code",
+    "plugin",
+    "cicd-harness",
+    "cicd",
+    "devops",
+    "release-engineering",
+    "infrastructure-as-code",
+    "policy-as-code",
+    "defense-in-depth",
+    "trust-tier",
+    "dora",
+    "multi-agent",
+    "orchestration"
+  ]
+}

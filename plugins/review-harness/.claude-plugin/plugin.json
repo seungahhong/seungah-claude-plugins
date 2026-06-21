@@ -1,7 +1,7 @@
 {
   "name": "review-harness",
   "version": "0.1.0",
-  "description": "개발 착수 *전* 상류 산출물(기획·디자인·API 계약·QA 인수조건)을 핸드오프 시점에 '착수 게이트'로 검수하는 도메인 무관 멀티 에이전트 하네스. AI가 코드 작성을 자동화할수록 병목은 '작성'이 아니라 상류 스펙 품질과 리뷰로 이동한다는 전제 아래, 4개 게이트 스킬(dor-review=기획 DoR·design-handoff-review=디자인 사각지대·contract-review=API 계약 완결성/breaking change·test-coverage-review=인수조건↔테스트 커버리지)로 모호성·누락·사각지대·호환성 결함을 코드 착수 전에 잡아 다운스트림 재작업을 줄인다. 모든 정량 수치는 검증된 2025+ 근거만 등급(GOLD/SILVER/BRONZE)과 함께 인용하고 '개선 N%'를 약속하지 않는다(baseline-before-target). 경계: 완성된 코드 대상 리뷰(frontend-harness /review·qa-inspector·security-audit), PRD·사용자 스토리 *작성*(product-spec-harness), 커밋/PR 리뷰(git-harness), 하네스 자체 진단·개선(meta-harness)은 범위가 아니며, 본 플러그인은 상류 산출물의 *준비도/완결성 게이트 검수*에 특화한다.",
+  "description": "개발 착수 *전* 상류 산출물(기획·디자인·API 계약·QA 인수조건)을 핸드오프 시점에 '착수 게이트'로 검수하는 도메인 무관 멀티 에이전트 하네스. AI가 코드 작성을 자동화할수록 병목은 '작성'이 아니라 상류 스펙 품질과 리뷰로 이동한다는 전제 아래, 4개 게이트 스킬(dor-review=기획 DoR·design-handoff-review=디자인 사각지대·contract-review=API 계약 완결성/breaking change·test-coverage-review=인수조건↔테스트 커버리지)로 모호성·누락·사각지대·호환성 결함을 코드 착수 전에 잡아 다운스트림 재작업을 줄인다. 모든 정량 수치는 검증된 2025+ 근거만 등급(GOLD/SILVER/BRONZE)과 함께 인용하고 '개선 N%'를 약속하지 않는다(baseline-before-target). 경계: 완성된 코드 대상 리뷰, PRD·사용자 스토리 *작성*, 커밋/PR 리뷰, 하네스 자체 진단·개선은 범위가 아니며, 본 플러그인은 상류 산출물의 *준비도/완결성 게이트 검수*에 특화한다.",
   "author": {
     "name": "seungah.hong",
     "email": "ssingah1030@gmail.com"

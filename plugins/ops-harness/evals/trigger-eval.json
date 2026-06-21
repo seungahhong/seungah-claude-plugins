@@ -1,0 +1,94 @@
+[
+  {
+    "query": "프로덕션에서 5xx 에러율 스파이크 났는데 어디가 문제인지부터 봐주고 근본 원인까지 분석해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "이 SLO 위반 알람 트리아지하고 traces·logs·metrics로 범인 서비스 localize한 다음 완화안 제안해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "온콜인데 레이턴시 p99가 튀었어. 어느 서비스가 범인인지 좁히고 mitigation 플랜 줘",
+    "should_trigger": true
+  },
+  {
+    "query": "장애 났어. 탐지→국소화→근본원인→완화 순서로 런북 따라 끌고 가줘",
+    "should_trigger": true
+  },
+  {
+    "query": "인시던트 RCA 하고 롤백/완화 조치의 위험이랑 blast radius까지 평가해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "결제 서비스가 느려졌다는데 분산 trace 보고 어느 hop에서 지연이 발원하는지 찾아줘",
+    "should_trigger": true
+  },
+  {
+    "query": "프로메테우스 지표랑 로그 보고 이상 탐지해서 영향 범위랑 심각도 정리해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "postmortem 쓰려는데 이번 인시던트 증상→원인 인과사슬이랑 완화 권고 정리해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "에러 폭증하는데 무슨 서비스가 원인인지 경쟁 가설 세워서 RCA 하고 첫 가설에 고착되지 말고 분석해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "운영 중인 시스템에 이상 징후 있는데 텔레메트리로 진단하고 즉시 완화랑 근본 수정 분리해서 제안해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "이 단순 케이스는 단일 배포 직후 한 서비스만 100% 에러야. 다단계 말고 바로 원인 짚어줘",
+    "should_trigger": true
+  },
+  {
+    "query": "이 기존 하네스(루트 CLAUDE.md/SKILL.md/agents) 결함을 실행 trace로 진단하고 고도화해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 실수 반복 안 하게 지금 쓰던 스킬/CLAUDE.md 본문을 trace로 진단해 고도화해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 빌드 그린 될 때까지 검증 가능한 목표 정하고 자율 반복으로 끝까지 완성해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 테스트 통과할 때까지 실행→검증→실패시 원인 진단→다시 고치기 루프로 반복해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 PR 코드 리뷰하고 정적으로 버그 찾아줘",
+    "should_trigger": false
+  },
+  {
+    "query": "변경사항 커밋 메시지 작성하고 다각도로 PR 리뷰해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "코드 착수 전에 기획 DoR랑 디자인 핸드오프, API 계약, QA 인수조건 핸드오프 게이트 검수해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "제품 기획문서(PRD)랑 사용자 스토리 작성해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 도메인용 하네스(에이전트팀+오케스트레이터) 새로 만들어줘",
+    "should_trigger": false
+  },
+  {
+    "query": "5분마다 배포 상태 폴링해서 반복 실행해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "settings.json에 prometheus CLI 명령 권한 추가해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "배포 파이프라인·릴리스 게이트·카나리 승격 전략을 설계해줘",
+    "should_trigger": false
+  }
+]

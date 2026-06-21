@@ -89,7 +89,7 @@ description(트리거 표면)을 건드리는 patch는 **검증 없이 흔들면
 ```json
 {
   "diagnosis_id": "diag-003",
-  "target_path": "plugins/frontend-harness/skills/a11y/SKILL.md",
+  "target_path": "plugins/<target-plugin>/skills/a11y/SKILL.md",
   "change_kind": "additive | destructive | compose | transfer | scope-escalation | blocked | structural-redesign-required",
   "summary": "should-not-trigger에 '단발 컴포넌트 작성' 케이스 1건 추가 (비파괴)",
   "rationale": "step 12에서 a11y 스킬이 신규 컴포넌트 작성 요청에 오발화. 기존 트리거 문구를 바꾸면 정상 케이스가 깨지므로(trace step 7~9), should-not-trigger 추가만으로 결함 모드를 닫는다. 특정 입력이 아닌 '작성 의도' 일반 패턴을 막으므로 hold-out에도 일반화된다.",
@@ -118,8 +118,8 @@ description(트리거 표면)을 건드리는 patch는 **검증 없이 흔들면
 # diag-003 — a11y/SKILL.md should-not-trigger 추가 (additive)
 # change_kind: additive | non_regression: true
 
---- a/plugins/frontend-harness/skills/a11y/SKILL.md
-+++ b/plugins/frontend-harness/skills/a11y/SKILL.md
+--- a/plugins/<target-plugin>/skills/a11y/SKILL.md
++++ b/plugins/<target-plugin>/skills/a11y/SKILL.md
 @@ -3,6 +3,7 @@
  should-not-trigger:
    - "이 함수 리팩터링해줘"

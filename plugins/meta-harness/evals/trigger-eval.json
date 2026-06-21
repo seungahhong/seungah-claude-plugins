@@ -86,5 +86,9 @@
   {
     "query": "테스트 그린 될 때까지 실행-검증-수정 루프 돌려줘",
     "should_trigger": false
+  },
+  {
+    "query": "프로덕션 인시던트 원인(RCA) 분석하고 완화 방안 만들어줘",
+    "should_trigger": false
   }
 ]

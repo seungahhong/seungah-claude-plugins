@@ -51,7 +51,7 @@ plugins/{plugin}/
 **확인 항목:**
 - `agents/`, `skills/`, `commands/` 디렉토리 존재 및 목록
 - 루트 `CLAUDE.md`의 기존 하네스 포인터
-- 동일 도메인 키워드를 트리거로 쓰는 기존 스킬 — 마켓플레이스 내 **모든 플러그인의 SKILL/command description을 grep**해 새 하네스의 트리거 키워드와 교집합을 표로 보고한다(예: '리뷰/PR/검증' 키워드는 git-harness·frontend-harness와 겹친다). 교집합이 있으면 그 충돌 스킬명을 Phase 6-4 near-miss 입력으로 넘긴다.
+- 동일 도메인 키워드를 트리거로 쓰는 기존 스킬 — 마켓플레이스/작업 환경에 설치된 **모든 SKILL/command description을 grep**해 새 하네스의 트리거 키워드와 교집합을 표로 보고한다(예: '리뷰/PR/검증' 같은 흔한 키워드는 이미 설치된 다른 스킬과 겹치기 쉽다). 교집합이 있으면 그 충돌 스킬명을 Phase 6-4 near-miss 입력으로 넘긴다.
 
 **분기:**
 - 신규 도메인 → Phase 1로 진행

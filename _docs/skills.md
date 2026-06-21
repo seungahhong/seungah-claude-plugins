@@ -16,6 +16,7 @@
 | Lighthouse Performance | `/lighthouse-performance` | Lighthouse CLI 기반 Core Web Vitals(LCP, CLS, INP, TTFB, FCP) 측정 및 개선 방안 |
 | QA Inspector | `/qa-inspector` | API 응답↔훅 타입, 라우팅, 상태 전이, 데이터 흐름 교차 비교로 경계면 불일치 탐지 |
 | Security Audit | `/security-audit` | OWASP Top 10 코드 분석, npm audit 의존성 스캔, 보안 헤더·시크릿 탐지 |
+| Figma-Extract | `/figma-extract` | Figma 링크→디자인 컨텍스트 추출/파일화 (metadata 노드맵 우선→대상 노드만 get_design_context/variable_defs/screenshot 상세 추출→`.claude/design/`에 json·spec·png 산출, 부모엔 경로+요약만 반환해 토큰 폭주 차단; 코드 생성 안 함, 단독 동작) |
 
 ### Plugin: `harness-generator`
 
@@ -85,3 +86,49 @@
 | Test Coverage Review | `/test-coverage-review` | QA 상류(인수조건↔테스트) 커버리지 — 인수조건 테스트가능성(Gherkin 변환) · AC↔테스트 매핑(스펙없는 테스트/검증없는 스펙) · 커버리지 채점(LLM-as-judge) · 누락 음성/엣지 시나리오 발굴 |
 
 > `review-harness`는 코드 착수 *전* **상류 산출물(기획·디자인·API 계약·QA 인수조건)** 을 핸드오프 시점에 '착수 게이트'로 검수하는 데 특화한 도메인 무관 하네스다. 4개 게이트 스킬은 모두 `disable-model-invocation: true`(명시 호출 또는 `handoff-review`가 spawn)·`allowed-tools`에 Edit/Write 없음(읽기 위주, 산출물 직접 수정 금지)이다. `handoff-review` 오케스트레이터는 선택된 게이트를 한 메시지에서 병렬 spawn한다(`frontend-harness`의 `/review` 패턴과 동일). **내재화 원칙** — Shift-Left(상류 게이트) · Honesty Guardrail(검증된 2025+ 근거만 등급과 함께 인용, '개선 N%' 약속 금지, baseline-before-target, 반증된 신화 수치 인용 금지) · LLM 자동탐지는 사람 검토를 보조(이상적 템플릿 과대탐지 경향 인지). **경계** — 완성된 코드 리뷰(`frontend-harness` `/review`·qa-inspector·security-audit) · PRD·스토리 *작성*(`product-spec-harness`) · 커밋/PR 리뷰(`git-harness`) · 하네스 자체 진단(`meta-harness`)은 범위가 아니며, 트리거 충돌 방지를 위해 description·`evals/trigger-eval.json`에 명시한다.
+
+### Plugin: `ops-harness`
+
+| Skill | Command | Description |
+|-------|---------|-------------|
+| Ops Harness | `/ops-harness` | 프로덕션 운영·인시던트 대응 진입 오케스트레이터. traces+logs+metrics 텔레메트리 기반 인시던트 전 생애주기를 AIOpsLab 4단계(L1 Detection → L2 Localization → L3 RCA → L4 Mitigation+위험평가)로 분해. 인프라는 중재 읽기 액션(get_logs/get_metrics/get_traces/exec_shell)으로만 관측·완화는 사람 집행, 매 Phase 승인 게이트·1줄 보고. 단순 케이스는 Straight-Shot 폴백 |
+
+4개 에이전트 구성 (모두 `model: "opus"`):
+
+- **L1 Detection** — `incident-detector`. 텔레메트리에서 이상을 탐지·트리아지(RED/USE)하고 증상·영향·심각도·시작시각을 확정(범인 지목은 다음 단계).
+- **L2 Localization** — `incident-localizer`. traces 우선으로 범인 후보를 국소화하고 metrics/logs 증거로 순위화.
+- **L3 RCA** — `root-cause-analyst`. 증상→원인 인과사슬을 확정. **RCA 가드레일**(anchoring·정체·임의 증거선택·신념 미갱신 경계, 경쟁 가설·반증 우선) + 단순/작은 모델엔 **Straight-Shot 폴백**.
+- **L4 Mitigation** — `mitigation-planner`. 완화안 + 위험/롤백/blast radius 평가 + **DQ=0.40·타당성+0.30·구체성+0.30·정확성** 자가 채점. 사람 집행 대기(직접 변경 금지).
+
+> `ops-harness`는 **배포 이후 런타임** 인시던트(탐지·국소화·RCA·완화)에 특화한 도메인 무관 하네스다. 4개 에이전트를 서브에이전트로 spawn한다(모두 `model: "opus"`; L1→L4 순차). **내재화 원칙** — 단계 분해(직전 증거만 입력) · 진단(L1–L3)↔조치/위험(L4) 역할 분리 · 중재 읽기·휴먼-인-더-루프 · DQ 품질 게이트 · RCA anti-anchoring 가드 · Honesty Guardrail(역할분리 100%/1.7%·RCA 15%p/45%는 한계 동반 인용, 일반화·인과 단정 금지). **경계** — 하네스 자체 진단(`meta-harness`)·검증 루프 완성(`loop-engineering`)·완성 코드 리뷰(`frontend-harness`/`git-harness`)·상류 핸드오프 게이트(`review-harness`)·PRD 작성(`product-spec-harness`)은 범위가 아니다. 근거: AIOpsLab(arXiv:2501.06706)[GOLD/SILVER] · 역할분리 오케스트레이션(arXiv:2511.15755)[SILVER] · RCA 추론 실패모드(arXiv:2601.22208)[SILVER].
+
+### Plugin: `backend-harness`
+
+| Skill | Command | Description |
+|-------|---------|-------------|
+| Backend Harness | `/backend-harness` | 백엔드/API **실행 기반 검증** 구현 진입 오케스트레이터. 범위/계약 → 설계 → 환경(1급) → 구현 → 실행 검증 5단계. 통과는 자기보고가 아니라 빌드·테스트의 실제 통과로만 인정(reward-hacking 가드), 매 Phase 승인 게이트 |
+| Test Generator | `/test-generator` | 기존 코드 실행기반 테스트를 generate→compile→execute→repair 공진화 루프로 생성·수리 (5 경험적 수리 템플릿·커버리지 게이트·judge 캘리브레이션). FE TDD(test-first)와 구분(test-after) |
+
+4개 에이전트 구성 (모두 `model: "opus"`):
+
+- **설계** — `be-architect`. 서비스 경계·API 계약·데이터 모델/마이그레이션 + 검증 후크·환경 요구사항.
+- **환경(1급)** — `env-provisioner`. 빌드·실행·테스트 가능 상태를 **독립 Phase**로 확보(환경 구성이 저장소 단위 작업 최대 병목 — arXiv:2512.06915).
+- **구현** — `be-implementer`. API·서비스 로직·DB 스키마/마이그레이션을 계약 준수로 구현(자기보고≠통과).
+- **검증(핵심)** — `be-verifier`. 빌드·마이그레이션·테스트를 직접 재실행해 PASS/FAIL, 고커버리지 요구, reward-hacking(테스트 무력화/우회) 적대적 점검.
+
+> `backend-harness`는 **백엔드/API 구현을 실행 기반 검증으로 완성**하는 데 특화한 도메인 무관 하네스다. 4개 에이전트를 서브에이전트로 spawn한다(모두 `model: "opus"`; Phase 순차). **내재화 원칙** — 실행 기반 검증(증거 없는 PASS 금지) · 환경 우선(1급 시민) · generator/checker 분리 · reward-hacking 가드 · 계약 준수 · 승인 게이트 · Honesty Guardrail(TestART 수치는 2024 데이터·효과크기 단정 금지). **경계** — API 계약 *검수*(`review-harness/contract-review`)·FE 화면 구현(`frontend-harness`)·PRD 작성(`product-spec-harness`)·커밋/PR(`git-harness`)·하네스 진단(`meta-harness`)·단발 자율 반복(`loop-engineering`)은 범위가 아니며, `test-generator`는 FE Red-Green-Refactor(`frontend-harness/tdd`)와 구분된다. 근거: 저장소 단위 작업 난도·환경 병목·자기보고 불일치(arXiv:2510.04852·2505.09569·2505.07473·2512.06915)[GOLD] · TestART(arXiv:2408.03095, ACM TOSEM 2025)[SILVER].
+
+### Plugin: `cicd-harness`
+
+| Skill | Command | Description |
+|-------|---------|-------------|
+| CICD Harness | `/cicd-harness` | 코드 커밋→프로덕션 전달 파이프라인 진입 오케스트레이터. CI 파이프라인(build/test 게이트) → IaC(terraform plan + OPA 결정론적 검증) → 릴리스·배포 결정(canary·rollback·feature-flag·flaky, trust-tier 단계적 자율) → 전달 안정성 가드(DORA 통제) 4단계. defense-in-depth(읽기전용·사람 사전승인), 매 Phase 승인 게이트 |
+
+4개 에이전트 구성 (모두 `model: "opus"`):
+
+- **Phase 1 CI 파이프라인** — `pipeline-architect`. build/test 게이트·릴리스 전략 설계/검수. YAML 변경은 *제안* diff만(직접 적용·커밋·푸시 금지).
+- **Phase 2 IaC·환경** — `iac-reviewer`. IaC 변경을 **terraform plan(실행 검증) + OPA(policy-as-code)** 결정론적 게이트로 통과/차단. LLM 판단을 게이트로 두지 않음. apply는 사람 집행.
+- **Phase 3 릴리스·배포 결정** — `release-gatekeeper`. flaky·rollback·feature-flag·canary 승격을 **trust-tier 단계적 자율**(낮은 위험=제안+자동, 높은 위험=사람 필수)로 결정. 배포 자동 실행 안 함.
+- **Phase 4 전달 안정성 가드** — `delivery-verifier`. **DORA 통제**(강한 테스트 자동화·작은 배치) 점검 + defense-in-depth 사람 사전 승인 목록 정리.
+
+> `cicd-harness`는 **코드 커밋→프로덕션의 전달 파이프라인(CI/CD·릴리스·IaC·배포 게이트)**에 특화한 도메인 무관 하네스다. 4개 에이전트를 서브에이전트로 spawn한다(모두 `model: "opus"`; Phase 순차, 없는 단계는 Phase 0에서 건너뜀). **내재화 원칙** — defense-in-depth(읽기전용·쓰기/apply/deploy는 사람 사전 승인 후 제안→집행) · policy-as-code 결정론적 게이트(terraform plan + OPA) · trust-tier 단계적 자율 · DORA 통제 프레이밍 · 역할 분리 · Honesty Guardrail. **DORA 정직성(필수)** — AI-불안정 통제책으로 사실 인용 가능한 것은 **small batches + robust test automation 두 가지뿐**이며, '버전관리·느슨한 결합도 통제요소'·'긴밀결합 팀 무이득'은 반증된 신화로만 표기한다. **경계** — 배포 *이후* 런타임 인시던트(`ops-harness`)·BE 코드 *구현*(`backend-harness`)·빌드 그린까지 자율 반복(`loop-engineering`)·커밋/PR(`git-harness`)·계약 검수(`review-harness/contract-review`)·PRD(`product-spec-harness`)·FE(`frontend-harness`)·하네스 진단(`meta-harness`)은 범위가 아니다. 근거: DORA 2025·DORA AI Capabilities Model[GOLD] · AI-Augmented CI/CD(arXiv:2508.11867)·GitHub Agentic Workflows·MACOG(arXiv:2510.03902)[SILVER].

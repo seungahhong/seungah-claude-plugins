@@ -90,5 +90,17 @@
   {
     "query": "그냥 이 질문에 답만 해줘. 작업 반복 말고",
     "should_trigger": false
+  },
+  {
+    "query": "프로덕션 장애 원인 진단하고 완화 조치까지 운영 대응해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "백엔드 API랑 DB 스키마를 처음부터 설계·구현해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "CI/CD 파이프라인이랑 배포 자동화를 구성·게이트로 묶어줘",
+    "should_trigger": false
   }
 ]

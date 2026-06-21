@@ -12,9 +12,9 @@ commands/                      # 상위 워크플로우 커맨드 (스킬을 서
 hooks/                         # PreToolUse·PostToolUse·Stop·FileChanged 훅
   hooks.json                   # 훅 설정
   guard.sh write-guard.sh skill-dedup.sh stop-lint.sh package-changed.sh
-skills/                        # 12개 스킬 (각 SKILL.md, 일부 + references/)
+skills/                        # 13개 스킬 (각 SKILL.md, 일부 + references/)
   planner architecture critic grill-me tdd
-  a11y semantic-html seo-geo-optimizer
+  a11y semantic-html seo-geo-optimizer figma-extract
   e2e-verifier lighthouse-performance qa-inspector security-audit
 ```
 
@@ -31,3 +31,4 @@ skills/                        # 12개 스킬 (각 SKILL.md, 일부 + references
 | Date | Change | Reason |
 |------|--------|--------|
 | 2026-06-03 | 플러그인 CLAUDE.md/README.md 신설 | 플러그인 단위 문서·사용법 분리 |
+| 2026-06-21 | figma-extract 스킬 추가 | Figma 링크→디자인 컨텍스트 추출 전용 스킬. metadata 노드맵 우선 → 대상 노드만 get_design_context/variable_defs/screenshot 상세 추출 → `.claude/design/`에 json·spec·png 파일화, 부모엔 경로+요약만(토큰 폭주 차단). 코드 생성은 책임 밖. 단독 동작 |

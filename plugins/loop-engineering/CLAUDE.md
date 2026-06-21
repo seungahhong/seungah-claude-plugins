@@ -29,7 +29,7 @@ loop-engineering/
 │           └── loop-engineering-research.md     # 설계 근거 deep-research dossier (출처·인용·신뢰도·caveat)
 └── evals/
     ├── evals.json                  # 수용 평가 (design-conformance dry-run — 핵심 불변식 file:section 인용 채점)
-    └── trigger-eval.json           # 트리거 경계 평가 (should_trigger 10 / should_not 13, 인접 하네스(meta/harness-generator/product-spec) reciprocal 가드)
+    └── trigger-eval.json           # 트리거 경계 평가 (should_trigger 10 / should_not 13, 인접 도메인 경계 가드)
 ```
 
 ## 루프 요약
@@ -51,7 +51,7 @@ loop-engineering/
 - **지속학습 메모리**: 검증된 교훈만 distill해 lessons.md에 쌓고 관련 규칙만 consult한다. raw trace(iterations.jsonl)는 보존(요약 금지).
 - **명시적 중단조건**: 통과·최대 반복·무진전·예산. 무한 루프 차단.
 - **승인 게이트·관찰성**: Phase 0 Goal Card 승인은 항상. 요청되지 않은 사이드 에이전트나 중복 실행을 만들지 않는다.
-- **경계**: 작업 산출물(코드·문서)을 검증 루프로 완성한다. 하네스 자체 진단·개선(meta-harness)·새 하네스 생성(harness-generator)·PRD(product-spec/frontend)·커밋/리뷰(git-harness)·native `/loop`(시간 간격 폴링)은 범위 밖이다.
+- **경계**: 작업 산출물(코드·문서)을 검증 루프로 완성한다. 하네스 자체 진단·개선·새 하네스 생성·기획문서(PRD)·커밋/PR 리뷰·native `/loop`(시간 간격 폴링)은 범위 밖이다.
 - 5개 에이전트 협업 하네스이므로 오케스트레이터 SKILL.md의 모든 Agent 호출에 `model: "opus"`를 명시한다.
 
 ## Change History
@@ -59,4 +59,5 @@ loop-engineering/
 | 날짜 | 변경 | 내용 |
 |------|------|------|
 | 2026-06-14 | 플러그인 신설 | loop engineering(목표 기반 자율 반복 + 지속학습 메모리) 멀티 에이전트 하네스. deep-research(loop engineering 1차 자료) 근거 |
-| 2026-06-15 | 2라운드 적대적 검증 후 29건 보강 | iterations.jsonl 단일 writer(memory-curator)·run-id/ts/goal.md/goal-slug 발급 주체 명시(SKILL Phase 1 초기화), BLOCKED verdict 분기 신설(검증 인프라≠작업 결함), consult-before-execute·재실행 1회차 consult, 무진전 단일 권위(failure-analyst)·예산 집행(SDK 캡/N 프록시), N/M 기호·중단조건·상태값(active/candidate/conflict/retired)·보고 문자열 정합, meta-harness 트리거 변별 강화 + 자매 evals reciprocal 가드(meta/generator/product) + native /goal 경계, evals.json 수용 평가 신설 |
+| 2026-06-15 | 2라운드 적대적 검증 후 29건 보강 | iterations.jsonl 단일 writer(memory-curator)·run-id/ts/goal.md/goal-slug 발급 주체 명시(SKILL Phase 1 초기화), BLOCKED verdict 분기 신설(검증 인프라≠작업 결함), consult-before-execute·재실행 1회차 consult, 무진전 단일 권위(failure-analyst)·예산 집행(SDK 캡/N 프록시), N/M 기호·중단조건·상태값(active/candidate/conflict/retired)·보고 문자열 정합, 인접 도메인 트리거 변별 강화 + native /goal 경계, evals.json 수용 평가 신설 |
+| 2026-06-21 | 다른 플러그인 참조 제거·독립화 | 경계·마켓플레이스 네비·evals 진술에서 다른 플러그인명·상대경로 참조를 제거하고 일반 개념(범위 밖 진술)으로 일반화해 단독 사용 가능하게 정리 |

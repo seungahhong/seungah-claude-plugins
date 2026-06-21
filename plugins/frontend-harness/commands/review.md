@@ -1,6 +1,6 @@
 ---
 name: review
-description: "코드 리뷰 및 배포 준비 단계를 실행하는 커맨드. /simplify(코드 간소화), /review(PR 리뷰), security-audit(보안 감사), lighthouse-performance(성능), qa-inspector(통합 정합성) 5개 관점을 사용자에게 보여주고 선택받은 항목만 병렬로 실행한 뒤 결과를 통합 보고한다. 선택 항목 수에 관계없이 항상 단일 메시지에서 동시 spawn되며, 수정이 필요한 항목은 수정 후 자동으로 리뷰를 재실행하여 모든 이슈가 해소될 때까지(최대 3회) 루프를 돈다. 'review', '리뷰', '배포 준비', '머지 준비', '코드 검토', 'PR 준비', '보안 감사', '품질 검토', '성능 검사', 'QA' 등의 키워드에 반응한다. 독립 실행 또는 오케스트레이터의 Review Phase(Phase 4)로 호출된다. 커밋은 별도로 git-harness 플러그인의 `/commit`을 사용한다."
+description: "코드 리뷰 및 배포 준비 단계를 실행하는 커맨드. /simplify(코드 간소화), /review(PR 리뷰), security-audit(보안 감사), lighthouse-performance(성능), qa-inspector(통합 정합성) 5개 관점을 사용자에게 보여주고 선택받은 항목만 병렬로 실행한 뒤 결과를 통합 보고한다. 선택 항목 수에 관계없이 항상 단일 메시지에서 동시 spawn되며, 수정이 필요한 항목은 수정 후 자동으로 리뷰를 재실행하여 모든 이슈가 해소될 때까지(최대 3회) 루프를 돈다. 'review', '리뷰', '배포 준비', '머지 준비', '코드 검토', 'PR 준비', '보안 감사', '품질 검토', '성능 검사', 'QA' 등의 키워드에 반응한다. 독립 실행 또는 오케스트레이터의 Review Phase(Phase 4)로 호출된다. 커밋은 이 커맨드 범위 밖이며, 필요하면 별도 커밋 워크플로를 사용한다."
 allowed-tools: Bash, Read, Grep, Glob, Edit, Write, Agent
 ---
 
@@ -8,7 +8,7 @@ allowed-tools: Bash, Read, Grep, Glob, Edit, Write, Agent
 
 개발이 완료된 코드에 대해 **`/simplify`**, **`/review`**, **`security-audit`**, **`lighthouse-performance`**, **`qa-inspector`** 5가지 관점을 **병렬로 실행**하여 결과를 통합 보고하고, 수정이 필요한 경우 수정 → 재리뷰 루프를 돌려 배포 가능 상태에 도달시킨다.
 
-> **커밋은 이 커맨드에서 다루지 않는다.** 별도 플러그인(`git-harness`)의 `/commit`을 사용한다.
+> **커밋은 이 커맨드에서 다루지 않는다.** 커밋이 필요하면 별도 커밋 워크플로를 사용한다.
 
 ## 왜 통합 리뷰가 필요한가
 
@@ -294,7 +294,7 @@ Agent 도구로 서브에이전트를 spawn하여 `./skills/qa-inspector/SKILL.m
 
 배포 가능 판정: YES
 
-[참고] 커밋이 필요하면 git-harness 플러그인의 `/commit`을 실행하세요.
+[참고] 커밋이 필요하면 별도 커밋 워크플로를 실행하세요.
 ```
 
 → Phase 5(최종 리포트)로 진행.
@@ -400,7 +400,7 @@ Agent 도구로 서브에이전트를 spawn하여 `./skills/qa-inspector/SKILL.m
 
 ## 다음 단계
 
-- [ ] 커밋 — `/commit` (git-harness)
+- [ ] 커밋 — 별도 커밋 워크플로 (이 커맨드 범위 밖)
 - [ ] PR 생성, 리뷰어 지정, CI/CD 확인
 ```
 
@@ -413,13 +413,9 @@ Agent 도구로 서브에이전트를 spawn하여 `./skills/qa-inspector/SKILL.m
 - 의존성 업데이트 권고 시 breaking change 여부를 함께 안내한다
 - 동일 이슈가 반복해서 잡히면 수정 패턴 자체에 문제가 있을 수 있음을 지적한다
 
-## 후속 단계 (별도 커맨드)
+## 후속 단계 (별도 워크플로)
 
-이 커맨드 종료 후 커밋이 필요하면 다음 커맨드를 사용한다.
-
-| 단계            | 커맨드      | 플러그인       |
-| --------------- | ---------- | -------------- |
-| 커밋 메시지 작성 | `/commit`  | `git-harness`  |
+커밋은 이 커맨드 범위 밖이다. 이 커맨드 종료 후 커밋이 필요하면 별도 커밋 워크플로를 사용한다.
 
 ## 병렬 실행 안티패턴
 

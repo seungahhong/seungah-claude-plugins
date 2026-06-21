@@ -1,0 +1,23 @@
+{
+  "name": "ops-harness",
+  "version": "0.1.0",
+  "description": "프로덕션 운영·인시던트 대응·관측성 멀티 에이전트 하네스. 개발 하류의 '운영' 단계를 담당하며, traces+logs+metrics 3종 텔레메트리를 기반으로 인시던트 전 생애주기를 AIOpsLab 4단계(Detection L1 → Localization L2 → Root Cause Analysis L3 → Mitigation L4)로 분해해 오케스트레이션한다. 진단/조치계획/위험평가를 역할 분리한 4개 전문 에이전트(incident-detector / incident-localizer / root-cause-analyst / mitigation-planner)가 협업하며, 인프라는 '중재된 읽기 액션'(get_logs/get_metrics/get_traces/exec_shell)으로만 접근하고 직접 변경하지 않는다(완화 조치는 사람 승인 후 제안 형태). RCA는 anchoring bias·반복 정체(stalled)·임의적 증거 선택·신념 미갱신을 명시적으로 경계하고, 단순 케이스에선 agentic 다단계가 해로울 수 있어 Straight-Shot(단일 직답) 폴백을 둔다. 산출물 품질은 DQ=0.40·타당성+0.30·구체성+0.30·정확성 루브릭으로 게이트한다. 운영 자율화는 미성숙·고난도 영역이므로 휴먼-인-더-루프를 유지한다. 범위는 *배포 이후* 런타임 인시던트(프로덕션 운영/장애 대응/관측성/RCA/완화/postmortem)에 한정한다 — 개발-타임 산출물(코드 diff 리뷰·기획문서 작성·검증 루프 완성·핸드오프 게이트 검수·하네스 자체 진단)은 범위 밖이다.",
+  "author": {
+    "name": "seungah.hong",
+    "email": "ssingah1030@gmail.com"
+  },
+  "tags": [
+    "claude-code",
+    "plugin",
+    "ops-harness",
+    "observability",
+    "incident-response",
+    "aiops",
+    "root-cause-analysis",
+    "mitigation",
+    "telemetry",
+    "human-in-the-loop",
+    "multi-agent",
+    "orchestration"
+  ]
+}
