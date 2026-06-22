@@ -3,6 +3,11 @@
 지속학습 루프(Fail→Investigate→Verify→Distill→Consult)를 회차·세션을 넘어 누적하기 위한 파일 포맷.
 **원본 trace는 보존(요약·삭제 금지)하고, 검증된 교훈만 distill**한다 — 진단의 근거는 항상 원본에 있다.
 
+> **external memory = "무엇이 됐고 무엇이 남았나"(the state file is the spine).** 모델은 run 사이 모든 걸 잊지만("the agent
+> forgets, the repo doesnt") 이 파일들은 디스크에 남아 다음 run이 멈춘 자리에서 이어가게 한다 — `goal.md`(목표)·`iterations.jsonl`
+> (무엇을 시도했고 통과했나)·`lessons.md`(다음에 적용)가 그 등뼈다. (선택) 자동화 프론트엔드(principles §7)를 쓰면, 루프가 처리하지
+> 못한 항목을 사람에게 넘기는 `triage-inbox.md`를 같은 디렉토리에 둘 수 있다(코어 루프 동작에는 영향 없음).
+
 ## 위치
 
 기본 `.claude/loop-memory/{slug}/` (사용자가 다른 경로를 지정하면 그곳). `{slug}`는 목표를 식별하는

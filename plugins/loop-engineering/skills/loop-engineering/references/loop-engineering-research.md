@@ -110,3 +110,75 @@ theneuron.ai(Cherny/Wu 해설) · steipete.me/posts/just-talk-to-it · x.com/ste
 - CL-Bench(총합 ICL 승) vs 특정 과제(메모리 승)를 가르는 *언제 distill하고 언제 raw만 둘지* 운용 결정규칙. (어떤 소스도 operational gate 미제시)
 - 100%→54% 붕괴를 막는 Distill quality-gate의 검증된 완화책(쓰기 전 검증 / 독립 verifier 승인 / 추상 통찰 선호 / 과거 에피소드 회귀 테스트). (faulty-memory는 진단만, 처방 미검증)
 - 도구 못 쓰는 /goal 평가자가 근거를 갖도록 에이전트가 기계검증 증거를 출력에 surface하게 강제하는 best practice, 그리고 도구 가진 verifier 서브에이전트 패턴과의 상호작용.
+
+## 9. 원전 심화 — Loop Engineering 여섯 빌딩블록·세 결함 (2026-06-23 추가 라운드)
+
+> 1차 자료 **Addy Osmani "Loop Engineering"(addyo.substack.com/p/loop-engineering)** 원전을 5각도로 팬아웃해 심화 조사한 라운드다
+> (78 load-bearing 주장 → 3표 적대적 교차검증 → **62 confirmed / 16 killed**). §1~§8(1차 라운드)을 *대체하지 않고 보강*한다.
+> killed 16건은 주로 *구현 패턴 일반화*(특정 cadence·스케일 수치, 미검증 production safeguard 주장)로, 1차 근거가 약해 채택하지 않았다.
+
+### 9.1 정의·포지셔닝 (confirmed)
+
+loop engineering은 **"에이전트에게 프롬프트를 주는 사람(나)을 대체하고, 그 일을 하는 *시스템*을 설계하는 것"**이며, 루프는 *recursive
+goal*(목적을 정의하면 AI가 완료까지 자율 반복)이다. 레버리지 지점은 **prompt → context → harness → loop**로 *위로* 이동하며, loop는
+"하네스 한 층 위"에 있다("sits one floor above the harness ... runs on a timer, spawns little helpers, and feeds itself"). 앵커 인용은
+**Boris Cherny(head of Claude Code)**: *"I don't prompt Claude anymore. I have loops running that prompt Claude ... My job is to write
+loops."* 중요 — 이는 *쉬워졌다*가 아니다: **"loop 설계는 prompt engineering보다 더 어렵다 — 레버리지 지점이 옮겨갔을 뿐."**
+(신뢰도 high — substack 1차 + productmarketfit.tech(Cherny) + addyosmani.com/blog 미러 교차검증.)
+
+### 9.2 여섯 빌딩블록 (factory model) — 각 레인 = 자율성 결함 하나 (confirmed)
+
+| 빌딩블록 | 막는 결함 | CC 1차 매핑 | 인용/근거 |
+|----------|-----------|-------------|-----------|
+| automations(heartbeat) | 수동 확인 / 루프 1회성 | `/loop`·Desktop task·Cloud Routine·`/goal`(매 turn Haiku 평가자) | "Automations are what make a loop an actual loop and not just one run you did once" · code.claude.com/docs/en/scheduled-tasks·/goal |
+| worktrees(병렬 격리) | 병렬 maker 파일 충돌 | `git worktree`·`--worktree`·`isolation: worktree`·`.worktreeinclude`·`worktree.baseRef` | "a separate working directory on its own branch ... one agent's edits literally can not touch the other one's checkout" · code.claude.com/docs/en/worktrees |
+| skills(외부 의도) | intent debt(cold start, 빈 의도를 추측으로 메움) | `SKILL.md`(name/description 트리거) | "A skill is that intent written down on the outside ... we dont do it like this because of that one incident" · Anthropic Agent Skills |
+| plugins/connectors(act) | 파일시스템만 보는 에이전트(제안만) | MCP servers/connectors, 플러그인 번들 | "the difference between an agent that says 'here is the fix' and a loop that opens the PR, links the Linear ticket and pings the channel once CI is green" |
+| sub-agents(maker≠checker) | 자기 채점 과대평가 | `.claude/agents/*.md` | "the model that wrote the code is way too nice grading its own homework" · code.claude.com/docs/en/sub-agents |
+| external memory(디스크 상태) | run 사이 컨텍스트 소실 | 대화 밖 on-disk md(또는 MCP 보드) | "the model forgets everything between runs so the memory has to be on disk" · "the agent forgets, the repo doesnt" · "the state file is the spine of the whole thing" |
+
+worked example(원전): 아침 triage automation이 어제 CI 실패·이슈·커밋을 읽어 마크다운/Linear에 findings를 적고 → 할 가치가 있는 건마다
+격리된 worktree를 열어 maker 서브에이전트가 초안을 만들고 → 두 번째(checker) 서브에이전트가 프로젝트 skills·기존 테스트에 비춰 리뷰한다.
+**본 하네스 매핑**: skills(하네스 자체)·sub-agents·external memory 3레인은 *이미 구현/체현*(loop-executor/loop-verifier 분리,
+loop-memory; sub-agents 레인은 실제 검증을 실행하는 강한 verifier로 — verifier-first는 §3/§4 원칙이지 빌딩블록이 아니다),
+automations·worktrees·connectors는 *선택 add-on 레인*. (신뢰도 high — substack 1차 + addyosmani.com 미러 + CC 공식 docs.)
+
+### 9.3 세 결함 + orchestration tax — "stay the engineer" (confirmed)
+
+factory가 *좋아질수록 더 날카로워지는* 사람-쪽 결함. 기계 검증으로 막지 못한다.
+
+1. **Unverified automation** — "A loop running unattended is also a loop making mistakes unattended"; maker/checker 분리로 "done"에
+   의미가 생기지만 **"'done' is a claim and not a proof"** — 검증 책임은 사람에게서 떠나지 않는다. green CI는 필요조건이지 충분조건이 아니다
+   (에이전트는 *기능 미구현으로도* 테스트를 통과시킨다 → merge 전 `git diff main..<branch>` 확인이 하드 게이트). "your job is to ship
+   code you confirmed works."
+2. **Comprehension rot / comprehension debt** — "the faster the loop ships code you did not write, the bigger the gap between what
+   exists and what you actually get"; 매끄러운 루프가 격차를 *더 빨리* 키운다. Anthropic skill-formation RCT(52명): AI 보조군 이해 퀴즈
+   ~17%p↓, *수동 "그냥 되게 해줘"* 위임이 가장 나쁨. "Making code cheap to generate doesn't make understanding cheap to skip." 완화:
+   merge 전 diff를 읽고 explain-back(침묵 승인 금지).
+3. **Cognitive surrender** — "very tempting to stop having an opinion and just take whatever it gives back"; 같은 행동(루프 설계)이
+   이해 *가속*이면 약, 이해 *회피*면 독 — "The loop doesn't know the difference. You do." 완화: 자동화 불가능한 operator intent self-check.
+4. **Orchestration tax** — worktree가 *기계적* 충돌은 없애도 **사람이 천장**이다: agent 수=생산자, review 속도=소비자, 시스템 처리량=
+   리뷰 단계 처리량. "the right number of parallel agents is how many you can actually code review properly"(실무 ~4–5 동시 worktree,
+   초과 시 병목은 Claude가 아니라 리뷰). 매 cold context-switch는 "cold reload" 비용 → 리뷰는 배치로.
+
+닫는 명령(원전): **"Build the loop. But build it like someone who intends to stay the engineer, not just the person who presses go."**
+(신뢰도 high — substack 1차 + orchestration-tax/comprehension-debt 포스트 + Anthropic RCT 교차검증.)
+
+### 9.4 명명된 패턴 계보 (confirmed URLs)
+
+loop engineering(substack) · agent harness engineering(addyosmani.com/blog/agent-harness-engineering) · factory model(substack) ·
+intent debt(intent-debt) · code agent orchestra("three focused agents ... outperform one generalist working three times as long",
+code-agent-orchestra) · adversarial/agentic code review("four genuinely different reviewers ... whereas four copies of one model is a
+single reviewer with a larger invoice", agentic-code-review) · orchestration tax(orchestration-tax) · comprehension debt(comprehension-debt) ·
+cognitive surrender · stay-the-engineer. (신뢰도 high — 각 패턴 Osmani 1차 포스트 직접 fetch 확인.)
+
+### 9.5 추가 출처 (2026-06-23)
+
+**1차**: addyo.substack.com/p/loop-engineering(원전) · code.claude.com/docs/en/{worktrees,scheduled-tasks,sub-agents,goal} ·
+anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills · Anthropic skill-formation RCT(comprehension ~17%p↓).
+**2차/blog**: productmarketfit.tech/p/stop-prompting-ai-and-start-building(Cherny) · addyosmani.com/blog/{loop-engineering, orchestration-tax,
+comprehension-debt, intent-debt, code-agent-orchestra, agentic-code-review, agent-harness-engineering} · developersdigest.tech(worktree 병렬 pitfalls).
+
+> caveat: (a) substack/blog는 의견·실무 가이드(엄밀 벤치마크 아님) — 정성 주장으로 채택. (b) worktree/scheduled-tasks/goal 동작은
+> CC 버전 고정(docs 기준) — 버전업 시 재확인. (c) killed 16건은 *미검증 3rd-party* cadence·스케일 수치·미확정 safeguard로 본문 반영 안 함 — 단 *공식 docs로 confirmed*된 운영 경계(예: scheduled-tasks의 작업 자동 만료·`CLAUDE_CODE_DISABLE_CRON`)는 1차 근거로 §9.2/principles §7에 반영하되 구체 수치는 버전 가변으로 표기한다.
+> (d) §4의 quality-gated distillation·full-trace 보존 원칙은 이 라운드로 *바뀌지 않는다*(추가 framing일 뿐).

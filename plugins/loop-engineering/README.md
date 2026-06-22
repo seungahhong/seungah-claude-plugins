@@ -12,6 +12,12 @@
 핵심은 **사람이 프롬프트를 직접 쓰기보다 에이전트가 개선 프롬프트를 쓰게 하고, 검증된 교훈을 메모리에 쌓아
 같은 실수를 반복하지 않으며, 위 과정을 계속 반복**하는 것입니다.
 
+> **전체 그림(factory model)**: loop engineering의 큰 그림은 여섯 빌딩블록(automations·worktrees·skills·plugins/connectors·
+> sub-agents·external memory)으로 *소프트웨어를 만드는 시스템*을 설계하는 것입니다. 이 하네스는 그중 **검증 루프 엔진**
+> (sub-agents 분리 + 메모리 + 검증기)을 기본으로 구현하고, 나머지는 코어 흐름을 바꾸지 않는 선택 레인으로 둡니다. 그리고
+> 루프가 좋아질수록 날카로워지는 사람-쪽 결함(코드 이해 부패·인지적 항복·리뷰 대역폭)을 막기 위해, **검증·이해·판단은 끝까지
+> 사람이 쥡니다** — *"build it like someone who intends to stay the engineer, not just the person who presses go."*
+
 ## 설치
 
 이 저장소를 Claude Code 플러그인 마켓플레이스로 추가한 뒤 `loop-engineering` 플러그인을 활성화하면,
@@ -44,7 +50,7 @@
 - 하네스(CLAUDE.md/SKILL.md/agents) 자체를 trace로 진단·개선 — 이 하네스는 *작업 산출물*을 개선하지 *하네스*를 개선하지 않는다
 - 새 하네스/에이전트 팀 생성
 - 기획문서(PRD)·사용자 스토리 작성
-- 커밋 메시지·PR 리뷰 — 커밋이 필요하면 별도 커밋 워크플로를 사용한다
+- 커밋 메시지·PR 리뷰 — 커밋이 필요하면 별도 커밋 워크플로를 사용한다 (단, 검증 PASS 하류의 opt-in act 레이어가 PR을 *열* 수는 있습니다 — PR *리뷰*가 아니라 검증된 결과의 행동)
 - *시간 간격* 반복 실행(폴링) → native `/loop`
 - 진단·학습·비반복이 필요 없는 *단순 목표 지향 자율 진행* → native `/goal`
 - 반복·검증 루프가 필요 없는 단발성 처리 → 일반 요청

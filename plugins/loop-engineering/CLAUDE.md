@@ -24,7 +24,7 @@ loop-engineering/
 │   └── loop-engineering/
 │       ├── SKILL.md                # 오케스트레이터(진입점, Goal 게이트 → 자율 반복 루프)
 │       └── references/
-│           ├── loop-engineering-principles.md   # 두 루프·7원칙·검증기/중단조건 설계·anti-pattern·참고문헌
+│           ├── loop-engineering-principles.md   # 두 루프·7원칙·검증기/중단조건 설계·anti-pattern·여섯 빌딩블록(factory §8)·참고문헌
 │           ├── loop-memory-format.md            # goal.md / iterations.jsonl / lessons.md 포맷
 │           └── loop-engineering-research.md     # 설계 근거 deep-research dossier (출처·인용·신뢰도·caveat)
 └── evals/
@@ -51,6 +51,8 @@ loop-engineering/
 - **지속학습 메모리**: 검증된 교훈만 distill해 lessons.md에 쌓고 관련 규칙만 consult한다. raw trace(iterations.jsonl)는 보존(요약 금지).
 - **명시적 중단조건**: 통과·최대 반복·무진전·예산. 무한 루프 차단.
 - **승인 게이트·관찰성**: Phase 0 Goal Card 승인은 항상. 요청되지 않은 사이드 에이전트나 중복 실행을 만들지 않는다.
+- **stay-the-engineer(사람 통제점)**: 검증·이해(merge 전 diff 읽기, green CI ≠ 구현 완료)·판단(cognitive surrender 자가점검)·병렬 상한(orchestration tax)은 자동화로 넘기지 않는다. 루프가 좋아질수록 이 결함들이 *더 날카로워진다*.
+- **factory model(선택 레인)**: 여섯 빌딩블록(automations·worktrees·skills·plugins/connectors·sub-agents·external memory) 중 skills(하네스 자체)·sub-agents·external memory가 *기본 구현*이고(sub-agents는 실제 검증을 실행하는 강한 verifier로), automations·worktrees·connectors는 코어 흐름을 바꾸지 않는 *opt-in 레인*이다(상세 SKILL §8 / principles §8).
 - **경계**: 작업 산출물(코드·문서)을 검증 루프로 완성한다. 하네스 자체 진단·개선·새 하네스 생성·기획문서(PRD)·커밋/PR 리뷰·native `/loop`(시간 간격 폴링)은 범위 밖이다.
 - 5개 에이전트 협업 하네스이므로 오케스트레이터 SKILL.md의 모든 Agent 호출에 `model: "opus"`를 명시한다.
 
@@ -61,3 +63,4 @@ loop-engineering/
 | 2026-06-14 | 플러그인 신설 | loop engineering(목표 기반 자율 반복 + 지속학습 메모리) 멀티 에이전트 하네스. deep-research(loop engineering 1차 자료) 근거 |
 | 2026-06-15 | 2라운드 적대적 검증 후 29건 보강 | iterations.jsonl 단일 writer(memory-curator)·run-id/ts/goal.md/goal-slug 발급 주체 명시(SKILL Phase 1 초기화), BLOCKED verdict 분기 신설(검증 인프라≠작업 결함), consult-before-execute·재실행 1회차 consult, 무진전 단일 권위(failure-analyst)·예산 집행(SDK 캡/N 프록시), N/M 기호·중단조건·상태값(active/candidate/conflict/retired)·보고 문자열 정합, 인접 도메인 트리거 변별 강화 + native /goal 경계, evals.json 수용 평가 신설 |
 | 2026-06-21 | 다른 플러그인 참조 제거·독립화 | 경계·마켓플레이스 네비·evals 진술에서 다른 플러그인명·상대경로 참조를 제거하고 일반 개념(범위 밖 진술)으로 일반화해 단독 사용 가능하게 정리 |
+| 2026-06-23 | Loop Engineering 원전 심화 반영 (additive, 현재 기능 전부 보존) | Osmani substack "Loop Engineering" deep-research(62 confirmed/16 killed) 기반 비파괴 보강 — principles §1 포지셔닝(prompt→context→harness→loop, Cherny 앵커)·§5 이해/머지 게이트(green CI≠구현)·병렬 maker review-bandwidth·§6 사람-쪽 3결함(comprehension rot·cognitive surrender·orchestration tax)·§7 자동화 프론트엔드·act 레이어·**신규 §8 여섯 빌딩블록(factory model) 표** + research dossier §9. SKILL 내재화 원칙 stay-the-engineer + PASS 이해 게이트 + /loop 합성 명료화 + factory 전체그림. loop-verifier green-CI≠구현(reward-hacking) 가드, loop-executor worktree 격리 옵션, memory-format "state file is the spine". 코어 흐름(Phase 0/1)·기존 §1~§8 번호·evals 불변 |
