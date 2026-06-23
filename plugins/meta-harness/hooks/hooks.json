@@ -1,5 +1,5 @@
 {
-  "description": "meta-harness self-heal capture. 사용자의 '수정/보강/방향전환(redirect)' 발화를 UserPromptSubmit에서 감지해 experience-store의 signals 레인에 원형으로 적재한다(캡처 전용·비차단). 적재된 신호는 추후 /meta-harness(healer)가 causal 진단·Pareto 비후퇴 패치에 사용한다 — 적용은 사용자 승인 게이트 통과 후에만.",
+  "description": "meta-harness self-heal capture. 사용자의 '수정/보강/방향전환(redirect)' 발화를 UserPromptSubmit에서 감지해 experience-store의 signals 레인에 원형으로 적재한다(캡처 전용·비차단 = record-an-event, exit 0). 데이터 적재 기준(C1~C9, skills/meta-harness/references/data-capture-criteria.md)을 따른다: 원문 보존·프로젝트 최상단(git root) 한 곳 모음·strong/weak 신호 등급·status 부여. 적재된 신호는 추후 /meta-harness(healer)가 causal 진단·Pareto 비후퇴 패치에 사용한다 — 적용은 사용자 승인 게이트 통과 후에만.",
   "hooks": {
     "UserPromptSubmit": [
       {

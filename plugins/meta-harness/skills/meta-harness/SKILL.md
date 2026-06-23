@@ -48,6 +48,7 @@ repo-wide 경계 밖(agents/·commands/·hooks/·plugin.json·플러그인별 CL
 - **3회 누적 → 구조 재설계** — 같은 표적이 3회 누적되면 본문 patch를 거절하고 `structural-redesign-required`를 권고한다.
 - **Pareto 비후퇴** — 채택 후보는 4축(behavior-alignment·rule-body-cost·trigger-precision·generalization) 어느 것도 frontier를 후퇴시키지 않는다. 상세는 [references/pareto-axes.md](./references/pareto-axes.md).
 - **outer-loop 최소화** — parent/mutation 선택을 proposer에게 위임한다.
+- **데이터 적재·지침 보강 기준(C1~C9)** — 신호 캡처(적재)와 patch 설계(보강)는 [references/data-capture-criteria.md](./references/data-capture-criteria.md)를 따른다: 묶음 캡처·요약 금지·그 순간 기록·신호 등급·고칠 곳(전역 메모리 포함)·검증 후 재사용, 그리고 보강 표적을 고를 때의 CLAUDE.md/Skill/hook/rule 메커니즘 선택. 1차 출처는 그 문서에 인라인.
 
 ## 연구 근거 원칙 (claude 특화 — 진단·개선에 적용)
 
@@ -83,12 +84,12 @@ repo-wide 경계 밖(agents/·commands/·hooks/·plugin.json·플러그인별 CL
 
 1. **트리거 유형 판별** — R1(현세션 redirect·보강) / R2(plugin 심층) / R3(외부 .md 역추적) 중 무엇인지 결정한다. 모호하면 한 번에 한 질문으로 확인한다.
 2. **스코프 확정** — repo-wide(기본) / plugin(opt-in). R2거나 사용자가 특정 플러그인 심층을 명시하면 plugin. 한 번에 한 질문.
-3. **warm-start** — `recurring-patterns.md`의 `needs_attention`(≥3) 표적을 먼저 읽어 이번 회차 경고 후보로 적재한다. 추가로 **`signals/*.jsonl`(UserPromptSubmit 훅이 과거 세션에 적재한 미소비 redirect/fix/augment 발화)** 을 읽어 이번 회차 결함 후보로 끌어온다 — 사용자가 지금 명시 트리거하지 않아도, 누적 신호가 있으면 "이전에 '…수정해줘'라고 하신 N건을 지금 진단할까요?"로 1줄 제안한다. 소비한 신호는 Phase 8에서 `index.json`에 소비 회차 포인터를 남겨 중복 재진단을 막는다(원본 signals 줄은 보존).
+3. **warm-start** — `recurring-patterns.md`의 `needs_attention`(≥3) 표적을 먼저 읽어 이번 회차 경고 후보로 적재한다. 추가로 **`signals/*.jsonl`(UserPromptSubmit 훅이 과거 세션에 적재한 미소비 redirect/fix/augment 발화)** 을 읽어 이번 회차 결함 후보로 끌어온다 — signals는 스코프 무관 **repo-wide `.claude/experience-store/signals/`** 단일 레인에서 읽는다(plugin 스코프 회차도 동일; 훅이 캡처 시점에 스코프를 모르므로, C5). `status:new`이고 기본 `strength:strong`인 신호만 nudge 대상으로 센다(weak·deferred는 기본 건너뜀, C7). 사용자가 지금 명시 트리거하지 않아도, 누적 신호가 있으면 "이전에 '…수정해줘'라고 하신 N건을 지금 진단할까요?"로 1줄 제안한다. 소비한 신호는 Phase 8에서 `status:consumed` + `index.json` 소비 회차 포인터를 남겨 중복 재진단을 막는다(원본 signals 줄은 보존).
 4. **fast-path 판정 (P3 경량 경로)** — 결함이 **단건·저위험**(예: description 오타 1건, 상호참조 경로 한 줄)이면 경량 경로로 라우팅한다: Phase 3 병렬 팬아웃을 **단건 진단**으로 축약하고 Phase 8 큐레이션·warm-start를 생략 가능으로 둔다. **단, 안전장치는 fast-path에서도 생략 금지** — Phase 5 검증·Phase 6 승인 게이트·Phase 7 경계 재확인은 항상 거친다(P2). (근거: progressive disclosure / just-in-time)
 
 ## Phase 2 — 신호 캡처 (trace-capturer 1회)
 
-R1: redirect 발화 **원문** + 직전 AI 산출물 + active SKILL을 시간순 원형 trace로 정규화한다. R3: 대상 .md 전문 + 3단 폴백 출처 역추적(① 산출 경로 규약 매칭 high → ② 파일 내 generated-by/메타마커 high → ③ 구조·문체 + git blame medium/low). raw trace를 `traces/*.jsonl`에 **원형 적재(요약·payload 누락 금지)**.
+R1: redirect 발화 **원문** + 직전 AI 산출물 + active SKILL을 시간순 원형 trace로 정규화한다(C1 묶음). R3: 대상 .md 전문 + 3단 폴백 출처 역추적(① 산출 경로 규약 매칭 high → ② 파일 내 generated-by/메타마커 high → ③ 구조·문체 + git blame medium/low). 사람이 쓴 검토·회고 .md도 R3 입력으로 ingest해 교훈·장치로 승격한다(C3). raw trace를 `traces/*.jsonl`에 **원형 적재(요약·payload 누락 금지, C2)**. 적재 기준 상세는 [references/data-capture-criteria.md](./references/data-capture-criteria.md)(C1~C9).
 
 > **signals 레인 소비(cross-session)** — Phase 1 warm-start가 `signals/*.jsonl`의 미소비 발화를 이번 회차 후보로 끌어온 경우, trace-capturer에 그 signal의 `raw`(발화 원문)와 `transcript_path`를 함께 넘긴다. trace-capturer는 `transcript_path`를 역추적해 그 시점의 직전 산출물·active SKILL을 `traces/*.jsonl`로 정규화한다(원형 보존). 즉 훅이 적재한 신호는 **회차를 시작시키는 입력**일 뿐, 그 자체로 진단·패치가 아니다 — 진단은 Phase 3, 적용은 Phase 6 승인 게이트 통과 후 Phase 7에서만. 스키마는 [references/experience-store-schema.md](./references/experience-store-schema.md)의 `signals/*.jsonl` 참조.
 
@@ -110,7 +111,7 @@ Agent(
 
 ## Phase 3 — 진단 (failure-diagnostician, 병렬 팬아웃)
 
-결함별 **병렬** 팬아웃 — 한 메시지에서 동시 spawn, **한 배치 ≤4~6건**. 각 에이전트는 read 범위를 표적 자산으로 축소한다. proposer는 experience-store를 grep/cat으로 직접 조회하고, confound를 먼저 의심하며, evidence를 trace step 번호/파일 경로로 인용한다. 표적 kind(`description|skill-body|agent|orchestrator|claude-md|plugin-metadata`)와 `scope_status`(in-boundary|scope-escalation|out-of-scope), severity/confidence를 판정한다.
+결함별 **병렬** 팬아웃 — 한 메시지에서 동시 spawn, **한 배치 ≤4~6건**. 각 에이전트는 read 범위를 표적 자산으로 축소한다. proposer는 experience-store를 grep/cat으로 직접 조회하고, confound를 먼저 의심하며, evidence를 trace step 번호/파일 경로로 인용한다. 표적 kind(`description|skill-body|agent|orchestrator|claude-md|plugin-metadata|global-memory`)·`cause_class`(원인 분류, C8)·canonical 표적 경로(이름 통일)와 `scope_status`(in-boundary|scope-escalation|out-of-scope), severity/confidence를 판정한다.
 
 ```
 # 한 메시지에서 결함 수만큼 동시 spawn (배치 ≤ 4~6)
@@ -132,7 +133,7 @@ Agent(subagent_type="failure-diagnostician", model="opus", run_in_background=tru
 
 ## Phase 4 — 개선 (pareto-refiner, 순차)
 
-진단별 **순차** — 직전 patch 결과를 다음 호출 프롬프트에 노출한다. additive-first → compose(직교 승리만) → transfer(과거 회차 교훈을 raw trace 재확인 후). 산출 `patch.md`(unified-diff + 위아래 3줄) + Pareto 좌표 + (description 수정 시) trigger_eval(should-trigger/should-not 8~10개씩). **patch만 생성, 자동 적용 금지.** 같은 표적 3회 누적이면 본문 patch 거절 + `change_kind:"structural-redesign-required"`.
+진단별 **순차** — 직전 patch 결과를 다음 호출 프롬프트에 노출한다. additive-first → compose(직교 승리만) → transfer(과거 회차 교훈을 raw trace 재확인 후). 산출 `patch.md`(unified-diff + 위아래 3줄) + Pareto 좌표 + (description 수정 시) trigger_eval(should-trigger/should-not 8~10개씩). **patch만 생성, 자동 적용 금지.** 같은 표적 3회 누적이면 본문 patch 거절 + `change_kind:"structural-redesign-required"`. 보강 **표적 선택**(CLAUDE.md/Skill/hook/rule)과 반복 표적의 hook·Skill 전환(③ 장치화)은 [references/data-capture-criteria.md §4](./references/data-capture-criteria.md)의 메커니즘 매트릭스를 따른다.
 
 ```
 # 진단 순서대로 순차 호출 — 직전 patch 결과를 다음 prompt에 전달
@@ -176,7 +177,7 @@ Agent(
          + pareto.json(빈도×severity frontier 재계산)
          + recurring-patterns.md(표적별 카운트 + needs_attention ≥3 nudge)
   [불변식] 요약은 index/recurring(navigation)에만. traces/는 절대 건드리지 않는다(원본 보존).
-           이번 회차가 소비한 signals/*.jsonl 발화는 index.json에 소비 회차 포인터로 표시(중복 재진단 방지) — 단 원본 signals 줄은 보존, 삭제·수정 금지.
+           이번 회차가 소비한 signals/*.jsonl 발화는 `status:consumed`로 전이 + index.json에 소비 회차 포인터로 표시(중복 재진단 방지) — 단 원본 signals 줄은 보존, 삭제·수정 금지(상태만 새로 표기). recurring 카운트는 canonical 표적 경로(+cause_class)로 묶는다(C8 이름 통일). 오래된 전부-consumed signals는 archival 후보로 1줄 보고(자동 압축 아님).
   """
 )
 ```
@@ -234,6 +235,7 @@ Agent(
 
 - [references/execution-types.md](./references/execution-types.md) — 실행 유형 판별(초기/신규/부분/새)
 - [references/scope-and-targets.md](./references/scope-and-targets.md) — 스코프·표적 kind·패치 경계
+- [references/data-capture-criteria.md](./references/data-capture-criteria.md) — 데이터 적재 기준(C1~C9) + 지침 보강 메커니즘 선택(CLAUDE.md/Skill/hook/rule), 1차 출처 인라인
 - [references/experience-store-schema.md](./references/experience-store-schema.md) — store 디렉토리·파일 스키마
 - [references/pareto-axes.md](./references/pareto-axes.md) — 4축 정의·비후퇴 규칙
 - [session-signal-capture](../session-signal-capture/SKILL.md) — R1/R3 신호 캡처 방법론

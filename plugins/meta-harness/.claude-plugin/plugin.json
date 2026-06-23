@@ -1,7 +1,7 @@
 {
   "name": "meta-harness",
-  "version": "0.2.0",
-  "description": "현 세션의 redirect/보강 발화(R1)와 외부 .md 산출물(R3), 그리고 plugin 자체의 잘못된 방향(R2)을 트리거로, 압축 요약이 아닌 full-trace experience store를 grep/cat로 직접 조회해 하네스(루트 CLAUDE.md + 각 SKILL.md + agents/*.md + commands/*.md + hooks = 'LLM 주위의 코드')의 결함 root cause를 causal reasoning(confound 격리 → 단독검증 → 위험평가)으로 진단하고, behavior-alignment·rule-body-cost·trigger-precision·generalization 4축 Pareto frontier를 후퇴시키지 않는 패치를 사용자 승인 게이트 하에서만 제안·적용하는 메타 하네스 엔지니어링 플러그인. self-heal 캡처 훅(UserPromptSubmit)이 사용자의 '수정/보강/방향전환' 발화를 세션 중 experience-store의 signals 레인에 원형으로 적재(캡처 전용·비차단)해, 추후 회차의 healer가 그 누적 신호로 진단·패치하게 한다(적용은 항상 승인 게이트 후). 'Meta-Harness: End-to-End Optimization of Model Harnesses'(arXiv 2603.28052v1)의 full-trace 보존 우월성(Table 3)과 outer-loop 최소화·proposer 위임을 핵심 원칙으로 차용한다.",
+  "version": "0.3.0",
+  "description": "현 세션의 redirect/보강 발화(R1)와 외부 .md 산출물(R3), 그리고 plugin 자체의 잘못된 방향(R2)을 트리거로, 압축 요약이 아닌 full-trace experience store를 grep/cat로 직접 조회해 하네스(루트 CLAUDE.md + 각 SKILL.md + agents/*.md + commands/*.md + hooks = 'LLM 주위의 코드')의 결함 root cause를 causal reasoning(confound 격리 → 단독검증 → 위험평가)으로 진단하고, behavior-alignment·rule-body-cost·trigger-precision·generalization 4축 Pareto frontier를 후퇴시키지 않는 패치를 사용자 승인 게이트 하에서만 제안·적용하는 메타 하네스 엔지니어링 플러그인. self-heal 캡처 훅(UserPromptSubmit)이 사용자의 '수정/보강/방향전환' 발화를 세션 중 experience-store의 signals 레인에 원형으로 적재(캡처 전용·비차단)해, 추후 회차의 healer가 그 누적 신호로 진단·패치하게 한다(적용은 항상 승인 게이트 후). 데이터 적재(신호 캡처)와 지침 보강(patch 설계)은 자족 reference data-capture-criteria.md(C1~C9 + CLAUDE.md/Skill/hook/rule 메커니즘 선택, 1차 출처 인라인)를 따른다 — 묶음 캡처·요약 금지·그 순간 기록·프로젝트 최상단 모음·신호 등급·고칠 곳(전역 메모리 포함)·검증 후 재사용. 'Meta-Harness: End-to-End Optimization of Model Harnesses'(arXiv 2603.28052v1)의 full-trace 보존 우월성(Table 3)과 outer-loop 최소화·proposer 위임을 핵심 원칙으로 차용한다.",
   "author": {
     "name": "seungah.hong",
     "email": "ssingah1030@gmail.com"

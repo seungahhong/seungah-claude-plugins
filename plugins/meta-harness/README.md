@@ -152,6 +152,7 @@ R1의 정의 그대로의 경우다 — "왜 문제였는지 검토 → **루트
 | Hook | self-heal-capture (UserPromptSubmit) | 사용자의 수정/보강/방향전환 발화를 signals 레인에 원형 적재(캡처 전용·비차단, cross-session) |
 | Skill | causal-diagnosis | full-trace 기반 causal 진단 루브릭 |
 | Skill | pareto-refinement | Pareto/additive patch 생성 방법론 |
+| Reference | data-capture-criteria | 데이터 적재 기준(C1~C9) + 지침 보강 메커니즘 선택(CLAUDE.md/Skill/hook/rule), 1차 출처 인라인 |
 
 ## 연구 근거 기반 보강 (실행 모델 근거 · 기능 · 원칙)
 
@@ -172,6 +173,10 @@ R1의 정의 그대로의 경우다 — "왜 문제였는지 검토 → **루트
 - **P3** 작은 작업을 느리게 하는 규칙 → **조건부 규칙**(progressive disclosure / 경량 경로). 근거: Agent Skills 'Pattern 3: Conditional details', just-in-time.
 - **P4** **반복 절차는 Skill로** — 'CLAUDE.md 섹션이 사실이 아니라 절차로 커지면 스킬화'. `recurring-patterns.md`(≥3)로 반복 근거 확인 후 추출. 근거: Agent Skills best practices.
 - **P5** 전역 지침은 **최소·고신호**(안정적 사실·원칙만; 절차는 Skill로 — *minimal ≠ short*). 근거: context engineering 'optimal set of tokens / right altitude'.
+
+**데이터 적재·지침 보강 기준 (C1~C9)**
+
+데이터 적재(신호 캡처·store)와 지침 보강(patch 설계)은 자족 reference [`skills/meta-harness/references/data-capture-criteria.md`](skills/meta-harness/references/data-capture-criteria.md)를 operative하게 따른다: **C1** 묶음(발화+직전결과+active SKILL)·**C2** 원문(요약 금지)·**C3** 3층(사건→교훈→장치)·**C4** 그 순간(lightweight identifier)·**C5** 프로젝트 최상단 한 곳·**C6** status 전이+압축 보관·**C7** strong/weak 등급·**C8** 고칠 곳(전역 메모리 포함)+이름 통일·**C9** 검증 후 재사용. 보강을 어디에 둘지는 CLAUDE.md/Skill/hook/rule 메커니즘 매트릭스로 고른다(반복 무시 규칙 → hook 전환 = ③ 장치화). 1차 출처(Anthropic context-engineering·best-practices·hooks·steering blog + Meta-Harness Table 3)는 그 문서에 인라인. self-heal 훅은 이 기준에 맞춰 흔한 교정어 포착 확장·신호 등급·프로젝트 최상단 모음을 additive로 반영했다(캡처 전용·비차단 = record-an-event, exit 0 불변).
 
 ---
 
