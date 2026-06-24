@@ -1,0 +1,90 @@
+[
+  {
+    "query": "이 작업 여러 에이전트로 나눌까 한 에이전트로 할까 판단해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "멀티 에이전트로 병렬화하는 게 정말 이득인지 단일 baseline이랑 비교해서 결정해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "이 작업에 맞는 에이전트 아키텍처(single/multi·centralized/independent) 골라줘",
+    "should_trigger": true
+  },
+  {
+    "query": "서브에이전트 몇 개로 어떻게 협업시킬지 토폴로지랑 역할 설계해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "에이전트 협업이 자꾸 깨지는데 communication·commitment·expectation 가드 설계해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "에이전트를 더 붙이면 정말 나아지는지 검증하고 아니면 단일로 가라고 말해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "이 작업은 분해 가능성이랑 도구 밀도 봤을 때 병렬화하면 안 되는 경우인지 평가해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "independent 토폴로지에서 에이전트 오류가 증폭되는데 centralized로 바꿀지 coordination 비용까지 따져 결정해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "이 멀티 에이전트 구성이 단일보다 나은지 순이득으로 검증하고 토폴로지 권고해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "모델에 넣을 컨텍스트 페이로드를 retrieval·압축·큐레이션으로 조립·최적화해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "AI가 만든 코드 출력을 LLM-as-a-Judge로 다중표본 평가하고 validity 점검해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "에이전트가 코드 생성할 실행가능 구현 명세(spec)를 source of truth로 작성해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 작업 검증 가능한 목표 정하고 통과할 때까지 한 흐름으로 자율 반복해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 도메인용 하네스(에이전트팀+오케스트레이터)를 처음부터 새로 만들어줘",
+    "should_trigger": false
+  },
+  {
+    "query": "프로덕션 장애 탐지하고 원인 국소화·RCA·완화까지 운영 대응해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "기존 하네스 결함 진단하고 trace 기반으로 루트 CLAUDE.md/스킬 고도화해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "제품 기획문서(PRD)랑 사용자 스토리 작성해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "변경사항 커밋 메시지 작성하고 PR 리뷰해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "settings.json에 npm 명령 권한 추가해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 함수 한 번만 리팩터링해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "기존 코드에 대한 실행 테스트를 생성해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "백엔드 API랑 DB 스키마를 처음부터 설계·구현해줘",
+    "should_trigger": false
+  }
+]

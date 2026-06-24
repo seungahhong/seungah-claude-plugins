@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "분석 → 설계 → 개발 → 리뷰 → 검증까지, 소프트웨어 개발 전 과정을 지원하는 멀티 에이전트 스킬·커맨드·훅 모음. 정적 분석 5개 관점(간소화·코드 리뷰·보안·성능·정합성) 중 사용자 선택 항목 병렬 + 재리뷰 루프와 E2E·타입/빌드 검증, 그리고 코드 착수 *전* 상류 산출물(기획·디자인·API 계약·QA 인수조건) 핸드오프 게이트 검수를 포함합니다.",
-    "version": "1.10.0",
+    "version": "1.11.0",
     "homepage": "https://github.com/seungahhong/seungah-claude-plugins"
   },
   "plugins": [
@@ -225,6 +225,93 @@
         "defense-in-depth",
         "trust-tier",
         "dora",
+        "multi-agent",
+        "orchestration"
+      ],
+      "category": "workflow",
+      "strict": false
+    },
+    {
+      "name": "context-engineering",
+      "description": "LLM·에이전트에 전달할 컨텍스트 페이로드를 체계적으로 조립·최적화하는 도메인 무관 멀티 에이전트 하네스. 단순 프롬프트 설계를 넘어 '무엇을 왜 모델에 넣는가'를 Scope(예산·도달 정보) → Retrieve/Generate(후보 수집) → Process(압축·정렬·중복제거, brevity bias·lost-in-the-middle 대응) → Manage(playbook 큐레이션·context-collapse 가드·최종 조립)의 4단계로 설계하고, 멀티 에이전트 컨텍스트면 per-agent 격리(REGISTRY/FOCUS) 패턴으로 cross-agent 오염(context pollution)을 막는다. 모든 단계는 토큰 예산과 검증 가능한 'retrieval need'를 못 박고 사람 승인 게이트로 시작한다. 검증된 2025+ 논문(arXiv:2507.13334 컨텍스트 엔지니어링 서베이·arXiv:2510.04618 ACE·arXiv:2604.07911 DACS)을 vote/CAVEAT와 함께 인용한다. 경계: 작업의 에이전트 병렬화 판단·AI 산출물 평가(judge 구성)·엔지니어용 실행 명세 작성·기획자용 PRD·하네스 자체 진단·단발 코드 수정은 범위 밖이며 '모델에 들어갈 정보 페이로드의 조립·최적화'에 특화한다.",
+      "source": "./plugins/context-engineering",
+      "version": "0.1.0",
+      "author": { "name": "seungah.hong" },
+      "tags": [
+        "claude-code",
+        "plugin",
+        "context-engineering",
+        "context-window",
+        "retrieval",
+        "rag",
+        "context-compression",
+        "playbook-curation",
+        "context-isolation",
+        "multi-agent",
+        "orchestration"
+      ],
+      "category": "workflow",
+      "strict": false
+    },
+    {
+      "name": "agent-orchestration",
+      "description": "한 작업을 여러 에이전트로 병렬화할지·어떻게 협업시킬지를 판단 규칙으로 결정하고, 그 협업이 단일 에이전트 baseline을 실제로 능가하는지 적대적으로 검증하는 도메인 무관 멀티 에이전트 하네스. 작업의 분해 가능성(decomposability)·도구 밀도(tool density)를 평가해 단일 baseline을 추정하고(Phase 0), architecture-task alignment·capability-ceiling 휴리스틱으로 single vs multi와 토폴로지(centralized/independent)를 권고하며(Phase 1), communication·commitment·expectation 협업 실패와 context-pollution을 막는 coordination 가드를 설계하고(Phase 2), 계획이 baseline을 능가하는지 검증해 능가 못 하면 단일 에이전트를 권고한다(Phase 3). 핵심 메시지는 '에이전트를 더 붙인다고 항상 이득이 아니다 — 성패는 수가 아니라 architecture-task alignment가 결정한다'이다. 검증된 2025+ 논문(arXiv:2512.08296 Science of Scaling Agent Systems·arXiv:2601.13295 CooperBench·arXiv:2604.07911 DACS)을 vote/CAVEAT와 함께 인용한다. 경계: 컨텍스트 페이로드 조립·AI 출력 평가·엔지니어용 구현 명세 작성·단일 자율 반복 루프·새 하네스 생성·프로덕션 장애 대응은 범위 밖이다.",
+      "source": "./plugins/agent-orchestration",
+      "version": "0.1.0",
+      "author": { "name": "seungah.hong" },
+      "tags": [
+        "claude-code",
+        "plugin",
+        "agent-orchestration",
+        "multi-agent",
+        "orchestration",
+        "task-decomposition",
+        "coordination",
+        "architecture-selection",
+        "capability-ceiling",
+        "workflow"
+      ],
+      "category": "workflow",
+      "strict": false
+    },
+    {
+      "name": "eval-harness",
+      "description": "AI 생성물(코드·에이전트 출력·산출 텍스트)을 엄밀하게 평가하는 도메인 무관 멀티 에이전트 하네스. 핵심 질문은 '점수가 몇 점인가'가 아니라 '이 점수를 믿어도 되는가'다. LLM-as-a-Judge를 단일 샷이 아니라 다중 표본(≥3)으로 돌리고, MCTS식 다관점 분해와 가능하면 실행 grounding으로 판정을 강화하며, agentic benchmark의 task validity·outcome validity 결함과 shortcut(풀지 않고 만점)·harness≠model 귀인 혼동·instruction density를 ABC 체크리스트로 감사한 뒤, 다중 표본을 집계해 confidence·CAVEAT와 함께 보고한다. 검증된 1차 논문(arXiv:2507.02825 ABC·arXiv:2412.12509 LLM-judge 신뢰성(2024-12 제출·2025 개정)·arXiv:2502.12468 MCTS-Judge·arXiv:2507.11538 IFScale·arXiv:2606.17799 harness≠model)을 vote/CAVEAT와 함께 인용한다('개선 N% 보장' 금지). 경계: 컨텍스트 페이로드 조립·작업 병렬화 판단·엔지니어용 구현 명세 작성·기존 코드의 일반 실행 테스트 생성·커밋/PR 코드 리뷰는 범위 밖이며 '판정의 신뢰성'을 설계·감사하는 데 특화한다.",
+      "source": "./plugins/eval-harness",
+      "version": "0.1.0",
+      "author": { "name": "seungah.hong" },
+      "tags": [
+        "claude-code",
+        "plugin",
+        "eval-harness",
+        "llm-as-a-judge",
+        "evaluation",
+        "benchmark-validity",
+        "rubric",
+        "multi-sample",
+        "reliability",
+        "multi-agent",
+        "orchestration"
+      ],
+      "category": "workflow",
+      "strict": false
+    },
+    {
+      "name": "spec-driven-development",
+      "description": "엔지니어용 실행 가능 명세(spec)를 source of truth로 작성하고, 에이전트가 그 명세대로 코드를 생성한 뒤 명세 대비 자기검증하게 하는 도메인 무관 멀티 에이전트 하네스. 워크플로를 코드 우선에서 명세 우선으로 역전한다 — 명세가 1차 산출물이고 코드는 그로부터 생성·검증되는 2차 산출물이다(Spec-Driven Development). 4단계(명세 작성 → 인수기준·자기검증 설계 → 명세 대비 구현 → 명세 대비 검증)로 진행하며, Phase 0 명세 승인 게이트를 두고, 마지막 Phase 3에 comprehension 게이트(diff를 읽고 무엇이 왜 바뀌었는지 확인 — comprehension debt 방지)를 둔다. 검증된 2025+ 근거(arXiv:2602.00180 'Spec-Driven Development: From Code to Contract' + Addy Osmani 'How to write a good spec for AI agents'(2026-01) + 'The 80% Problem in Agentic Coding'(2026-01) comprehension debt)를 vote/CAVEAT와 함께 인용한다. 경계: 기획자용 PRD·사용자 스토리(문제정의·비즈니스 요구) 작성·AI 출력 평가용 judge 구성·컨텍스트 페이로드 조립·완성 코드 리뷰·커밋/PR·하네스 자체 진단은 범위가 아니며 에이전트가 코드를 생성할 '실행 가능한 구현 명세 contract'에 특화한다.",
+      "source": "./plugins/spec-driven-development",
+      "version": "0.1.0",
+      "author": { "name": "seungah.hong" },
+      "tags": [
+        "claude-code",
+        "plugin",
+        "spec-driven-development",
+        "executable-specification",
+        "spec-as-contract",
+        "acceptance-criteria",
+        "self-verification",
+        "comprehension-gate",
+        "coding-agent",
         "multi-agent",
         "orchestration"
       ],

@@ -90,5 +90,9 @@
   {
     "query": "CI/CD 파이프라인이랑 배포·IaC(terraform) 정책 검증을 구성·게이트로 묶어줘",
     "should_trigger": false
+  },
+  {
+    "query": "AI가 생성한 출력 채점이 믿을 만한지 LLM-as-a-Judge를 다중 표본으로 돌리고 벤치 validity까지 감사해줘",
+    "should_trigger": false
   }
 ]

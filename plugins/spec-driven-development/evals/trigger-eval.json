@@ -1,0 +1,90 @@
+[
+  {
+    "query": "이 기능 구현 전에 에이전트가 따라 짤 실행 가능한 명세부터 source of truth로 작성해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "spec을 먼저 세우고 코드는 그 명세대로 생성·검증되게 spec-driven development로 진행해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "코딩 에이전트가 해석 없이 구현할 구조화된 명세(contract) 만들어줘 — 인터페이스·동작·제약·엣지케이스로",
+    "should_trigger": true
+  },
+  {
+    "query": "명세 쓰고 인수기준·테스트 계획·자기검증까지 붙여서 명세대로 구현하고 명세 부합을 조항별로 검증해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "명세 우선으로 짜고 코드가 명세를 충족하는지 조항별로 적대 검증해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "구현 명세 contract 작성하고 명세 대비 검증 + diff 읽고 이해 확인하는 게이트까지 돌려줘",
+    "should_trigger": true
+  },
+  {
+    "query": "코드 먼저 짜지 말고 spec을 1차 산출물로 두고 코드는 거기서 끌어내는 방식으로 만들어줘",
+    "should_trigger": true
+  },
+  {
+    "query": "이 API 동작을 실행 가능한 명세로 못 박고, 그 명세대로 에이전트가 생성한 뒤 명세 충족을 검증하게 해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "명세를 source of truth로 두고 generated 코드가 명세대로 도는지 추적성 있게 검증·comprehension 게이트로 마무리해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "제품 기획문서(PRD)랑 사용자 스토리 작성해줘 — 문제정의랑 비즈니스 요구 담아서",
+    "should_trigger": false
+  },
+  {
+    "query": "AI 생성물·에이전트 출력을 평가할 LLM-as-a-Judge 구성하고 다중표본 평가 하네스 돌려줘",
+    "should_trigger": false
+  },
+  {
+    "query": "모델에 넣을 컨텍스트 페이로드를 조립·압축·중복제거해서 최적화해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 작업을 여러 에이전트로 병렬화할지 판단하고 coordination 설계해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이미 완성된 이 코드 리뷰하고 버그 찾아줘",
+    "should_trigger": false
+  },
+  {
+    "query": "변경사항 커밋 메시지 작성하고 PR 리뷰해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 기존 하네스(CLAUDE.md/SKILL.md/agents) 결함을 trace로 진단하고 고도화해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "검증 가능한 목표 정하고 통과할 때까지 자율 반복 루프로 끝까지 완성해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 함수 한 번만 빠르게 고쳐줘. 명세나 검증 단계는 필요 없어",
+    "should_trigger": false
+  },
+  {
+    "query": "기존 코드에 대해 회귀 테스트(unit test) 케이스만 생성해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "프로덕션 장애 원인 진단하고 완화 조치까지 운영 대응해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "settings.json에 npm 명령 권한 추가해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 컴포넌트 접근성·시맨틱 HTML 점검해줘",
+    "should_trigger": false
+  }
+]

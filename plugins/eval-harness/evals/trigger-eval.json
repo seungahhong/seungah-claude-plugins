@@ -1,0 +1,94 @@
+[
+  {
+    "query": "이 LLM 출력 제대로 평가해줘. judge가 한 번 채점한 건 못 믿겠으니 여러 번 표본 떠서 신뢰도까지 내줘",
+    "should_trigger": true
+  },
+  {
+    "query": "LLM-as-a-judge로 이 코드 정확성 엄밀하게 채점하고 싶은데 single-shot 말고 다중 표본으로",
+    "should_trigger": true
+  },
+  {
+    "query": "이 벤치마크가 진짜 능력을 재는지 task validity랑 outcome validity 점검해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "에이전트가 과제 안 풀고 채점 환경 악용해서 만점 받는 shortcut 있는지 감사해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "이 점수가 모델 때문인지 harness 때문인지 분리해서 어디를 고쳐야 할지 알려줘",
+    "should_trigger": true
+  },
+  {
+    "query": "어려운 코드 판정을 다관점으로 분해해서 채점하고 confidence랑 caveat까지 붙여줘",
+    "should_trigger": true
+  },
+  {
+    "query": "에이전트 출력 평가 설계해줘. 성공기준이랑 채점 루브릭이 진짜 성공을 가리키게",
+    "should_trigger": true
+  },
+  {
+    "query": "이 judge가 매번 같은 점수 내는데 그게 정확하다는 보장이 아니잖아, 신뢰성 검증해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "AI 생성물 평가 결과를 단일 점수 말고 컴포넌트별로 귀인하고 baseline 대비로 보고해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "모델에 넣을 컨텍스트 페이로드 조립하고 압축·정렬해서 토큰 예산에 맞춰줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 작업을 여러 에이전트로 병렬화할지, 어떤 토폴로지로 묶을지 판단해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "에이전트가 코드 생성할 수 있게 엔지니어용 실행가능 구현 명세(contract) 작성해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 기존 함수에 대한 실행 테스트 케이스를 그냥 만들어줘",
+    "should_trigger": false
+  },
+  {
+    "query": "변경사항 커밋 메시지 작성하고 이 PR 코드 리뷰해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "제품 기획문서(PRD)랑 사용자 스토리 작성해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 기존 하네스 결함을 trace로 진단하고 루트 CLAUDE.md/스킬 고도화해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 도메인용 하네스(에이전트팀+오케스트레이터) 새로 만들어줘",
+    "should_trigger": false
+  },
+  {
+    "query": "프로덕션 장애 원인 진단하고 완화 조치까지 운영 대응해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "검증 가능한 목표 정하고 통과할 때까지 자율 반복으로 끝까지 작업해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "settings.json에 npm 명령 권한 추가해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 컴포넌트 접근성·시맨틱 HTML 점검해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "5분마다 배포 상태 확인하는 작업 반복 실행해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "백엔드 API랑 DB 스키마를 처음부터 설계·구현해줘",
+    "should_trigger": false
+  }
+]

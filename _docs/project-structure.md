@@ -178,4 +178,80 @@ plugins/
           cicd-harness-research.md                       #   설계 근거 dossier (출처·등급·CAVEAT·DORA 반증 nuance)
     evals/
       trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 11 / should_not 13, 인접 하네스 reciprocal 가드)
+  context-engineering/                                   # [독립 플러그인] LLM·에이전트에 넣을 컨텍스트 페이로드를 체계적으로 조립·최적화하는 하네스 (Scope→Retrieve→Process→Manage 4단계 + per-agent 격리). 경계: 에이전트 병렬화 판단·AI 산출물 평가·구현 명세 작성·PRD·하네스 진단 제외
+    .claude-plugin/
+      plugin.json
+    CLAUDE.md                                            # 하네스 포인터 + Phase 요약 + 변경 이력
+    README.md                                            # 사용자용 개요·사용법·도구 경계·근거 논문
+    agents/                                              # 모두 model: "opus"
+      context-scoper.md                                  # Phase 0 Scope — 도달 정보·토큰 예산·retrieval need(must/nice/out) 명세
+      context-retriever.md                               # Phase 1 Retrieve/Generate — RAG식 후보 컨텍스트 수집·생성(출처·relevance·충돌 표기)
+      context-processor.md                               # Phase 2 Process — 압축·정렬·중복제거(구조적 증분, brevity bias·lost-in-the-middle 대응)
+      context-curator.md                                 # Phase 3 Manage — playbook 큐레이션·context-collapse 가드·REGISTRY/FOCUS 격리·최종 검증·조립
+    skills/
+      context-engineering/                               # 진입점 오케스트레이터 (Phase 0 Scope 게이트 → 4단계 조립 파이프라인)
+        SKILL.md
+        references/
+          context-engineering-principles.md              #   4 components·anti-pattern(brevity/collapse/lost-in-middle/pollution)·REGISTRY/FOCUS·설계 지침
+          context-engineering-research.md                #   설계 근거 dossier (출처·인용·vote·CAVEAT·반박된 주장; arXiv:2507.13334·2510.04618·2604.07911)
+    evals/
+      evals.json                                         # 수용 평가 (핵심 불변식 file:section 인용 채점)
+      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 13, 인접 도메인 reciprocal 가드)
+  agent-orchestration/                                   # [독립 플러그인] 작업을 여러 에이전트로 병렬화할지·어떻게 협업시킬지 판단 규칙으로 결정하고 단일 baseline 능가를 적대 검증하는 하네스. 경계: 컨텍스트 조립·AI 출력 평가·구현 명세·단일 자율루프·하네스 생성·장애 대응 제외
+    .claude-plugin/
+      plugin.json
+    CLAUDE.md                                            # 하네스 포인터 + Phase 요약 + 변경 이력
+    README.md                                            # 사용자용 개요·사용법·도구 경계·근거 논문
+    agents/                                              # 모두 model: "opus"
+      task-decomposer.md                                 # Phase 0 — 분해 가능성·도구 밀도·의존 구조 평가 + 단일 baseline 추정
+      architecture-selector.md                           # Phase 1 — 선택 규칙(architecture-task alignment·45% capability ceiling) → single/multi + 토폴로지
+      coordination-designer.md                           # Phase 2 — communication/commitment/expectation 가드 + context-pollution 격리
+      orchestration-verifier.md                          # Phase 3 — baseline 능가 적대 검증, 병렬화 금지면 단일 권고(REJECT)
+    skills/
+      agent-orchestration/                               # 진입점 오케스트레이터 (Phase 0 게이트 → 결정 → 설계 → 검증)
+        SKILL.md
+        references/
+          agent-orchestration-principles.md              #   선택 규칙·토폴로지·협업 가드·anti-pattern·결정 신호표
+          agent-orchestration-research.md                #   설계 근거 dossier (출처·인용·vote·CAVEAT·반박된 주장; arXiv:2512.08296·2601.13295·2604.07911)
+    evals/
+      evals.json                                         # 수용 평가 (핵심 불변식 file:section 인용 채점)
+      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 13, 인접 도메인 reciprocal 가드)
+  eval-harness/                                          # [독립 플러그인] AI 생성물(코드·에이전트 출력)을 엄밀 평가하는 하네스 (정의·validity→judge 구성→validity 감사→실행·집계 4단계). 경계: 컨텍스트 조립·병렬화 판단·구현 명세·일반 실행 테스트 생성·커밋/PR 리뷰 제외
+    .claude-plugin/
+      plugin.json
+    CLAUDE.md                                            # 하네스 포인터 + Phase 요약 + 변경 이력
+    README.md                                            # 사용자용 개요·사용법·도구 경계·근거 논문
+    agents/                                              # 모두 model: "opus"
+      eval-designer.md                                   # Phase 0 — 평가 대상·관찰형 성공기준 + task/outcome validity 명세 + 귀인 단위
+      judge-builder.md                                   # Phase 1 — judge 구성(다중 표본 ≥3·다관점 분해·실행 grounding), single-shot 금지
+      validity-auditor.md                                # Phase 2 — ABC 감사(validity·shortcut·harness≠model 귀인·instruction density), BLOCK 게이트
+      eval-runner.md                                     # Phase 3 — 다중 표본 실행·집계 + confidence + CAVEAT 보고
+    skills/
+      eval-harness/                                      # 진입점 오케스트레이터 (Define → Build Judge → Audit → Run & Report)
+        SKILL.md
+        references/
+          eval-harness-principles.md                     #   네 신뢰 축·judge/validity 설계지침·anti-pattern·경계
+          eval-harness-research.md                       #   설계 근거 dossier (출처·인용·vote·CAVEAT·반박된 주장; arXiv:2507.02825·2412.12509·2502.12468·2507.11538·2606.17799)
+    evals/
+      evals.json                                         # 수용 평가 (핵심 불변식 file:section 인용 채점)
+      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 14, 인접 도메인 reciprocal 가드)
+  spec-driven-development/                               # [독립 플러그인] 엔지니어용 실행 가능 명세(spec=source of truth)를 작성하고 에이전트가 명세대로 코드 생성→자기검증하게 하는 하네스 (명세작성→인수설계→구현→검증 4단계). 경계: 기획자 PRD·AI 출력 평가·컨텍스트 조립·완성 코드 리뷰·하네스 진단 제외
+    .claude-plugin/
+      plugin.json
+    CLAUDE.md                                            # 하네스 포인터 + Phase 요약 + 변경 이력
+    README.md                                            # 사용자용 개요·사용법·도구 경계·근거 논문
+    agents/                                              # 모두 model: "opus"
+      spec-author.md                                     # Phase 0 — 실행 가능 명세 작성(source of truth; 구조화 contract)
+      acceptance-designer.md                             # Phase 1 — 인수기준 + 테스트 계획 + 자기검증 체크 설계(자족, 외부 의존 금지)
+      spec-implementer.md                                # Phase 2 — 명세대로 코드 생성(또는 구현 가이드) + 추적성
+      spec-verifier.md                                   # Phase 3 — 명세 부합 조항별 검증 + comprehension 게이트(comprehension debt 방지)
+    skills/
+      spec-driven-development/                           # 진입점 오케스트레이터 (Phase 0 명세 승인 게이트 → 4단계 플로우)
+        SKILL.md
+        references/
+          spec-driven-development-principles.md          #   명세 우선 원리·spec 구성요소·anti-pattern·comprehension 게이트 설계
+          spec-driven-development-research.md            #   설계 근거 dossier (출처·인용·vote·CAVEAT·반박된 주장; arXiv:2602.00180 + Osmani 2026-01)
+    evals/
+      evals.json                                         # 수용 평가 (핵심 불변식 file:section 인용 채점)
+      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 13, 인접 도메인 reciprocal 가드)
 ```

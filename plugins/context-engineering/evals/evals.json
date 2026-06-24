@@ -1,0 +1,70 @@
+{
+  "eval_metadata": {
+    "eval_id": "context-engineering-acceptance",
+    "eval_name": "context-engineering 오케스트레이터 수용 평가 (design-conformance dry-run)",
+    "prompt": "LLM·에이전트에 전달할 컨텍스트 페이로드를 Scope(예산·도달 정보·retrieval need) → Retrieve/Generate(후보 수집) → Process(압축·정렬·중복제거) → Manage(playbook 큐레이션·격리·검증·조립)의 4단계로 체계적으로 조립·최적화하고, 멀티 에이전트면 per-agent 격리(REGISTRY/FOCUS)를 설계한다. 본 평가는 shipped SKILL.md·agents/*.md·references/*가 계약 불변식(Scope 우선·구조적 증분·위치 인지 배치·playbook 큐레이션·격리 패턴·사실 보존·검증 없는 출하 금지·승인 게이트·경계)을 강제·명세하고 인용을 정확히 사용하는지 file:section 인용 증거로 채점한다(런타임 실행이 아닌 정적 정합 점검).",
+    "method": "design-conformance dry-run — 런타임 실행 없이 shipped 파일이 핵심 동작을 명세·강제하고 검증된 인용만 사용하는지 인용으로 검증",
+    "assertions": [
+      {
+        "text": "[Scope/need-and-budget-first] context-scoper는 작업을 slug·목적·토큰 예산·retrieval need(must/nice/out 분류 + '왜 필요한가' 정당화)·컨텍스트 유형(단일|멀티 에이전트)·범위(In/Out)를 담은 Context Brief로 변환하고, 정당화되지 않는 정보는 넣지 않으며, 파이프라인 시작 전 승인 게이트를 통과해야 한다.",
+        "passed": true,
+        "evidence": "agents/context-scoper.md Work Principles 'retrieval need 먼저'·'토큰 예산 명시'·'도달 정보 우선순위화(must/nice/out)'·'멀티 에이전트 여부 판정'·'slug 도출' + Output 'Context Brief' 템플릿. SKILL.md Phase 0 승인 게이트 '[Phase 0] 도달 정보·예산·retrieval need 확정 ... 진행할까요?' + '승인 전에는 수집을 시작하지 않는다'. 내재화 원칙 'Scope 우선(retrieval need 먼저)'."
+      },
+      {
+        "text": "[Structure/four-components-mapping] 4단계 구조(Scope→Retrieve/Generate→Process→Manage)가 arXiv:2507.13334의 세 foundational component(retrieval and generation·processing·management)에 매핑되고, 그 앞단에 Scope 게이트를 얹은 근거가 명세되어야 한다.",
+        "passed": true,
+        "evidence": "SKILL.md 핵심 프레이밍 'arXiv:2507.13334의 분류 체계가 이 하네스 4단계의 근거 ... 세 foundational component(context retrieval and generation · processing · management)에 그 앞단의 Scope를 게이트로 얹었다'. references/context-engineering-principles.md §2 '4단계 구조의 근거' + research dossier 출처 2(인용 'Foundational components: Context retrieval and generation; Context processing; Context management ...')."
+      },
+      {
+        "text": "[Process/structural-incremental] context-processor는 전면 재작성을 금지하고 detailed knowledge를 보존하는 구조적 증분으로 압축해 brevity bias·context collapse를 막으며, 가장 중요한 컨텍스트를 페이로드 앞·뒤로 위치 배치해 lost-in-the-middle을 완화해야 한다.",
+        "passed": true,
+        "evidence": "agents/context-processor.md Work Principles '구조적 증분 압축(전면 재작성 금지)' + brevity bias·context collapse 인용 'drops domain insights for concise summaries'·'iterative rewriting erodes details over time' 대응 + '위치 인지 정렬(lost-in-the-middle 대응)'. SKILL.md 내재화 원칙 '구조적 증분(collapse·brevity 가드)'·'위치 인지 배치'. principles §4(1·2·3)."
+      },
+      {
+        "text": "[Manage/playbook-curation] context-curator는 컨텍스트를 일회성 system prompt가 아니라 진화하는 playbook으로 generation/reflection/curation을 통해 큐레이션하고, 전면 재작성이 아닌 증분으로 갱신해 context-collapse를 가드해야 한다(arXiv:2510.04618 ACE 근거).",
+        "passed": true,
+        "evidence": "agents/context-curator.md Work Principles 'playbook 큐레이션(generation/reflection/curation)'·'context-collapse 가드' + Core Role(arXiv:2510.04618 ACE '진화하는 playbook' 인용 'evolving playbooks that accumulate, refine, and organize strategies'). SKILL.md 내재화 원칙 'playbook 큐레이션'. principles §5. research dossier 출처 3."
+      },
+      {
+        "text": "[Isolation/registry-focus] 멀티 에이전트 공유 컨텍스트일 때만 context-curator가 per-agent 격리(REGISTRY ≤200토큰 상태요약 + FOCUS(a_i) 풀 컨텍스트 주입·나머지 registry 압축)를 설계해 context pollution을 막고, 단일 호출이면 격리를 만들지 않아야 한다(arXiv:2604.07911 근거, 정량수치 비인용·질적 메커니즘만).",
+        "passed": true,
+        "evidence": "agents/context-curator.md Work Principles '멀티 에이전트 격리(해당 시)' REGISTRY/FOCUS 서술 + Error Handling '단일 호출이면 격리 섹션을 해당 없음으로'. SKILL.md 내재화 원칙 '멀티 에이전트 격리(opt-in) ... 멀티 에이전트 컨텍스트일 때만 활성화' + Phase 3 격리 프롬프트('정량 이득은 단정 말고 질적 메커니즘으로'). principles §6(CAVEAT: 단독저자 preprint·수치 비인용). research dossier 출처 5·6."
+      },
+      {
+        "text": "[Retrieve/no-hallucination] context-retriever는 retrieve(존재 사실)와 generate(없는 합성)를 구분·표기하고, 충돌·중복은 해소하지 말고 표시만 하며, must-have need 미충족을 그럴듯한 생성으로 메우지 않고 보고해야 한다(환각 컨텍스트 금지).",
+        "passed": true,
+        "evidence": "agents/context-retriever.md Work Principles 'retrieve vs generate 구분'·'출처 표기 필수'·'충돌·중복 플래그(판단은 보류)'·'need 미충족 보고(빈칸을 그럴듯한 생성으로 메우지 않는다 — 환각 컨텍스트는 가장 비싼 오류)' + Error Handling 'must-have need 미충족: 빈칸을 생성으로 메우지 말고'. SKILL.md 내재화 원칙 '사실 보존·출처 추적(생성 금지) ... 빈 must-have를 그럴듯한 생성으로 메우지 않는다'."
+      },
+      {
+        "text": "[Manage/verified-shipping] context-curator는 최종 페이로드를 예산 준수·must-have 충족·중복/충돌 해소·출처 추적·위치 배치 기준으로 검증한 뒤에만 출하하고, 하나라도 어기면 출하하지 않고 어느 단계로 되돌릴지 상향 보고해야 한다(검증 없는 출하 금지).",
+        "passed": true,
+        "evidence": "agents/context-curator.md Work Principles '최종 검증(검증 없는 출하 금지)' 5항(예산·must-have·충돌·출처·위치) + Error Handling '검증 실패 ... 출하하지 않고 상향 보고'. SKILL.md 내재화 원칙 '검증 없는 출하 금지' + Phase 3 프롬프트 '하나라도 어기면 출하 말고 상향 보고'. principles §7."
+      },
+      {
+        "text": "[Provenance/source-tracking] 모든 후보 컨텍스트는 출처를 표기하고, 압축·조립 단계가 출처를 보존하며, 처리·큐레이션은 새 사실 추가(생성)가 아니라 선별·조직·압축이어야 한다.",
+        "passed": true,
+        "evidence": "agents/context-retriever.md '출처 표기 필수'. agents/context-processor.md '출처 보존'·'사실 보존(생성 금지)'. agents/context-curator.md '사실 보존(생성 금지)' + 검증의 '출처 추적'. SKILL.md 내재화 원칙 '사실 보존·출처 추적(생성 금지) ... 모든 조각의 출처를 페이로드까지 보존'."
+      },
+      {
+        "text": "[Approval/observability] Phase 0 Context Brief 승인 게이트는 항상이고, 매 단계 토큰 사용/예산을 보고하며, 요청되지 않은 사이드 에이전트나 중복 실행을 만들지 않아야 한다.",
+        "passed": true,
+        "evidence": "SKILL.md 내재화 원칙 '관찰 가능성·승인 — 시작 전 Context Brief 승인 게이트는 항상 ... 요청되지 않은 사이드 에이전트나 중복 실행을 만들지 않는다' + Phase 0 승인 게이트 + 각 Phase 1줄 보고('토큰 {사용/예산}'). CLAUDE.md Phase 요약 보고 형식. agents 각 Output 오케스트레이터 1줄 보고."
+      },
+      {
+        "text": "[Agents/all-opus] 4개 에이전트 협업 하네스이고, SKILL.md의 모든 Agent 호출 예시에 model:\"opus\"가 명시되며, 에이전트 표에도 '모든 Agent 호출은 model:opus'가 명세되어야 한다.",
+        "passed": true,
+        "evidence": "SKILL.md Phase 0~3의 모든 Agent(...) 호출에 model=\"opus\" 명시 + 에이전트 팀 표 아래 '모든 Agent 호출은 model: \"opus\"를 명시한다'. CLAUDE.md Structure 'agents/ # 모두 model: \"opus\"' + 'agents 4개'. agents/*.md(context-scoper·context-retriever·context-processor·context-curator) frontmatter name/description만."
+      },
+      {
+        "text": "[Boundary/domain-guard] context-engineering은 모델에 들어갈 정보 페이로드 조립·최적화에 특화하고, 작업 병렬화 판단(에이전트 오케스트레이션)·AI 산출물 평가(judge 구성)·엔지니어용 실행 명세 작성·기획자용 PRD·하네스 자체 진단·단발 코드 수정과 경계를 두며(타 플러그인 의존 없이 일반 개념으로), 인접 도메인 요청에는 발동하지 않도록 should-not 가드를 둔다.",
+        "passed": true,
+        "evidence": "SKILL.md description '발동하지 않는다 — 작업을 여러 에이전트로 병렬화 ... judge 구성 ... 엔지니어용 실행 명세 ... 기획자용 PRD ... 하네스 자체를 trace로 진단 ... 단발성 ...' + 경계 섹션(일반 개념으로만 변별). plugin.json description 경계 절. CLAUDE.md Conventions 경계. evals/trigger-eval.json should_not(병렬화 판단·산출물 평가·실행 명세·PRD·하네스 진단·단발 수정)."
+      },
+      {
+        "text": "[Citations/verified-only] research dossier는 검증된 인용(arXiv:2507.13334·2510.04618·2604.07911)만 신뢰도(vote)·CAVEAT와 함께 사용하고, 반박된 주장(DACS 정량수치·formal discipline 합의·ACE +N% 보장)은 '반박된 주장(투명성)' 절에만 기록하며 본문 근거로 쓰지 않고, '개선 N% 보장'을 하지 않아야 한다.",
+        "passed": true,
+        "evidence": "references/context-engineering-research.md 출처 1~6(각 vote·CAVEAT) + '반박된 주장(투명성)' 절(DACS 90-98% vs 21-60% 비인용·formal discipline 합의 과장·ACE +10.6%/+8.6% 보장 불채택) + '방법론 메모 ... 개선 N% 보장 금지'. principles §5 CAVEAT '+10.6%/+8.6%는 ... 보장하지 않는다'. §6 CAVEAT 'DACS 단독저자 preprint·수치 비인용'."
+      }
+    ]
+  }
+}

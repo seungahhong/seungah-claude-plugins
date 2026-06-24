@@ -1,0 +1,21 @@
+{
+  "name": "agent-orchestration",
+  "version": "0.1.0",
+  "description": "한 작업을 여러 에이전트로 병렬화할지·어떻게 할지를 판단 규칙으로 결정하고, 그 협업이 단일 에이전트 baseline을 실제로 능가하는지 적대적으로 검증하는 도메인 무관 멀티 에이전트 하네스. 작업의 분해 가능성(decomposability)·도구 밀도(tool density)를 평가해 단일 에이전트 baseline을 추정하고(Phase 0), architecture-task alignment·capability-ceiling 휴리스틱으로 single vs multi와 토폴로지(centralized/independent)를 권고하며(Phase 1), communication·commitment·expectation 협업 실패와 context-pollution을 막는 coordination 가드를 설계하고(Phase 2), 계획이 baseline을 능가하는지 검증해 능가 못 하면 단일 에이전트를 권고한다(Phase 3). 핵심 메시지는 '에이전트를 더 붙인다고 항상 이득이 아니다'이며, 병렬화하면 안 되는 경우를 명시적으로 플래그한다. 경계: 모델에 넣을 컨텍스트 페이로드 조립·압축, AI 출력의 엄밀한 평가(judge 구성), 엔지니어용 구현 명세 작성, 단일 자율 반복 루프, 새 하네스 생성, 프로덕션 장애 대응은 범위 밖이며, '여러 에이전트를 쓸지/어떻게 협업시킬지 결정'에 특화한다.",
+  "author": {
+    "name": "seungah.hong",
+    "email": "ssingah1030@gmail.com"
+  },
+  "tags": [
+    "claude-code",
+    "plugin",
+    "agent-orchestration",
+    "multi-agent",
+    "orchestration",
+    "task-decomposition",
+    "coordination",
+    "architecture-selection",
+    "capability-ceiling",
+    "workflow"
+  ]
+}

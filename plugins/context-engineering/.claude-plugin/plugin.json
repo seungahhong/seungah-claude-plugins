@@ -1,0 +1,22 @@
+{
+  "name": "context-engineering",
+  "version": "0.1.0",
+  "description": "LLM·에이전트에 전달할 컨텍스트 페이로드를 체계적으로 조립·최적화하는 도메인 무관 멀티 에이전트 하네스. 단순 프롬프트 설계를 넘어 '무엇을 왜 모델에 넣는가'를 Scope(예산·도달 정보) → Retrieve/Generate(후보 수집) → Process(압축·정렬·중복제거, brevity bias·lost-in-the-middle 대응) → Manage(playbook 큐레이션·context-collapse 가드·최종 조립)의 4단계로 설계하고, 멀티 에이전트 컨텍스트면 per-agent 격리(REGISTRY/FOCUS) 패턴으로 cross-agent 오염을 막는다. 모든 단계는 토큰 예산과 검증 가능한 'retrieval need'를 못 박고 사람 승인 게이트로 시작한다. 경계: 작업을 여러 에이전트로 병렬화할지 판단하는 오케스트레이션 설계, AI 산출물을 엄밀히 평가하는 judge 구성, 엔지니어용 실행 명세 작성, 기획자용 PRD 작성, 하네스 자체 trace 진단·단발 코드 수정은 범위 밖이며, '모델에 들어갈 정보 페이로드의 조립·최적화'에 특화한다.",
+  "author": {
+    "name": "seungah.hong",
+    "email": "ssingah1030@gmail.com"
+  },
+  "tags": [
+    "claude-code",
+    "plugin",
+    "context-engineering",
+    "context-window",
+    "retrieval",
+    "rag",
+    "context-compression",
+    "playbook-curation",
+    "context-isolation",
+    "multi-agent",
+    "orchestration"
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "eval_metadata": {
+    "eval_id": "spec-driven-development-acceptance",
+    "eval_name": "spec-driven-development 오케스트레이터 수용 평가 (design-conformance dry-run)",
+    "prompt": "엔지니어용 실행 가능 명세(spec)를 source of truth로 작성하고(Author Spec), 인수기준·테스트 계획·자기검증을 명세 안에서 설계하며(Acceptance), 에이전트가 명세대로 코드를 생성하고(Generate-against-spec), 코드가 명세대로 도는지 조항별로 검증한 뒤 comprehension 게이트로 마무리한다(Verify-against-spec). 본 평가는 shipped SKILL.md·agents/*.md·references/*가 계약 불변식(명세=source of truth·구조화된 contract·명세 승인 게이트·인수기준 자족 설계·명세 대비 검증·generator/checker 분리·comprehension 게이트·정직성·경계)을 강제·명세하는지 file:section 인용 증거로 채점한다(런타임 실행이 아닌 정적 정합 점검).",
+    "method": "design-conformance dry-run — 런타임 실행 없이 shipped 파일이 핵심 동작을 명세·강제하는지 인용으로 검증",
+    "assertions": [
+      {
+        "text": "[Spec/source-of-truth-inversion] 하네스는 명세를 1차 산출물(source of truth)로, 코드를 명세로부터 생성/검증되는 2차 산출물로 다루는 워크플로 역전을 명세하고, 코드를 먼저 짜고 명세를 사후 작성하지 않도록 강제해야 한다.",
+        "passed": true,
+        "evidence": "SKILL.md '워크플로 역전' 절 + 내재화 원칙 '명세=source of truth(코드 우선 역전)'. agents/spec-author.md Work Principles '명세=source of truth(코드 우선 역전)'. references/spec-driven-development-principles.md §1(arXiv:2602.00180 'inverts the traditional workflow by treating specifications as the source of truth and code as a generated or verified secondary artifact'). CLAUDE.md Conventions '명세=source of truth'. research.md 출처 2."
+      },
+      {
+        "text": "[Spec/structured-contract] 명세는 산문이 아니라 구조화된 contract(목표·범위 In/Out·인터페이스·동작(관찰 가능)·제약/불변·엣지케이스)로 작성되고, 구조·계획·반복(structure/plan/iterate)을 원칙으로 삼아야 한다.",
+        "passed": true,
+        "evidence": "agents/spec-author.md Work Principles '구조화된 contract(산문 금지)'·'구조·계획·반복(structure/plan/iterate)' + Output 'Executable Spec' 템플릿(목표·범위·인터페이스·동작·제약/불변·엣지케이스). references/spec-driven-development-principles.md §2(좋은 명세 구성요소, Osmani 'How to structure, plan, and iterate'). SKILL.md 내재화 원칙 '구조화된 contract'. research.md 출처 1."
+      },
+      {
+        "text": "[Gate/spec-approval] Phase 0 명세 승인 게이트는 항상이며, 사용자가 명세를 승인하기 전에는 인수 설계/구현으로 진행하지 않아야 한다(잘못된 명세로 비용 낭비 방지).",
+        "passed": true,
+        "evidence": "SKILL.md Phase 0 '명세 승인 게이트' '[Phase 0] 실행 가능 명세 확정 — 다음: 인수기준·자기검증 설계(Phase 1). 승인할까요?' + '승인 전에는 다음 단계로 진행하지 않는다'. agents/spec-author.md Output 1줄 보고(승인 게이트 문구). CLAUDE.md Conventions '명세 승인 게이트(항상)'. SKILL.md 내재화 원칙 '명세 승인 게이트(항상)'."
+      },
+      {
+        "text": "[Acceptance/self-contained] acceptance-designer는 인수기준·테스트 계획·자기검증 체크·인수 점검 루브릭(LLM-as-a-Judge식)을 명세 안에서 자족적으로 설계하고, 각 인수기준을 spec 조항에 추적 가능하게 귀속하며 명세를 falsifiable하게 덮되 명세를 확장(over-spec)하지 않아야 한다.",
+        "passed": true,
+        "evidence": "agents/acceptance-designer.md Work Principles '조항별 인수기준(traceable)'·'falsifiable하게'·'실행 가능한 테스트 계획'·'자기검증 체크 내재화'·'LLM-as-a-Judge식 인수 점검(자족적)'·'over-spec 금지' + Output 'Acceptance Plan' 템플릿. SKILL.md Phase 1 규칙(A1 ← B1, 자족적, over-spec 금지). references/spec-driven-development-principles.md §2·§3. research.md 출처 1(self-verification·LLM-as-a-Judge·test plan)."
+      },
+      {
+        "text": "[Generate/spec-faithful-traceable] spec-implementer는 명세대로(인터페이스·동작·제약·엣지케이스) 구현하고 어느 spec 조항을 어디서 구현했는지 추적성을 남기며, 명세에 없는 동작을 임의 확장하지 않고(명세 보정으로 되돌림) 완료 주장 전 자기검증을 선실행해 기계 검증 가능한 증거를 surface해야 한다.",
+        "passed": true,
+        "evidence": "agents/spec-implementer.md Work Principles '명세가 지시서다(spec-faithful)'·'추적성(traceability)'·'자기검증 선실행(완료 주장 전)'·'최소·필요 변경' + Output '조항 추적(Spec ↔ Code)'·'자기검증 결과'. SKILL.md Phase 2 규칙(임의 확장 금지·조항 매핑·자기검증 선실행·최종 PASS 선언 금지). references/spec-driven-development-principles.md §3·§6 anti-pattern 3."
+      },
+      {
+        "text": "[Verify/spec-conformance-and-separation] 검증은 구현과 분리된 spec-verifier가 수행하고(generator/checker 분리), '잘 도나'가 아니라 '명세대로 도나'를 조항별 충족/미충족+증거로 적대 판정하며, 증거 없는 충족을 금지하고 green CI ≠ 명세 구현 완료(reward-hacking)와 검증불가(BLOCKED) 분리를 강제해야 한다.",
+        "passed": true,
+        "evidence": "agents/spec-verifier.md Core Role '분리된 독립 검증자' + Work Principles '명세 대비 검증(spec-conformance, not just works)'·'적대적·증거 필수'·'green CI ≠ 명세 구현 완료(reward-hacking 경계)'·'검증 불가는 분리(BLOCKED)' + Output 'Conformance Verdict'. SKILL.md 내재화 원칙 'generator/checker 분리'·'명세 대비 검증(spec-conformance)' + Phase 3 분기(BLOCKED·라우팅). references/spec-driven-development-principles.md §4. research.md 출처 2."
+      },
+      {
+        "text": "[Comprehension/gate] Phase 3는 모든 조항이 충족돼도 완료 선언 전에 실제 diff를 읽고 무엇이 왜 바뀌었고 명세를 구현하는지 확인하는 comprehension 게이트를 강제하며(각 변경을 명세 조항으로 설명 가능해야 통과), 명세를 이해의 앵커로 두어 comprehension debt를 막아야 한다.",
+        "passed": true,
+        "evidence": "agents/spec-verifier.md Work Principles 'comprehension 게이트(완료 선언 전 필수)' + Output 'comprehension 게이트' 섹션(판정 통과/미통과). SKILL.md Phase 3 규칙(diff 읽고 명세 조항으로 설명) + 분기 'comprehension 게이트 미통과'. references/spec-driven-development-principles.md §5(Osmani 'The 80% Problem' 인용, 명세=이해의 앵커). CLAUDE.md Conventions 'comprehension 게이트'. research.md 출처 3."
+      },
+      {
+        "text": "[Honesty/no-overclaim] 하네스는 SDD가 워크플로 역전이지 '보장된 개선/효율'이 아님을 명시하고, 정량 수치는 vote/CAVEAT와 함께만 인용하며 효율·non-determinism 비판을 dossier에 함께 기록하고, 반박된 주장(super-prompts 등)은 본문 근거로 쓰지 않아야 한다.",
+        "passed": true,
+        "evidence": "references/spec-driven-development-research.md 출처 2 CAVEAT(Martin Fowler 효율·non-determinism 비판) + '반박된 주장(투명성 — 본문 근거로 사용 금지)' 섹션(super-prompts vote 0-3) + '방법론 — deep-research 3-vote 적대 검증'(정직성 규칙). principles.md §1 정직성 주의·§8 참고문헌. SKILL.md 내재화 원칙 '과장 금지(정직성)'. README.md '정직성 노트'. CLAUDE.md Conventions '과장 금지(정직성)'."
+      },
+      {
+        "text": "[Boundary/domain-guard] spec-driven-development는 엔지니어용 실행 가능 구현 명세에 특화하고, 기획자용 PRD·사용자 스토리·AI 출력 평가 judge 구성·컨텍스트 페이로드 조립·완성 코드 리뷰/커밋·PR·하네스 진단과 경계를 두며(타 플러그인 의존 없이 일반 개념으로 변별), 인접 도메인 요청에 발동하지 않도록 should-not 가드를 둔다.",
+        "passed": true,
+        "evidence": "SKILL.md description '발동하지 않는다 — 기획자용 PRD·사용자 스토리 ... judge(LLM-as-a-Judge) 구성 ... 컨텍스트 페이로드 조립 ... 완성 코드 리뷰·커밋 메시지·PR 리뷰 ... 하네스 자체 ... 진단 ...' + 경계 섹션. plugin.json description 경계 절. references/spec-driven-development-principles.md §7(인접 도메인 경계, 일반 개념). evals/trigger-eval.json should_not(PRD·judge·컨텍스트·완성코드리뷰·하네스진단·단발 등)."
+      },
+      {
+        "text": "[Orchestration/opus-and-routing] 4개 에이전트(spec-author·acceptance-designer·spec-implementer·spec-verifier) 협업 하네스로, SKILL.md의 모든 Agent 호출에 model:\"opus\"가 명시되고, 미충족 시 구현 보완(Phase 2)·명세 보정(Phase 0)으로 명세를 source of truth로 유지하며 라우팅하고, 산출물을 .claude/specs/{spec-slug}/에 둔다.",
+        "passed": true,
+        "evidence": "SKILL.md '에이전트 팀' 표 + '모든 Agent 호출은 model:\"opus\"를 명시한다' + Phase 0~3 각 Agent() 호출에 model=\"opus\" + Phase 3 분기 라우팅(미충족→Phase 2/Phase 0, 명세=source of truth 유지) + '산출물 배치' .claude/specs/{spec-slug}/. CLAUDE.md Structure(agents 모두 model: opus) + Phase 요약 표. 각 agents/*.md frontmatter name/description만."
+      }
+    ]
+  }
+}

@@ -1,0 +1,90 @@
+[
+  {
+    "query": "이 작업에 모델로 줄 컨텍스트를 토큰 예산 안에서 체계적으로 조립·최적화해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "이 에이전트 호출에 넣을 컨텍스트를 무엇을 왜 넣을지 정하고 압축·정렬해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "컨텍스트 윈도우 예산 안에서 무엇을 넣고 뺄지 근거 두고 retrieval need부터 정해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "RAG식으로 후보 컨텍스트 모아서 중복 제거하고 핵심만 남겨 페이로드로 만들어줘",
+    "should_trigger": true
+  },
+  {
+    "query": "반복 재작성으로 디테일 잃지 않게 컨텍스트를 진화하는 playbook으로 큐레이션해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "핵심 정보가 중간에 묻히지 않게 컨텍스트를 위치 인지로 정렬해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "여러 에이전트가 한 컨텍스트 윈도우를 공유해 서로의 페이로드가 오염되는 걸 막게 per-agent 컨텍스트 윈도우 격리(REGISTRY/FOCUS) 설계해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "context engineering으로 이 프롬프트에 들어갈 정보 페이로드를 설계·검증해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "긴 문서들 요약하다 도메인 통찰 잃지 않게 컨텍스트 구조적 증분으로 압축해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "이 작업을 몇 개 에이전트로 어떻게 병렬화할지, 단일 에이전트보다 나은지 판단해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "여러 에이전트로 나눌지 토폴로지 정하고 coordination 실패 가드 설계해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 AI 생성 코드 출력을 다중표본 judge로 엄밀하게 평가하고 validity 감사해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "LLM-as-a-Judge 구성해서 에이전트 출력 정확성을 점수로 채점해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "에이전트가 코드 생성할 실행 가능한 구현 명세(source of truth)를 작성하고 자기검증하게 해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "기획자용 제품 기획문서(PRD)랑 사용자 스토리 작성해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 기존 하네스 결함을 trace로 진단하고 루트 CLAUDE.md/스킬 고도화해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 질문에 한 줄로 답만 해줘, 컨텍스트 설계 같은 거 말고",
+    "should_trigger": false
+  },
+  {
+    "query": "이 함수 한 번만 고쳐줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 PR 코드 리뷰하고 버그 찾아줘",
+    "should_trigger": false
+  },
+  {
+    "query": "settings.json에 명령 권한 추가해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "검증 가능한 목표 정하고 통과할 때까지 실행-검증-수정 자율 반복 루프로 끝내줘",
+    "should_trigger": false
+  },
+  {
+    "query": "프로덕션 장애 원인 진단하고 완화 조치까지 운영 대응해줘",
+    "should_trigger": false
+  }
+]

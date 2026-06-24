@@ -102,5 +102,9 @@
   {
     "query": "CI/CD 파이프라인이랑 배포 자동화를 구성·게이트로 묶어줘",
     "should_trigger": false
+  },
+  {
+    "query": "이 작업을 에이전트 여러 개로 병렬화하는 게 단일 에이전트보다 나은지 판단하고 협업 구조를 설계해줘",
+    "should_trigger": false
   }
 ]

@@ -132,3 +132,63 @@
 - **Phase 4 전달 안정성 가드** — `delivery-verifier`. **DORA 통제**(강한 테스트 자동화·작은 배치) 점검 + defense-in-depth 사람 사전 승인 목록 정리.
 
 > `cicd-harness`는 **코드 커밋→프로덕션의 전달 파이프라인(CI/CD·릴리스·IaC·배포 게이트)**에 특화한 도메인 무관 하네스다. 4개 에이전트를 서브에이전트로 spawn한다(모두 `model: "opus"`; Phase 순차, 없는 단계는 Phase 0에서 건너뜀). **내재화 원칙** — defense-in-depth(읽기전용·쓰기/apply/deploy는 사람 사전 승인 후 제안→집행) · policy-as-code 결정론적 게이트(terraform plan + OPA) · trust-tier 단계적 자율 · DORA 통제 프레이밍 · 역할 분리 · Honesty Guardrail. **DORA 정직성(필수)** — AI-불안정 통제책으로 사실 인용 가능한 것은 **small batches + robust test automation 두 가지뿐**이며, '버전관리·느슨한 결합도 통제요소'·'긴밀결합 팀 무이득'은 반증된 신화로만 표기한다. **경계** — 배포 *이후* 런타임 인시던트(`ops-harness`)·BE 코드 *구현*(`backend-harness`)·빌드 그린까지 자율 반복(`loop-engineering`)·커밋/PR(`git-harness`)·계약 검수(`review-harness/contract-review`)·PRD(`product-spec-harness`)·FE(`frontend-harness`)·하네스 진단(`meta-harness`)은 범위가 아니다. 근거: DORA 2025·DORA AI Capabilities Model[GOLD] · AI-Augmented CI/CD(arXiv:2508.11867)·GitHub Agentic Workflows·MACOG(arXiv:2510.03902)[SILVER].
+
+### Plugin: `context-engineering`
+
+| Skill | Command | Description |
+|-------|---------|-------------|
+| Context Engineering | `/context-engineering` | LLM·에이전트에 넣을 **컨텍스트 페이로드를 체계적으로 조립·최적화**하는 진입 오케스트레이터. Scope(도달 정보·토큰 예산·retrieval need) → Retrieve/Generate(후보 수집·생성) → Process(압축·정렬·중복제거, brevity bias·lost-in-the-middle 대응) → Manage(playbook 큐레이션·context-collapse 가드·격리·검증·조립) 4단계. Phase 0 Context Brief 승인 게이트, 멀티 에이전트 컨텍스트면 per-agent 격리(REGISTRY/FOCUS) 설계 |
+
+4개 에이전트 구성 (모두 `model: "opus"`):
+
+- **Scope** — `context-scoper`. 작업이 모델에 *반드시 도달해야 할 정보*와 *토큰 예산*을 정의. retrieval need를 must/nice/out으로 분류하고 각 need에 '왜 필요한가'를 붙임(컨텍스트는 많을수록 좋은 게 아니다).
+- **Retrieve/Generate** — `context-retriever`. retrieval need(특히 must-have)를 충족하는 후보 컨텍스트를 RAG식으로 수집·생성. 출처·relevance·토큰·충돌을 표기하고 must-have 미충족은 생성으로 메우지 않고 보고.
+- **Process** — `context-processor`. 예산 안으로 압축·정렬·중복제거. 전면 재작성 금지(디테일 보존 구조적 증분), 가장 중요한 컨텍스트를 앞·뒤 배치(lost-in-the-middle 대응), 충돌은 둘 다 보존·표시.
+- **Manage** — `context-curator`. 진화하는 playbook으로 큐레이션(generation/reflection/curation), context-collapse 가드, (멀티 에이전트면) REGISTRY(≤200토큰 상태요약)/FOCUS(a_i) 격리, 최종 페이로드 검증(예산·must-have·출처·위치) 후 출하.
+
+> `context-engineering`은 **모델에 들어갈 정보 페이로드의 조립·최적화**에 특화한 도메인 무관 하네스다. 4개 에이전트를 서브에이전트로 spawn한다(모두 `model: "opus"`; Scope→Retrieve→Process→Manage 순차). 산출물은 `.claude/context-engineering/{slug}/`(context-brief.md / payload.md / playbook.md)에 모이고 같은 slug 재실행 시 playbook을 먼저 참조한다. **내재화 원칙** — Scope 우선(retrieval need 먼저) · 체계적 최적화≠더 채우기 · 구조적 증분(brevity bias·context collapse 가드) · 위치 인지 배치(lost-in-the-middle) · playbook 큐레이션 · 사실 보존·환각 컨텍스트 금지 · 멀티 에이전트 per-agent 격리(opt-in) · 검증 없는 출하 금지 · 승인 게이트. **경계** — 작업의 에이전트 병렬화 판단 · AI 산출물 평가(judge 구성) · 엔지니어용 실행 명세 작성 · 기획자용 PRD · 하네스 자체 진단 · 단발 코드 수정은 범위가 아니며(일반 개념으로만 변별, 타 플러그인 비의존), description·trigger-eval에 명시한다. 근거: A Survey of Context Engineering(arXiv:2507.13334)[정의·taxonomy, vote 3-0] · ACE: Agentic Context Engineering(arXiv:2510.04618, ICLR 2026)[진화 playbook·brevity bias·context collapse, vote 3-0] · DACS: Dynamic Attentional Context Scoping(arXiv:2604.07911)[context pollution·REGISTRY/FOCUS, vote 2-1 medium — 정량수치 비인용, 질적 패턴만].
+
+### Plugin: `agent-orchestration`
+
+| Skill | Command | Description |
+|-------|---------|-------------|
+| Agent Orchestration | `/agent-orchestration` | 한 작업을 **여러 에이전트로 병렬화할지·어떻게 협업시킬지** 판단 규칙으로 결정하고 단일 baseline 능가를 적대 검증하는 진입 오케스트레이터. 작업 분해·평가(decomposability·tool density·단일 baseline 추정) → 아키텍처 결정(architecture-task alignment·capability ceiling → single/multi·토폴로지) → 협업 가드 설계(communication·commitment·expectation·context-pollution) → baseline 능가 검증(능가 못 하면 단일 권고) 4단계. Phase 0 승인 게이트 |
+
+4개 에이전트 구성 (모두 `model: "opus"`):
+
+- **Decompose & Assess** — `task-decomposer`. 작업의 분해 가능성·도구 밀도·의존 구조를 평가하고 단일 에이전트 baseline을 추정(범인 지목이 아니라 구조 분석).
+- **Decide Architecture** — `architecture-selector`. 선택 규칙(architecture-task alignment·45% capability ceiling)으로 single vs multi와 토폴로지(centralized/independent) 권고. 휴리스틱은 falsifiable하게 적되 결정론 rule로 과강화 금지.
+- **Design Coordination** — `coordination-designer`. communication/commitment/expectation 세 실패 메커니즘 가드(expectation 우선) + per-agent 컨텍스트 격리(context-pollution 회피) 설계. 멀티일 때만.
+- **Verify-or-Reject** — `orchestration-verifier`. 계획이 단일 baseline을 *실제로* 능가하는지 적대 검증. 순이득이 양임을 증명 못 하면 단일 에이전트 권고(REJECT)가 정당한 결과.
+
+> `agent-orchestration`은 **여러 에이전트를 쓸지/어떻게 협업시킬지 결정·설계·검증**에 특화한 도메인 무관 하네스다. 4개 에이전트를 서브에이전트로 spawn한다(모두 `model: "opus"`; Phase 0→3 순차, single이면 Phase 2 skip). 핵심 메시지는 **"에이전트를 더 붙인다고 항상 이득이 아니다 — 성패는 수가 아니라 architecture-task alignment가 결정한다"**. **내재화 원칙** — 에이전트 수≠이득 · capability ceiling(경험적 임계, over-rule 금지) · 협업에는 비용(curse of coordination) · 실패는 root-cause(communication/commitment/expectation) · baseline 대비 순이득 검증 · falsifiable·over-rule 금지 · 승인 게이트. **경계** — 컨텍스트 페이로드 조립·압축 · AI 출력 평가(judge 구성) · 엔지니어용 구현 명세 작성 · 단일 자율 반복 루프 · 새 하네스 생성 · 프로덕션 장애 대응은 범위가 아니다. 근거: Towards a Science of Scaling Agent Systems(arXiv:2512.08296, Google/MIT/DeepMind/Anthropic)[+80.8%~−70.0% architecture-task alignment·45% capability ceiling, vote 3-0] · CooperBench(arXiv:2601.13295)[curse of coordination·communication/commitment/expectation 3실패모드, vote 3-0/2-1] · DACS(arXiv:2604.07911)[context pollution, vote 2-1 medium — 수치 비인용].
+
+### Plugin: `eval-harness`
+
+| Skill | Command | Description |
+|-------|---------|-------------|
+| Eval Harness | `/eval-harness` | AI 생성물(코드·에이전트 출력)을 **엄밀하게 평가**하는 진입 오케스트레이터. 핵심 질문은 '점수가 몇 점인가'가 아니라 **'이 점수를 믿어도 되는가'**. 정의·validity(task/outcome validity) → judge 구성(LLM-as-a-Judge 다중표본≥3·다관점 분해·실행 grounding) → validity 감사(ABC: shortcut·harness≠model 귀인·instruction density, BLOCK 게이트) → 실행·집계·보고(confidence·CAVEAT) 4단계. Phase 0 Eval Spec 승인 게이트 |
+
+4개 에이전트 구성 (모두 `model: "opus"`):
+
+- **Define & Validity** — `eval-designer`. 평가 대상·관찰형 성공기준 + task validity(목표 역량 있어야만 풀린다)·outcome validity(결과가 실제 성공을 가리킨다) 명세 + 귀인 단위(model/harness/environment).
+- **Build Judge** — `judge-builder`. judge를 단일 샷이 아니라 다중 표본(≥3)으로 구성하고, 어려운 판정을 다관점으로 분해(MCTS식 프레이밍), 가능하면 실행 결과에 grounding. temp-0 재현성을 정확성으로 착각 금지.
+- **Audit Validity** — `validity-auditor`. ABC 관점으로 shortcut(풀지 않고 만점·파일시스템 악용)·harness≠model 귀인 혼동·instruction density 과밀을 judge 실행 *전에* 감사. 위반이면 BLOCK.
+- **Run & Report** — `eval-runner`. 다중 표본 실행·집계, 분산을 confidence로 환산, validity 잔여 위험·grounding 유무·귀인 한계를 CAVEAT로 동반. baseline 대비로만 비교('개선 N% 보장' 금지).
+
+> `eval-harness`는 **AI 생성물의 판정 신뢰성**(누가·어떻게·몇 번 채점하면 결과를 믿을 수 있는가)을 설계·감사·실행하는 데 특화한 도메인 무관 하네스다. 4개 에이전트를 서브에이전트로 spawn한다(모두 `model: "opus"`; Phase 0→3 순차). **내재화 원칙** — validity 우선(상대 최대 100% 왜곡, 상한치) · single-shot 금지(다중 표본 ≥3) · 다관점 분해·실행 grounding · shortcut 적대 감사 · harness≠model 귀인 · instruction density 절제 · confidence·CAVEAT·baseline 대비 · 승인 게이트. **경계** — 컨텍스트 페이로드 조립 · 작업의 에이전트 병렬화 판단 · 엔지니어용 구현 명세 작성 · 기존 코드의 일반 실행 테스트 생성 · 커밋/PR 코드 리뷰는 범위가 아니다. 근거: Establishing Best Practices for Building Rigorous Agentic Benchmarks(ABC, arXiv:2507.02825)[task/outcome validity·상대 최대 100% 왜곡, vote 3-0] · Can You Trust LLM Judgments?(arXiv:2412.12509)[single-shot 위험·다중 표본, vote 3-0] · MCTS-Judge(arXiv:2502.12468)[test-time 다관점 분해, vote 2-1 — '41%→80%' 수치는 반박되어 비인용] · IFScale(arXiv:2507.11538)[instruction density 68%@500, vote 2-1] · Coding Benchmarks Are Misaligned(arXiv:2606.17799)[harness≠model 20+pp, vote 3-0].
+
+### Plugin: `spec-driven-development`
+
+| Skill | Command | Description |
+|-------|---------|-------------|
+| Spec-Driven Development | `/spec-driven-development` | 엔지니어용 **실행 가능 명세(spec)를 source of truth로 작성**하고 에이전트가 명세대로 코드 생성→명세 대비 자기검증하게 하는 진입 오케스트레이터. 워크플로를 코드 우선→명세 우선으로 역전(명세=1차 산출물, 코드=2차). 명세 작성(구조화 contract) → 인수기준·자기검증 설계 → 명세 대비 구현 → 명세 대비 검증(+comprehension 게이트) 4단계. Phase 0 명세 승인 게이트 |
+
+4개 에이전트 구성 (모두 `model: "opus"`):
+
+- **Author Spec** — `spec-author`. 산문이 아니라 *구조화된 contract*(목표·범위 In/Out·인터페이스·동작·제약·엣지케이스)로 실행 가능 명세 작성. 에이전트가 그대로 구현·검증할 수 있게.
+- **Acceptance** — `acceptance-designer`. 인수기준·테스트 계획·자기검증 체크를 명세 안에서 자족적으로 설계(LLM-as-a-Judge식 인수 점검을 이 플러그인 안에서 직접 기술, 외부 의존 금지). 인수기준이 명세를 falsifiable하게 덮는지 확인.
+- **Generate-against-spec** — `spec-implementer`. 명세를 구현한 코드(또는 구현 가이드) + 추적성(어느 spec 조항을 어디서 구현했는지).
+- **Verify-against-spec** — `spec-verifier`. "코드가 *명세대로* 도나"를 조항별로 검증(충족/미충족+증거) + comprehension 게이트(완료 선언 전 diff를 읽고 무엇이 왜 바뀌었는지 확인 — comprehension debt 방지, 명세가 이해의 앵커).
+
+> `spec-driven-development`는 에이전트가 코드를 생성할 **엔지니어용 실행 가능 구현 명세 contract**에 특화한 도메인 무관 하네스다. 4개 에이전트를 서브에이전트로 spawn한다(모두 `model: "opus"`; Phase 0→3 순차). **내재화 원칙** — 명세=source of truth · 명세 승인 게이트(구현 착수 전) · 구조화된 contract · 인수기준+자기검증 내재화 · 명세 대비 검증(추적성) · comprehension 게이트(comprehension debt 방지) · 과장 금지(정직성, 비판도 dossier에 기록). **경계** — 기획자용 PRD·사용자 스토리(문제정의·비즈니스 요구) 작성 · AI 출력 평가 judge 구성 · 컨텍스트 페이로드 조립 · 완성 코드 리뷰·커밋/PR · 하네스 자체 진단은 범위가 아니다(일반 개념으로 변별, 타 플러그인 의존 금지). 근거: Spec-Driven Development: From Code to Contract in the Age of AI Coding Assistants(arXiv:2602.00180)[명세=source of truth·워크플로 역전, vote 3-0; Martin Fowler의 non-determinism·overhead 비판 동반 — 'super-prompt' 주장은 반박되어 비인용] · Addy Osmani "How to write a good spec for AI agents"(2026-01, addyo.substack)[구조화·계획·반복, vote 3-0] · "The 80% Problem in Agentic Coding"(2026-01)[comprehension debt, vote 3-0].

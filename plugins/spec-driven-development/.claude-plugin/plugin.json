@@ -1,0 +1,23 @@
+{
+  "name": "spec-driven-development",
+  "version": "0.1.0",
+  "description": "엔지니어용 실행 가능 명세(spec)를 source of truth로 작성하고, 에이전트가 그 명세대로 코드를 생성한 뒤 명세 대비 자기검증하게 하는 도메인 무관 멀티 에이전트 하네스. 워크플로를 코드 우선에서 명세 우선으로 역전한다 — 명세가 1차 산출물이고 코드는 그로부터 생성·검증되는 2차 산출물이다(Spec-Driven Development). 4단계(명세 작성 → 인수기준·자기검증 설계 → 명세 대비 구현 → 명세 대비 검증)로 진행하며, Phase 0 명세 승인 게이트를 두고, 마지막 Phase 3에 comprehension 게이트(diff를 읽고 무엇이 왜 바뀌었는지 확인 — comprehension debt 방지)를 둔다. 경계: 기획자용 PRD·사용자 스토리(문제정의·비즈니스 요구) 작성, AI 출력 평가용 judge 구성, 컨텍스트 페이로드 조립·압축, 완성 코드 리뷰·커밋/PR, 하네스 자체 진단은 범위가 아니며, 에이전트가 코드를 생성할 *실행 가능한 구현 명세 contract*에 특화한다.",
+  "author": {
+    "name": "seungah.hong",
+    "email": "ssingah1030@gmail.com"
+  },
+  "tags": [
+    "claude-code",
+    "plugin",
+    "spec-driven-development",
+    "executable-specification",
+    "spec-as-contract",
+    "acceptance-criteria",
+    "self-verification",
+    "comprehension-gate",
+    "coding-agent",
+    "multi-agent",
+    "orchestration",
+    "workflow"
+  ]
+}

@@ -106,5 +106,13 @@
   {
     "query": "넘어온 인수조건이 테스트 가능한지, 음성·엣지 경로 빠졌는지 핸드오프 게이트로 점검해줘",
     "should_trigger": false
+  },
+  {
+    "query": "에이전트가 코드를 생성할 실행 가능한 구현 명세(spec=source of truth)를 작성하고 명세대로 코드 생성·자기검증하게 해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "기획문서 말고, 엔지니어가 코딩 에이전트에게 줄 기술 구현 명세를 contract로 써줘",
+    "should_trigger": false
   }
 ]

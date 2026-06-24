@@ -1,0 +1,75 @@
+{
+  "eval_metadata": {
+    "eval_id": "agent-orchestration-acceptance",
+    "eval_name": "agent-orchestration 오케스트레이터 수용 평가 (design-conformance dry-run)",
+    "prompt": "한 작업을 여러 에이전트로 병렬화할지·어떻게 협업시킬지를 판단 규칙으로 결정하고(Phase 0 분해·평가 → Phase 1 아키텍처 결정 → Phase 2 협업 가드 설계 → Phase 3 baseline 능가 검증), 'multi라서 좋다'가 아니라 단일 에이전트 baseline 대비 순이득으로 검증해 능가 못 하면 단일을 권고한다. 본 평가는 shipped SKILL.md·agents/*.md·references/*가 계약 불변식(에이전트 수≠이득·architecture-task alignment·capability ceiling(over-rule 금지)·세 root-cause 협업 가드·context-pollution 격리·baseline 능가 검증/reject·falsifiability·인용 정직성·승인 게이트·경계)을 강제·명세하는지 file:section 인용 증거로 채점한다(런타임 실행이 아닌 정적 정합 점검).",
+    "method": "design-conformance dry-run — 런타임 실행 없이 shipped 파일이 핵심 동작을 명세·강제하는지 인용으로 검증",
+    "assertions": [
+      {
+        "text": "[Phase0/assess-not-decide] task-decomposer는 작업을 분해 가능성(decomposability)·도구 밀도(tool density)·의존 그래프(직렬/병렬)·단일 에이전트 baseline 추정으로 변환하되 single/multi 결정은 하지 않고(결정의 입력만), 관찰 가능한 근거로 적으며 수치를 발명하지 않고(모르면 '미상'), Phase 0 직후 승인 게이트를 통과해야 한다.",
+        "passed": true,
+        "evidence": "agents/task-decomposer.md Work Principles '분해 가능성(decomposability) 평가'·'도구 밀도(tool density) 평가'·'하위작업 의존 구조(직렬 vs 병렬)'·'단일 에이전트 baseline 추정'·'관찰 가능한 근거로 적는다(수치를 발명하지 않고, 모르면 미상)'·'결정 금지(평가 전용)'. Output 'Task Assessment' 템플릿. SKILL.md Phase 0 '승인 게이트 [Phase 0] 작업 분해·신호 평가 완료 — 다음: 아키텍처 결정. 진행할까요?' + '승인 전에는 아키텍처 결정을 시작하지 않는다'."
+      },
+      {
+        "text": "[Phase1/alignment-over-count] architecture-selector는 architecture-task alignment를 우선해 single vs multi를 권고하고(에이전트 수가 아니라 작업-아키텍처 정합이 성패를 결정), 멀티는 단일보다 나은 이유를 댈 수 있을 때만 권고하며 단일을 기본 후보로 둔다.",
+        "passed": true,
+        "evidence": "agents/architecture-selector.md Work Principles 'architecture-task alignment 우선(references §1: +80.8% ~ −70.0%, vote high)'·'단일 권고를 기본 후보로(멀티는 비용을 정당화해야 채택, 멀티 권고는 왜 단일보다 나은가를 명시할 수 있을 때만)'. SKILL.md 내재화 원칙 '에이전트 수 ≠ 이득 — 멀티의 성패는 architecture-task alignment가 결정한다'. references/agent-orchestration-principles.md §2.1·research dossier §1."
+      },
+      {
+        "text": "[Phase1/capability-ceiling-no-over-rule] 단일 에이전트가 이미 충분히 푸는 작업(capability ceiling, 경험적 임계 ~45% 초과)은 추가 에이전트가 음의 수익일 수 있어 병렬화 금지 후보로 플래그하되, 결정론적 rule이 아니라 경험적 임계임을 명시하고(decomposability·tool density·토폴로지가 무효화 가능) over-rule을 금지해야 한다.",
+        "passed": true,
+        "evidence": "agents/architecture-selector.md Work Principles 'capability-ceiling 휴리스틱 ... 음의 수익(references §2)' + 'falsifiable하되 over-rule 금지'. SKILL.md 내재화 원칙 'capability ceiling ... 경험적 임계지 결정론적 rule이 아니다 — decomposability·tool density·토폴로지가 뒤집을 수 있다'. references/agent-orchestration-principles.md §2.2 '결정론적 rule이 아니라 경험적 임계다(R²≈0.51)' + §7 anti-pattern 'capability-ceiling 과강화(over-rule)'. research dossier §2 CAVEAT."
+      },
+      {
+        "text": "[Phase1/topology-error-amplification] 멀티 권고 시 토폴로지(centralized/independent)를 함께 권고하고, independent가 centralized보다 오류 증폭이 크다는 근거로 통합 필요·도구 밀도가 높은 작업은 centralized를 보수적 기본으로 두며, 토폴로지가 미상이면 centralized로 기운다.",
+        "passed": true,
+        "evidence": "agents/architecture-selector.md Work Principles '토폴로지 권고(centralized vs independent) ... independent가 centralized보다 오류를 더 크게 증폭(references §1)' + Error Handling '토폴로지 미상 → centralized를 보수적 기본'. references/agent-orchestration-principles.md §3 '오류 증폭이 토폴로지마다 다르다 ... independent가 centralized보다 크다'. research dossier §1(error amplification 17.2x independent vs 4.4x centralized)."
+      },
+      {
+        "text": "[Phase2/three-rootcause-guards] coordination-designer는 협업 실패를 communication·commitment·expectation 세 root-cause 메커니즘으로 조직화해 각각 가드를 붙이고(증상이 아니라 root-cause), expectation이 최대 실패원이므로 우선하며, 메시지·동기화를 최소로 둔다(채널 정체 자체가 communication 실패원).",
+        "passed": true,
+        "evidence": "agents/coordination-designer.md Work Principles '세 실패 메커니즘에 각각 가드(root-cause 조직화) — communication·commitment·expectation'·'expectation 실패가 가장 크고 communication이 그다음(references §4) — 가드 우선순위에 반영'·'최소 coordination'. SKILL.md 내재화 원칙 '실패는 root-cause로 조직화 ... expectation이 최대 실패원, 우선'. references/agent-orchestration-principles.md §4. research dossier §4(expectation ~42%·communication ~26%)."
+      },
+      {
+        "text": "[Phase2/context-pollution-isolation] 멀티 구성에서 N개 에이전트가 컨텍스트를 공유할 때 생기는 cross-agent 오염(context pollution)을 per-agent 컨텍스트 격리로 막고, 오케스트레이터는 에이전트별 경량 상태 요약만 유지하고 특정 에이전트를 다룰 때만 풀 컨텍스트를 끌어오는 비대칭 격리를 둔다.",
+        "passed": true,
+        "evidence": "agents/coordination-designer.md Work Principles 'context pollution 회피(per-agent 컨텍스트 격리) ... 오케스트레이터는 에이전트별 경량 상태 요약만 유지하고 특정 에이전트를 다룰 때만 그 풀 컨텍스트를 끌어온다'. SKILL.md 내재화 원칙 '컨텍스트는 격리한다 ... per-agent 격리로 완화한다'. references/agent-orchestration-principles.md §5. research dossier §5(medium 신뢰, 질적 메커니즘만)."
+      },
+      {
+        "text": "[Phase3/verify-or-reject] orchestration-verifier는 'multi라서 좋다'가 아니라 단일 baseline 대비 순이득(멀티 이득 − coordination 비용 − 오류 증폭)이 양인지 적대적으로 따지고, 능가를 증명 못 하면 REJECT(단일 권고)가 정당한 결과이며 경계(순이득 0 근처)에서는 단일을 보수적으로 권고하고, 아키텍처/가드를 직접 고치지 않고 REVISE 신호만 낸다.",
+        "passed": true,
+        "evidence": "agents/orchestration-verifier.md Work Principles 'baseline 대비 순이득으로 판정(multi-라서 좋다 금지)'·'거절은 정당한 결과(reject-or-verify)'·'수정 금지(검증·권고 전용)' + Output 'PASS|REJECT|REVISE' + Error Handling '경계값 → 보수적으로 단일 권고'·'반복 REVISE → 단일 최종 권고'. SKILL.md Phase 3 분기(PASS/REJECT/REVISE) + 내재화 원칙 'baseline 대비 순이득으로 검증 ... 증명 못 하면 단일을 권고하고 병렬화를 거절'. references/agent-orchestration-principles.md §6."
+      },
+      {
+        "text": "[Coordination-cost/curse] 에이전트 협업은 사람 팀과 달리 '인원 추가 = 생산성 증가'가 보장되지 않고(curse of coordination — 페어 협업이 각자 수행보다 성공률이 떨어지는 경향), 이 비용을 검증의 차감 항으로 계상해 멀티의 순이득을 과대평가하지 않아야 한다.",
+        "passed": true,
+        "evidence": "agents/coordination-designer.md Core Role '협업이 각자 수행 대비 성공률이 떨어지고(curse of coordination, references §3)' + 'curse of coordination 인지(가드 비용 정당화)'. agents/orchestration-verifier.md Work Principles 'curse of coordination을 비용으로 계상'. SKILL.md 내재화 원칙 '협업에는 비용이 든다(curse of coordination)'. references/agent-orchestration-principles.md §4 도입·§6 순이득 식. research dossier §3."
+      },
+      {
+        "text": "[Falsifiability/citation-honesty] 모든 휴리스틱(capability-ceiling 임계·alignment 부호)은 관찰 가능한 입력으로 적어 반증 가능하게 하고 권고마다 '이 권고가 틀릴 조건'을 달며, 정량 수치는 vote/CAVEAT와 함께만 인용하고 '개선 N% 보장'을 금지하며, medium 신뢰 출처(2604.07911)는 CAVEAT를 명시하고 수치를 채택하지 않아야 한다.",
+        "passed": true,
+        "evidence": "agents/architecture-selector.md Output 'Architecture Recommendation' 템플릿에 '이 권고가 틀릴 조건 (falsifiability)' 절. SKILL.md 내재화 원칙 'falsifiable·over-rule 금지'. references/agent-orchestration-research.md 머리말 '정량 수치는 vote/CAVEAT와 함께만 인용 ... 개선 N% 보장 류의 단정은 쓰지 않는다' + §5 'medium 신뢰 — 수치는 채택하지 않고 질적 실패모드만 인용' + '방법론 — deep-research 3-vote 적대 검증'. references/agent-orchestration-principles.md 머리말·§2.2."
+      },
+      {
+        "text": "[Refuted/transparency] research dossier는 채택하지 않은/반박된 주장(DACS 정량 격리 수치 90-98% vs 21-60%·'멀티가 일반적으로 단일을 능가한다'·capability-ceiling 45%를 결정론 금지 rule로 사용)을 별도 '반박된 주장(투명성)' 섹션에 기록하고 본문 근거로 쓰지 않아야 한다.",
+        "passed": true,
+        "evidence": "references/agent-orchestration-research.md '## 반박된 주장 (투명성)' 섹션 3건(DACS 정량 수치 미채택·more-agents-is-better 거부·capability-ceiling을 결정론 rule로 쓰는 것의 과강화) + 각 항목 '본문 근거로 쓰지 않고'. principles.md §7 anti-pattern 'more-agents-is-better'·'capability-ceiling 과강화(over-rule)'."
+      },
+      {
+        "text": "[Approval/observability] Phase 0 직후 승인 게이트는 항상이고 각 Phase는 1줄로 보고하며(single 권고면 Phase 2 skip), 요청되지 않은 사이드 에이전트나 중복 실행을 만들지 않고 최종 결정·근거·남은 불확실성을 요약 보고해야 한다.",
+        "passed": true,
+        "evidence": "SKILL.md Phase 0 승인 게이트 + Phase 1 'single 권고면 → Phase 2를 건너뛰고 Phase 3로' + 각 Phase 1줄 보고 문자열 + 내재화 원칙 '관찰 가능성·승인 ... 요청되지 않은 사이드 에이전트나 중복 실행을 만들지 않는다' + 마무리 보고 '[Orchestration 결정] {단일 | 멀티:토폴로지} — 순이득 {…}, 근거 {…}'. CLAUDE.md Phase 요약 표·Conventions."
+      },
+      {
+        "text": "[Boundary/domain-guard] agent-orchestration은 '여러 에이전트를 쓸지/어떻게 협업시킬지 결정'에 특화하고, 컨텍스트 페이로드 조립·압축·AI 출력 평가(judge 구성)·엔지니어용 구현 명세 작성·단일 자율 반복 루프·새 하네스 생성·프로덕션 장애 대응과 경계를 두며 인접 도메인 요청에는 발동하지 않도록 should-not 가드를 둔다.",
+        "passed": true,
+        "evidence": "SKILL.md description '발동하지 않는다 — 컨텍스트 페이로드 조립·압축, AI 출력의 엄밀한 평가(judge 구성), 엔지니어용 구현 명세 작성, 단일 자율 반복 루프, 새 하네스/에이전트 팀 ... 생성, 프로덕션 장애 대응 ...' + 경계 섹션(각 인접 도메인 일반 개념으로 변별). plugin.json description 경계 절. README.md '언제 다른 도구를 쓰나'·'도구 경계'. evals/trigger-eval.json should_not 13건(컨텍스트 조립·judge 평가·구현 명세·단일 반복 루프·하네스 생성·장애 대응·하네스 진단·PRD·커밋/PR·settings·리팩터·테스트 생성·백엔드 설계)."
+      },
+      {
+        "text": "[Independence/self-contained] 하네스는 다른 마켓플레이스 플러그인을 dependency로 참조하지 않고 경계의 '범위 밖' 진술을 일반 개념(컨텍스트 설계·평가·명세·반복·운영 도메인)으로만 서술하며, 각 논문(2512.08296·2601.13295·2604.07911)을 primary로 직접 인용해 단독으로 사용 가능해야 한다.",
+        "passed": true,
+        "evidence": "SKILL.md 경계 섹션이 타 플러그인명 없이 '컨텍스트 설계 도메인'·'평가 도메인'·'명세 도메인'·'운영 도메인' 등 일반 개념으로만 변별. references/agent-orchestration-research.md §1·§3·§5가 각 arXiv 논문을 제목·저자·ID·연도·인용문으로 primary 직접 인용. principles.md 참고 문헌·CLAUDE.md Change History가 세 arXiv ID를 직접 명시. plugin.json·README.md 어디에도 타 플러그인 경로 의존 없음."
+      }
+    ]
+  }
+}
