@@ -32,7 +32,7 @@ backend-harness/
 │       └── references/
 │           └── test-generator-guide.md          # 공진화 루프·5 경험적 수리 템플릿·커버리지 게이트·judge 캘리브레이션
 └── evals/
-    └── trigger-eval.json           # 트리거 경계 평가 (should_trigger 11 / should_not 11, 인접 하네스 reciprocal 가드)
+    └── trigger-eval.json           # 트리거 경계 평가 (should_trigger 11 / should_not 12, 인접 하네스 reciprocal 가드)
 ```
 
 ## 5단계 요약

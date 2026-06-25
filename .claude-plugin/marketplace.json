@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "분석 → 설계 → 개발 → 리뷰 → 검증까지, 소프트웨어 개발 전 과정을 지원하는 멀티 에이전트 스킬·커맨드·훅 모음. 정적 분석 5개 관점(간소화·코드 리뷰·보안·성능·정합성) 중 사용자 선택 항목 병렬 + 재리뷰 루프와 E2E·타입/빌드 검증, 그리고 코드 착수 *전* 상류 산출물(기획·디자인·API 계약·QA 인수조건) 핸드오프 게이트 검수를 포함합니다.",
-    "version": "1.13.0",
+    "version": "1.14.0",
     "homepage": "https://github.com/seungahhong/seungah-claude-plugins"
   },
   "plugins": [
@@ -357,6 +357,29 @@
         "oversight",
         "doer-verifier",
         "appropriate-reliance",
+        "multi-agent",
+        "orchestration"
+      ],
+      "category": "workflow",
+      "strict": false
+    },
+    {
+      "name": "code-as-harness",
+      "description": "코드를 단순 산출물이 아니라 실행 가능(executable)·검사 가능(inspectable)·상태 보존(stateful)한 운영 기반(operational substrate)으로 다루고, 한 번의 거버넌스된 Plan→Execute→Verify 제어 루프로 코드 변경을 안전하고 검증 가능하게 수행하는 도메인 무관 멀티 에이전트 하네스. 근거 논문은 arXiv:2605.18747 'Code as Agent Harness: Toward Executable, Verifiable, and Stateful Agent Systems'(2026-05)다. 핵심 메시지는 '코드는 에이전트가 추론·행동·검증하는 실행 기반이다 — 계획은 변경 계약이고, 실행은 권한·샌드박스로 게이트되며, 검증은 자기보고가 아니라 결정적 센서(실행)로 한다'이다. 4단계로 진행한다: (Phase 0) 작업을 계획 계약(Plan Contract)으로 변환 — 의도한 변경(파일·동작·불변식)·성공을 판정할 결정적 센서(테스트·빌드·타입·린트·실행)·각 행동의 위험(가역 vs 안전임계/비가역: 삭제·마이그레이션·스키마·네트워크 egress·시크릿·프로덕션)을 사전 분류한다(승인 게이트) → (Phase 1) 권한 실행 — 계약을 실현하는 최소 변경을 권한·샌드박스 경계에서 가역 우선으로 적용하고 안전임계 행동은 실행 전 사람 승인 게이트(전수 승인 아님)로 막으며 계획조항→diff→관측 피드백을 구조화된 실행 trace로 남긴다 → (Phase 2) 실행 검증 — 계약의 결정적 센서를 실제로 돌려 조항별로 PASS/FAIL/UNVERIFIED를 센서 증거와 함께 판정하고, 자기보고를 불신하며 reward-hacking·verifier-gaming(테스트 약화·하드코딩·형식 우회)을 가드하고 불완전 피드백에서는 PASS를 단정하지 않으며(UNVERIFIED) 최종 성공 너머 불변식·부작용도 본다 → (Phase 3) 텔레메트리 진단·수렴 — 검사 가능한 trace를 최적화 substrate로 읽어 root cause를 trace 인용으로 진단하고 통과한 것을 깨지 않는 regression-free 차기 수정안을 제안하며 CONVERGED/ITERATE/ESCALATE를 결정한다(무진전이면 ESCALATE). 검증된 근거(arXiv:2605.18747 정독 + 인접 1차 2604.08224 Externalization·2506.11442 ReVeal·2604.20801 AgentFlow·2508.00083 code-gen 서베이·2512.14012 developer-control + 보강 2604.15149 verifier reward-hacking·2603.07084 sandbox)를 vote/CAVEAT와 함께 인용하되, 서베이는 개념 프레임(벤치마크 결과 아님)으로 쓰고 인접 논문 기법을 대상 서베이에 귀속하지 않으며 'several-fold' 민감도는 특정 세팅값으로 한정하고 반박된 주장(AgentFlow 4-phase 루프)은 본문 근거로 쓰지 않으며 '개선 N% 보장'을 금지한다. 경계: 통과까지 자율 반복+교차세션 학습 메모리(자율 반복 도메인)·백엔드 환경 provisioning 1급 구현(백엔드 구현 도메인)·실행 가능 명세 작성(명세 우선 도메인)·AI 에이전트 병렬화·토폴로지(멀티 에이전트 오케스트레이션 도메인)·컨텍스트 페이로드 조립(컨텍스트 설계 도메인)·AI 출력 평가(평가 도메인)·하네스 자체 진단(메타 도메인)·상류 핸드오프 검수(핸드오프 리뷰 도메인)·프로덕션 인시던트 대응(운영 도메인)·PRD·커밋/PR·settings는 범위가 아니며 '코드를 실행·검증 가능한 하네스로 다루는 거버넌스된 Plan→Execute→Verify 제어 사이클'에 특화한다. 다른 마켓플레이스 플러그인에 의존하지 않는 독립 플러그인이다.",
+      "source": "./plugins/code-as-harness",
+      "version": "0.1.0",
+      "author": { "name": "seungah.hong" },
+      "tags": [
+        "claude-code",
+        "plugin",
+        "code-as-harness",
+        "plan-execute-verify",
+        "execution-based-verification",
+        "permissioned-execution",
+        "sandboxing",
+        "reward-hacking-guard",
+        "execution-trace",
+        "human-oversight",
         "multi-agent",
         "orchestration"
       ],

@@ -105,7 +105,7 @@ plugins/
           loop-engineering-research.md                   #   설계 근거 deep-research dossier (출처·인용·신뢰도·caveat)
     evals/
       evals.json                                         # 수용 평가 (design-conformance dry-run — 핵심 불변식 file:section 인용 채점)
-      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 10 / should_not 18, 인접 하네스(meta/harness-generator/product-spec) reciprocal 가드)
+      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 10 / should_not 19, 인접 하네스(meta/harness-generator/product-spec/code-as-harness) reciprocal 가드)
   review-harness/                                        # [독립 플러그인] 코드 착수 *전* 상류 산출물(기획·디자인·API 계약·QA 인수조건) 핸드오프 게이트 검수. 경계: 완성 코드 리뷰(frontend-harness)·PRD/스토리 작성(product-spec)·커밋/PR(git-harness)·하네스 진단(meta-harness) 제외
     .claude-plugin/
       plugin.json
@@ -159,7 +159,7 @@ plugins/
         references/
           test-generator-guide.md                        #   공진화 루프·5 경험적 수리 템플릿·커버리지 게이트·judge 캘리브레이션
     evals/
-      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 11 / should_not 11, 인접 하네스 reciprocal 가드)
+      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 11 / should_not 12, 인접 하네스 reciprocal 가드)
   cicd-harness/                                          # [독립 플러그인] 코드 커밋→프로덕션 전달 파이프라인 CI/CD·DevOps·릴리스·IaC 하네스. 경계: 배포 이후 인시던트(ops)·BE 구현(backend)·빌드그린 반복(loop)·커밋/PR(git)·계약검수(review) 제외
     .claude-plugin/
       plugin.json
@@ -253,7 +253,7 @@ plugins/
           spec-driven-development-research.md            #   설계 근거 dossier (출처·인용·vote·CAVEAT·반박된 주장; arXiv:2602.00180 + Osmani 2026-01)
     evals/
       evals.json                                         # 수용 평가 (핵심 불변식 file:section 인용 채점)
-      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 13, 인접 도메인 reciprocal 가드)
+      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 14, 인접 도메인 reciprocal 가드)
   ai-readable-codebase/                                 # [독립 플러그인] 코드베이스의 구조적 AI 접근성(A축≠Q축)을 진단·개선하는 하네스 (진단(2축·L1~L5 증거기반)→빌드 가드레일→standalone 독립 실행→수용 증명·재측정 4단계). 경계: 한 기능 구현·검증(backend)·상류 핸드오프 검수(review)·하네스 진단(meta)·전달 파이프라인(cicd)·실행 명세(spec)·컨텍스트 조립(context)·완성 코드 리뷰(frontend/git) 제외
     .claude-plugin/
       plugin.json
@@ -292,4 +292,23 @@ plugins/
     evals/
       evals.json                                         # 수용 평가 (핵심 불변식 file:section 인용 채점)
       trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 10 / should_not 12, 인접 도메인 reciprocal 가드)
+  code-as-harness/                                      # [독립 플러그인] 코드를 실행 가능·검사 가능·상태 보존(operational substrate)으로 다루고 거버넌스된 Plan→Execute→Verify 제어 루프로 코드 변경을 안전·검증 가능하게 수행하는 하네스 (계획 계약→권한·샌드박스 실행→실행 검증→텔레메트리 진단·수렴 4단계). 단일 거버넌스 사이클이지 통과까지 자율 반복(loop)이 아님. 경계: 통과까지 자율 반복+학습 메모리(loop)·백엔드 환경 provisioning 구현(backend)·실행 명세 작성(spec)·AI 에이전트 병렬화(agent-orchestration)·컨텍스트 조립(context)·AI 출력 평가(eval)·하네스 진단(meta)·상류 핸드오프 검수(review)·장애 대응(ops)·PRD(product-spec)·커밋/PR(git) 제외
+    .claude-plugin/
+      plugin.json
+    CLAUDE.md                                            # 하네스 포인터 + Phase 요약 + 변경 이력
+    README.md                                            # 사용자용 개요·사용법·도구 경계·근거 논문
+    agents/                                              # 모두 model: "opus"
+      plan-contractor.md                                 # Phase 0 Plan Contract — 작업 → 변경 계약(의도한 변경·결정적 센서·행동 위험 분류)
+      permissioned-executor.md                           # Phase 1 Permissioned Execute — 권한·샌드박스 실행·가역 우선·안전임계 사람 게이트·구조화 실행 trace 적재
+      execution-verifier.md                              # Phase 2 Execution Verify — 결정적 센서 실제 실행·조항별 PASS/FAIL/UNVERIFIED·reward-hacking·불완전 피드백·최종 너머 가드(검증 전용)
+      telemetry-diagnostician.md                         # Phase 3 Telemetry Diagnose & Converge — trace 인용 진단·regression-free 수정안·무진전 ESCALATE·CONVERGED/ITERATE/ESCALATE(진단·제안만)
+    skills/
+      code-as-harness/                                   # 진입점 오케스트레이터 (Phase 0 계획 계약 승인 게이트 → 실행 → 검증 → 진단·수렴)
+        SKILL.md
+        references/
+          code-as-harness-principles.md                  #   원칙·anti-pattern·결정 신호표
+          code-as-harness-research.md                    #   설계 근거 dossier (출처·인용·vote·CAVEAT·반박된 주장; arXiv:2605.18747 + 인접 2604.08224·2506.11442·2604.20801·2508.00083·2512.14012 + 보강 2604.15149·2603.07084)
+    evals/
+      evals.json                                         # 수용 평가 (핵심 불변식 file:section 인용 채점)
+      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 14, 인접 도메인 reciprocal 가드)
 ```

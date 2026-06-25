@@ -98,5 +98,9 @@
   {
     "query": "이 코드베이스가 AI 에이전트가 읽고 기여하기 좋은 구조인지 진단하고 AI 접근성 등급(L1~L5)·빌드 가드레일로 개선해줘",
     "should_trigger": false
+  },
+  {
+    "query": "코드를 executable·inspectable·stateful 운영 기반으로 다뤄 계획 계약→권한 실행→결정적 센서 검증→trace 진단의 거버넌스 사이클로 변경해줘(백엔드 환경 provisioning을 1급 단계로 두는 구현은 아님)",
+    "should_trigger": false
   }
 ]

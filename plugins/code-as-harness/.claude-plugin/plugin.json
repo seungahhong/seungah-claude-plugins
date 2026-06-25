@@ -1,0 +1,23 @@
+{
+  "name": "code-as-harness",
+  "version": "0.1.0",
+  "description": "코드를 단순 산출물이 아니라 실행 가능(executable)·검사 가능(inspectable)·상태 보존(stateful)한 운영 기반(operational substrate)으로 다루고, 한 번의 거버넌스된 Plan→Execute→Verify 제어 루프로 코드 변경을 안전하고 검증 가능하게 수행하는 도메인 무관 멀티 에이전트 하네스. 핵심 메시지는 '코드는 에이전트가 추론·행동·검증하는 실행 기반이다 — 계획은 변경 계약이고, 실행은 권한·샌드박스로 게이트되며, 검증은 자기보고가 아니라 결정적 센서(실행)로 한다'이다. 4단계로 진행한다: (Phase 0) 작업을 계획 계약(Plan Contract)으로 변환 — 의도한 변경(파일·동작·불변식)을 명문화하고, 성공을 판정할 결정적 센서(테스트·빌드·타입·린트·실행)와 각 행동의 위험(가역 vs 안전임계/비가역: 삭제·마이그레이션·스키마·네트워크·시크릿·프로덕션)을 사전 분류한다(승인 게이트) → (Phase 1) 권한 실행(Permissioned Execute) — 계약을 실현하는 최소 변경을 권한·샌드박스 경계 안에서 적용하고 가역 우선·안전임계 행동은 사람 승인 게이트로 막으며, 계획조항→diff→행동→관측 피드백을 구조화된 실행 trace로 남긴다 → (Phase 2) 실행 검증(Execution Verify) — 계약의 결정적 센서를 실제로 돌려 조항별로 부합을 판정하고, reward-hacking·verifier-gaming(센서 약화·우회)을 가드하며, 불완전 피드백(부분 센서)에서는 confidence를 낮추고 UNVERIFIED로 표시(증거 없는 PASS 금지)하고 최종 성공 너머의 불변식·부작용도 본다 → (Phase 3) 텔레메트리 진단·수렴(Telemetry Diagnose & Converge) — 검사 가능한 trace를 최적화 substrate로 읽어 실패의 root cause를 trace 인용으로 진단하고, 통과한 것을 깨지 않는 regression-free 차기 계획계약 수정을 제안하며 CONVERGED/ITERATE/ESCALATE를 결정한다. 검증된 근거(arXiv:2605.18747 'Code as Agent Harness'(2026-05) 정독 + arXiv:2604.08224 Externalization(weights→context→harness)·arXiv:2506.11442 ReVeal(generation-verification 공진화)·arXiv:2604.20801 AgentFlow(harness 민감도)·arXiv:2508.00083 code-gen 서베이·arXiv:2512.14012 developer-control 연구·arXiv:2604.15149 verifier reward-hacking·arXiv:2603.07084 sandbox 격리)를 vote/CAVEAT와 함께 인용하되, 서베이는 개념적 프레임워크(벤치마크 결과 아님)로 쓰고 인접 논문의 기법(TAPO·AgentFlow DSL)을 대상 서베이에 귀속하지 않으며 'several-fold' 민감도는 특정 세팅값으로 한정하고 반박된 주장(AgentFlow 4-phase 루프)은 본문 근거로 쓰지 않으며 '개선 N% 보장'을 금지한다. 경계: 검증 가능한 목표로 통과까지 자율 반복하고 교차세션 학습 메모리에 distill하는 단일 자율 반복 루프(자율 반복 도메인), 백엔드/API 환경 provisioning을 1급으로 둔 구현(백엔드 구현 도메인), 실행 가능 명세를 source of truth로 작성하는 일(명세 우선 도메인), 여러 AI 에이전트로 병렬화할지·토폴로지 결정(멀티 에이전트 오케스트레이션 도메인), 모델 컨텍스트 페이로드 조립·압축(컨텍스트 설계 도메인), AI 출력 judge 구성·엄밀 평가(평가 도메인), 하네스 자체 결함 진단·개선(메타 도메인), 상류 산출물 핸드오프 게이트 검수(핸드오프 리뷰 도메인), 프로덕션 인시던트 대응(운영 도메인), PRD 작성·커밋/PR·settings 설정은 범위가 아니며 '코드를 실행·검증 가능한 하네스로 다루는 거버넌스된 Plan→Execute→Verify 제어 사이클'에 특화한다. 다른 마켓플레이스 플러그인에 의존하지 않는 독립 플러그인이다.",
+  "author": {
+    "name": "seungah.hong",
+    "email": "ssingah1030@gmail.com"
+  },
+  "tags": [
+    "claude-code",
+    "plugin",
+    "code-as-harness",
+    "plan-execute-verify",
+    "execution-based-verification",
+    "permissioned-execution",
+    "sandboxing",
+    "reward-hacking-guard",
+    "execution-trace",
+    "human-oversight",
+    "multi-agent",
+    "orchestration"
+  ]
+}

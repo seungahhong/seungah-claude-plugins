@@ -1,0 +1,75 @@
+{
+  "eval_metadata": {
+    "eval_id": "code-as-harness-acceptance",
+    "eval_name": "code-as-harness 오케스트레이터 수용 평가 (design-conformance dry-run)",
+    "prompt": "코드를 실행 가능·검사 가능·상태 보존한 운영 기반으로 다루고 한 번의 거버넌스된 Plan→Execute→Verify 제어 루프로 코드 변경을 안전·검증 가능하게 수행한다(Phase 0 계획 계약 → Phase 1 권한 실행 → Phase 2 실행 검증 → Phase 3 텔레메트리 진단·수렴). 본 평가는 shipped SKILL.md·agents/*.md·references/*가 계약 불변식(코드=operational substrate·계획=변경 계약·권한/샌드박스 실행·안전임계 사람 게이트·실행 기반 검증(자기보고 불신)·reward-hacking 가드·불완전 피드백 UNVERIFIED·최종 성공 너머·trace 인용 진단·regression-free 개선·무진전 ESCALATE·정직성(서베이=개념 프레임·인접 기법 귀속 분리·반박된 AgentFlow 4-phase 미사용)·승인 게이트·경계·독립성)을 강제·명세하는지 file:section 인용 증거로 채점한다(런타임 실행이 아닌 정적 정합 점검).",
+    "method": "design-conformance dry-run — 런타임 실행 없이 shipped 파일이 핵심 동작을 명세·강제하는지 인용으로 검증",
+    "assertions": [
+      {
+        "text": "[Core/code-as-substrate] 하네스는 코드를 산출물이 아니라 운영 기반(executable=검증 가능 연산·inspectable=구조화 trace·stateful=영속 진행)으로 다루고, 검증을 의견이 아니라 실행으로 규정한다.",
+        "passed": true,
+        "evidence": "SKILL.md 서두 'executable·inspectable·stateful' + 내재화 원칙 '코드 = 운영 기반'. references/code-as-harness-principles.md §1. research dossier §1·§4(인용 'model outputs become operations with formally verifiable outcomes ... structured traces'). CLAUDE.md Conventions 첫 항목."
+      },
+      {
+        "text": "[Phase0/plan-as-contract] plan-contractor는 작업을 변경 계약으로 변환하되 의도한 변경(파일·동작·불변식·바꾸지 않을 것)을 조항화하고, 성공 판정 결정적 센서(테스트·빌드·타입·린트·실행)를 사전 명시하며, 각 행동을 가역 vs 안전임계/비가역으로 분류해 사람 게이트를 표시하고, 실행·검증 상세는 하지 않으며(계약만) Phase 0 직후 승인 게이트를 통과해야 한다.",
+        "passed": true,
+        "evidence": "agents/plan-contractor.md Work Principles '의도한 변경 명문화'·'판정 센서 사전 명시'·'행동 위험 분류(1급)'·'계약만, 실행·검증 상세 금지'. Output 'Plan Contract' 템플릿. SKILL.md Phase 0 승인 게이트 '[Phase 0] 계획 계약 완료 — 다음: 권한 실행. 진행할까요?' + '승인 전에는 다음 단계를 시작하지 않는다'. references/code-as-harness-principles.md §2. research dossier §3(plans form contracts)·§5."
+      },
+      {
+        "text": "[Phase1/permissioned-execution] permissioned-executor는 계약을 권한·샌드박스 경계에서 최소 변경·가역 우선으로 실현하고, 안전임계/비가역 행동(삭제·마이그레이션·스키마·네트워크 egress·시크릿·프로덕션)은 실행 전 사람 승인 게이트로 막으며(전수 승인 아님), 계획조항→diff→관측 피드백을 구조화된 실행 trace로 남기고 센서 판정은 하지 않는다.",
+        "passed": true,
+        "evidence": "agents/permissioned-executor.md Work Principles '최소 변경·계약 한 조항씩'·'가역 우선'·'안전임계 행동은 사람 게이트(전수 승인 아님)'·'구조화된 실행 trace 적재'·'검증 금지(실행·적재만)'. SKILL.md Phase 1 prompt + 내재화 원칙 '권한·샌드박스 실행'. references/code-as-harness-principles.md §3·§9. research dossier §3(sandboxed/permissioned)·§5(e)·§12(b)·§7."
+      },
+      {
+        "text": "[Phase2/execution-based-verification] execution-verifier는 계약의 결정적 센서를 실제로 돌려 조항별로 PASS/FAIL/UNVERIFIED를 센서 출력 증거와 함께 판정하고 자기보고를 불신하며, 코드를 수정하지 않는다(검증 전용).",
+        "passed": true,
+        "evidence": "agents/execution-verifier.md Work Principles '결정적 센서 실행·조항별 판정'·'세 판정값(PASS/FAIL/UNVERIFIED)'·'수정 금지(검증 전용)'. SKILL.md Phase 2 prompt '센서를 실제로 돌리고 ... 자기보고를 불신한다' + 내재화 원칙 '실행 기반 검증(자기보고 불신)'. references/code-as-harness-principles.md §4. research dossier §4·§8."
+      },
+      {
+        "text": "[Phase2/reward-hacking-guard] 검증은 reward-hacking·verifier-gaming(테스트 삭제·약화·skip·기대값을 출력에 맞추기·입력 하드코딩·형식만 맞춘 우회)을 위반으로 잡고, extensional correctness만 보는 약한 센서 통과를 PASS로 단정하지 않는다.",
+        "passed": true,
+        "evidence": "agents/execution-verifier.md Work Principles 'reward-hacking·verifier-gaming 가드'. SKILL.md Phase 2 prompt '테스트 삭제·약화·skip·기대값 맞추기·입력 하드코딩·형식 우회 ... 약한 센서 통과를 PASS로 단정하지 않는다' + 내재화 원칙 'reward-hacking·verifier-gaming 가드'. references/code-as-harness-principles.md §5·anti-pattern. research dossier §5(a)·§12(a)(verifier gaming via direct answer hacking, format exploitation, shortcut solutions)."
+      },
+      {
+        "text": "[Phase2/incomplete-feedback] 부분 센서·사각이면 PASS를 단정하지 않고 UNVERIFIED로 confidence를 강등하며 무엇이 안 덮였는지 명시하고(증거 없는 PASS 금지), 최종 task 성공 너머의 불변식·부작용·인접 회귀도 본다.",
+        "passed": true,
+        "evidence": "agents/execution-verifier.md Work Principles '세 판정값(UNVERIFIED는 솔직한 결과)'·'최종 성공 너머'. SKILL.md Phase 2 prompt '부분 센서·사각이면 PASS 단정 말고 UNVERIFIED ... 증거 없는 PASS 금지 ... 불변식·부작용·인접 회귀도 본다' + 내재화 원칙 '불완전 피드백 정직성'. references/code-as-harness-principles.md §6. research dossier §5(a)(evaluation beyond final task success)·§5(b)(verification under incomplete feedback)."
+      },
+      {
+        "text": "[Phase3/trace-diagnosis] telemetry-diagnostician은 실행 trace와 Verification Report를 최적화 substrate로 읽어 FAIL/UNVERIFIED root cause를 trace 인용(어느 조항·diff·센서 출력)으로 진단하고(추측 금지), 코드를 직접 수정하지 않는다(진단·제안만).",
+        "passed": true,
+        "evidence": "agents/telemetry-diagnostician.md Work Principles 'trace 인용 진단(추측 금지)'·'수정 금지(진단·제안만)'. SKILL.md Phase 3 prompt 'root cause를 trace 인용(어느 조항·diff·센서 출력)으로 진단 ... 추측 금지' + 내재화 원칙 '검사 가능 trace = 텔레메트리 substrate'. references/code-as-harness-principles.md §7. research dossier §3.5.1(Deep Telemetry as the Optimization Substrate)·§11."
+      },
+      {
+        "text": "[Phase3/regression-free-converge] 차기 계획계약 수정안은 통과한 센서를 회귀시키지 않음을 명시 점검하고(regression-free·최소 개입), 무진전(같은 실패 반복·진동)이면 ITERATE 대신 ESCALATE하며, CONVERGED/ITERATE/ESCALATE를 결정하되 최종 수렴 판정에 사람 게이트를 둔다.",
+        "passed": true,
+        "evidence": "agents/telemetry-diagnostician.md Work Principles 'regression-free 수정안'·'무진전 감지'·'수렴 결정(사람 게이트)'. SKILL.md Phase 3 prompt '통과한 센서를 회귀시키지 않음을 명시 점검 ... 같은 실패 반복/진동이면 ITERATE 대신 ESCALATE ... CONVERGED/ITERATE/ESCALATE' + 'ITERATE 결정 시' 사람 승인 하 1사이클. references/code-as-harness-principles.md §8·§9. research dossier §5(c)(regression-free harness improvement)."
+      },
+      {
+        "text": "[Core/single-governed-cycle] 하네스는 한 번의 거버넌스된 제어 사이클(필요 시 사람 승인 하 1회 ITERATE)을 운영하며, 통과까지 무한 자율 반복하거나 교차세션 학습 메모리에 distill하지 않는다고 명시 경계한다.",
+        "passed": true,
+        "evidence": "SKILL.md 서두 인용블록 '한 번의 거버넌스된 제어 사이클 ... 통과까지 무한 자율 반복하거나 교차세션 학습 메모리에 distill하지 않는다' + 경계 섹션 '통과까지 자율 반복 + 교차세션 학습' 첫 항목 + Phase 3 'ITERATE 결정 시' 사람 승인 하 1사이클·무한 반복 아님. README.md ITERATE 주석. CLAUDE.md Conventions 경계."
+      },
+      {
+        "text": "[Honesty/attribution-and-refuted] 대상 서베이(2605.18747)는 개념 프레임으로(벤치마크 결과 아님) 인용하고, 인접 논문 기법(ReVeal TAPO·AgentFlow DSL)은 각 출처에만 귀속하며, 'several-fold(4x)' 민감도는 특정 세팅값으로 한정하고, 반박된 AgentFlow 4-phase 루프(vote 1-2)는 별도 기록하고 본문 근거로 쓰지 않으며, '개선 N% 보장'을 금지한다.",
+        "passed": true,
+        "evidence": "references/code-as-harness-research.md 머리말 정직성 가드(서베이=개념 프레임·인접 기법 귀속 분리·several-fold 세팅 한정·개선 N% 금지) + '## 반박된 주장 (투명성)' 4건(AgentFlow 4-phase REFUTED 1-2·인접 기법 귀속·벤치마크로서의 3-layer·several-fold 보편화) + '## 방법론' 3-vote(24 confirmed/1 killed). SKILL.md 내재화 원칙 '정직성·falsifiability' + 마무리 정직성 문단. principles.md §10. research §9·§10 CAVEAT."
+      },
+      {
+        "text": "[Approval/observability] Phase 0 직후 승인 게이트는 항상이고 Phase 1 안전임계·Phase 3 최종 수렴에 사람 게이트가 있으며, 각 Phase는 1줄로 보고하고 요청되지 않은 사이드 에이전트나 중복 실행을 만들지 않으며 최종적으로 네 산출물을 종합 보고한다.",
+        "passed": true,
+        "evidence": "SKILL.md Phase 0 승인 게이트 + 각 Phase 1줄 보고 문자열 + 내재화 원칙 '관찰 가능성·승인 ... 요청되지 않은 사이드 에이전트나 중복 실행을 만들지 않는다' + 마무리 '[Code-as-Harness] 계획계약 {…} · 실행 {…} · 검증 {…} · 결정 {…}'. CLAUDE.md Phase 요약 표(게이트 열)·Conventions."
+      },
+      {
+        "text": "[Boundary/domain-guard] code-as-harness는 '코드를 실행·검증 가능한 하네스로 다루는 거버넌스된 Plan→Execute→Verify 제어 사이클'에 특화하고, 통과까지 자율 반복+학습 메모리·백엔드 환경 provisioning 구현·실행 명세 작성·AI 에이전트 병렬화·컨텍스트 조립·AI 출력 평가·하네스 진단·상류 핸드오프 검수·장애 대응·PRD·커밋/PR·settings와 경계를 두며 인접 도메인 요청에는 발동하지 않도록 should-not 가드를 둔다.",
+        "passed": true,
+        "evidence": "SKILL.md description '발동하지 않는다 — ... 단일 자율 반복 루프 ... 백엔드/API 환경 provisioning ... 실행 가능 명세 ... 병렬화·토폴로지 ... 컨텍스트 페이로드 ... judge 구성 ... 하네스 자체 결함 진단 ... 핸드오프 게이트 검수 ... 인시던트 대응 ... PRD ... 커밋/PR ... settings' + 경계 섹션(인접 도메인 일반 개념으로 변별). plugin.json description 경계 절. README.md '도구 경계'. evals/trigger-eval.json should_not 14건."
+      },
+      {
+        "text": "[Independence/self-contained] 하네스는 다른 마켓플레이스 플러그인을 dependency로 참조하지 않고 경계의 '범위 밖'을 일반 도메인 개념(자율 반복·백엔드 구현·명세 우선·멀티 에이전트 오케스트레이션·컨텍스트 설계·평가·메타·핸드오프 리뷰·운영)으로만 서술하며, 각 1차 자료(arXiv:2605.18747 + 인접 2604.08224·2506.11442·2604.20801·2508.00083·2512.14012 + 보강 2604.15149·2603.07084)를 직접 인용해 단독으로 사용 가능해야 한다.",
+        "passed": true,
+        "evidence": "SKILL.md 경계 섹션이 타 플러그인명 없이 '자율 반복 도메인'·'백엔드 구현 도메인'·'명세 우선 도메인'·'멀티 에이전트 오케스트레이션 도메인'·'컨텍스트 설계 도메인'·'평가 도메인'·'메타 도메인'·'핸드오프 리뷰 도메인'·'운영 도메인' 일반 개념으로만 변별. references/code-as-harness-research.md §1~§12가 각 1차 자료를 제목·arXiv ID·인용문으로 직접 인용. README.md '근거 자료'·'독립성'·plugin.json description이 동일 출처를 직접 명시. 어디에도 타 플러그인 경로 의존 없음."
+      }
+    ]
+  }
+}

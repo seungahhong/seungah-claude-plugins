@@ -90,5 +90,9 @@
   {
     "query": "코드베이스의 구조적 AI 접근성(A축≠Q축)을 진단하고 L1~L5 등급 매기고 빌드 가드레일·독립 실행·수용 증명으로 개선해줘",
     "should_trigger": false
+  },
+  {
+    "query": "이 변경을 계획 계약으로 못 박고 권한·샌드박스에서 실행한 뒤 결정적 센서로 검증하는 거버넌스된 Plan→Execute→Verify 한 사이클로 해줘(영속하는 source-of-truth 명세 작성은 아님)",
+    "should_trigger": false
   }
 ]

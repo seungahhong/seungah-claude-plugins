@@ -24,6 +24,7 @@
 | `spec-driven-development` | 엔지니어용 실행 가능 명세(spec=source of truth)를 작성하고 에이전트가 명세대로 코드 생성→명세 대비 자기검증하게 하는 하네스 (명세작성→인수설계→구현→검증 4단계 + 4개 에이전트, 명세 승인 게이트·comprehension 게이트. 근거 arXiv:2602.00180 + Osmani 2026-01 글) |
 | `ai-readable-codebase` | 코드베이스의 구조적 AI 접근성(A축≠Q축)을 진단·개선하는 하네스 (진단(2축·L1~L5 증거기반)→빌드 가드레일(의존 방향 물리 강제·피드백 3차원)→standalone 독립 실행→수용 증명·등급 재측정 4단계 + 4개 에이전트, 빌드가 강제·문서가 설명·reward-hacking 가드. 근거 flex.team 5부작 + 2025+ 출처(arXiv:2602.11481·2306.09896·2505.10443 등), CodeScene 9.4/5.15 수치는 미입증으로 비인용) |
 | `human-agent-teaming` | 사람과 AI 에이전트가 *한 팀으로* 협업하도록 분업·공통기반·감독/신뢰·검증을 설계하는 하네스 (분업·위임(human/agent/co-delegation·자율 수준·HITL/HOTL)→공통기반(온보딩 브리핑·AI 오류 경계·workspace awareness·재정렬 루프)→모니터링 기반 감독(전수 승인 아님·단계적 가역 권한·적절한 의존)→비례 검증(루브릭·Doer-Verifier)·핸드오프 연속성·책임 4단계 + 4개 에이전트. 축은 AI↔AI 토폴로지가 아니라 사람↔에이전트 분업·감독. 근거 Anthropic 'Building Effective Human-Agent Teams' 정독 + 1차 자료 + arXiv:2504.10918·2602.05987, 벤더=설계 의도·반박된 패턴(자기제한 1차 감독) 미사용) |
+| `code-as-harness` | 코드를 *실행 가능·검사 가능·상태 보존* 한 운영 기반으로 다루고 한 번의 거버넌스된 Plan→Execute→Verify 제어 루프로 코드 변경을 안전·검증 가능하게 수행하는 하네스 (계획 계약(의도·결정적 센서·행동 위험 분류)→권한·샌드박스 실행(가역 우선·안전임계 사람 게이트·실행 trace)→실행 검증(자기보고 불신·결정적 센서 실행·reward-hacking·불완전 피드백 UNVERIFIED·최종 너머)→텔레메트리 진단·수렴(trace 인용 진단·regression-free 수정·CONVERGED/ITERATE/ESCALATE) 4단계 + 4개 에이전트. 근거 arXiv:2605.18747 'Code as Agent Harness' 정독 + 인접 1차(2604.08224·2506.11442·2604.20801·2508.00083·2512.14012)·보강(2604.15149·2603.07084), 서베이=개념 프레임·인접 기법 귀속 분리·반박된 AgentFlow 4-phase 미사용. 단일 거버넌스 사이클이지 통과까지 자율 반복(loop)이 아님) |
 
 ## 세부 문서 (`_docs/`)
 
