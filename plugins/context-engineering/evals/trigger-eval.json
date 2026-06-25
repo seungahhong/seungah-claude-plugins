@@ -90,5 +90,9 @@
   {
     "query": "코드베이스의 구조적 AI 접근성 진단해서 L1~L5 등급 매기고 빌드 가드레일·독립 실행·수용 증명으로 개선해줘",
     "should_trigger": false
+  },
+  {
+    "query": "에이전트를 도구가 아니라 팀원으로 온보딩하는 공통기반·working agreement랑 분업·감독 체계를 설계해줘",
+    "should_trigger": false
   }
 ]

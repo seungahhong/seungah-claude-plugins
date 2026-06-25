@@ -90,5 +90,9 @@
   {
     "query": "백엔드 API랑 DB 스키마를 처음부터 설계·구현해줘",
     "should_trigger": false
+  },
+  {
+    "query": "에이전트 산출물을 사람이 협업 안에서 어떻게 검증할지 루브릭·Doer-Verifier로 설계하고 분업·감독 체계를 잡아줘",
+    "should_trigger": false
   }
 ]

@@ -1,0 +1,90 @@
+[
+  {
+    "query": "이 작업에서 사람이랑 에이전트가 뭘 나눠 맡을지 분업을 설계해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "에이전트한테 어디까지 위임하고 어디서 사람이 결정·검증할지 정해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "에이전트 자율성을 얼마나 줄지, 신뢰를 작업 종류별로 어떻게 보정할지 설계해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "에이전트를 감독하는데 모든 행동을 일일이 승인하지 않고 모니터링+개입으로 관리하는 체계 만들어줘",
+    "should_trigger": true
+  },
+  {
+    "query": "에이전트가 멋대로 너무 많이 하고 테스트도 안 하고 다 됐다고 하는데 범위·검증 가드를 설계해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "에이전트 산출물을 사람이 어떻게 검증할지 루브릭이랑 Doer-Verifier로 설계해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "사람-에이전트 협업이 자꾸 어긋나는데 공통기반·역할 경계·재정렬 루프를 잡아줘",
+    "should_trigger": true
+  },
+  {
+    "query": "에이전트를 도구가 아니라 팀원처럼 일 시키는 working agreement랑 온보딩 브리핑 만들어줘",
+    "should_trigger": true
+  },
+  {
+    "query": "고위험·비가역 결정 전에 사람이 개입하는 체크포인트랑 단계적 권한을 설계해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "human-in-the-loop으로 갈지 human-on-the-loop으로 갈지 작업 중요도랑 신뢰성 보고 정해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "이 작업을 여러 AI 에이전트로 병렬화할지 한 에이전트로 할지, 토폴로지(centralized/independent)를 정해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "모델에 넣을 컨텍스트 페이로드를 retrieval·압축·큐레이션으로 조립·최적화해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "AI가 만든 코드 출력을 LLM-as-a-Judge로 다중표본 평가하고 benchmark validity 점검해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 작업 검증 가능한 목표 정하고 통과할 때까지 한 흐름으로 자율 반복해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "완성된 기획·디자인·API 계약을 코드 착수 전 핸드오프 게이트로 검수해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 도메인용 하네스(에이전트팀+오케스트레이터)를 처음부터 새로 만들어줘",
+    "should_trigger": false
+  },
+  {
+    "query": "기존 하네스 결함을 trace 기반으로 진단하고 루트 CLAUDE.md/스킬 고도화해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "제품 기획문서(PRD)랑 사용자 스토리 작성해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "변경사항 커밋 메시지 작성하고 PR 리뷰해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "settings.json에 npm 명령 권한 추가해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "프로덕션 장애 탐지하고 원인 국소화·RCA·완화까지 운영 대응해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "에이전트가 코드 생성할 실행가능 구현 명세(spec)를 source of truth로 작성해줘",
+    "should_trigger": false
+  }
+]

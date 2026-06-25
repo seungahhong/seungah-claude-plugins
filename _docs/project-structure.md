@@ -105,7 +105,7 @@ plugins/
           loop-engineering-research.md                   #   설계 근거 deep-research dossier (출처·인용·신뢰도·caveat)
     evals/
       evals.json                                         # 수용 평가 (design-conformance dry-run — 핵심 불변식 file:section 인용 채점)
-      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 10 / should_not 15, 인접 하네스(meta/harness-generator/product-spec) reciprocal 가드)
+      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 10 / should_not 18, 인접 하네스(meta/harness-generator/product-spec) reciprocal 가드)
   review-harness/                                        # [독립 플러그인] 코드 착수 *전* 상류 산출물(기획·디자인·API 계약·QA 인수조건) 핸드오프 게이트 검수. 경계: 완성 코드 리뷰(frontend-harness)·PRD/스토리 작성(product-spec)·커밋/PR(git-harness)·하네스 진단(meta-harness) 제외
     .claude-plugin/
       plugin.json
@@ -119,7 +119,7 @@ plugins/
       contract-review/                                   # API 계약 게이트 (엔드포인트 완결성·breaking-change diff·소비자(CDC) 커버리지·코드↔spec drift)
       test-coverage-review/                              # 인수조건↔테스트 커버리지 (테스트가능성·AC↔테스트 매핑·커버리지 채점·누락 시나리오 발굴)
     evals/
-      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 14 / should_not 13, 자매 하네스(frontend/product-spec/git/meta) reciprocal 가드)
+      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 14 / should_not 16, 자매 하네스(frontend/product-spec/git/meta) reciprocal 가드)
   ops-harness/                                           # [독립 플러그인] 프로덕션 운영·인시던트 대응·관측성 하네스. AIOpsLab 4단계(탐지→국소화→RCA→완화). 경계: 하네스 진단(meta)·검증루프(loop)·코드리뷰(frontend/git)·상류 핸드오프(review)·PRD(product-spec) 제외
     .claude-plugin/
       plugin.json
@@ -196,7 +196,7 @@ plugins/
           context-engineering-research.md                #   설계 근거 dossier (출처·인용·vote·CAVEAT·반박된 주장; arXiv:2507.13334·2510.04618·2604.07911)
     evals/
       evals.json                                         # 수용 평가 (핵심 불변식 file:section 인용 채점)
-      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 13, 인접 도메인 reciprocal 가드)
+      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 15, 인접 도메인 reciprocal 가드)
   agent-orchestration/                                   # [독립 플러그인] 작업을 여러 에이전트로 병렬화할지·어떻게 협업시킬지 판단 규칙으로 결정하고 단일 baseline 능가를 적대 검증하는 하네스. 경계: 컨텍스트 조립·AI 출력 평가·구현 명세·단일 자율루프·하네스 생성·장애 대응 제외
     .claude-plugin/
       plugin.json
@@ -215,7 +215,7 @@ plugins/
           agent-orchestration-research.md                #   설계 근거 dossier (출처·인용·vote·CAVEAT·반박된 주장; arXiv:2512.08296·2601.13295·2604.07911)
     evals/
       evals.json                                         # 수용 평가 (핵심 불변식 file:section 인용 채점)
-      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 13, 인접 도메인 reciprocal 가드)
+      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 14, 인접 도메인 reciprocal 가드)
   eval-harness/                                          # [독립 플러그인] AI 생성물(코드·에이전트 출력)을 엄밀 평가하는 하네스 (정의·validity→judge 구성→validity 감사→실행·집계 4단계). 경계: 컨텍스트 조립·병렬화 판단·구현 명세·일반 실행 테스트 생성·커밋/PR 리뷰 제외
     .claude-plugin/
       plugin.json
@@ -234,7 +234,7 @@ plugins/
           eval-harness-research.md                       #   설계 근거 dossier (출처·인용·vote·CAVEAT·반박된 주장; arXiv:2507.02825·2412.12509·2502.12468·2507.11538·2606.17799)
     evals/
       evals.json                                         # 수용 평가 (핵심 불변식 file:section 인용 채점)
-      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 14, 인접 도메인 reciprocal 가드)
+      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 15, 인접 도메인 reciprocal 가드)
   spec-driven-development/                               # [독립 플러그인] 엔지니어용 실행 가능 명세(spec=source of truth)를 작성하고 에이전트가 명세대로 코드 생성→자기검증하게 하는 하네스 (명세작성→인수설계→구현→검증 4단계). 경계: 기획자 PRD·AI 출력 평가·컨텍스트 조립·완성 코드 리뷰·하네스 진단 제외
     .claude-plugin/
       plugin.json
@@ -273,4 +273,23 @@ plugins/
     evals/
       evals.json                                         # 수용 평가 (핵심 불변식 file:section 인용 채점)
       trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 13, 인접 도메인 reciprocal 가드)
+  human-agent-teaming/                                  # [독립 플러그인] 사람과 AI 에이전트가 한 팀으로 협업하도록 분업·공통기반·감독/신뢰·검증을 설계하는 하네스 (분업·위임→공통기반→모니터링 기반 감독·신뢰 보정→비례 검증·핸드오프·책임 4단계). 축은 AI↔AI 토폴로지가 아니라 사람↔에이전트 분업·감독. 경계: 여러 AI 에이전트 병렬화·토폴로지(agent-orchestration)·컨텍스트 페이로드 조립(context)·AI 출력 평가(eval)·단일 자율 반복(loop)·상류 핸드오프 검수(review)·하네스 진단(meta)·PRD(product-spec)·커밋/PR(git) 제외
+    .claude-plugin/
+      plugin.json
+    CLAUDE.md                                            # 하네스 포인터 + Phase 요약 + 변경 이력
+    README.md                                            # 사용자용 개요·사용법·도구 경계·근거 자료
+    agents/                                              # 모두 model: "opus"
+      delegation-designer.md                             # Phase 0 Charter & Delegate — 분업(사람=전략·하드 트레이드오프·최종 검증·책임 / 에이전트=전문 실행)·위임(human/agent/co-delegation·trustworthy region)·자율 수준·운영 모드(HITL/HOTL)·고위험 결정점·역할 경계
+      common-ground-builder.md                           # Phase 1 Establish Common Ground — 온보딩 브리핑(적혀 있지 않으면 존재하지 않음)·AI 오류 경계 노출·workspace awareness·재정렬 루프(SMM 영속)·working agreement
+      oversight-designer.md                              # Phase 2 Calibrate Oversight & Trust — 모니터링 기반 감독(전수 승인 아님)·단계적 가역 권한·개입/스티어링·적절한 의존 신뢰 보정·실패모드(over-reach)/자동화 편향 가드
+      verification-designer.md                           # Phase 3 Verify & Sustain — 비례 검증(코드=테스트·그 외=루브릭·Doer-Verifier fresh-context)·검증 스캐폴딩·대칭 전문성 대응·핸드오프 연속성·후속 재정렬(AAR)·책임(moral crumple zone 금지)
+    skills/
+      human-agent-teaming/                               # 진입점 오케스트레이터 (Phase 0 분업 승인 게이트 → 공통기반 → 감독 → 검증, 협업 설계 산출·실행 안 함)
+        SKILL.md
+        references/
+          human-agent-teaming-principles.md              #   분업 규칙·감독 설계·검증 운영·anti-pattern·결정 신호표·경계
+          human-agent-teaming-research.md                #   설계 근거 dossier (Anthropic HAT 블로그 + 1차 자료 + arXiv:2504.10918·2602.05987·출처·인용·vote·CAVEAT; 벤더=설계 의도·반박된 패턴(자기제한)·METR RCT 반례)
+    evals/
+      evals.json                                         # 수용 평가 (핵심 불변식 file:section 인용 채점)
+      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 10 / should_not 12, 인접 도메인 reciprocal 가드)
 ```

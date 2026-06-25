@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "분석 → 설계 → 개발 → 리뷰 → 검증까지, 소프트웨어 개발 전 과정을 지원하는 멀티 에이전트 스킬·커맨드·훅 모음. 정적 분석 5개 관점(간소화·코드 리뷰·보안·성능·정합성) 중 사용자 선택 항목 병렬 + 재리뷰 루프와 E2E·타입/빌드 검증, 그리고 코드 착수 *전* 상류 산출물(기획·디자인·API 계약·QA 인수조건) 핸드오프 게이트 검수를 포함합니다.",
-    "version": "1.12.0",
+    "version": "1.13.0",
     "homepage": "https://github.com/seungahhong/seungah-claude-plugins"
   },
   "plugins": [
@@ -334,6 +334,29 @@
         "standalone-app",
         "acceptance-proof",
         "codebase-grading",
+        "multi-agent",
+        "orchestration"
+      ],
+      "category": "workflow",
+      "strict": false
+    },
+    {
+      "name": "human-agent-teaming",
+      "description": "사람과 AI 에이전트가 한 팀으로 효과적으로 협업하도록 분업·공통기반·감독/신뢰·검증/지속을 설계하는 도메인 무관 멀티 에이전트 하네스. 핵심 축은 AI끼리의 병렬화·토폴로지가 아니라 사람↔에이전트의 분업과 감독이며, 산출물은 프롬프트가 아니라 협업 설계(teaming playbook)다. 일이 단일 플레이어에서 멀티플레이어(사람이 전략을 세우고 에이전트가 실행)로 옮겨갔다는 전제에서, 4단계로 진행한다: (Phase 0) 분업(사람=전략·하드 트레이드오프·최종 검증·책임 / 에이전트=전문 실행)·위임(human/agent/co-delegation·conditional delegation·trustworthy region)·자율 수준(작업 종류별 보수적 기본, 미입증이면 전수 검토)·운영 모드(human-in-the-loop vs human-on-the-loop)·고위험/비가역 결정점·역할 경계를 정하고(승인 게이트) → (Phase 1) '적혀 있지 않으면 에이전트엔 존재하지 않는다'는 전제로 팀원 온보딩식 공통기반·AI 오류 경계 노출·workspace awareness·재정렬 루프(SMM은 영속 협상, 일회성 설정 아님)를 세우며 → (Phase 2) 모든 행동을 일일이 승인하지 않는 모니터링 기반 감독(투명성·개입/스티어링·단계적 가역 권한 read-only→쓰기 전 승인→영속·위험 트리거)·적절한 의존으로의 신뢰 보정(신뢰 최대화가 아님)·특징적 실패모드(over-reach·조기 완료 선언)·자동화 편향 가드를 설계하고 → (Phase 3) 인간 검증을 요구되는 마지막 층으로 운영화(코드=테스트·그 외=루브릭·Doer-Verifier fresh-context)·검증 스캐폴딩·핸드오프 연속성·후속 재정렬(After-Action)·책임(moral crumple zone 금지)을 설계한다. 핵심 메시지는 '에이전트는 도구가 아니라 팀원이고, 자율성과 인간 통제의 균형을 작업 종류별로 잡는다'이다. 검증된 근거(Anthropic 'Building Effective Human-Agent Teams' 블로그 정독 + 'Building Effective Agents'·'Our framework for safe and trustworthy agents'·'Measuring Agent Autonomy'·'Effective harnesses for long-running agents' 1차 자료 + arXiv:2504.10918 Adaptive Human-Agent Teaming(133개 경험 연구 리뷰)·arXiv:2602.05987 Human-Agent Collaboration(CHI EA '26))를 vote/CAVEAT와 함께 인용하되, 벤더 1차 자료는 설계 의도로(크기 주장 미인용)·학술은 권장 메커니즘으로 쓰고 '개선 N% 보장'을 금지하며 반박된 패턴(에이전트 자기제한을 1차 감독으로)을 쓰지 않고 반례(METR RCT 경험 개발자 감속)도 정직히 기록한다. 경계: 여러 AI 에이전트로 병렬화할지·토폴로지(single/multi·centralized/independent) 결정·모델에 넣을 컨텍스트 페이로드 조립·압축·AI 출력의 엄밀한 평가(judge 구성)·한 목표를 통과까지 한 흐름으로 자율 반복·상류 산출물 핸드오프 게이트 검수·새 하네스 생성·하네스 자체 진단·PRD 작성·커밋/PR 리뷰·settings.json 설정은 범위가 아니며 '사람과 에이전트가 한 팀으로 어떻게 협업할지 설계'에 특화한다. 다른 마켓플레이스 플러그인에 의존하지 않는 독립 플러그인이다.",
+      "source": "./plugins/human-agent-teaming",
+      "version": "0.1.0",
+      "author": { "name": "seungah.hong" },
+      "tags": [
+        "claude-code",
+        "plugin",
+        "human-agent-teaming",
+        "human-agent-collaboration",
+        "human-in-the-loop",
+        "delegation",
+        "trust-calibration",
+        "oversight",
+        "doer-verifier",
+        "appropriate-reliance",
         "multi-agent",
         "orchestration"
       ],

@@ -86,5 +86,9 @@
   {
     "query": "백엔드 API랑 DB 스키마를 처음부터 설계·구현해줘",
     "should_trigger": false
+  },
+  {
+    "query": "사람과 에이전트가 한 팀으로 분업·위임·감독·검증을 어떻게 나눌지 사람↔에이전트 협업 체계를 설계해줘",
+    "should_trigger": false
   }
 ]

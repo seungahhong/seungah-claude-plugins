@@ -114,5 +114,9 @@
   {
     "query": "이 코드베이스가 AI 에이전트가 읽고 기여하기 좋은 구조인지 진단하고 AI 접근성 등급(L1~L5)·빌드 가드레일·standalone으로 개선해줘",
     "should_trigger": false
+  },
+  {
+    "query": "사람과 에이전트가 한 팀으로 분업·감독·검증을 어떻게 할지 협업 체계를 설계해줘",
+    "should_trigger": false
   }
 ]
