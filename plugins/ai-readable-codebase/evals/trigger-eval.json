@@ -1,0 +1,90 @@
+[
+  {
+    "query": "이 코드베이스가 AI 에이전트가 읽고 작업하기 좋은 구조인지 진단하고 AI 접근성 등급(L1~L5) 매겨줘",
+    "should_trigger": true
+  },
+  {
+    "query": "코드 품질(Q축)은 괜찮은데 AI 접근성(A축)이 낮은 것 같아 — 두 축 분리해서 격차 찾아줘",
+    "should_trigger": true
+  },
+  {
+    "query": "에이전트가 기여 가능한 코드베이스로 만들고 싶어. 구조가 프롬프트보다 먼저라던데 어디부터 고쳐야 하는지",
+    "should_trigger": true
+  },
+  {
+    "query": "의존 방향을 빌드/컴파일 계층에서 물리적으로 강제하고 빌드 피드백을 에이전트가 학습하게 가드레일 설계해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "도메인 슬라이스를 전체 시스템 없이 standalone으로 독립 실행하게 port/adapter 치환 설계해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "AI가 만든 PR에 자동 수용 증명(E2E) 붙여서 리뷰를 '동작하나'에서 '설계가 좋은가'로 옮기고 등급 재측정해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "우리 레포 AI 읽힘성(AI-readable/AI-accessible) 진단하고 빌드 가드레일·독립 실행·수용 증명까지 개선 로드맵 짜줘",
+    "should_trigger": true
+  },
+  {
+    "query": "CLAUDE.md 가이드만으로는 에이전트가 자꾸 경계를 어겨. 빌드가 강제하게 구조를 바꾸고 싶어",
+    "should_trigger": true
+  },
+  {
+    "query": "두 서비스 중 어느 쪽이 에이전트에게 더 적대적인지 코드베이스 구조 관점에서 비교 진단해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "이 API 기능을 실제로 구현하고 빌드·테스트가 통과하는지 실행 기반으로 검증해서 완성해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "코드 착수 전에 기획·디자인 핸드오프·API 계약·QA 인수조건이 착수 준비됐는지 게이트로 검수해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 하네스(CLAUDE.md/SKILL.md/agents) 자체가 잘못 동작해 — trace로 결함 진단하고 하네스 고도화해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "커밋부터 프로덕션까지 CI/CD 파이프라인이랑 terraform·릴리스 게이트(canary·rollback) 설계해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 기능 구현 전에 에이전트가 따라 짤 실행 가능한 명세(spec)부터 source of truth로 작성해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "모델에 넣을 컨텍스트 페이로드를 조립·압축·중복제거해서 토큰 예산 안에 최적화해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이미 완성된 이 코드 리뷰하고 버그 찾고 커밋 메시지·PR 작성해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "검증 가능한 목표 정하고 통과할 때까지 자율 반복 루프로 끝까지 완성해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "AI 생성물·에이전트 출력을 평가할 LLM-as-a-Judge 구성하고 다중표본 평가 하네스 돌려줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 작업을 여러 에이전트로 병렬화할지 판단하고 협업 토폴로지 설계해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "새 하네스(에이전트 팀 + 스킬 + 오케스트레이터)를 처음부터 단계별로 같이 만들어줘",
+    "should_trigger": false
+  },
+  {
+    "query": "프로덕션 장애 원인 진단하고 완화 조치까지 운영 대응해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "settings.json에 npm 명령 권한 추가해줘",
+    "should_trigger": false
+  }
+]

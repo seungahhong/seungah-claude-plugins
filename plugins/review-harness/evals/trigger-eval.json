@@ -110,5 +110,9 @@
   {
     "query": "이 Figma 디자인을 실제 프론트엔드 코드로 생성·구현해줘",
     "should_trigger": false
+  },
+  {
+    "query": "이 코드베이스가 AI 에이전트가 읽고 기여하기 좋은 구조인지 진단하고 AI 접근성 등급(L1~L5)·빌드 가드레일·standalone으로 개선해줘",
+    "should_trigger": false
   }
 ]

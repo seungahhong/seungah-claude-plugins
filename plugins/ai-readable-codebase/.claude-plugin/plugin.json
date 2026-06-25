@@ -1,0 +1,22 @@
+{
+  "name": "ai-readable-codebase",
+  "version": "0.1.0",
+  "description": "코드베이스가 AI 코딩 에이전트가 읽고 안전하게 기여할 수 있는 구조인지를 진단·개선하는 도메인 무관 멀티 에이전트 하네스. 핵심 전제는 '구조가 프롬프트보다 먼저다(structure before prompt)'와 '코드 품질(Q축)과 AI 접근성(A축)은 다른 차원이다'이다 — 클린 코드라도 패턴 비일관·빌드 피드백 약함·모듈 경계 모호로 에이전트에 적대적일 수 있다. 4단계로 진행한다: (Phase 0) 2축(Q/A)으로 코드베이스를 진단하고 L1~L5 AI 접근성 등급을 증거 기반으로 매긴 뒤 A축 격차를 식별(진단 승인 게이트) → (Phase 1) 가장 중요한 아키텍처 규칙을 빌드/컴파일 계층으로 옮겨 의존 방향을 물리적으로 강제하고 빌드 피드백을 3차원(위치 특정성·원인 명확성·수정방향 추론가능성)으로 '가르치게' 설계하며 빌드(무엇이 불가능한지) vs CLAUDE.md(무엇이 바람직한지/왜) 역할을 분담 → (Phase 2) 도메인 슬라이스를 전체 시스템 없이 독립 실행 가능하게(port/adapter 치환·use-case 경유 seed) 설계 → (Phase 3) 수용 증명(자동 E2E) 인프라로 리뷰를 '동작하나'에서 '설계가 좋은가'로 이동시키고 등급을 적대적으로 재측정(generator/checker 분리·reward-hacking 가드). 빌드가 강제하고 문서가 설명한다 — 자연어 가이드(CLAUDE.md)는 구조 강제 없이는 실패한다. 검증된 근거(flex.team 'AI가 읽을 수 있는 코드베이스' 5부작 + 2025+ 출처)를 vote/CAVEAT와 함께 인용하고 정량 수치를 과장하지 않는다('개선 N% 보장' 금지). 경계: 한 기능의 실행 기반 구현·검증(backend-harness), 상류 산출물 핸드오프 검수(review-harness), 하네스 자체 진단(meta-harness), 커밋→프로덕션 전달 파이프라인(cicd-harness), 실행 가능 명세 작성(spec-driven-development), 컨텍스트 페이로드 조립(context-engineering), 완성 코드 리뷰·커밋/PR(frontend/git-harness)은 범위가 아니며 '코드베이스의 구조적 AI 접근성 진단·개선'에 특화한다.",
+  "author": {
+    "name": "seungah.hong",
+    "email": "ssingah1030@gmail.com"
+  },
+  "tags": [
+    "claude-code",
+    "plugin",
+    "ai-readable-codebase",
+    "ai-accessibility",
+    "build-guardrails",
+    "dependency-enforcement",
+    "standalone-app",
+    "acceptance-proof",
+    "codebase-grading",
+    "multi-agent",
+    "orchestration"
+  ]
+}

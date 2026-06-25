@@ -94,5 +94,9 @@
   {
     "query": "AI가 생성한 출력 채점이 믿을 만한지 LLM-as-a-Judge를 다중 표본으로 돌리고 벤치 validity까지 감사해줘",
     "should_trigger": false
+  },
+  {
+    "query": "이 코드베이스가 AI 에이전트가 읽고 기여하기 좋은 구조인지 진단하고 AI 접근성 등급(L1~L5)·빌드 가드레일로 개선해줘",
+    "should_trigger": false
   }
 ]

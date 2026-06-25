@@ -22,13 +22,14 @@
 | `agent-orchestration` | 작업을 여러 에이전트로 병렬화할지·어떻게 협업시킬지 판단 규칙으로 결정하고 단일 baseline 능가를 적대 검증하는 하네스 (분해평가→아키텍처결정→협업가드→검증 4단계 + 4개 에이전트, architecture-task alignment·45% capability ceiling·coordination 3실패모드. 근거 arXiv:2512.08296·2601.13295·2604.07911) |
 | `eval-harness` | AI 생성물(코드·에이전트 출력)을 엄밀 평가하는 하네스 (정의·validity→judge 구성→validity 감사→실행·집계 4단계 + 4개 에이전트, LLM-as-a-Judge 다중표본≥3·ABC task/outcome validity·harness≠model 귀인. 근거 arXiv:2507.02825·2412.12509·2502.12468·2507.11538·2606.17799) |
 | `spec-driven-development` | 엔지니어용 실행 가능 명세(spec=source of truth)를 작성하고 에이전트가 명세대로 코드 생성→명세 대비 자기검증하게 하는 하네스 (명세작성→인수설계→구현→검증 4단계 + 4개 에이전트, 명세 승인 게이트·comprehension 게이트. 근거 arXiv:2602.00180 + Osmani 2026-01 글) |
+| `ai-readable-codebase` | 코드베이스의 구조적 AI 접근성(A축≠Q축)을 진단·개선하는 하네스 (진단(2축·L1~L5 증거기반)→빌드 가드레일(의존 방향 물리 강제·피드백 3차원)→standalone 독립 실행→수용 증명·등급 재측정 4단계 + 4개 에이전트, 빌드가 강제·문서가 설명·reward-hacking 가드. 근거 flex.team 5부작 + 2025+ 출처(arXiv:2602.11481·2306.09896·2505.10443 등), CodeScene 9.4/5.15 수치는 미입증으로 비인용) |
 
 ## 세부 문서 (`_docs/`)
 
 루트 `CLAUDE.md`는 100줄 이내 인덱스로 유지하고, 세부 내용은 아래 특징별 문서에 둔다. 작업 전 관련 문서를 먼저 참조할 것.
 
 - [`_docs/project-structure.md`](_docs/project-structure.md) — 전체 디렉토리 구조와 각 파일/스킬 역할 트리
-- [`_docs/skills.md`](_docs/skills.md) — 플러그인별 스킬 목록·커맨드·설명 (frontend-harness / harness-generator / git-harness / meta-harness / product-spec-harness / loop-engineering / review-harness / ops-harness / backend-harness / cicd-harness / context-engineering / agent-orchestration / eval-harness / spec-driven-development)
+- [`_docs/skills.md`](_docs/skills.md) — 플러그인별 스킬 목록·커맨드·설명 (frontend-harness / harness-generator / git-harness / meta-harness / product-spec-harness / loop-engineering / review-harness / ops-harness / backend-harness / cicd-harness / context-engineering / agent-orchestration / eval-harness / spec-driven-development / ai-readable-codebase)
 - [`_docs/commands-and-hooks.md`](_docs/commands-and-hooks.md) — frontend-harness 커맨드(orchestrator/research/prd/…/review) + Stop lint 훅
 - [`_docs/conventions.md`](_docs/conventions.md) — 마켓플레이스 등록·플러그인/스킬/커맨드 배치·교차 참조·플러그인 분리 규칙
 

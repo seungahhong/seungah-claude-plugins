@@ -86,5 +86,9 @@
   {
     "query": "이 컴포넌트 접근성·시맨틱 HTML 점검해줘",
     "should_trigger": false
+  },
+  {
+    "query": "코드베이스의 구조적 AI 접근성(A축≠Q축)을 진단하고 L1~L5 등급 매기고 빌드 가드레일·독립 실행·수용 증명으로 개선해줘",
+    "should_trigger": false
   }
 ]

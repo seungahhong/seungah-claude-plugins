@@ -90,5 +90,9 @@
   {
     "query": "프로덕션 인시던트 원인(RCA) 분석하고 완화 방안 만들어줘",
     "should_trigger": false
+  },
+  {
+    "query": "이 제품 코드베이스가 AI 에이전트가 읽고 기여하기 좋은 구조인지 진단하고 AI 접근성 등급(L1~L5)·빌드 가드레일·standalone으로 개선해줘",
+    "should_trigger": false
   }
 ]

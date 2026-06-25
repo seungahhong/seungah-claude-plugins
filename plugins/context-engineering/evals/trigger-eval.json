@@ -86,5 +86,9 @@
   {
     "query": "프로덕션 장애 원인 진단하고 완화 조치까지 운영 대응해줘",
     "should_trigger": false
+  },
+  {
+    "query": "코드베이스의 구조적 AI 접근성 진단해서 L1~L5 등급 매기고 빌드 가드레일·독립 실행·수용 증명으로 개선해줘",
+    "should_trigger": false
   }
 ]

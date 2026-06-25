@@ -254,4 +254,23 @@ plugins/
     evals/
       evals.json                                         # 수용 평가 (핵심 불변식 file:section 인용 채점)
       trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 13, 인접 도메인 reciprocal 가드)
+  ai-readable-codebase/                                 # [독립 플러그인] 코드베이스의 구조적 AI 접근성(A축≠Q축)을 진단·개선하는 하네스 (진단(2축·L1~L5 증거기반)→빌드 가드레일→standalone 독립 실행→수용 증명·재측정 4단계). 경계: 한 기능 구현·검증(backend)·상류 핸드오프 검수(review)·하네스 진단(meta)·전달 파이프라인(cicd)·실행 명세(spec)·컨텍스트 조립(context)·완성 코드 리뷰(frontend/git) 제외
+    .claude-plugin/
+      plugin.json
+    CLAUDE.md                                            # 하네스 포인터 + Phase 요약 + 변경 이력
+    README.md                                            # 사용자용 개요·사용법·도구 경계·L1~L5 등급·근거 자료
+    agents/                                              # 모두 model: "opus"
+      accessibility-assessor.md                          # Phase 0 Assess — 2축(Q/A) 진단 + L1~L5 등급(증거 기반, 자기보고 불신) + A축 격차·백로그
+      guardrail-architect.md                             # Phase 1 Guardrails — 빌드가 강제·문서가 설명(의존 방향 물리 강제 + 피드백 3차원 + 역할 분담)
+      standalone-designer.md                             # Phase 2 Standalone — 도메인 슬라이스 독립 실행(port/adapter 치환·use-case seed·명시적 제외)
+      acceptance-verifier.md                             # Phase 3 Acceptance & Re-grade — 수용 증명 인프라(+한계 명시) + 등급 적대 재측정(reward-hacking 가드·generator/checker 분리)
+    skills/
+      ai-readable-codebase/                              # 진입점 오케스트레이터 (Phase 0 진단 승인 게이트 → 4단계, 제안만·사람 집행)
+        SKILL.md
+        references/
+          ai-readable-codebase-principles.md             #   2축·L1~L5·빌드 가드레일·피드백 3차원·standalone·수용 증명·anti-pattern·경계
+          ai-readable-codebase-research.md               #   설계 근거 dossier (flex 5부작 + 2025+ 출처·인용·vote·CAVEAT; CodeScene 9.4/5.15 미입증 투명성 §D)
+    evals/
+      evals.json                                         # 수용 평가 (핵심 불변식 file:section 인용 채점)
+      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 13, 인접 도메인 reciprocal 가드)
 ```

@@ -1,0 +1,70 @@
+{
+  "eval_metadata": {
+    "eval_id": "ai-readable-codebase-acceptance",
+    "eval_name": "ai-readable-codebase 오케스트레이터 수용 평가 (design-conformance dry-run)",
+    "prompt": "코드베이스를 2축(Q 코드품질 / A AI접근성)으로 진단하고 L1~L5 AI 접근성 등급을 증거 기반으로 매긴 뒤(Assess), 핵심 아키텍처 규칙을 빌드/컴파일 계층으로 옮겨 의존 방향을 물리적으로 강제하고 빌드 피드백을 3차원으로 설계하며(Guardrails), 도메인 슬라이스를 전체 없이 독립 실행하게 하고(Standalone), 수용 증명 인프라로 리뷰를 전환한 뒤 등급을 적대적으로 재측정한다(Acceptance & Re-grade). 본 평가는 shipped SKILL.md·agents/*.md·references/*가 계약 불변식(A축≠Q축 분리·증거 기반 등급·진단 승인 게이트·빌드가 강제하고 문서가 설명·피드백 3차원·standalone 격리·수용 증명 한계·재측정 reward-hacking 가드·generator/checker 분리·정직성·경계·opus)을 강제·명세하는지 file:section 인용 증거로 채점한다(런타임 실행이 아닌 정적 정합 점검).",
+    "method": "design-conformance dry-run — 런타임 실행 없이 shipped 파일이 핵심 동작을 명세·강제하는지 인용으로 검증",
+    "assertions": [
+      {
+        "text": "[Axis/Q-A-separation] 하네스는 코드 품질(Q축)과 AI 접근성(A축)을 별개 축으로 분리 측정하고, 높은 Q축이 높은 A축을 보장하지 않음을 명시하며 A축 7개 지표(패턴 일관성·빌드 피드백 품질·모듈 경계 예측성·의존 방향 강제·독립 실행·에이전트 가이드·자동 수용)로 평가해야 한다.",
+        "passed": true,
+        "evidence": "SKILL.md 내재화 원칙 'A축 ≠ Q축(분리 측정)' + 전제 '코드 품질(Q축)과 AI 접근성(A축)은 다른 차원이다'. agents/accessibility-assessor.md Work Principles 'A축 ≠ Q축(분리 측정)'·'A축 7개 지표' + Output 'Q축 요약'/'A축 지표별 평가'. references/ai-readable-codebase-principles.md §1·§2. CLAUDE.md Conventions 'A축 ≠ Q축'."
+      },
+      {
+        "text": "[Grade/evidence-based] L1~L5 등급은 자기보고가 아니라 증거로 매겨야 하며, 가장 결정적 측정은 '금지된 경계 위반이 빌드 실패를 일으키는가'를 위반 케이스/빌드 설정의 file:line으로 확인하는 것이고, 증거 확보 불가 항목은 '검증 불가'로 분리(등급 미산입)해야 한다.",
+        "passed": true,
+        "evidence": "agents/accessibility-assessor.md Work Principles '증거 기반 등급(자기보고 불신)'·'L1~L5 루브릭' + Error Handling '증거 확보 불가 → 검증 불가 분리'. SKILL.md Phase 0 규칙('금지된 경계 위반이 빌드 실패를 일으키는가'·자기보고 불신·검증 불가 분리). references/ai-readable-codebase-principles.md §3. CLAUDE.md Conventions '증거 기반 등급(reward-hacking 가드)'."
+      },
+      {
+        "text": "[Gate/assessment-approval] Phase 0 진단 승인 게이트는 사용자가 진단을 승인하기 전 개선 설계(Phase 1~)로 진행하지 않아야 하며, 승인된 진단을 산출물 경로에 기록해야 한다.",
+        "passed": true,
+        "evidence": "SKILL.md Phase 0 '진단 승인 게이트' + '[Phase 0] AI 접근성 진단 — ... 승인할까요?' + '승인 전에는 개선 설계로 진행하지 않는다' + assessment.md write. agents/accessibility-assessor.md Output 1줄 보고(승인 게이트 문구). README.md '5단계 사용법' 2."
+      },
+      {
+        "text": "[Guardrail/build-enforces-docs-explain] Phase 1은 '빌드가 강제하고 문서가 설명한다'를 강제해야 한다 — 빌드는 무엇이 불가능한지(특히 의존 방향을 물리적으로 강제, 린트보다 빌드 강제 우월), CLAUDE.md는 무엇이 바람직한지/왜를 맡고 역할 분담표로 명시하며 CLAUDE.md를 빌드 규칙과 동기화해야 한다.",
+        "passed": true,
+        "evidence": "agents/guardrail-architect.md Work Principles '빌드가 강제하고 문서가 설명한다(역할 분담)'·'의존 방향 물리 강제(가장 중요)'·'빌드/문서 분담표 산출' + Output '빌드 vs CLAUDE.md 역할 분담표'. SKILL.md Phase 1 규칙 + 내재화 원칙 '빌드가 강제하고 문서가 설명한다'. references/ai-readable-codebase-principles.md §4(자연어 가이드 3대 실패). research.md B-출처7(컴파일 에러가 가장 강한 신호)."
+      },
+      {
+        "text": "[Feedback/3-dimensions-and-shift-left] 빌드 피드백은 3차원(위치 특정성·원인 명확성·수정방향 추론가능성)으로 설계되고, 검증을 앞단으로(컴파일>런타임, 타입>컴파일 체크) 옮기며 가장 중요한 규칙을 가장 빠른 계층(컴파일)에서 잡아야 한다.",
+        "passed": true,
+        "evidence": "agents/guardrail-architect.md Work Principles '피드백 3차원(가르치게 설계)'·'피드백을 앞단으로'·'피드백 계층 위계' + Output '피드백 품질 개선(3차원)'/'검증 앞단화'. SKILL.md Phase 1 규칙(3차원·컴파일>런타임). references/ai-readable-codebase-principles.md §4. research.md B-출처6(피드백 질=병목)·출처7(로컬 컴파일 에러가 최대 개선)."
+      },
+      {
+        "text": "[Standalone/isolation] Phase 2는 도메인 슬라이스를 전체 시스템 없이 독립 실행 가능하게 설계해야 하며, Port/Adapter 의존성 역전으로 운영 어댑터를 테스트 어댑터로 치환(도메인 로직 불변)하고 seed를 Repository 직접 호출이 아니라 UseCase 경유로 생성하며 운영 전용 모듈을 명시적으로 제외해야 한다.",
+        "passed": true,
+        "evidence": "agents/standalone-designer.md Work Principles '전체 없이 부분 검증'·'Port/Adapter 의존성 역전 활용'·'seed는 UseCase 경유(지름길 금지)'·'선택 조합·명시적 제외' + Output '어댑터 치환'/'seed 데이터(UseCase 경유)'. SKILL.md Phase 2 규칙. references/ai-readable-codebase-principles.md §5. research.md B-출처3(실행 트레이스 길이)."
+      },
+      {
+        "text": "[Acceptance/proof-and-limits] Phase 3은 수용 증명(자동 E2E·데모)으로 리뷰를 '동작하나→설계가 좋은가'로 옮기되, 수용 증명이 못 잡는 것(성능·보안 인가 우회·동시성 정합·가독성)을 사람 몫으로 반드시 명시(과신 금지)해야 한다.",
+        "passed": true,
+        "evidence": "agents/acceptance-verifier.md Work Principles '수용 증명 우선(리뷰 전환)'·'수용 증명의 한계 명시(과신 금지)' + Output '수용 증명의 한계(사람 몫 — 명시)'. SKILL.md Phase 3 규칙(한계 명시) + 내재화 원칙 '수용 증명 우선 + 한계 명시'. references/ai-readable-codebase-principles.md §6. research.md C(Faros 리뷰 우회 경향)."
+      },
+      {
+        "text": "[Regrade/reward-hacking-and-separation] 등급 재측정은 구현/설계 에이전트와 분리된 검증자(generator/checker 분리)가 수행하고, 자기보고로 올리지 않으며('경계 위반이 빌드 실패를 일으키는가'를 직접 확인) green≠개선을 의심·역점검하고 증거 확보 불가는 미달이 아니라 BLOCKED로 분리해야 한다.",
+        "passed": true,
+        "evidence": "agents/acceptance-verifier.md Core Role '분리된 독립 검증자' + Work Principles '등급 재측정은 증거 기반(reward-hacking 가드)'·'green ≠ 개선'·'generator/checker 분리'·'검증불가(BLOCKED) 분리' + Output '등급 재측정(증거 기반)'. SKILL.md 내재화 원칙 'generator/checker 분리'·'증거 기반 등급' + Phase 3 분기(BLOCKED·reward-hacking 의심·라우팅). references/ai-readable-codebase-principles.md §3·§7."
+      },
+      {
+        "text": "[Honesty/no-overclaim] 하네스는 외부 정량 수치를 vote/CAVEAT와 함께만 인용하고 '개선 N% 보장'을 금지하며, 특히 CodeScene 9.4/10·업계 평균 5.15/10 수치가 peer-reviewed 출처(arXiv:2601.02200)에 없음을 명시해 본문 근거로 쓰지 않고, 반박·미검증 주장을 dossier 투명성 섹션에만 둔다.",
+        "passed": true,
+        "evidence": "references/ai-readable-codebase-research.md §D-1(CodeScene 9.4/5.15 미입증, 본문 사용 금지)·§D-2(9개→10번째 미검증)·§D-3(CLAUDE.md 실패는 설계 명제)·§D-4(반박 주장 vote)·§E(정직성·세션 한도 한계). principles.md §1·§9. SKILL.md 내재화 원칙 '과장 금지(정직성)'. CLAUDE.md Conventions '과장 금지(정직성)'. README.md '정직성 노트'."
+      },
+      {
+        "text": "[Boundary/domain-guard] ai-readable-codebase는 애플리케이션 코드베이스의 구조적 AI 접근성 진단·개선에 특화하고, 한 기능 구현·검증(backend)·상류 핸드오프 검수(review)·하네스 자체 진단(meta)·전달 파이프라인(cicd)·실행 가능 명세(spec)·컨텍스트 조립(context)·완성 코드 리뷰/커밋(frontend/git)과 경계를 두며(일반 개념으로 변별·타 플러그인 의존 없이) 인접 도메인 요청에 발동하지 않도록 should-not 가드를 둔다.",
+        "passed": true,
+        "evidence": "SKILL.md description '발동하지 않는다 — ... backend-harness ... review-harness ... meta-harness ... cicd-harness ... spec-driven-development ... context-engineering ... frontend/git-harness ...' + '경계' 섹션(표적이 하네스가 아니라 제품 코드베이스·빌드 구조 vs 전달 파이프라인 변별). plugin.json description 경계 절. references/ai-readable-codebase-principles.md §8. evals/trigger-eval.json should_not."
+      },
+      {
+        "text": "[Stack-agnostic] 하네스는 근거 시리즈의 구현 예시(Kotlin/Gradle/Spring/Hexagonal)에 묶이지 않고 원리(빌드 강제·독립 실행·수용 증명)를 사용자 스택으로 환산하며 특정 도구를 강요하지 않아야 한다.",
+        "passed": true,
+        "evidence": "agents/guardrail-architect.md·standalone-designer.md·acceptance-verifier.md 각 Work Principles '스택 무관 일반화'. SKILL.md 내재화 원칙 '스택 무관 일반화'. references/ai-readable-codebase-principles.md §5·§9 + research.md A-CAVEAT(원리만 스택 무관). README.md '정직성 노트'. CLAUDE.md Conventions '스택 무관(일반화)'."
+      },
+      {
+        "text": "[Orchestration/opus-and-routing] 4개 에이전트(accessibility-assessor·guardrail-architect·standalone-designer·acceptance-verifier) 협업 하네스로, SKILL.md의 모든 Agent 호출에 model:\"opus\"가 명시되고, 미해소 격차 시 해당 Phase(0/1/2)로 라우팅하며 산출물을 .claude/ai-readability/{대상-slug}/에 둔다. 또한 코드를 자동 수정하지 않고 제안만 산출(사람 집행)한다.",
+        "passed": true,
+        "evidence": "SKILL.md '에이전트 팀' 표 + '모든 Agent 호출은 model:\"opus\"를 명시한다' + Phase 0~3 각 Agent() 호출에 model=\"opus\" + Phase 3 분기 라우팅(미해소→Phase 1/2/0) + '산출물 배치' .claude/ai-readability/{대상-slug}/. 내재화 원칙 '제안만(사람 집행)'. CLAUDE.md Structure(agents 모두 model: opus) + Phase 요약 표. 각 agents/*.md frontmatter name/description만."
+      }
+    ]
+  }
+}
