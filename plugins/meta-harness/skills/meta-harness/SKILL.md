@@ -48,7 +48,8 @@ repo-wide 경계 밖(agents/·commands/·hooks/·plugin.json·플러그인별 CL
 - **3회 누적 → 구조 재설계** — 같은 표적이 3회 누적되면 본문 patch를 거절하고 `structural-redesign-required`를 권고한다.
 - **Pareto 비후퇴** — 채택 후보는 4축(behavior-alignment·rule-body-cost·trigger-precision·generalization) 어느 것도 frontier를 후퇴시키지 않는다. 상세는 [references/pareto-axes.md](./references/pareto-axes.md).
 - **outer-loop 최소화** — parent/mutation 선택을 proposer에게 위임한다.
-- **데이터 적재·지침 보강 기준(C1~C9)** — 신호 캡처(적재)와 patch 설계(보강)는 [references/data-capture-criteria.md](./references/data-capture-criteria.md)를 따른다: 묶음 캡처·요약 금지·그 순간 기록·신호 등급·고칠 곳(전역 메모리 포함)·검증 후 재사용, 그리고 보강 표적을 고를 때의 CLAUDE.md/Skill/hook/rule 메커니즘 선택. 1차 출처는 그 문서에 인라인.
+- **데이터 적재·지침 보강 기준(C1~C9)** — 신호 캡처(적재)와 patch 설계(보강)는 [references/data-capture-criteria.md](./references/data-capture-criteria.md)를 따른다: 묶음 캡처·요약 금지·그 순간 기록·신호 등급·고칠 곳(전역 메모리 포함)·검증 후 재사용, 그리고 보강 표적을 고를 때의 CLAUDE.md/Skill/hook/permission/rule 메커니즘 선택. 1차 출처는 그 문서에 인라인.
+- **결정론은 hook/permission으로 (1급 메커니즘 선택)** — 진단은 근거의 enforcement 성격을 먼저 분류한다(`deterministic-enforce`/`deterministic-record`/`judgment`, C8). **매번 반드시 일어나야/막혀야 하는 결정론적 근거는 advisory 본문(CLAUDE.md/Skill)에 더 적지 말고 hook/permission으로 장치화**하고(③), hook이면 상황에 맞는 lifecycle event를 [references/hook-lifecycle.md](./references/hook-lifecycle.md)로 고른다(record=exit 0 / enforce=exit 2·deny). 이는 ≥3 반복 후 폴백이 아니라 첫 발생부터의 선택이다. **정정**: `.claude/rules`는 결정론이 아니라 advisory(결정론 강제는 hook·permission뿐). **배치는 경계를 따른다(P2)** — 플러그인 hook은 plugin 모드 in-boundary(repo-wide면 hook_spec 동봉 scope-escalation), 프로젝트 `.claude/settings.json`(hooks/permissions)은 meta-harness가 직접 쓰지 않고 `update-config` 핸드오프로 권고한다.
 
 ## 연구 근거 원칙 (claude 특화 — 진단·개선에 적용)
 
@@ -111,7 +112,7 @@ Agent(
 
 ## Phase 3 — 진단 (failure-diagnostician, 병렬 팬아웃)
 
-결함별 **병렬** 팬아웃 — 한 메시지에서 동시 spawn, **한 배치 ≤4~6건**. 각 에이전트는 read 범위를 표적 자산으로 축소한다. proposer는 experience-store를 grep/cat으로 직접 조회하고, confound를 먼저 의심하며, evidence를 trace step 번호/파일 경로로 인용한다. 표적 kind(`description|skill-body|agent|orchestrator|claude-md|plugin-metadata|global-memory`)·`cause_class`(원인 분류, C8)·canonical 표적 경로(이름 통일)와 `scope_status`(in-boundary|scope-escalation|out-of-scope), severity/confidence를 판정한다.
+결함별 **병렬** 팬아웃 — 한 메시지에서 동시 spawn, **한 배치 ≤4~6건**. 각 에이전트는 read 범위를 표적 자산으로 축소한다. proposer는 experience-store를 grep/cat으로 직접 조회하고, confound를 먼저 의심하며, evidence를 trace step 번호/파일 경로로 인용한다. `enforcement_class`(deterministic-enforce|deterministic-record|judgment, C8 §4-1)·표적 kind(`description|skill-body|agent|orchestrator|claude-md|plugin-metadata|hook|permission|rule|global-memory`)·`cause_class`(원인 분류, C8)·canonical 표적 경로(이름 통일)와 `scope_status`(in-boundary|scope-escalation|out-of-scope), severity/confidence를 판정한다. deterministic-*면 표적을 hook/permission으로 라우팅한다(첫 발생부터; `.claude/rules`는 advisory).
 
 ```
 # 한 메시지에서 결함 수만큼 동시 spawn (배치 ≤ 4~6)
@@ -133,7 +134,7 @@ Agent(subagent_type="failure-diagnostician", model="opus", run_in_background=tru
 
 ## Phase 4 — 개선 (pareto-refiner, 순차)
 
-진단별 **순차** — 직전 patch 결과를 다음 호출 프롬프트에 노출한다. additive-first → compose(직교 승리만) → transfer(과거 회차 교훈을 raw trace 재확인 후). 산출 `patch.md`(unified-diff + 위아래 3줄) + Pareto 좌표 + (description 수정 시) trigger_eval(should-trigger/should-not 8~10개씩). **patch만 생성, 자동 적용 금지.** 같은 표적 3회 누적이면 본문 patch 거절 + `change_kind:"structural-redesign-required"`. 보강 **표적 선택**(CLAUDE.md/Skill/hook/rule)과 반복 표적의 hook·Skill 전환(③ 장치화)은 [references/data-capture-criteria.md §4](./references/data-capture-criteria.md)의 메커니즘 매트릭스를 따른다.
+진단별 **순차** — 직전 patch 결과를 다음 호출 프롬프트에 노출한다. additive-first → compose(직교 승리만) → transfer(과거 회차 교훈을 raw trace 재확인 후). 산출 `patch.md`(unified-diff + 위아래 3줄) + Pareto 좌표 + (description 수정 시) trigger_eval(should-trigger/should-not 8~10개씩) + (deterministic-* + hook/permission 표적일 때) **`hook_spec`**(event·matcher·exit·config 위치). **patch만 생성, 자동 적용 금지.** 같은 표적 3회 누적이면 본문 patch 거절 + `change_kind:"structural-redesign-required"`. 보강 **메커니즘 선택**(enforcement_class → CLAUDE.md/Skill/hook/permission/rule, deterministic은 첫 발생부터 hook/permission)과 hook의 **lifecycle event 선택**은 [references/data-capture-criteria.md §4](./references/data-capture-criteria.md) 결정 절차 + [references/hook-lifecycle.md](./references/hook-lifecycle.md) §3을 따른다. 프로젝트 `.claude/settings.json`(hooks/permissions) 표적은 직접 쓰지 말고 `change_kind:"update-config-handoff"`로 spec을 넘긴다.
 
 ```
 # 진단 순서대로 순차 호출 — 직전 patch 결과를 다음 prompt에 전달
@@ -159,7 +160,7 @@ Agent(
 
 ## Phase 6 — 사용자 승인 게이트 (필수)
 
-결함별로 **why를 먼저** 보여준 뒤 accepted/rejected/deferred를 수집한다(일부만 결정해도 진행). `confidence:low`(특히 R3 역추적)면 **출처 확인 질문을 선행**한다. `scope-escalation`·반복 패턴(≥3) 경고를 노출한다. 결정은 `.claude/_workspace/{run}/{run}_decisions.json`에 기록한다.
+결함별로 **why를 먼저** 보여준 뒤 accepted/rejected/deferred를 수집한다(일부만 결정해도 진행). `confidence:low`(특히 R3 역추적)면 **출처 확인 질문을 선행**한다. `scope-escalation`(hook이면 hook_spec 동봉)·`update-config-handoff`(settings.json/permissions·rule)·반복 패턴(≥3) 경고를 노출한다. 결정은 `.claude/_workspace/{run}/{run}_decisions.json`에 기록한다.
 
 ## Phase 7 — 적용 (accepted만)
 
@@ -205,8 +206,9 @@ Agent(
 ## 에러 정책
 
 - **진단 실패** — 해당 결함을 `confidence:low`로 격하하고 Phase 6에서 사용자에게 재확인. 배치 전체를 막지 않는다.
-- **scope-escalation** — 경계 밖 표적은 patch 없이 plugin 모드 재실행을 권고(보고 표에 명시).
-- **blocked** — 레포 루트 메타는 사용자 직접 수정 안내, 자동 patch 금지.
+- **scope-escalation** — 경계 밖 표적은 patch 없이 plugin 모드 재실행을 권고(보고 표에 명시). 표적이 `hook`이면 제안 `hook_spec`(event·matcher·exit)을 동봉해 바로 옮기게 한다.
+- **update-config-handoff** — 프로젝트 `.claude/settings.json`(hooks/permissions)·`.claude/rules` 표적은 meta-harness가 직접 쓰지 않고(P2) 권장 spec을 담아 `update-config` 스킬+사용자에게 넘긴다.
+- **blocked** — 레포 루트 메타·전역 메모리는 사용자 직접 수정 안내, 자동 patch 금지.
 - **stall 폴백** — 병렬 배치에서 지연 에이전트는 read 범위를 더 축소해 단건 재spawn. 배치 크기 6 초과 금지.
 - **patch 충돌** — 동일 파일 다중 patch는 Phase 7에서 묶어 적용. 충돌 시 후행 patch를 deferred로 돌리고 사용자에게 재진단 제안.
 - **3회 누적** — 본문 patch 거절 + `structural-redesign-required` 권고를 Phase 6 경고로 노출.
@@ -235,7 +237,9 @@ Agent(
 
 - [references/execution-types.md](./references/execution-types.md) — 실행 유형 판별(초기/신규/부분/새)
 - [references/scope-and-targets.md](./references/scope-and-targets.md) — 스코프·표적 kind·패치 경계
-- [references/data-capture-criteria.md](./references/data-capture-criteria.md) — 데이터 적재 기준(C1~C9) + 지침 보강 메커니즘 선택(CLAUDE.md/Skill/hook/rule), 1차 출처 인라인
+- [references/data-capture-criteria.md](./references/data-capture-criteria.md) — 데이터 적재 기준(C1~C9) + 지침 보강 메커니즘 선택 결정 절차(enforcement_class → CLAUDE.md/Skill/hook/permission/rule), 1차 출처 인라인
+- [references/hook-lifecycle.md](./references/hook-lifecycle.md) — hook 라이프사이클 event 전체·상황→event 선택·record/enforce·exit/제어·config·matcher·스코프 배치(결정론 보강 시 event 선택용 자족 reference)
+- [references/hooks-grounding.md](./references/hooks-grounding.md) — hooks·rules 사실의 1차 출처 provenance + 신뢰 등급(VERBATIM/요약/추론). 플러그인 내부에 보존(로컬 `.claude/` 경로 비참조)
 - [references/experience-store-schema.md](./references/experience-store-schema.md) — store 디렉토리·파일 스키마
 - [references/pareto-axes.md](./references/pareto-axes.md) — 4축 정의·비후퇴 규칙
 - [session-signal-capture](../session-signal-capture/SKILL.md) — R1/R3 신호 캡처 방법론

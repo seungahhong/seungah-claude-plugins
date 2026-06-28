@@ -4,7 +4,7 @@ experience-store는 meta-harness의 영속 기억이다. 과거 회차의 결함
 
 ## 제1 불변식 — 요약 금지, traces는 항상 원본
 
-**store에 요약을 넣는 순간 진단 능력은 퇴화한다.** 근거 논문(Meta-Harness, arXiv 2603.28052v1) Table 3은 full-trace를 보존한 경우(56.7)가 점수+요약만 보존한 경우(38.7)보다 우월함을 보였다. 따라서 다음을 강제한다.
+**store에 요약을 넣는 순간 진단 능력은 퇴화한다.** 근거 논문(Meta-Harness, arXiv 2603.28052v1) Table 3은 full-trace를 보존한 경우(56.7)가 **요약만 보존한 경우(38.7)** 보다 우월함을 보였다(점수만=41.3과도 구분 — 셋 다 같은 Table 3 보고값, [data-capture-criteria.md](./data-capture-criteria.md) §1과 동일 라벨). 따라서 다음을 강제한다.
 
 - `traces/*.jsonl` 는 **항상 원본 raw trace**다. 도구 호출 payload·산출물 전문·redirect 발화 원문을 절대 압축·생략하지 않는다.
 - **요약(summary)은 오직 navigation 보조물에만 둔다** — `index.json`, `recurring-patterns.md`. 이 둘은 "어디를 grep할지" 가리키는 포인터이지 진단 근거가 아니다.
@@ -71,6 +71,7 @@ experience-store는 meta-harness의 영속 기억이다. 과거 회차의 결함
 
 - `decision` ∈ `accepted|rejected|deferred`. `applied`는 accepted+적용 완료일 때만 true.
 - `scope_status` ∈ `in-boundary|scope-escalation|out-of-scope`.
+- `target_kind` ∈ `description|skill-body|agent|orchestrator|claude-md|plugin-metadata|hook|permission|rule|global-memory`. `change_kind`에 `update-config-handoff`(settings.json/permissions·rule → meta-harness 직접수정 안 함, P2) 포함. 결정론 보강이면 `enforcement_class`(deterministic-enforce|deterministic-record|judgment)와 (hook/permission 표적일 때) `hook_spec`(event·exit·matcher)을 함께 기록해 recurring·transfer가 메커니즘 단위로 묶이게 한다.
 - `why`는 trace의 step 번호/파일 경로를 인용한다(요약문 금지).
 
 ### index.json — navigable 포인터

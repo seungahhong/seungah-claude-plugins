@@ -11,7 +11,7 @@
 | `frontend-harness` | 프론트엔드 개발 워크플로우 (계획·구현·품질·보안·성능·QA·검증·figma-extract 스킬 + 오케스트레이터 커맨드 + lint 훅) |
 | `harness-generator` | 도메인 무관 하네스(에이전트팀+스킬+오케스트레이터) **수동·인터랙티브** 생성 메타 플러그인 |
 | `git-harness` | Git 워크플로우 (한국어 커밋 메시지, 다각도 PR 리뷰) |
-| `meta-harness` | full-trace experience store 기반 메타 하네스 엔지니어링 (causal 진단 + Pareto 비후퇴 패치, 사용자 승인 게이트) + self-heal 캡처 훅(UserPromptSubmit이 '수정/보강' 발화를 signals 레인에 원형 적재 → 추후 healer가 소비, 적용은 승인 게이트 후). 데이터 적재·지침 보강은 자족 reference의 데이터 적재 기준(C1~C9) + CLAUDE.md/Skill/hook/rule 메커니즘 선택을 따른다 |
+| `meta-harness` | full-trace experience store 기반 메타 하네스 엔지니어링 (causal 진단 + Pareto 비후퇴 패치, 사용자 승인 게이트) + 라이프사이클 훅 2종(UserPromptSubmit self-heal-capture가 '수정/보강' 발화를 signals 레인에 원형 적재, SessionStart warm-start-nudge가 미소비 신호를 세션 시작 시 표면화 → healer가 소비, 적용은 승인 게이트 후). 데이터 적재·지침 보강은 자족 reference의 데이터 적재 기준(C1~C9) + 메커니즘 선택 결정 절차를 따른다 — enforcement 성격 분류 후 **결정론적 근거는 advisory 본문이 아니라 hook/permission으로 첫 발생부터 라우팅**(hook이면 자족 hook-lifecycle.md로 상황에 맞는 lifecycle event 선택), 배치는 경계 유지(.claude/settings.json은 직접 수정 않고 update-config 핸드오프; .claude/rules는 결정론 아닌 advisory) |
 | `product-spec-harness` | 기획자용 기획문서(PRD)+사용자스토리 5단계 인터랙티브 하네스 (기획안 인자 입력 → 카드 추출 → 생성 전 기획 완성도 점검(DoR) 내재화 → 보강점 반영 PRD·스토리 생성 → 적대적 검증; 기획 완성도 점검·적대적 검증 결과는 생성 후 opt-in으로 `.claude/_docs/<슬러그>/`에 저장, 기획자용 용어 순화) |
 | `loop-engineering` | 검증 가능한 목표를 향한 자율 반복 루프(Goal→Execute→Verify→Diagnose→Improve) + 지속학습 메모리(Fail→Investigate→Verify→Distill→Consult) 멀티 에이전트 하네스 |
 | `review-harness` | 코드 착수 *전* 상류 산출물(기획 DoR·디자인 핸드오프·API 계약·QA 인수조건) 핸드오프 게이트 검수 (4개 게이트 스킬 + handoff-review 오케스트레이터, 2025+ 근거·정직성 가드레일) |

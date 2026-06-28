@@ -32,6 +32,15 @@
 - **안전 경계** — 훅이 적재한 신호는 *회차를 시작시키는 입력*일 뿐이다. 실제 진단(Phase 3)·적용(Phase 7)은 기존 **사용자 승인 게이트(Phase 6)** 를 그대로 통과해야 한다. 즉 "기억했다가 추후 healer가 환경/플러그인을 고친다"가 **자동 수정이 아니라 승인 게이트와 함께** 성립한다.
 - 트리거 문구는 환경변수 `SELF_HEAL_PATTERNS`로 교체할 수 있다.
 
+### warm-start nudge 훅 (SessionStart)
+
+self-heal-capture가 적재한 신호는 `/meta-harness`를 수동 호출해야만 소비된다 — 이 갭을 라이프사이클-정합 훅으로 메운다. `hooks/warm-start-nudge.sh`(**SessionStart** 훅, matcher 생략=모든 source: startup/resume/clear/compact)가 세션 시작 시 signals 레인의 **미소비(status:new)·강(strong)** 신호를 세어, 있으면 **한 줄로 표면화**한다("최근 7일 self-heal 신호 약 N건 — /meta-harness로 진단할 수 있습니다"). 단 미소비 상태가 갱신되기 전까지 자격 세션마다 반복 표면화될 수 있다(정확 소비 집계는 /meta-harness).
+
+- **왜 SessionStart인가** — "세션 시작마다 컨텍스트 주입"은 SessionStart event의 정석 용도다(차단 불가 event, exit 0 stdout이 컨텍스트에 추가). 상황→event 선택 근거는 `skills/meta-harness/references/hook-lifecycle.md`.
+- **주입 전용·비차단·근사치** — 항상 exit 0, 막지 않는다. 정확한 미소비 집계(소비 포인터는 index.json)는 `/meta-harness` warm-start(Phase 1)가 하고, 이 훅은 근사 nudge만 한다(과대표기 가능성 명시 = 정직성). 신호가 없으면 침묵.
+- **비활성** — `META_HARNESS_NUDGE=off`(또는 `0`/`false`/`no`)로 끌 수 있다.
+- **안전 불변** — 표면화만, 진단·적용은 기존 승인 게이트 그대로.
+
 ## 산출물
 
 - **experience-store**: `.claude/experience-store/`(repo-wide) 또는 `.claude/plugin-store/{target}/`(plugin) — history.jsonl(append-only ledger), index.json(navigable 포인터), pareto.json(frontier 좌표), recurring-patterns.md(표적별 카운트), patches/(적용 patch 사본), {run}/{candidate}/traces/*.jsonl(원본 raw trace).
@@ -150,9 +159,11 @@ R1의 정의 그대로의 경우다 — "왜 문제였는지 검토 → **루트
 | Skill | meta-harness | 진입 오케스트레이터(Phase 0~8 + R4) |
 | Skill | session-signal-capture | R1/R3 신호 캡처 방법론(원본 보존) |
 | Hook | self-heal-capture (UserPromptSubmit) | 사용자의 수정/보강/방향전환 발화를 signals 레인에 원형 적재(캡처 전용·비차단, cross-session) |
+| Hook | warm-start-nudge (SessionStart, 모든 source) | 세션 시작 시 미소비(status:new·strong) 신호가 있으면 한 줄 표면화(주입 전용·비차단·근사치, env로 비활성) |
 | Skill | causal-diagnosis | full-trace 기반 causal 진단 루브릭 |
 | Skill | pareto-refinement | Pareto/additive patch 생성 방법론 |
-| Reference | data-capture-criteria | 데이터 적재 기준(C1~C9) + 지침 보강 메커니즘 선택(CLAUDE.md/Skill/hook/rule), 1차 출처 인라인 |
+| Reference | data-capture-criteria | 데이터 적재 기준(C1~C9) + 지침 보강 메커니즘 선택 결정 절차(enforcement_class → CLAUDE.md/Skill/hook/permission/rule), 1차 출처 인라인 |
+| Reference | hook-lifecycle | hook 라이프사이클 event 전체·상황→event 선택·record/enforce·exit/제어·config·matcher·스코프 배치(결정론 보강 시 event 선택용), 1차 출처 인라인 |
 
 ## 연구 근거 기반 보강 (실행 모델 근거 · 기능 · 원칙)
 
@@ -176,7 +187,7 @@ R1의 정의 그대로의 경우다 — "왜 문제였는지 검토 → **루트
 
 **데이터 적재·지침 보강 기준 (C1~C9)**
 
-데이터 적재(신호 캡처·store)와 지침 보강(patch 설계)은 자족 reference [`skills/meta-harness/references/data-capture-criteria.md`](skills/meta-harness/references/data-capture-criteria.md)를 operative하게 따른다: **C1** 묶음(발화+직전결과+active SKILL)·**C2** 원문(요약 금지)·**C3** 3층(사건→교훈→장치)·**C4** 그 순간(lightweight identifier)·**C5** 프로젝트 최상단 한 곳·**C6** status 전이+압축 보관·**C7** strong/weak 등급·**C8** 고칠 곳(전역 메모리 포함)+이름 통일·**C9** 검증 후 재사용. 보강을 어디에 둘지는 CLAUDE.md/Skill/hook/rule 메커니즘 매트릭스로 고른다(반복 무시 규칙 → hook 전환 = ③ 장치화). 1차 출처(Anthropic context-engineering·best-practices·hooks·steering blog + Meta-Harness Table 3)는 그 문서에 인라인. self-heal 훅은 이 기준에 맞춰 흔한 교정어 포착 확장·신호 등급·프로젝트 최상단 모음을 additive로 반영했다(캡처 전용·비차단 = record-an-event, exit 0 불변).
+데이터 적재(신호 캡처·store)와 지침 보강(patch 설계)은 자족 reference [`skills/meta-harness/references/data-capture-criteria.md`](skills/meta-harness/references/data-capture-criteria.md)를 operative하게 따른다: **C1** 묶음(발화+직전결과+active SKILL)·**C2** 원문(요약 금지)·**C3** 3층(사건→교훈→장치)·**C4** 그 순간(lightweight identifier)·**C5** 프로젝트 최상단 한 곳·**C6** status 전이+압축 보관·**C7** strong/weak 등급·**C8** 고칠 곳(전역 메모리 포함)+이름 통일·**C9** 검증 후 재사용. 보강을 어디에 둘지는 **결정 절차**로 고른다 — 먼저 enforcement 성격을 분류(`deterministic-enforce`/`deterministic-record`/`judgment`)하고, **결정론적 근거는 advisory 본문(CLAUDE.md/Skill)이 아니라 hook/permission으로 첫 발생부터 라우팅**하며, hook이면 자족 reference [`hook-lifecycle.md`](skills/meta-harness/references/hook-lifecycle.md)로 **상황에 맞는 lifecycle event**(record=exit0 / enforce=exit2·deny)를 고른다. 배치는 경계 유지(플러그인 hook=plugin 모드, `.claude/settings.json`은 직접 수정 않고 `update-config` 핸드오프). **정정**: `.claude/rules`는 결정론이 아니라 advisory(결정론 강제는 hook·permission뿐). 1차 출처(Anthropic context-engineering·best-practices·hooks·hooks-guide·memory·skills·settings·steering blog + Meta-Harness Table 3)는 그 문서들에 인라인. 라이프사이클 훅 2종(self-heal-capture·warm-start-nudge)은 이 기준에 맞춰 캡처/주입 전용·비차단(record-an-event, exit 0 불변)으로 동작한다.
 
 ---
 

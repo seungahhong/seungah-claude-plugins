@@ -5,7 +5,9 @@
 #
 # 역할 = "record an event"(사건 기록, 3층 모델 ①). UserPromptSubmit + exit 0 은 차단하지 않는 로깅 훅이다.
 #   guardrail(강제)이 아니라 recorder(기록)다 — 강제가 필요하면 PreToolUse+exit2 같은 별도 장치가 맡는다.
-#   (근거: code.claude.com/docs/en/hooks, claude.com/blog/steering-claude-code-skills-hooks-rules-subagents-and-more)
+#   왜 UserPromptSubmit인가: "사용자 발화를 매번 캡처"는 이 event의 정석 용도다(상황→event 선택은
+#   skills/meta-harness/references/hook-lifecycle.md §3). 적재된 신호의 세션시작 표면화는 형제 훅 warm-start-nudge(SessionStart)가 맡는다.
+#   (근거: code.claude.com/docs/en/hooks, code.claude.com/docs/en/hooks-guide, claude.com/blog/steering-claude-code-skills-hooks-rules-subagents-and-more)
 # 적재 기준은 skills/meta-harness/references/data-capture-criteria.md (C1~C9)를 따른다:
 #   C2 원문 보존(요약·절단 금지) · C4 그 순간 lightweight identifier(transcript_path) 고정 ·
 #   C5 프로젝트 최상단(git root) 한 곳에 모음 · C6 status 부여 · C7 strong/weak 등급 + 흔한 한국어 교정어 포착.
@@ -71,6 +73,6 @@ import os,json
 rec={"ts":os.environ["TS"],"actor":"user","kind":os.environ["KIND"],"strength":os.environ["STRENGTH"],"status":"new",
 "source":"hook:UserPromptSubmit","session_id":os.environ["SID"],"cwd":os.environ["CWD"],"root":os.environ["ROOT"],
 "transcript_path":os.environ["TP"],"raw":os.environ["RAW"],"captured_by":"meta-harness/self-heal-capture"}
-open(os.environ["OUT"],"a").write(json.dumps(rec,ensure_ascii=False)+"\n")' 2>/dev/null
+open(os.environ["OUT"],"a").write(json.dumps(rec,ensure_ascii=False,separators=(",",":"))+"\n")' 2>/dev/null
 fi
 exit 0

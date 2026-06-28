@@ -1,5 +1,5 @@
 {
-  "description": "meta-harness self-heal capture. 사용자의 '수정/보강/방향전환(redirect)' 발화를 UserPromptSubmit에서 감지해 experience-store의 signals 레인에 원형으로 적재한다(캡처 전용·비차단 = record-an-event, exit 0). 데이터 적재 기준(C1~C9, skills/meta-harness/references/data-capture-criteria.md)을 따른다: 원문 보존·프로젝트 최상단(git root) 한 곳 모음·strong/weak 신호 등급·status 부여. 적재된 신호는 추후 /meta-harness(healer)가 causal 진단·Pareto 비후퇴 패치에 사용한다 — 적용은 사용자 승인 게이트 통과 후에만.",
+  "description": "meta-harness 라이프사이클 훅 2종(둘 다 비차단·캡처/주입 전용 = record-an-event, exit 0; 진단·패치·적용은 /meta-harness healer + 승인 게이트 소관). ① self-heal-capture(UserPromptSubmit): 사용자의 '수정/보강/방향전환(redirect)' 발화를 감지해 experience-store의 signals 레인에 원형 적재(원문 보존·git root 한 곳·strong/weak 등급·status). ② warm-start-nudge(SessionStart, 모든 source: startup/resume/clear/compact): 세션 시작 시 미소비(status:new·strong) 신호가 있으면 한 줄로 알려 healer 수동 호출 없이도 표면화(근사치 — 정확 집계는 /meta-harness; env META_HARNESS_NUDGE=off로 비활성). 라이프사이클 event 선택 근거는 skills/meta-harness/references/hook-lifecycle.md, 적재 기준은 data-capture-criteria.md(C1~C9). 적용은 항상 사용자 승인 게이트 후에만.",
   "hooks": {
     "UserPromptSubmit": [
       {
@@ -7,6 +7,17 @@
           {
             "type": "command",
             "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/self-heal-capture.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/warm-start-nudge.sh",
             "timeout": 10
           }
         ]
