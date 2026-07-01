@@ -1,0 +1,94 @@
+[
+  {
+    "query": "내 MCP 도구들에 최소 권한 OAuth 스코프를 설계해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "에이전트간(A2A) 호출에 사용자 대신(on-behalf-of) 위임 인가를 붙여줘",
+    "should_trigger": true
+  },
+  {
+    "query": "confused-deputy랑 토큰 재생 공격 관점으로 내 에이전트 인가 모델을 위협 모델링해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "에이전트가 호출할 수 있는 민감 도구 스코프에 사람 동의 게이트를 설계해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "우리 에이전트의 인증(누구인가)과 인가(허가되는가) 정책을 분리해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "공유 API 키를 단명·audience-bound 토큰으로 바꾸는 인가 설계를 해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "내 에이전트의 인가/아이덴티티 모델을 적대적으로 red-team해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "MCP 서버가 RFC 8707 resource indicator랑 audience 검증을 강제하게 설계해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "RFC 8693 토큰 교환으로 매 신뢰 경계에서 fresh exchange하고 passthrough 없는 위임 체인을 설계해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "LLM 출력에서 PII랑 toxicity를 사용자에게 가기 전에 요청 시점에 필터링해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "챗봇 입력에 jailbreak·prompt-injection 탐지 레일을 요청 시점에 붙여줘",
+    "should_trigger": false
+  },
+  {
+    "query": "사람이 에이전트 팀에 일을 어떻게 위임·감독·핸드오프할지 협업 구조를 설계해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "우리 Terraform plan이랑 릴리스 파이프라인에 OPA policy-as-code 게이트를 추가해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 리팩터 동안 코딩 에이전트 자신의 파일수정 권한이랑 샌드박스를 거버넌스해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "/orders REST 엔드포인트를 구현하고 실행으로 검증해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "프로덕션 에이전트가 500을 던지고 있어 — 로그랑 트레이스로 근본 원인을 찾아줘",
+    "should_trigger": false
+  },
+  {
+    "query": "코드 착수 전에 API 계약이랑 QA 인수조건을 핸드오프 게이트로 검수해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "내 모델 답변을 오프라인 LLM-as-a-judge로 다중표본 채점해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 작업을 병렬 에이전트로 쪼갤지 한 에이전트로 할지 토폴로지를 정해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "Keycloak이랑 Athenz를 실제로 세우고 Kubernetes에 배포해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "제품 기획문서(PRD)랑 사용자 스토리를 작성해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "변경사항 커밋 메시지 작성하고 PR 리뷰해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "settings.json에 npm 명령 실행 권한을 추가해줘",
+    "should_trigger": false
+  }
+]

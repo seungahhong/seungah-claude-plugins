@@ -311,4 +311,61 @@ plugins/
     evals/
       evals.json                                         # 수용 평가 (핵심 불변식 file:section 인용 채점)
       trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 14, 인접 도메인 reciprocal 가드)
+  llm-guardrails-harness/                               # [독립 플러그인] LLM/에이전트 앱에 런타임 외부 가드레일(input/output/retrieval/execution 레일)을 설계·강제하는 하네스 (위협모델·정책→입력 레일→출력·검색 레일→행동 강제·적대검증 4단계). 경계: 오프라인 출력 평가(eval)·장애 RCA(ops)·상류 핸드오프(review)·아이덴티티/인가 설계(agent-authorization) 제외
+    .claude-plugin/
+      plugin.json
+    CLAUDE.md                                            # 하네스 포인터 + Phase 요약 + 변경 이력
+    README.md                                            # 사용자용 개요·사용법·도구 경계·근거 자료
+    agents/                                              # 모두 model: "opus"
+      threat-modeler.md                                  # Phase 0 — 앱→OWASP LLM Top 10 매핑·fail-closed 정책·레일 배치 결정
+      input-rail-engineer.md                             # Phase 1 — 모델 호출 전 jailbreak/injection 탐지·Llama-Guard 분류·요청 거부/재작성
+      output-rail-engineer.md                            # Phase 2 — PII 리댁션·독성/정책 필터·grounding·untrusted 검색 청크 필터링
+      enforcement-redteamer.md                           # Phase 3 — 최소 권한 tool 스코핑·비가역 행동 사람 게이트·red-team(ASR/FPR)
+    skills/
+      llm-guardrails-harness/                            # 진입점 오케스트레이터 (Phase 0 정책 승인 게이트 → 입력 → 출력/검색 → 행동/검증)
+        SKILL.md
+        references/
+          llm-guardrails-harness-principles.md           #   원칙·anti-pattern·결정 신호표
+          llm-guardrails-harness-research.md             #   설계 근거 dossier (OWASP LLM Top 10 2025·NeMo Guardrails·Llama Guard(arXiv:2312.06674)·SoK Jailbreak(arXiv:2506.10597)·등급·CAVEAT)
+    evals/
+      evals.json                                         # 수용 평가 (핵심 불변식 file:section 인용 채점)
+      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 14, 인접 도메인 reciprocal 가드)
+  qa-agent-harness/                                     # [독립 플러그인] 리스크 기반 전략→오라클 명시 시나리오→오라클 우선 생성·게이트된 자가치유 실행→결함 vs 플래키 지능형 트리아지의 독립 end-to-end 에이전틱 QA 하네스 (4단계). 경계: FE 한정 QA(frontend)·단일 test-generator(backend)·오프라인 judge(eval)·장애 RCA(ops)·상류 핸드오프(review)·자율 반복(loop)·LLM 가드레일(llm-guardrails) 제외
+    .claude-plugin/
+      plugin.json
+    CLAUDE.md                                            # 하네스 포인터 + Phase 요약 + 변경 이력
+    README.md                                            # 사용자용 개요·사용법·도구 경계·근거 자료
+    agents/                                              # 모두 model: "opus"
+      test-architect.md                                  # Phase 0 — 요구사항·변경·리스크 → 리스크 노출 등급·커버리지 우선순위 전략
+      scenario-designer.md                               # Phase 1 — 스토리/API → 리스크 매핑 시나리오 + 명시적 오라클(살아있는 라이브러리)
+      test-engineer.md                                   # Phase 2 — 오라클 우선 생성·실행·로케이터/DOM 드리프트 점수화·로깅된 자가치유
+      failure-triager.md                                 # Phase 3 — 결함/플래키/환경 분류·공유 근본원인 클러스터링·변경 기반 재실행 우선순위
+    skills/
+      qa-agent-harness/                                  # 진입점 오케스트레이터 (Phase 0 전략 승인 게이트 → 시나리오 → 실행 → 트리아지)
+        SKILL.md
+        references/
+          qa-agent-harness-principles.md                 #   원칙·anti-pattern·결정 신호표
+          qa-agent-harness-research.md                   #   설계 근거 dossier (arXiv:2601.02454·2506.02943 CANDOR·2606.18168·2504.16777·등급·제외 범위·CAVEAT)
+    evals/
+      evals.json                                         # 수용 평가 (핵심 불변식 file:section 인용 채점)
+      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 14, 인접 도메인 reciprocal 가드)
+  agent-authorization-harness/                          # [독립 플러그인] 에이전트/MCP 도구/A2A 시스템의 머신 아이덴티티·인가를 벤더 무관하게 설계·red-team하는 하네스 (신뢰·스코프 모델링→그랜트·위임 설계→동의·집행→적대 인가 검증 4단계, 설계+red-team 산출물이지 IdP 배포 아님). 경계: 런타임 콘텐츠·행동 레일(llm-guardrails, LLM06 공유 이음매)·사람↔에이전트 분업(human-agent-teaming)·파이프라인 policy-as-code(cicd)·코딩 에이전트 권한(code-as-harness) 제외
+    .claude-plugin/
+      plugin.json
+    CLAUDE.md                                            # 하네스 포인터 + Phase 요약 + 변경 이력
+    README.md                                            # 사용자용 개요·사용법·도구 경계·근거 자료
+    agents/                                              # 모두 model: "opus"
+      trust-scope-modeler.md                             # Phase 0 — 참여자·authN vs authZ authority·접촉면 인벤토리·최소 스코프·신뢰 경계
+      grant-delegation-designer.md                       # Phase 1 — 단명 audience-bound 토큰(RFC 8707)·토큰 교환 위임(RFC 8693 may_act)·no passthrough
+      consent-enforcement-designer.md                    # Phase 2 — 인증/인가 분리·deny-by-default·동의 게이트·end-to-end audience 검증·감사 로깅
+      authorization-redteamer.md                         # Phase 3 — confused-deputy·토큰재생·스코프크리프·무제한위임 적대 검증·위협 분석
+    skills/
+      agent-authorization-harness/                       # 진입점 오케스트레이터 (Phase 0 모델링 게이트 → 그랜트·위임 → 집행 → red-team)
+        SKILL.md
+        references/
+          agent-authorization-harness-principles.md      #   원칙·anti-pattern·결정 신호표
+          agent-authorization-harness-research.md        #   설계 근거 dossier (RFC 8707·8693·OWASP LLM06=HIGH / ID-JAG·MCP auth·A2A draft=MEDIUM, 등급·CAVEAT·정직성)
+    evals/
+      evals.json                                         # 수용 평가 (핵심 불변식 file:section 인용 채점)
+      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 14, 인접 도메인 reciprocal 가드)
 ```

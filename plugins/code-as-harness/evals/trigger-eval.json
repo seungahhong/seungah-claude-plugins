@@ -90,5 +90,13 @@
   {
     "query": "사람과 에이전트가 한 팀으로 협업하도록 분업·감독·신뢰 보정을 설계해줘",
     "should_trigger": false
+  },
+  {
+    "query": "런타임에 LLM 입출력·tool 호출을 외부 정책 엔진으로 검사·차단·재작성하는 가드레일을 설계해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "만들 에이전트/MCP 시스템의 아이덴티티·인가(스코프·토큰·위임) 아키텍처를 설계·red-team해줘",
+    "should_trigger": false
   }
 ]

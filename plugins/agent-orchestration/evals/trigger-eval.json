@@ -90,5 +90,9 @@
   {
     "query": "사람과 에이전트가 한 팀으로 분업·위임·감독·검증을 어떻게 나눌지 사람↔에이전트 협업 체계를 설계해줘",
     "should_trigger": false
+  },
+  {
+    "query": "에이전트간(A2A) 호출의 인가·아이덴티티·on-behalf-of 위임 모델을 설계해줘",
+    "should_trigger": false
   }
 ]

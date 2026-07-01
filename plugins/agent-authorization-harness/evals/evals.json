@@ -1,0 +1,65 @@
+{
+  "eval_metadata": {
+    "eval_id": "agent-authorization-harness-acceptance",
+    "eval_name": "agent-authorization-harness 오케스트레이터 수용 평가 (design-conformance dry-run)",
+    "prompt": "만들어지는 에이전트/MCP 도구/A2A 시스템의 머신 아이덴티티·인가 모델을 벤더 무관하게 설계하고 적대적으로 red-team한다(Phase 0 신뢰·스코프 모델링 → Phase 1 그랜트·위임 설계 → Phase 2 동의·집행 설계 → Phase 3 적대적 인가 검증). 본 평가는 shipped SKILL.md·agents/*.md·references/*가 설계 불변식(최소 권한·단명 audience-bound 스코프 토큰·RFC 8707 end-to-end audience 검증·인증/인가 분리(인가는 LLM 아님)·RFC 8693 토큰 교환 위임·매 경계 fresh exchange·no passthrough·민감 스코프 사람 동의 게이트·deny-by-default·감사 로깅·confused-deputy/토큰재생/스코프크리프/무제한위임 red-team·설계+분석이 산출물(배포 아님)·정직성(discipline HIGH vs framing MEDIUM 등급·벤더 illustrative·개선 N% 금지)·승인 게이트·경계·독립성)을 강제·명세하는지 file:section 인용 증거로 채점한다(런타임 실행이 아닌 정적 정합 점검).",
+    "method": "design-conformance dry-run — 런타임 실행 없이 shipped 파일이 핵심 동작을 명세·강제하는지 인용으로 검증",
+    "assertions": [
+      {
+        "text": "[Core/least-privilege-model] 하네스는 접근 근거로 네트워크·공유 키·LLM 판단을 신뢰하지 않고, 만들어지는 시스템의 머신 아이덴티티·인가를 설계로 못 박으며, 최소 권한(과대 기능/권한/자율)을 1차 원칙으로 둔다.",
+        "passed": true,
+        "evidence": "SKILL.md 서두 핵심 메시지 + 내재화 원칙 '최소 권한(least privilege)'. references/agent-authorization-harness-principles.md §1. research dossier §5(OWASP LLM06 excessive functionality/permissions/autonomy). CLAUDE.md Conventions 첫 항목."
+      },
+      {
+        "text": "[Phase0/trust-scope-modeling] trust-scope-modeler는 참여자를 역할(subject/resource-owner·actor/agent·client·resource server)로 열거하되 인증 authority(IdP=누구인가)와 인가 authority(PDP/resource server=허가되는가)를 분리 식별하고, 접촉하는 모든 도구·리소스·에이전트 hop을 인벤토리하며 상호작용별 최소 스코프를 배정하고 신뢰 경계를 긋되 토큰·정책은 설계하지 않으며(모델만) Phase 0 직후 승인 게이트를 통과한다.",
+        "passed": true,
+        "evidence": "agents/trust-scope-modeler.md Work Principles '역할별 참여자 열거'(authN vs authZ 분리)·'접촉면 인벤토리'·'최소 스코프 배정'·'신뢰 경계 긋기'·'모델만, 토큰·정책 금지'. Output 'Actor & Scope Model' 템플릿. SKILL.md Phase 0 승인 게이트 '[Phase 0] 신뢰·스코프 모델링 완료 — 다음: 그랜트·위임 설계. 진행할까요?' + '승인 전에는 다음 단계를 시작하지 않는다'. references/agent-authorization-harness-principles.md §1·§4. research dossier §1·§5·§8."
+      },
+      {
+        "text": "[Phase1/audience-bound-and-delegation] grant-delegation-designer는 장수 공유 자격증명 대신 단명·audience-bound(RFC 8707 resource/aud) 스코프 토큰을 설계하고, 사용자 위임은 RFC 8693 토큰 교환(subject_token/actor_token/may_act)으로 모델링하되 매 신뢰 경계에서 fresh exchange하고 상류 토큰을 절대 passthrough하지 않으며, 표준 그랜트를 자체 키보다 우선하되 ID-JAG은 in-flux 초안으로 명시한다.",
+        "passed": true,
+        "evidence": "agents/grant-delegation-designer.md Work Principles '단명·audience-bound 스코프 토큰'·'토큰 교환 위임(RFC 8693)'(subject/actor/may_act·매 경계 fresh exchange·no passthrough)·'표준 그랜트 우선'(ID-JAG in-flux 명시). Output 'Grant & Delegation Design' 템플릿. SKILL.md Phase 1 prompt + 내재화 원칙 '단명·스코프 토큰 > 장수 마스터 자격증명'·'audience/resource 바인딩'·'표준 on-behalf-of/토큰 교환 위임'. references/agent-authorization-harness-principles.md §2·§3·§5·§8. research dossier §3(RFC 8707)·§4(RFC 8693)·§6(never pass through)."
+      },
+      {
+        "text": "[Phase2/authN-authZ-separation-and-consent] consent-enforcement-designer는 인증(IdP=누구인가)과 인가(resource server/PDP=허가되는가)를 분리하고 인가를 LLM에 위임하지 않으며(외부 시스템), 정책을 deny-by-default로 두고 모든 resource server에서 end-to-end audience 검증(aud≠자기 URI면 거부; AS만 신뢰 금지)을 집행하며, 민감/비가역 스코프에 사람 동의 게이트를 두고 요청 스코프와 조직 허용 스코프를 분리하며 모든 인가 결정을 감사 로깅한다.",
+        "passed": true,
+        "evidence": "agents/consent-enforcement-designer.md Work Principles '인증 ≠ 인가 분리'(LLM 위임 금지)·'deny-by-default 정책'·'end-to-end audience 검증'·'민감 스코프 사람 동의 게이트'(요청 vs 허용 분리)·'감사 로깅'. Output 'Consent & Enforcement Design' 템플릿. SKILL.md Phase 2 prompt + 내재화 원칙 '인증(authN) ≠ 인가(authZ)'·'민감/비가역 스코프의 사람 동의'·'deny-by-default + 감사성'. references/agent-authorization-harness-principles.md §4·§6·§7·§3. research dossier §3·§5(authorization in external systems)·§7(requested vs org-permitted scopes)."
+      },
+      {
+        "text": "[Phase3/adversarial-redteam] authorization-redteamer는 완성된 모델을 canonical 공격(confused deputy ASI01→ASI03·토큰 재생/passthrough·과대/ambient 스코프·무제한 위임 체인·네트워크/시스템프롬프트를 토큰 대신 신뢰·인프라 배포를 설계로 착각)으로 검증하고 각 공격면에 RESISTS/PARTIAL/FAILS를 설계 조항 인용으로 판정하며, 설계를 직접 수정하지 않는다(검증·권고만).",
+        "passed": true,
+        "evidence": "agents/authorization-redteamer.md Work Principles '공격면을 하나씩 검증'(6개 공격면 열거)·'설계 조항 인용으로 판정'·'검증·권고만, 수정 금지'. Output 'Authorization Threat Analysis' 템플릿(공격면별 RESISTS/PARTIAL/FAILS). SKILL.md Phase 3 prompt '(1)~(6) 공격면 ... 어디서 버티고 어디서 무너지는지 ... 설계 조항 인용으로 판정'. references/agent-authorization-harness-principles.md §5·anti-pattern. research dossier §5(ASI01/ASI03)·§6."
+      },
+      {
+        "text": "[Core/design-not-deploy] 하네스의 산출물은 인가 설계 + 위협/red-team 분석(advisory + 설계 산출물)이지 통과하는 라이브 IdP/PDP 배포가 아니며, Keycloak/Athenz/Kubernetes를 세우는 것은 인프라 작업으로 명시 범위 밖이고 벤더는 illustrative일 뿐 필수가 아니라고 못 박는다.",
+        "passed": true,
+        "evidence": "SKILL.md 서두 인용블록 '인가 모델을 설계하고 red-team한다 ... 특정 IdP/PDP를 배포하지 않는다 ... Keycloak·Athenz·Kubernetes ... 명시적으로 범위 밖 ... 벤더 이름은 예시일 뿐 필수가 아니다' + 내재화 원칙 '설계 + red-team이 산출물(배포 아님)'. references/agent-authorization-harness-principles.md §9. research dossier §9 CAVEAT(배포 사례 범위 밖). CLAUDE.md Conventions·경계."
+      },
+      {
+        "text": "[Honesty/grade-and-no-guarantee] discipline은 published RFC 8707·RFC 8693·OWASP LLM06:2025로 HIGH, framing은 ID-JAG(draft-04)·MCP auth draft·A2A·OWASP Agentic 초안으로 MEDIUM이라고 등급·명시하고, 벤더(Okta XAA 등)는 illustrative로 표기하며, '개선 N% 보장'을 금지하고 완벽한 최소권한 설계도 스코프 내 prompt injection엔 뚫릴 수 있어 런타임 레일과 합성(대체 아님)함을 정직하게 명시한다.",
+        "passed": true,
+        "evidence": "references/agent-authorization-harness-research.md 머리말 정직성 가드(discipline HIGH vs framing MEDIUM·ID-JAG not a finalized RFC·벤더 illustrative·개선 N% 금지·스코프 내 injection→런타임 레일 합성) + '신뢰도 등급 요약' 표 + '정직성/CAVEAT' 섹션. SKILL.md 내재화 원칙 '정직성·falsifiability' + 마무리 정직성 문단. principles.md §10. agents/authorization-redteamer.md '정직성(잔여 위험 은폐 금지)'."
+      },
+      {
+        "text": "[Approval/observability] Phase 0 직후 승인 게이트는 항상이고 Phase 2 민감 스코프 동의 게이트가 있으며, 각 Phase는 1줄로 보고하고 요청되지 않은 사이드 에이전트나 중복 실행을 만들지 않으며 최종적으로 네 산출물을 종합 보고한다.",
+        "passed": true,
+        "evidence": "SKILL.md Phase 0 승인 게이트 + 각 Phase 1줄 보고 문자열 + 내재화 원칙 '관찰 가능성·승인 ... 요청되지 않은 사이드 에이전트나 중복 실행을 만들지 않는다' + 마무리 '[Agent-Auth-Harness] 액터/스코프 {…} · 그랜트/위임 {…} · 집행 {…} · red-team {…}'. references/agent-authorization-harness-principles.md §11. CLAUDE.md Phase 요약 표(게이트 열)·Conventions."
+      },
+      {
+        "text": "[Boundary/domain-guard] agent-authorization-harness는 '만들어지는 에이전트/도구/A2A 시스템의 머신 아이덴티티·인가 모델 설계+red-team'에 특화하고, 런타임 콘텐츠·행동 레일 집행·사람↔에이전트 업무 분업·파이프라인 인프라 정책·코딩 에이전트 자신 권한·일반 API 구현·장애 RCA·상류 핸드오프 검수·출력 채점·병렬화 결정·특정 IdP 배포와 경계를 두며 인접 도메인 요청에는 발동하지 않도록 should-not 가드를 둔다.",
+        "passed": true,
+        "evidence": "SKILL.md description '발동하지 않는다 — 런타임 콘텐츠·행동 레일 ... 사람↔에이전트 업무 분업 ... 파이프라인/릴리스 인프라 policy-as-code ... 코딩 에이전트 자신의 파일수정 권한 ... 일반 API 엔드포인트 구현 ... 사후 프로덕션 인시던트 ... 상류 산출물 핸드오프 게이트 검수 ... 오프라인 LLM-as-a-judge ... 작업 병렬화·토폴로지 ... 특정 IdP/Keycloak/Athenz 배포' + 경계 섹션. plugin.json description 경계 절(공유 이음새=LLM06 과대행위 명시). references/agent-authorization-harness-principles.md 결정 신호표. evals/trigger-eval.json should_not 14건(인접 플러그인 reciprocal 포함)."
+      },
+      {
+        "text": "[Boundary/guardrails-shared-seam] 하네스는 공유 이음새(OWASP LLM06 과대행위)를 명시해, 런타임 가드레일은 행동 한계를 요청 시점에 집행하고 이 하네스는 그 한계가 존재·최소권한이 되게 하는 자격/스코프/위임을 설계한다는 점(합성하되 중복 아님)을 razor-sharp하게 변별한다.",
+        "passed": true,
+        "evidence": "plugin.json description 경계 절 '런타임 콘텐츠·행동 레일 ... llm-guardrails-harness(공유 이음새=OWASP LLM06 과대행위 — guardrails는 행동 한계를 요청 시점에 집행하고 이 하네스는 그 한계가 존재·최소권한이 되게 하는 자격/스코프/위임을 설계, 합성하되 중복 아님)'. SKILL.md 경계 섹션 '런타임 콘텐츠·행동 레일(요청 시점 집행)' 항목(공유 이음새 서술). references/agent-authorization-harness-principles.md §10·결정 신호표. research dossier 머리말 (4)(스코프 내 injection→런타임 레일 합성)."
+      },
+      {
+        "text": "[Independence/self-contained] 하네스는 다른 마켓플레이스 플러그인을 dependency로 참조하지 않고(경계는 변별용으로만 형제 플러그인명을 명시), 각 1차 자료(RFC 8707·RFC 8693·OWASP LLM06:2025·MCP Authorization·A2A spec·OWASP Agentic ASI01/ASI03·ID-JAG draft-04·Okta XAA·LY blog/deck·AIP arXiv:2603.24775)를 제목·URL/ID·인용으로 직접 인용해 단독으로 사용 가능하다.",
+        "passed": true,
+        "evidence": "references/agent-authorization-harness-research.md §1~§10이 각 1차 자료를 제목·출처 URL/arXiv ID·인용문·신뢰도 등급으로 직접 인용. README.md '근거 자료'·'독립성' + CLAUDE.md 'Change History'가 동일 출처를 명시. 어디에도 타 플러그인 파일 경로 의존 없음(형제 플러그인명은 경계 변별에만 사용). SKILL.md 참조 문서가 references/*만 링크."
+      }
+    ]
+  }
+}

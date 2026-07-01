@@ -90,5 +90,9 @@
   {
     "query": "배포 파이프라인·릴리스 게이트·카나리 승격 전략을 설계해줘",
     "should_trigger": false
+  },
+  {
+    "query": "우리 LLM 서비스에 jailbreak·프롬프트 주입·PII 런타임 가드레일을 요청 시점에 인라인 강제해줘",
+    "should_trigger": false
   }
 ]

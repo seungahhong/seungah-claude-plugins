@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "분석 → 설계 → 개발 → 리뷰 → 검증까지, 소프트웨어 개발 전 과정을 지원하는 멀티 에이전트 스킬·커맨드·훅 모음. 정적 분석 5개 관점(간소화·코드 리뷰·보안·성능·정합성) 중 사용자 선택 항목 병렬 + 재리뷰 루프와 E2E·타입/빌드 검증, 그리고 코드 착수 *전* 상류 산출물(기획·디자인·API 계약·QA 인수조건) 핸드오프 게이트 검수를 포함합니다.",
-    "version": "1.15.0",
+    "version": "1.16.0",
     "homepage": "https://github.com/seungahhong/seungah-claude-plugins"
   },
   "plugins": [
@@ -385,6 +385,80 @@
         "reward-hacking-guard",
         "execution-trace",
         "human-oversight",
+        "multi-agent",
+        "orchestration"
+      ],
+      "category": "workflow",
+      "strict": false
+    },
+    {
+      "name": "llm-guardrails-harness",
+      "description": "LLM/에이전트 애플리케이션의 안전을 모델의 자기 정렬이나 시스템 프롬프트에 대한 신뢰가 아니라, 모델 바깥을 감싸는 외부·인라인 제어 평면(external control plane)으로 요청 시점에 강제하는 도메인 무관 멀티 에이전트 런타임 가드레일 하네스. 핵심 메시지는 '안전은 모델을 믿는 게 아니라 모델 주위에 별도의 정책 계층을 두고 요청 시점에 입력·출력·검색·행동을 검사·거부·재작성하는 것이다 — prompt injection은 LLM의 근본 설계를 악용하므로 정렬·지시만으로는 닫히지 않고, 가드레일 자체도 공격 가능한 LLM이라 단일 레일은 충분치 않다'이다. 4단계로 진행한다: (Phase 0) 위협 모델링·정책 정의(Threat-Model & Policy Definition) — 대상 앱을 OWASP LLM Top 10 2025 위험에 매핑하고 콘텐츠 카테고리(PII 클래스·독성/폭력/불법·off-policy 주제)와 행동 위험(excessive agency·시스템 프롬프트 유출)을 목록화해 fail-closed 정책과 레일 배치 결정으로 명문화한다(승인 게이트) → (Phase 1) 입력 레일(Input Rails) — 모델 호출 전에 jailbreak/prompt-injection 탐지, Llama-Guard 스타일 입력 분류(SAFE/UNSAFE+카테고리 ID), 요청 검증으로 입력을 거부하거나 재작성/마스킹한다 → (Phase 2) 출력·검색 레일(Output & Retrieval Rails) — 생성 후 PII 리댁션·독성/정책 필터·grounding/환각 점검과 검색 시점의 untrusted 청크 필터링(indirect prompt injection)을 모델·사용자 도달 전에 별도 계층으로 둔다 → (Phase 3) 에이전트 행동 강제·적대 검증(Agent-Action Enforcement & Adversarial Verification) — 최소 권한 tool 스코핑·인자/결과 검증(execution rails)·비가역 행동 사람 승인 게이트를 외부 정책 엔진으로 강제하고, 모든 레일을 적대적으로 red-team해 ASR(놓친 공격)과 FPR(과차단)을 함께 측정하며 우회를 반복 보강한다. 핵심 안전장치: 외부 강제 우선(시스템 프롬프트 신뢰 금지)·전체 레일 taxonomy(input/dialog/output/retrieval/execution) 커버·fail-closed 기본값(레일 오류/타임아웃/불확실 시 차단·강등, fail-open 금지)·다층 방어(단일 신뢰점 가드레일 금지)·excessive agency 최소 권한+비가역 행동 사람 게이트(LLM05→LLM06)·검색/도구 반환 콘텐츠 불신(LLM08)·safety-utility(ASR↔FPR) 트레이드오프 명시·오염된 정적 벤치마크 불신(미지 적대 공격 일반화 평가). 근거는 OWASP Top 10 for LLM Applications 2025·NVIDIA NeMo Guardrails(input/dialog/output/retrieval/execution 5 rail types)·Llama Guard(arXiv:2312.06674)·SoK: Evaluating Jailbreak Guardrails(arXiv:2506.10597, ASR/FPR·adaptive-attack bypass)·OWASP LLM Prompt Injection Prevention Cheat Sheet·Adaptive Evaluation of Out-of-Band Defenses(arXiv:2606.26479)이며, Tech-Verse 2026 S04 세션의 이전 가능한 코어(레일 taxonomy+OWASP 매핑+외부강제 원칙)만 일반화하고 특정 사내 게이트웨이 구현이나 '개선 N% 보장'·보편 ASR/FPR 수치는 주장하지 않는다(가드레일은 위험을 줄이는 방어심층이지 위험 제거가 아니며 적응형 공격자는 개별 레일을 우회한다). 경계: 오프라인으로 AI 출력 품질을 LLM judge로 사후 채점·평가하는 일(eval-harness), 프로덕션 LLM 서비스의 사후 장애 탐지·국소화·RCA(ops-harness), 코드 착수 전 상류 산출물(PRD·디자인·API 계약·QA) 핸드오프 게이트 검수(review-harness), 사람↔에이전트 분업·공통기반·감독/신뢰를 설계(human-agent-teaming), 작업을 여러 에이전트로 병렬화할지·토폴로지 결정(agent-orchestration), 일반 API/백엔드 기능 구현·실행 검증(backend-harness), 코딩 에이전트 자신의 코드 변경 권한·샌드박스 거버넌스(code-as-harness), 프런트엔드 소스 코드의 웹 취약점(XSS/CSRF) 스캔(frontend-harness), 토큰·스코프·위임·동의 등 아이덴티티/인가 아키텍처 설계(agent-authorization-harness)는 범위 밖이며, 이 하네스는 '런타임에 LLM I/O와 tool 호출의 콘텐츠·행동 정책을 외부에서 인라인 강제하는 방어심층(defense-in-depth)'에 특화한다. excessive agency(LLM06)는 agent-authorization-harness와 공유 이음매다 — 본 하네스는 런타임 콘텐츠·행동 레일, agent-authorization은 그 아래의 자격증명·아이덴티티·스코프 계층이다. 다른 마켓플레이스 플러그인에 의존하지 않는 독립 플러그인이다.",
+      "source": "./plugins/llm-guardrails-harness",
+      "version": "0.1.0",
+      "author": { "name": "seungah.hong" },
+      "tags": [
+        "claude-code",
+        "plugin",
+        "llm-guardrails",
+        "prompt-injection-defense",
+        "input-output-rails",
+        "owasp-llm-top-10",
+        "nemo-guardrails",
+        "llama-guard",
+        "excessive-agency",
+        "adversarial-redteam",
+        "asr-fpr",
+        "fail-closed",
+        "defense-in-depth",
+        "multi-agent",
+        "orchestration"
+      ],
+      "category": "workflow",
+      "strict": false
+    },
+    {
+      "name": "qa-agent-harness",
+      "description": "에이전트가 '커버리지를 채우는' 것이 아니라 리스크 노출(발생확률 × 영향)을 커버리지 우선순위로 변환하고, 각 시나리오에 진짜 판정 오라클을 명시한 뒤, 테스트를 생성·실행하되 실패를 맹목 재시도하지 않고 결함/플래키/환경으로 먼저 분류하도록 묶은 도메인 무관(FE+API) 에이전틱 소프트웨어 QA 하네스. 핵심 메시지는 '커버리지 극대화나 그린 신호 자체가 reward-hacking 가능한 대리지표다 — 오라클이 약하면 연기만 나고 경보는 울리지 않는다(All Smoke, No Alarm). 테스트의 가치는 실행 경로 수가 아니라 어서션(오라클)의 강도에 있다'이다. 4단계로 진행한다: (Phase 0) 리스크 기반 테스트 전략(Risk-Driven Test Strategy) — 요구사항·최근 변경·비즈니스/기술 리스크를 리스크 노출(확률×영향) 등급으로 정규화하고 무엇을 어느 깊이로 테스트할지 커버리지 우선순위와 판정 기준을 담은 전략을 산출한다(균일 커버리지가 아니라 리스크 노출도가 노력을 배분, 승인 게이트) → (Phase 1) 시나리오 설계·살아있는 시나리오 라이브러리(Scenario Design) — 스토리/API/도메인 규칙을 리스크에 매핑된 시나리오로 번역하되 각 시나리오에 '무엇이 성공/실패인가'의 명시적 오라클(기대 상태·불변식)을 부착하고 요구사항·리스크로 추적 가능하며 제품과 함께 진화하는 라이브러리를 유지한다(정적 회귀팩 지양) → (Phase 2) 오라클 우선 생성 + 자가치유 실행(Generation + Self-Healing Execution) — 실행 가능한 테스트를 생성하되 스모크/동어반복 어서션을 금지하고 진짜 오라클을 넣으며, 실행 중 로케이터/DOM 드리프트는 role→data-testid→접근성 트리→가시 텍스트 우선순위로 점수화된 후보 비교로 자가치유하되 치유는 로깅·게이트되어 실제 회귀를 초록으로 은폐하지 않는다 → (Phase 3) 실패 트리아지 & 근본원인(Intelligent Failure Triage) — 실패를 재시도하기 전에 실제 결함 vs 플래키 vs 환경으로 분류하고 공유 근본원인(네트워킹·외부 의존 등)으로 클러스터링해 하나의 수정으로 다수 플래키를 해소하며, 변경 영향과 리스크로 재실행/회귀 범위를 우선순위화하고 결정을 설명 가능하게 로깅한다. 전 과정은 '행동 전 제안(suggest-before-act)' 점진적 자율성, 파괴적/고위험 행동에 대한 HITL 승인 게이트, 설명 가능한 로깅된 결정으로 관통된다. 검증된 근거(arXiv:2601.02454 'The Rise of Agentic Testing'(멀티에이전트 QA)·arXiv:2506.02943 CANDOR(오라클 다중표본 합의)·arXiv:2606.18168 'All Smoke, No Alarm'(오라클 신호)·arXiv:2504.16777 'Systemic Flakiness'(공동발생 플래키 클러스터)·arXiv:2601.05542 LLM 오라클 생성·Requirements-based test prioritization(리스크 인자) 산업연구·Katalon Agentic QA 운영모델)를 등급(HIGH/MEDIUM)·CAVEAT와 함께 인용하되, S06 세션의 헤드라인 신규성인 조직 도입·AI 성숙도 5단계 모델·변경관리 층은 하네스화 불가로 명시적으로 제외하고, 보고된 회사별 수치(1.54x QA 산출·~49% AI 대체·68% 시간 절감)와 CANDOR 오라클 정확도(0.834→0.971)는 특정 세팅 관찰값으로만 인용하며 '개선 N% 보장'을 쓰지 않는다. 경계: 넓은 프론트엔드 개발 워크플로우 안의 FE 한정 QA 단계(FE 개발 도메인), 구현 흐름 내부의 좁은 test-generator 스킬(백엔드 구현 도메인), AI 출력을 오프라인 LLM-as-a-Judge로 채점·측정하는 일(평가 도메인), 라이브 텔레메트리로 프로덕션 인시던트를 RCA하는 일(운영 도메인), 코딩 착수 전 상류 인수조건↔테스트 커버리지를 핸드오프 게이트로 검수하는 일(핸드오프 리뷰 도메인), 검증 가능한 목표로의 도메인 무관 자율 반복 루프(자율 반복 도메인), 작업을 여러 AI 에이전트로 병렬화할지·토폴로지 결정(멀티 에이전트 오케스트레이션 도메인), 사람↔에이전트 분업·감독 설계(사람-에이전트 협업 도메인), LLM 입출력 안전 가드레일(주입·PII·독성)은 범위가 아니며 '리스크 기반 전략→오라클 명시 시나리오→오라클 우선 생성·게이트된 자가치유 실행→결함 vs 플래키 지능형 트리아지의 독립 end-to-end 에이전틱 QA 라이프사이클'에 특화한다. 다른 마켓플레이스 플러그인에 의존하지 않는 독립 플러그인이다.",
+      "source": "./plugins/qa-agent-harness",
+      "version": "0.1.0",
+      "author": { "name": "seungah.hong" },
+      "tags": [
+        "claude-code",
+        "plugin",
+        "qa-agent-harness",
+        "agentic-testing",
+        "risk-based-testing",
+        "test-oracle",
+        "self-healing-tests",
+        "flaky-test-triage",
+        "test-prioritization",
+        "human-in-the-loop",
+        "multi-agent",
+        "orchestration"
+      ],
+      "category": "workflow",
+      "strict": false
+    },
+    {
+      "name": "agent-authorization-harness",
+      "description": "에이전트/MCP 도구/에이전트간(A2A) 시스템을 만들거나 배선할 때, 행동 아래에 깔리는 '머신 아이덴티티·인가(authorization)' 아키텍처를 벤더 무관하게 설계하고 적대적으로 red-team하는 도메인 무관 멀티 에이전트 하네스. 핵심 메시지는 '네트워크·공유 API 키·LLM의 자체 판단을 접근 결정의 근거로 신뢰하지 말고, 최소 권한(least-privilege) 스코프와 감사 대상(audience-bound) 단명 토큰, 사용자 위임(on-behalf-of)과 deny-by-default 집행을 설계로 못 박은 뒤 confused-deputy·토큰 재생/passthrough·스코프 크리프·무제한 위임을 적대적으로 검증한다'이다. 산출물은 인가 설계 + 위협/red-team 분석(advisory + 설계 산출물)이며, 특정 IdP/Keycloak/Athenz 배포가 아니다. 4단계로 진행한다: (Phase 0) 신뢰·스코프 모델링(Trust & Scope Modeling) — 참여자(subject/resource-owner·actor/agent·client·resource server·인증 authority(IdP) vs 인가 authority(PDP/resource server))를 열거하고 시스템이 접촉하는 모든 도구·리소스·에이전트를 매핑해 상호작용마다 실제로 필요한 최소 스코프를 배정하고 신뢰 경계를 긋는다(승인 게이트) → (Phase 1) 그랜트·위임 설계(Grant & Delegation Design) — 장수 공유 자격증명 대신 단명·audience-bound(RFC 8707 resource/aud) 스코프 토큰을, 사용자 위임은 토큰 교환(RFC 8693 subject_token/actor_token/may_act)으로 매 신뢰 경계마다 fresh exchange하고 절대 passthrough하지 않으며, 표준 그랜트(OAuth 2.1·ID-JAG 크로스앱)를 자체 키보다 우선한다 → (Phase 2) 동의·집행 설계(Consent & Enforcement Design) — 인증(IdP=누구인가)과 인가(resource server/PDP=허가되는가)를 분리하고 deny-by-default 정책·민감/비가역 스코프의 사람 동의 게이트·모든 resource server에서의 end-to-end audience 검증·감사 로깅을 설계한다(인가는 LLM에 위임하지 않고 외부 시스템에서) → (Phase 3) 적대적 인가 검증(Adversarial Authorization Verification) — confused-deputy(prompt-injection→특권 도구 호출, ASI01→ASI03)·토큰 재생/passthrough·과대/ambient 스코프·무제한 위임 체인·네트워크를 신뢰로 착각하는 안티패턴을 상대로 모델이 어디서 버티고 어디서 무너지는지 위협 분석을 낸다(산출물은 분석이지 통과하는 라이브 배포가 아니다). 근거는 published Standards-Track RFC 8707(Resource Indicators)·RFC 8693(Token Exchange)와 OWASP LLM06:2025(Excessive Agency)로 discipline은 HIGH 신뢰이고, ID-JAG(draft-ietf-oauth-identity-assertion-authz-grant-04)·MCP Authorization draft·A2A spec·OWASP Agentic ASI01/ASI03는 in-flux 초안이라 framing은 MEDIUM으로 등급·명시하며(벤더 Okta XAA는 예시일 뿐 필수 아님), '개선 N% 보장'을 쓰지 않고 최소권한 설계도 스코프 내 prompt-injection엔 여전히 뚫릴 수 있음을 정직하게 못 박는다. 경계: 런타임 콘텐츠·행동 레일(jailbreak·PII·toxicity·출력·과대행위 행동 제한)로 요청 시점에 무엇을 통과시킬지 집행하는 일은 llm-guardrails-harness(공유 이음새=OWASP LLM06 과대행위 — guardrails는 행동 한계를 요청 시점에 집행하고 이 하네스는 그 한계가 존재·최소권한이 되게 하는 자격/스코프/위임을 설계, 합성하되 중복 아님), 사람↔에이전트의 업무 분업·감독·핸드오프 설계는 human-agent-teaming, 파이프라인/릴리스 인프라의 policy-as-code(OPA·terraform plan·trust-tier)는 cicd-harness, 코딩 에이전트 자신의 파일수정 권한·샌드박스 거버넌스는 code-as-harness, 일반 API/엔드포인트 구현·실행검증은 backend-harness, 사후 프로덕션 인시던트 탐지·국소화·RCA는 ops-harness, 코드 착수 전 상류 산출물 핸드오프 게이트 검수는 review-harness, 오프라인 LLM-as-a-judge 출력 채점은 eval-harness, 작업을 병렬화할지·토폴로지 결정은 agent-orchestration의 몫이며 본 하네스는 '만들어지는 에이전트/도구/A2A 시스템의 머신 아이덴티티·인가 모델을 설계하고 적대적으로 검증'하는 사전예방 설계+red-team에 특화한다. 다른 마켓플레이스 플러그인에 의존하지 않는 독립 플러그인이다.",
+      "source": "./plugins/agent-authorization-harness",
+      "version": "0.1.0",
+      "author": { "name": "seungah.hong" },
+      "tags": [
+        "claude-code",
+        "plugin",
+        "agent-authorization",
+        "machine-identity",
+        "least-privilege",
+        "oauth-2.1",
+        "token-exchange",
+        "audience-binding",
+        "mcp-authorization",
+        "a2a",
+        "confused-deputy-defense",
+        "authorization-redteam",
         "multi-agent",
         "orchestration"
       ],

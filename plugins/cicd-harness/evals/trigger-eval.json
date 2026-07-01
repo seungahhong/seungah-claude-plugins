@@ -98,5 +98,9 @@
   {
     "query": "이 코드베이스가 AI 에이전트가 읽고 기여하기 좋은 구조인지 진단하고 의존 방향을 빌드에서 물리적으로 강제하게 AI 접근성(L1~L5)·가드레일을 개선해줘",
     "should_trigger": false
+  },
+  {
+    "query": "만들 에이전트의 최소 권한 인가·토큰·위임 모델을 설계하고 confused-deputy를 red-team해줘",
+    "should_trigger": false
   }
 ]

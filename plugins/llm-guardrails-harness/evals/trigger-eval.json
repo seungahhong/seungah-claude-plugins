@@ -1,0 +1,94 @@
+[
+  {
+    "query": "내 챗봇 입력 파이프라인에 jailbreak·prompt-injection 탐지를 붙여줘",
+    "should_trigger": true
+  },
+  {
+    "query": "LLM 응답이 사용자에게 가기 전에 PII를 리댁션하고 독성 콘텐츠를 필터링해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "내 LLM 앱을 OWASP LLM Top 10에 위협 모델링하고 알맞은 가드레일을 설계해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "에이전트가 아무 tool이나 호출할 수 있어 — excessive agency 가드레일이랑 파괴적 행동에 사람 승인 게이트를 붙여줘",
+    "should_trigger": true
+  },
+  {
+    "query": "우리 내부 LLM 게이트웨이에 입력·출력 콘텐츠 레일을 둘러줘",
+    "should_trigger": true
+  },
+  {
+    "query": "RAG 출력에 grounding/환각 점검이랑 untrusted 검색 컨텍스트 필터링(indirect prompt injection)을 추가해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "내 가드레일을 red-team해서 공격 성공률(ASR) 대 오탐률(FPR)을 함께 보고해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "외부 정책 엔진으로 내 LangChain 에이전트가 호출 가능한 tool을 최소 권한으로 스코핑해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "레일 오류나 분류기 불확실 시 통과 말고 fail-closed로 차단·강등하게 입력·출력 레일을 다층으로 설계해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "내 모델 답변을 오프라인에서 LLM-as-a-judge로 정확도·일관성 채점하고 benchmark validity를 감사해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "프로덕션 LLM 서비스가 500을 내고 있어 — 로그랑 트레이스로 근본 원인 찾아줘",
+    "should_trigger": false
+  },
+  {
+    "query": "코드 착수 전에 API 계약이랑 QA 인수조건을 핸드오프 게이트로 검수해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 작업을 여러 병렬 에이전트로 나눌지 한 에이전트로 할지, 어떤 토폴로지가 좋은지 정해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "사람이 에이전트 팀을 어떻게 감독하고 위임하고 핸드오프할지 협업 모델을 설계해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "우리 React 댓글 폼의 XSS 취약점을 수정해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "/orders REST 엔드포인트를 구현하고 실제로 실행해서 검증해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이번 리팩터링에서 코딩 에이전트의 파일 편집 권한이랑 샌드박스를 거버넌스해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "내 MCP tool을 위한 최소 권한 스코프 OAuth 토큰이랑 위임·동의를 설계해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "제품 기획문서(PRD)랑 사용자 스토리를 작성해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "변경사항 커밋 메시지 작성하고 PR 리뷰해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "settings.json에 npm 명령 실행 권한을 추가해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 코드베이스가 AI 코딩 에이전트가 읽기 좋은 구조인지 진단하고 빌드 가드레일로 개선해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "기존 하네스 결함을 trace 기반으로 진단하고 루트 CLAUDE.md/스킬을 고도화해줘",
+    "should_trigger": false
+  }
+]

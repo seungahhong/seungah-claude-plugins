@@ -1,0 +1,26 @@
+{
+  "name": "llm-guardrails-harness",
+  "version": "0.1.0",
+  "description": "LLM/에이전트 애플리케이션의 안전을 모델의 자기 정렬이나 시스템 프롬프트에 대한 신뢰가 아니라, 모델 바깥을 감싸는 외부·인라인 제어 평면(external control plane)으로 요청 시점에 강제하는 도메인 무관 멀티 에이전트 런타임 가드레일 하네스. 핵심 메시지는 '안전은 모델을 믿는 게 아니라 모델 주위에 별도의 정책 계층을 두고 요청 시점에 입력·출력·검색·행동을 검사·거부·재작성하는 것이다 — prompt injection은 LLM의 근본 설계를 악용하므로 정렬·지시만으로는 닫히지 않고, 가드레일 자체도 공격 가능한 LLM이라 단일 레일은 충분치 않다'이다. 4단계로 진행한다: (Phase 0) 위협 모델링·정책 정의(Threat-Model & Policy Definition) — 대상 앱을 OWASP LLM Top 10 2025 위험에 매핑하고 콘텐츠 카테고리(PII 클래스·독성/폭력/불법·off-policy 주제)와 행동 위험(excessive agency·시스템 프롬프트 유출)을 목록화해 fail-closed 정책과 레일 배치 결정으로 명문화한다(승인 게이트) → (Phase 1) 입력 레일(Input Rails) — 모델 호출 전에 jailbreak/prompt-injection 탐지, Llama-Guard 스타일 입력 분류(SAFE/UNSAFE+카테고리 ID), 요청 검증으로 입력을 거부하거나 재작성/마스킹한다 → (Phase 2) 출력·검색 레일(Output & Retrieval Rails) — 생성 후 PII 리댁션·독성/정책 필터·grounding/환각 점검과 검색 시점의 untrusted 청크 필터링(indirect prompt injection)을 모델·사용자 도달 전에 별도 계층으로 둔다 → (Phase 3) 에이전트 행동 강제·적대 검증(Agent-Action Enforcement & Adversarial Verification) — 최소 권한 tool 스코핑·인자/결과 검증(execution rails)·비가역 행동 사람 승인 게이트를 외부 정책 엔진으로 강제하고, 모든 레일을 적대적으로 red-team해 ASR(놓친 공격)과 FPR(과차단)을 함께 측정하며 우회를 반복 보강한다. 핵심 안전장치: 외부 강제 우선(시스템 프롬프트 신뢰 금지)·전체 레일 taxonomy(input/dialog/output/retrieval/execution) 커버·fail-closed 기본값(레일 오류/타임아웃/불확실 시 차단·강등, fail-open 금지)·다층 방어(단일 신뢰점 가드레일 금지)·excessive agency 최소 권한+비가역 행동 사람 게이트(LLM05→LLM06)·검색/도구 반환 콘텐츠 불신(LLM08)·safety-utility(ASR↔FPR) 트레이드오프 명시·오염된 정적 벤치마크 불신(미지 적대 공격 일반화 평가). 근거는 OWASP Top 10 for LLM Applications 2025·NVIDIA NeMo Guardrails(input/dialog/output/retrieval/execution 5 rail types)·Llama Guard(arXiv:2312.06674)·SoK: Evaluating Jailbreak Guardrails(arXiv:2506.10597, ASR/FPR·adaptive-attack bypass)·OWASP LLM Prompt Injection Prevention Cheat Sheet·Adaptive Evaluation of Out-of-Band Defenses(arXiv:2606.26479)이며, Tech-Verse 2026 S04 세션의 이전 가능한 코어(레일 taxonomy+OWASP 매핑+외부강제 원칙)만 일반화하고 특정 사내 게이트웨이 구현이나 '개선 N% 보장'·보편 ASR/FPR 수치는 주장하지 않는다(가드레일은 위험을 줄이는 방어심층이지 위험 제거가 아니며 적응형 공격자는 개별 레일을 우회한다). 경계: 오프라인으로 AI 출력 품질을 LLM judge로 사후 채점·평가하는 일(eval-harness), 프로덕션 LLM 서비스의 사후 장애 탐지·국소화·RCA(ops-harness), 코드 착수 전 상류 산출물(PRD·디자인·API 계약·QA) 핸드오프 게이트 검수(review-harness), 사람↔에이전트 분업·공통기반·감독/신뢰를 설계(human-agent-teaming), 작업을 여러 에이전트로 병렬화할지·토폴로지 결정(agent-orchestration), 일반 API/백엔드 기능 구현·실행 검증(backend-harness), 코딩 에이전트 자신의 코드 변경 권한·샌드박스 거버넌스(code-as-harness), 프런트엔드 소스 코드의 웹 취약점(XSS/CSRF) 스캔(frontend-harness), 토큰·스코프·위임·동의 등 아이덴티티/인가 아키텍처 설계(agent-authorization-harness)는 범위 밖이며, 이 하네스는 '런타임에 LLM I/O와 tool 호출의 콘텐츠·행동 정책을 외부에서 인라인 강제하는 방어심층(defense-in-depth)'에 특화한다. excessive agency(LLM06)는 agent-authorization-harness와 공유 이음매다 — 본 하네스는 런타임 콘텐츠·행동 레일, agent-authorization은 그 아래의 자격증명·아이덴티티·스코프 계층이다. 다른 마켓플레이스 플러그인에 의존하지 않는 독립 플러그인이다.",
+  "author": {
+    "name": "seungah.hong",
+    "email": "ssingah1030@gmail.com"
+  },
+  "tags": [
+    "claude-code",
+    "plugin",
+    "llm-guardrails",
+    "prompt-injection-defense",
+    "input-output-rails",
+    "owasp-llm-top-10",
+    "nemo-guardrails",
+    "llama-guard",
+    "excessive-agency",
+    "adversarial-redteam",
+    "asr-fpr",
+    "fail-closed",
+    "defense-in-depth",
+    "multi-agent",
+    "orchestration"
+  ]
+}

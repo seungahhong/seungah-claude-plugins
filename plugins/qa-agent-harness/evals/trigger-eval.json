@@ -1,0 +1,94 @@
+[
+  {
+    "query": "이 기능의 리스크를 기준으로 테스트 전략을 세우고 무엇을 어느 깊이로 테스트할지 우선순위를 정해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "이 사용자 스토리들을 리스크에 매핑된 테스트 시나리오로 설계하고 시나리오마다 판정 오라클을 붙여줘",
+    "should_trigger": true
+  },
+  {
+    "query": "E2E 테스트를 생성해서 실행하고 깨진 로케이터는 role/testid/접근성 트리 우선으로 자가치유하게 해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "UI 바뀔 때마다 Playwright 테스트가 깨지는데 점수화·로깅된 자가치유를 세팅해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "테스트는 통과하는데 어서션이 미덥지 않아 — 오라클 품질을 감사하고 스모크/동어반복은 걸러줘",
+    "should_trigger": true
+  },
+  {
+    "query": "CI에 실패 테스트 200개가 있는데 어느 게 실제 결함이고 어느 게 플래키·환경 이슈인지 분류해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "플래키들을 공유 근본원인으로 클러스터링해서 하나의 수정으로 다수를 해소하게 해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "이번 PR 변경분에 대해 어떤 테스트를 먼저 돌릴지 변경 영향+리스크로 우선순위를 정해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "행동 전 승인 게이트를 두고 파괴적 행동은 HITL로 막는 자율 QA 에이전트 파이프라인을 구성해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "이 React 페이지에 접근성/Lighthouse 감사를 돌려줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 API 엔드포인트를 구현하고 유닛 테스트 하나 붙여줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 LLM 출력들을 judge 루브릭으로 채점하고 benchmark validity를 감사해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "프로덕션이 죽었어 — traces/logs로 근본원인을 찾아 완화해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "코딩 착수 전에 인수조건↔테스트 커버리지를 핸드오프 게이트로 검수해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "목표 지표가 통과할 때까지 이 빌드를 자율 반복 루프로 돌리고 교훈을 메모리에 distill해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 작업을 여러 AI 에이전트로 병렬화할지 한 에이전트로 할지 토폴로지를 판단해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "우리 팀에서 사람과 에이전트가 책임을 어떻게 나눌지 분업·감독을 설계해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "내 LLM 챗봇 입출력에 안전 가드레일(주입/PII/독성)을 걸어줘",
+    "should_trigger": false
+  },
+  {
+    "query": "제품 기획문서(PRD)랑 사용자 스토리를 작성해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "변경사항 커밋 메시지 작성하고 PR 리뷰해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "settings.json에 npm 명령 권한 추가해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 코드베이스가 AI 코딩 에이전트가 읽기 좋은 구조인지 진단하고 빌드 가드레일로 개선해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 코드 변경을 계획→실행→검증 사이클로 결정적 센서 돌려 안전하게 반영해줘",
+    "should_trigger": false
+  }
+]

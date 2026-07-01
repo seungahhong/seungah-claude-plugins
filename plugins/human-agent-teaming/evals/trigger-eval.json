@@ -86,5 +86,9 @@
   {
     "query": "에이전트가 코드 생성할 실행가능 구현 명세(spec)를 source of truth로 작성해줘",
     "should_trigger": false
+  },
+  {
+    "query": "에이전트/MCP 도구의 머신 아이덴티티·인가(토큰·스코프·on-behalf-of 위임) 모델을 설계해줘",
+    "should_trigger": false
   }
 ]
