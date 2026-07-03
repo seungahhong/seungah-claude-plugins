@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "분석 → 설계 → 개발 → 리뷰 → 검증까지, 소프트웨어 개발 전 과정을 지원하는 멀티 에이전트 스킬·커맨드·훅 모음. 정적 분석 5개 관점(간소화·코드 리뷰·보안·성능·정합성) 중 사용자 선택 항목 병렬 + 재리뷰 루프와 E2E·타입/빌드 검증, 그리고 코드 착수 *전* 상류 산출물(기획·디자인·API 계약·QA 인수조건) 핸드오프 게이트 검수를 포함합니다.",
-    "version": "1.16.0",
+    "version": "1.17.0",
     "homepage": "https://github.com/seungahhong/seungah-claude-plugins"
   },
   "plugins": [
@@ -461,6 +461,30 @@
         "authorization-redteam",
         "multi-agent",
         "orchestration"
+      ],
+      "category": "workflow",
+      "strict": false
+    },
+    {
+      "name": "ai-readiness-cartography",
+      "description": "임의 git 저장소가 'AI 코딩 에이전트가 읽고 안전하게 기여할 수 있는 코드베이스'인지를 결정론적 스코어러(score.py, stdlib-only)로 정량 측정·시각화하는 도메인 무관 단일 스킬. 100점·9카테고리(E 검증·실행신호 22 / D 의존그래프 18 / B 문맥품질 15 / C 암묵지 12 / H 피드백루프 9 / A 네비게이션 8 / F 신선도 8 / I 환경재현 5 / G 성과 3) + 2개 blocking gate(Reference Integrity: dangling reference 0 / Executable Verification: 실행 가능한 test·build)로 채점한다. 핵심은 순수 가중합이 아니라 gating 집계 — 하나의 blocking 결함이 등급에 상한(AI-Fragile)을 씌워 다른 고득점에 희석되지 않게 한다(Kenogami lowest-as-ceiling·Factory 게이팅). 산출물은 JSON 점수표 + 단일 HTML 대시보드 + ROI 정렬 리팩토링 가이드. 루브릭은 2025~2026 1차 근거로 조작화됐다(ORACLE-SWE 2604.07789: reproduction/test 신호가 성공률 최대 기여 → E 최상위 가중 / LocAgent 2503.09089: 의존 그래프가 localization 예측 → D 기계 판독 그래프 / ETH Zurich AGENTS.md 2602.11988: 컨텍스트 보유율≠성능 → A 보유율 폐기·novelty로 / USENIX Security 2025 slopsquatting: hallucinated path 위험 → E1 binary gate / RepoMirage 2605.26177: structure-first anchor — 파일 노출≠성능; god-file=결합도는 defect-prediction 문헌·라인 수 근거 부재, session-4 C7·C8). 모든 지표에 auto/heuristic/manual 라벨과 근거 등급을 붙여 자동화 범위와 정직성을 명확히 하고, 코드를 자동 수정하지 않고 측정·시각화·제안만 낸다. 코드베이스의 구조적 AI 접근성을 정성 진단하고 빌드 가드레일·standalone·수용 증명으로 개선 설계하는 ai-readable-codebase(스코어러 없는 L1~L5 멀티 에이전트)와는 상보적이다(측정 vs 정성 진단→개선). 한 기능 구현(backend-harness), 하네스 자체 진단(meta-harness), AI 생성물 평가 judge(eval-harness), 컨텍스트 조립(context-engineering), 완성 코드 리뷰·PR(frontend/git-harness)은 범위 밖이며 '결정론적 점수·대시보드 산출'에 특화한다.",
+      "source": "./plugins/ai-readiness-cartography",
+      "version": "0.1.0",
+      "author": {
+        "name": "seungah.hong"
+      },
+      "tags": [
+        "claude-code",
+        "plugin",
+        "ai-readiness-cartography",
+        "ai-readiness-score",
+        "agent-readiness",
+        "codebase-scoring",
+        "dependency-graph",
+        "reference-integrity-gate",
+        "dashboard",
+        "roi-refactoring",
+        "deterministic-scorer"
       ],
       "category": "workflow",
       "strict": false

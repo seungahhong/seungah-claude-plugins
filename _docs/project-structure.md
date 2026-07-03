@@ -234,7 +234,7 @@ plugins/
           eval-harness-research.md                       #   설계 근거 dossier (출처·인용·vote·CAVEAT·반박된 주장; arXiv:2507.02825·2412.12509·2502.12468·2507.11538·2606.17799)
     evals/
       evals.json                                         # 수용 평가 (핵심 불변식 file:section 인용 채점)
-      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 15, 인접 도메인 reciprocal 가드)
+      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 19, 인접 도메인 reciprocal 가드)
   spec-driven-development/                               # [독립 플러그인] 엔지니어용 실행 가능 명세(spec=source of truth)를 작성하고 에이전트가 명세대로 코드 생성→자기검증하게 하는 하네스 (명세작성→인수설계→구현→검증 4단계). 경계: 기획자 PRD·AI 출력 평가·컨텍스트 조립·완성 코드 리뷰·하네스 진단 제외
     .claude-plugin/
       plugin.json
@@ -272,7 +272,7 @@ plugins/
           ai-readable-codebase-research.md               #   설계 근거 dossier (flex 5부작 + 2025+ 출처·인용·vote·CAVEAT; CodeScene 9.4/5.15 미입증 투명성 §D)
     evals/
       evals.json                                         # 수용 평가 (핵심 불변식 file:section 인용 채점)
-      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 13, 인접 도메인 reciprocal 가드)
+      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 15, 인접 도메인 reciprocal 가드)
   human-agent-teaming/                                  # [독립 플러그인] 사람과 AI 에이전트가 한 팀으로 협업하도록 분업·공통기반·감독/신뢰·검증을 설계하는 하네스 (분업·위임→공통기반→모니터링 기반 감독·신뢰 보정→비례 검증·핸드오프·책임 4단계). 축은 AI↔AI 토폴로지가 아니라 사람↔에이전트 분업·감독. 경계: 여러 AI 에이전트 병렬화·토폴로지(agent-orchestration)·컨텍스트 페이로드 조립(context)·AI 출력 평가(eval)·단일 자율 반복(loop)·상류 핸드오프 검수(review)·하네스 진단(meta)·PRD(product-spec)·커밋/PR(git) 제외
     .claude-plugin/
       plugin.json
@@ -368,4 +368,29 @@ plugins/
     evals/
       evals.json                                         # 수용 평가 (핵심 불변식 file:section 인용 채점)
       trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 14, 인접 도메인 reciprocal 가드)
+  ai-readiness-cartography/                             # [독립 플러그인] 임의 git 저장소가 'AI 에이전트가 읽고 안전하게 기여할 수 있는 코드베이스'인지를 결정론적 스코어러로 정량 측정·시각화하는 단일 스킬 (100점·9카테고리 + 2 blocking gate(gating 집계) → JSON 점수표+HTML 대시보드+ROI 리팩토링 가이드). 에이전트 팀 없음. ai-readable-codebase(정성 진단→개선)와 상보(측정 vs 개선 설계). 외부 스킬 v2를 deep-research 5세션 적대 검증으로 v3 리팩토링
+    .claude-plugin/
+      plugin.json
+    CLAUDE.md                                            # 하네스 포인터 + 루브릭 v3 요약 + 변경 이력
+    README.md                                            # 사용자용 개요·사용법·경계·근거(ai-readable-codebase 비교표)
+    skills/
+      ai-readiness-cartography/                          # 진입점 오케스트레이터 (score.py 실행 → 대시보드 채우기 → ROI 가이드)
+        SKILL.md
+        scripts/
+          score.py                                       #   v3 결정론적 스코어러 (stdlib only, gating·import 그래프 파싱·결합도 god-file·reference integrity)
+        assets/
+          template.html                                  #   대시보드 원본 (Inter/JetBrains Mono·인라인 SVG·gate strip·9카테고리 차트)
+        references/
+          scoring-rubric.md                              #   v3 루브릭 (9카테고리 + 2 gate, 근거 등급·auto/heuristic/manual 라벨)
+          ai-readiness-cartography-research.md           #   근거 dossier 인덱스 (루브릭→근거 매핑·정직성 노트)
+          research/                                      #   2025~2026 1차 근거 (deep-research 5세션 적대 검증)
+            README.md                                    #     합성 (헤드라인 반전 7개 + 리팩토링 결정 R1~R12)
+            session-1-comprehension-metrics.md           #     ORACLE-SWE(2604.07789)·Nemotron-CORTEXA — 실행 신호 최상위
+            session-2-context-engineering.md             #     ETH Zurich AGENTS.md(2602.11988)·Context Rot·Lost-in-the-Middle
+            session-3-grounding-hallucination.md         #     USENIX slopsquatting(2025)·Ashik(2604.09515) — E1 gate·stale drift
+            session-4-repo-structure.md                  #     LocAgent(2503.09089)·RepoMirage(2605.26177) — 의존 그래프·결합도 god-file
+            session-5-benchmark-operationalization.md    #     Factory/Kenogami readiness — gating 집계·H/I 신규
+    evals/
+      evals.json                                         # 수용 평가 (v3 불변식 file:section·score.py 함수 인용 채점)
+      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 6 / should_not 8, ai-readable-codebase reciprocal 가드)
 ```

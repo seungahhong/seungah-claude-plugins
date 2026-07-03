@@ -102,5 +102,13 @@
   {
     "query": "실패한 테스트 스위트를 실제로 실행·자가치유하고 결함 vs 플래키로 트리아지해줘",
     "should_trigger": false
+  },
+  {
+    "query": "이 레포 AI-readiness 100점 루브릭으로 점수 매기고 HTML 대시보드 만들어줘",
+    "should_trigger": false
+  },
+  {
+    "query": "코드베이스가 얼마나 agent-friendly한지 결정론적 스코어러로 채점해서 등급이랑 ROI 우선순위 뽑아줘",
+    "should_trigger": false
   }
 ]

@@ -1,0 +1,70 @@
+{
+  "eval_metadata": {
+    "eval_id": "ai-readiness-cartography-acceptance",
+    "eval_name": "ai-readiness-cartography 수용 평가 (design-conformance dry-run)",
+    "prompt": "스킬은 임의 git 저장소를 결정론적 스코어러(score.py, stdlib only)로 채점해 JSON 점수표 + HTML 대시보드 + ROI 리팩토링 가이드를 산출한다. 100점·9 카테고리(E 검증·실행신호 22 / D 의존그래프 18 / B 문맥품질 15 / C 암묵지 12 / H 피드백루프 9 / A 네비게이션 8 / F 신선도 8 / I 환경재현 5 / G 성과 3) + 2개 blocking gate(Reference Integrity·Executable Verification)로 채점하되, 순수 가중합이 아니라 gating으로 하나의 blocking 결함이 등급에 상한(AI-Fragile)을 씌운다. 루브릭은 2025~2026 1차 근거로 조작화됐고 각 지표에 auto/heuristic/manual 라벨·근거 등급이 붙는다. 본 평가는 shipped SKILL.md·scripts/score.py·references/scoring-rubric.md·research/*가 하네스 불변식(gating 집계·실행 검증 최상위 가중·보유율 폐기·기계 판독 의존 그래프·결합도 god-file·redundancy discipline·auto/manual 라벨·정직성·경계·제안만)을 강제·명세하는지 file:section·score.py 함수 인용으로 채점한다(정적 정합 점검).",
+    "method": "design-conformance dry-run — 런타임 실행 없이 shipped 파일이 핵심 동작을 명세·강제하는지 인용으로 검증. score.py는 실제 실행 결과(gating·dangling 탐지)도 인용.",
+    "assertions": [
+      {
+        "text": "[Core/deterministic-first] 하네스는 결정론적 score.py가 먼저 자동 채점하고 LLM이 heuristic/manual 항목·E1 dangling 후보 확인을 보강하도록 규정한다(손채점부터 금지).",
+        "passed": true,
+        "evidence": "SKILL.md '워크플로 1. 결정론적 자동 채점' + 내재화 원칙 '자동 우선, 사람 보강'. scripts/score.py main()·build_report(). CLAUDE.md Conventions '결정론 우선, 사람 보강'."
+      },
+      {
+        "text": "[Core/gating] 집계는 순수 가중합이 아니라 gating이며, blocking gate(Gate-1 Reference Integrity·Gate-2 Executable Verification)가 실패하면 등급에 상한 AI-Fragile을 씌운다(blocking 결함이 다른 고득점에 희석되지 않게).",
+        "passed": true,
+        "evidence": "scripts/score.py apply_gates()·GATE_CEILING_SCORE=59·Gate dataclass. references/scoring-rubric.md '등급 밴드 + 게이팅' 섹션. 실제 실행: 이 repo 채점 시 두 gate 실패 확인(단 총점 35는 상한 이하라 캡은 no-op·grade_capped=False) — 캡 동작 자체는 apply_gates(85, 실패 gate) 합성 호출로 True 확인. 근거 session-5 C8(Kenogami lowest-as-ceiling)."
+      },
+      {
+        "text": "[E/executable-top-weight] E(Verification & Executable Signals)가 최상위 배점(22)이며 E2 Executable Verification(실행 가능한 test/build/하네스)이 E 최고 하위 배점(10)이다 — 정적 문서보다 실행 신호 우선(ORACLE-SWE reproduction +26~27pp).",
+        "passed": true,
+        "evidence": "scripts/score.py score_E() sub E2=/10, max=22. references/scoring-rubric.md 'E. Verification & Executable Signals /22'. research/session-1-comprehension-metrics.md C1. basis 필드 'ORACLE-SWE(2604.07789)'."
+      },
+      {
+        "text": "[A/coverage-not-scored] A(Navigation)는 컨텍스트 보유율(coverage %)을 점수화하지 않고 structure-first anchor(진입점·의존 이웃 명시)만 채점하며, 보유율은 진단 정보로만 보고한다(ETH Zurich 보유율≠성능 반증).",
+        "passed": true,
+        "evidence": "scripts/score.py score_A() — A1 root briefing·A2 anchors만 점수, evidence의 coverage_info_only는 '_info_only' 라벨로 미채점. references/scoring-rubric.md 'A. Navigation ... 보유율(coverage %)은 점수화하지 않는다'. research/session-2 C1."
+      },
+      {
+        "text": "[D/machine-readable-graph] D(Dependency)는 'mermaid 존재'가 아니라 기계 판독 import 그래프 파싱(Python AST·JS 상대 import)을 1급 신호로, architecture doc/mermaid는 부차(/2)로 둔다(LocAgent).",
+        "passed": true,
+        "evidence": "scripts/score.py build_import_graph()·score_D() D1 Graph=/8 vs D4 ArchDoc=/2. references/scoring-rubric.md 'D1 기계 판독 의존 그래프 8'. research/session-4 C2."
+      },
+      {
+        "text": "[godfile/coupling-not-lines] god-file은 라인 수 단독 임계값이 아니라 결합도(fan-in+fan-out)로 판정하고, 라인 수(>500)는 '근거 약함' 보조 신호로만 라벨링한다(라인 임계값은 agent용 근거 부재).",
+        "passed": true,
+        "evidence": "scripts/score.py COUPLING_HOTSPOT=14(god-file 1급 신호)·score_D D3_Coupling(결합도로 hotspot 판정)·find_large_files(LARGE_FILE_LINES=300은 '나열' 컷오프일 뿐 점수 신호 아님·결합도 우선 정렬). 라인 수는 어떤 카테고리 점수에도 감점으로 쓰이지 않음. references/scoring-rubric.md 'god-file은 결합도로 정의' + '넣지 말 것: N줄 초과 정량 감점'. research/session-4 C7·C8."
+      },
+      {
+        "text": "[B/redundancy-not-linecount] B(Context Quality)는 절대 line 수 목표를 삭제하고 redundancy discipline(README/코드 중복↓)·command-first를 채점한다(문서 존재≠성능, 중복은 순비용).",
+        "passed": true,
+        "evidence": "scripts/score.py score_B() B1_RedundancyDiscipline(_readme_corpus 대조)·B2_CommandFirst. references/scoring-rubric.md 'B. ... 절대 line 수 목표는 삭제'. research/session-2 C3·C4·C6."
+      },
+      {
+        "text": "[E1/reference-integrity-honesty] Gate-1은 절대 % 임계값이 아니라 dangling 0 불변식이며, score.py는 dangling 후보를 보수적으로(top-level 세그먼트·./·../ 만) flag하고 LLM이 placeholder/illustrative를 걸러 실 dangling만 반영하도록 규정한다.",
+        "passed": true,
+        "evidence": "scripts/score.py check_reference_integrity()의 top_level 필터 + ext 종료 경계 lookahead(.json→.js 절단 방지) + repo-경계 가드(_inside_repo: resolve·is_relative_to — repo 밖 참조는 probe 없이 미집계). references/scoring-rubric.md 'Gate-1' 정직성 노트(명령·패키지 대조는 미구현 명시). SKILL.md 워크플로 1 'E1 dangling 후보 확인'. research/session-3 C9(절대 임계값 금지)."
+      },
+      {
+        "text": "[新/H-I-categories] 신규 H(Feedback-Loop Latency)·I(Environment & Task-Discovery) 카테고리가 존재하고 근거 등급 Med로 라벨링된다(DevEx·Factory 8-pillar).",
+        "passed": true,
+        "evidence": "scripts/score.py score_H()(/9, auto-med)·score_I()(/5, auto-med). references/scoring-rubric.md 'H'·'I' 섹션 '근거 등급 Med'. research/session-5 C6·C7. Factory 'Task Discovery' 귀속 정정(C6)도 dossier에 명시."
+      },
+      {
+        "text": "[G/success-efficiency-split] G(Outcomes)는 success와 efficiency를 별도 하위지표(G1 success telemetry / G2 efficiency telemetry)로 분리한다(두 축은 독립적으로 움직임).",
+        "passed": true,
+        "evidence": "scripts/score.py score_G() G1_SuccessTelemetry·G2_EfficiencyTelemetry. references/scoring-rubric.md 'G. ... success ⁄ efficiency'. research/session-5 C5(Lulla et al.)."
+      },
+      {
+        "text": "[honesty/labels-no-overclaim] 모든 카테고리에 auto/heuristic/manual 라벨과 근거 등급이 붙고, 근거 부재 신호(라인 수 god-file 정량 감점·hallucination % 임계값·human 포매팅 가점)는 미채택이며 '개선 N% 보장' 같은 과장을 금지한다.",
+        "passed": true,
+        "evidence": "scripts/score.py CategoryScore.label·evidence_grade·basis 필드. references/scoring-rubric.md '넣지 말 것(근거 부재 — 정직성)' 섹션. SKILL.md 내재화 원칙 '정직성'. research/README.md 정직성 노트."
+      },
+      {
+        "text": "[boundary/vs-ai-readable-codebase] 하네스는 코드를 자동 수정하지 않고 측정·시각화·제안만 내며, 정성 진단→개선 설계(ai-readable-codebase)·기능 구현(backend-harness)·하네스 진단(meta-harness)·judge 평가(eval-harness)와 경계를 명시하고 ai-readable-codebase와 상보 관계임을 규정한다.",
+        "passed": true,
+        "evidence": "SKILL.md '이 스킬이 다른 것(경계)' 섹션 + 내재화 원칙 '제안만(사람 집행)'. CLAUDE.md Conventions '경계' + 'ai-readable-codebase와는 상보'. README.md 비교표. plugin.json description 경계 문단."
+      }
+    ]
+  }
+}

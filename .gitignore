@@ -8,3 +8,7 @@
 .claude/plugin-store/
 
 .DS_Store
+
+# python bytecode (플러그인 스크립트 실행 시 생성)
+__pycache__/
+*.pyc

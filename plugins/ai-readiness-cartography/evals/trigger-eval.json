@@ -1,0 +1,58 @@
+[
+  {
+    "query": "이 레포 AI-readiness 점수 매기고 등급 대시보드 만들어줘",
+    "should_trigger": true
+  },
+  {
+    "query": "이 코드베이스가 얼마나 agent-friendly한지 100점 루브릭으로 채점하고 HTML로 시각화해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "agent-readiness 스코어링 돌려서 blocking gate(hallucinated path·test 유무) 통과하는지 보여줘",
+    "should_trigger": true
+  },
+  {
+    "query": "repo cartography — AI 준비도 지도랑 ROI 정렬 리팩토링 우선순위를 측정 기반으로 뽑아줘",
+    "should_trigger": true
+  },
+  {
+    "query": "Claude Code가 이 레포를 잘 다룰 수 있는지 카테고리별 점수+대시보드로 감사해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "우리 레포 의존 그래프·결합도·dangling reference를 스코어러로 측정해서 점수표(JSON) 내줘",
+    "should_trigger": true
+  },
+  {
+    "query": "코드베이스 AI 접근성을 정성 진단하고 L1~L5 등급 매긴 뒤 빌드 가드레일·standalone·수용 증명으로 개선 설계해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "의존 방향을 빌드에서 물리적으로 강제하고 도메인 슬라이스를 standalone으로 독립 실행하게 아키텍처를 개선해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 API 엔드포인트를 설계·구현하고 빌드·테스트로 실행 검증해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "루트 CLAUDE.md랑 SKILL.md 하네스 자체가 부실한데 trace로 진단해서 고도화해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 LLM 출력들을 judge 루브릭으로 채점하고 benchmark validity를 감사해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "모델에 넣을 컨텍스트 페이로드를 조립·압축·관리해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 PR 코드 리뷰하고 한국어 커밋 메시지 써줘",
+    "should_trigger": false
+  },
+  {
+    "query": "settings.json에 hook 추가해서 저장할 때마다 lint 돌게 해줘",
+    "should_trigger": false
+  }
+]

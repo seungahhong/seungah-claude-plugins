@@ -86,5 +86,13 @@
   {
     "query": "settings.json에 npm 명령 권한 추가해줘",
     "should_trigger": false
+  },
+  {
+    "query": "이 레포 AI-readiness 100점 루브릭으로 점수 매기고 등급·HTML 대시보드 만들어줘",
+    "should_trigger": false
+  },
+  {
+    "query": "codebase가 얼마나 agent-friendly한지 결정론적 스코어러로 측정해서 JSON 점수표+ROI 리팩토링 우선순위 뽑아줘",
+    "should_trigger": false
   }
 ]

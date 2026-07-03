@@ -28,7 +28,7 @@ eval-harness/
 │           └── eval-harness-research.md      # 설계 근거 deep-research dossier (출처·인용·신뢰도·CAVEAT·반박된 주장)
 └── evals/
     ├── evals.json                  # 수용 평가 (design-conformance dry-run — 핵심 불변식 file:section 인용 채점)
-    └── trigger-eval.json           # 트리거 경계 평가 (should_trigger 9 / should_not 15, 인접 도메인 경계 가드)
+    └── trigger-eval.json           # 트리거 경계 평가 (should_trigger 9 / should_not 19, 인접 도메인 경계 가드)
 ```
 
 ## Phase 요약
