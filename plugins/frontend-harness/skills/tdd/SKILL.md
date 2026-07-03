@@ -1,6 +1,6 @@
 ---
 name: tdd
-description: Red-Green-Refactor 루프 기반 테스트 주도 개발(TDD) 스킬. 사용자가 "TDD", "테스트 주도 개발", "red-green-refactor", "테스트 먼저", "테스트 기반 개발" 등을 언급하거나, 새로운 기능 구현/버그 수정 시 테스트를 먼저 작성하고 싶을 때 사용. 통합 테스트, 단위 테스트, 테스트 우선 개발 방식이 필요한 모든 상황에서 반드시 이 스킬을 활용할 것.
+description: Red-Green-Refactor 루프 기반 테스트 주도 개발(TDD) 스킬. 사용자가 "TDD", "테스트 주도 개발", "red-green-refactor", "테스트 먼저", "테스트 기반 개발" 등을 언급하거나, 새로운 기능 구현/버그 수정 시 테스트를 먼저 작성하고 싶을 때 사용. 통합 테스트, 단위 테스트, 테스트 우선 개발 방식이 필요한 모든 상황에서 반드시 이 스킬을 활용할 것. 발동하지 않는다 — 이미 구현된 코드에 실행 기반 테스트를 사후 생성·보강(test-after)하는 것은 backend-harness/test-generator가 담당한다(이 스킬은 테스트 선행 red-green-refactor 루프 전용).
 ---
 
 # 테스트 주도 개발 (TDD)

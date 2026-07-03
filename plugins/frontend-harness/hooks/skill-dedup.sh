@@ -1,16 +1,14 @@
 #!/bin/bash
 # skill-dedup.sh — SKILL.md 생성 전 중복 스킬 확인
-# PreToolUse hook (Write matcher, pathPattern **/SKILL.md)
+# PreToolUse hook (Write matcher) — 대상 판별은 아래 case의 */SKILL.md 가드가 담당한다.
+# 파서(jq/python3)가 없으면 stderr 경고 후 통과한다(fail-open).
+set -u
+
+SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+. "$SCRIPT_DIR/lib.sh"
 
 INPUT=$(cat)
-FILE_PATH=$(echo "$INPUT" | python3 -c "
-import sys, json
-try:
-    d = json.load(sys.stdin)
-    print(d.get('tool_input', {}).get('file_path', ''))
-except:
-    print('')
-" 2>/dev/null)
+FILE_PATH=$(hook_field '.tool_input.file_path') || true
 
 [ -z "$FILE_PATH" ] && exit 0
 

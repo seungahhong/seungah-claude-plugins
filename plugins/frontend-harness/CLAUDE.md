@@ -9,8 +9,9 @@
 commands/                      # 상위 워크플로우 커맨드 (스킬을 서브에이전트로 spawn)
   orchestrator.md              # research → prd → develop → review → verify 6단계
   research.md prd.md frontend-guidelines.md review.md verifier.md verify.md
-hooks/                         # PreToolUse·PostToolUse·Stop·FileChanged 훅
+hooks/                         # PreToolUse·PostToolUse·Stop 훅
   hooks.json                   # 훅 설정
+  lib.sh                       # 공용 stdin JSON 파서 (jq→python3 폴백, 부재 시 경고 후 통과)
   guard.sh write-guard.sh skill-dedup.sh stop-lint.sh package-changed.sh
 skills/                        # 13개 스킬 (각 SKILL.md, 일부 + references/)
   planner architecture critic grill-me tdd
@@ -20,8 +21,8 @@ skills/                        # 13개 스킬 (각 SKILL.md, 일부 + references
 
 ## Conventions
 
-- 각 스킬은 `skills/<skill>/SKILL.md`에 정의하고 frontmatter는 `name`/`description`만 둔다.
-- 커맨드는 스킬을 직접 실행하지 않고 Agent 도구로 서브에이전트를 spawn한다.
+- 각 스킬은 `skills/<skill>/SKILL.md`에 정의하고 frontmatter는 `name`/`description` 필수 + 필요 시 `allowed-tools`/`disable-model-invocation`만 추가 허용한다.
+- 커맨드는 스킬을 직접 실행하지 않고 Agent 도구로 서브에이전트를 spawn한다(모든 spawn에 `model: "opus"` 명시).
 - 스킬 간 교차 참조는 상대 경로(예: `../a11y/SKILL.md`)를 쓴다.
 - 참고 자료는 `skills/<skill>/references/` 하위에 배치한다.
 - Review 단계는 사용자가 선택한 관점만 단일 메시지에서 동시 spawn한다(병렬).
@@ -31,4 +32,5 @@ skills/                        # 13개 스킬 (각 SKILL.md, 일부 + references
 | Date | Change | Reason |
 |------|--------|--------|
 | 2026-06-03 | 플러그인 CLAUDE.md/README.md 신설 | 플러그인 단위 문서·사용법 분리 |
+| 2026-07-03 | 훅·권한·트리거 정비 (v1.3.1) | 유효하지 않은 FileChanged 이벤트 제거 → package-changed를 PostToolUse로 재배선, 훅 파서 공용화(lib.sh, jq→python3 폴백·부재 시 경고 후 통과), guard.sh 차단 regex 보강(분리형 rm 플래그·`/*`·`git add ./`), stop-lint 이벤트 분기(PostToolUse=수정 파일만·Stop=전체 diff), qa-inspector/security-audit allowed-tools 최소화(Write/Edit 제거), planner·tdd·architecture·critic·grill-me·qa-inspector에 인접 하네스 역방향 배제 문구, 커맨드 spawn에 model:"opus" 명시 |
 | 2026-06-21 | figma-extract 스킬 추가 | Figma 링크→디자인 컨텍스트 추출 전용 스킬. metadata 노드맵 우선 → 대상 노드만 get_design_context/variable_defs/screenshot 상세 추출 → `.claude/design/`에 json·spec·png 파일화, 부모엔 경로+요약만(토큰 폭주 차단). 코드 생성은 책임 밖. 단독 동작 |

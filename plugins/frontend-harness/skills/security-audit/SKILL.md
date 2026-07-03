@@ -1,7 +1,7 @@
 ---
 name: security-audit
 description: "웹 애플리케이션 보안 감사 스킬. OWASP Top 10 기준 취약점 스캔, 코드 보안 분석, 의존성 취약점 점검, 보안 헤더 검증을 수행한다. 사용자가 '보안 감사', '보안 점검', '취약점 스캔', 'OWASP', 'XSS', 'SQL Injection', 'CSRF', '시큐어 코딩', '보안 리뷰', '의존성 취약점', 'CVE', '보안 헤더' 등을 언급할 때 사용한다. 코드 기반 정적 분석(SAST)과 설정 점검을 수행하며, 실제 네트워크 침투는 범위 밖이다. 오케스트레이터의 Review 단계(`/review`)에서 다른 정적 분석 스킬과 병렬로 실행되거나, 독립적으로 호출할 수 있다."
-allowed-tools: Bash, Read, Grep, Glob, Write, Edit, WebSearch
+allowed-tools: Bash, Read, Grep, Glob, WebSearch
 ---
 
 # Security Audit — 보안 감사

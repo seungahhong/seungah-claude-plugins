@@ -94,5 +94,13 @@
   {
     "query": "codebase가 얼마나 agent-friendly한지 결정론적 스코어러로 측정해서 JSON 점수표+ROI 리팩토링 우선순위 뽑아줘",
     "should_trigger": false
+  },
+  {
+    "query": "이 저장소 AI 준비도를 결정론적 스코어러로 100점 만점 점수 매기고 HTML 대시보드로 시각화해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "우리 레포 AI-readiness 점수표(JSON)랑 ROI 리팩토링 가이드 뽑아줘 — 카테고리별 점수로",
+    "should_trigger": false
   }
 ]

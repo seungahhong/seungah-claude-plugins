@@ -34,6 +34,8 @@ from __future__ import annotations
 
 import argparse
 import ast
+import functools
+import html
 import json
 import os
 import re
@@ -174,7 +176,10 @@ def _safe_readable(p: Path) -> bool:
         return False
 
 
+@functools.lru_cache(maxsize=128)
 def read_text(p: Path) -> str:
+    # 단일 실행 내 동일 파일 재독(문맥 파일·pyproject 등) 방지 캐시.
+    # maxsize×MAX_READ_BYTES가 메모리 상한 — 무제한으로 두지 않는다.
     try:
         if not _safe_readable(p):
             return ""
@@ -386,6 +391,7 @@ def _resolve_js(importer: Path, spec: str, repo: Path) -> str | None:
 def check_reference_integrity(repo: Path, context_files: list[Path]) -> dict[str, Any]:
     """문서가 인용한 파일 경로·line range의 실존을 검증한다. dangling 0이 gate 통과 조건."""
     total_paths = 0
+    total_ranges = 0  # 검증한 line-range 참조 수(E1 정확도 분모에 포함)
     dangling_paths: list[tuple[str, str]] = []
     dangling_ranges: list[tuple[str, str]] = []
     # Gate는 high-precision이어야 하므로(등급 상한 유발) 검증 대상을 보수적으로 한정:
@@ -424,6 +430,7 @@ def check_reference_integrity(repo: Path, context_files: list[Path]) -> dict[str
                     break
             if target is None:
                 continue
+            total_ranges += 1
             n = count_lines(target)
             hi = int(end) if end else start
             if hi > n or start < 1:
@@ -431,6 +438,7 @@ def check_reference_integrity(repo: Path, context_files: list[Path]) -> dict[str
     dangling = len(dangling_paths) + len(dangling_ranges)
     return {
         "total_paths": total_paths,
+        "total_ranges": total_ranges,
         "dangling_paths": dangling_paths,
         "dangling_ranges": dangling_ranges,
         "dangling_total": dangling,
@@ -475,8 +483,9 @@ def detect_verification(repo: Path) -> dict[str, Any]:
         "settings.gradle", "settings.gradle.kts", "pom.xml",
     ))
     if toolchain_builtin:
-        test_cmd = True
         build_cmd = True
+        # test_cmd는 아래에서 실제 테스트 흔적(파일)이 확인될 때만 인정 —
+        # 매니페스트만으로 인정하면 테스트 0건 저장소가 Gate-2를 통과하는 과대평가가 된다.
 
     # 실제 테스트 하네스(파일) 존재 — 명령뿐 아니라 실행 대상.
     # test 디렉토리 *하위* 코드 파일은 파일명과 무관하게 카운트(관용적 레이아웃 지원).
@@ -490,6 +499,9 @@ def detect_verification(repo: Path) -> dict[str, Any]:
         if "test" in n or "spec" in n or in_test_dir:
             test_files += 1
     has_test_dir = any((repo / d).exists() for d in ("tests", "test", "__tests__", "spec", "e2e"))
+
+    if toolchain_builtin and (test_files > 0 or has_test_dir):
+        test_cmd = True
 
     ci = repo / ".github" / "workflows"
     ci_workflows = list(ci.glob("*.yml")) + list(ci.glob("*.yaml")) if ci.exists() else []
@@ -513,10 +525,13 @@ def score_E(repo: Path, refint: dict, verif: dict, context_files: list[Path]) ->
     """E. Verification & Executable Signals /22 (Auto) — 최상위 가중(session-1 C1)."""
     sub: dict[str, int] = {}
     # E1 Reference accuracy /6 (Gate-1과 연동)
-    if refint["total_paths"] == 0:
+    # 분모·분자 모두 path + line-range 참조를 포함 — Gate-1을 뒤집는 dangling range가
+    # E1 점수에는 반영되지 않던 비대칭 방지.
+    total_refs = refint["total_paths"] + refint["total_ranges"]
+    if total_refs == 0:
         sub["E1_RefAccuracy"] = 3  # 검증 대상 없음 — neutral
     else:
-        acc = (refint["total_paths"] - len(refint["dangling_paths"])) / refint["total_paths"]
+        acc = (total_refs - refint["dangling_total"]) / total_refs
         sub["E1_RefAccuracy"] = round(6 * acc)
     # E2 Executable verification /10 (Gate-2와 연동) — reproduction/test 최상위
     e2 = 0
@@ -1153,6 +1168,23 @@ def serialize(report: Report) -> dict[str, Any]:
     }
 
 
+def html_escape_deep(value: Any) -> Any:
+    """모든 문자열 값을 재귀 html.escape — template.html 채움은 이 사본(*.htmlsafe.json)만 사용.
+
+    브랜치명·파일 경로·findings에 저장소 유래 텍스트가 들어가므로, 대시보드 XSS 차단을
+    LLM 지침이 아니라 결정론 코드로 강제한다.
+    """
+    if isinstance(value, str):
+        return html.escape(value, quote=True)
+    if isinstance(value, list):
+        return [html_escape_deep(v) for v in value]
+    if isinstance(value, tuple):
+        return tuple(html_escape_deep(v) for v in value)
+    if isinstance(value, dict):
+        return {html_escape_deep(k): html_escape_deep(v) for k, v in value.items()}
+    return value
+
+
 def render_markdown(report: Report) -> str:
     L: list[str] = []
     L.append(f"# AI-Readiness Audit · {report.meta['repo']} (v3 gated)")
@@ -1218,7 +1250,11 @@ def main() -> int:
         print(f"error: repo path not found: {repo}", file=sys.stderr)
         return 2
 
-    report = build_report(repo)
+    try:
+        report = build_report(repo)
+    except Exception as e:  # 적대적/비정형 저장소에서 traceback 대신 정돈된 실패
+        print(f"error: scoring failed for {repo.name}: {type(e).__name__}: {e}", file=sys.stderr)
+        return 2
     payload = serialize(report)
     if args.json_out:
         out_path = Path(args.json_out)
@@ -1226,6 +1262,9 @@ def main() -> int:
             if out_path.parent and str(out_path.parent) not in (".", ""):
                 out_path.parent.mkdir(parents=True, exist_ok=True)
             out_path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
+            # HTML 대시보드 채움 전용 이스케이프 사본
+            safe_path = out_path.with_name(out_path.stem + ".htmlsafe.json")
+            safe_path.write_text(json.dumps(html_escape_deep(payload), indent=2, ensure_ascii=False), encoding="utf-8")
         except OSError as e:
             print(f"error: cannot write JSON to {out_path}: {e}", file=sys.stderr)
             return 2

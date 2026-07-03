@@ -1,5 +1,5 @@
 {
-  "description": "Frontend-harness 훅 설정. 위험 명령 차단(PreToolUse), 민감 파일 생성 차단(Write guard), 스킬 중복 방지(SKILL.md guard), 파일 수정 후 자동 린트(PostToolUse), 응답 완료 후 린트 체인(Stop), 의존성 변경 알림(FileChanged).",
+  "description": "Frontend-harness 훅 설정. 위험 명령 차단(PreToolUse Bash), 민감 파일 생성 차단(Write guard), 스킬 중복 방지(SKILL.md guard), 파일 수정 후 해당 파일 린트·의존성 변경 알림(PostToolUse), 응답 완료 후 전체 린트 체인(Stop).",
   "hooks": {
     "PreToolUse": [
       {
@@ -19,13 +19,7 @@
             "type": "command",
             "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/write-guard.sh",
             "timeout": 10
-          }
-        ]
-      },
-      {
-        "matcher": "Write",
-        "pathPattern": "**/SKILL.md",
-        "hooks": [
+          },
           {
             "type": "command",
             "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/skill-dedup.sh",
@@ -42,6 +36,11 @@
             "type": "command",
             "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/stop-lint.sh",
             "timeout": 30
+          },
+          {
+            "type": "command",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/package-changed.sh",
+            "timeout": 10
           }
         ]
       }
@@ -54,18 +53,6 @@
             "type": "command",
             "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/stop-lint.sh",
             "timeout": 60
-          }
-        ]
-      }
-    ],
-    "FileChanged": [
-      {
-        "matcher": "package.json",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/package-changed.sh",
-            "timeout": 10
           }
         ]
       }

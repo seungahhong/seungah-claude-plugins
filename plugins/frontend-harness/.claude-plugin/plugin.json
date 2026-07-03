@@ -1,6 +1,6 @@
 {
   "name": "frontend-harness",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "프론트엔드 개발 전 과정을 지원하는 멀티 에이전트 스킬 모음. Research → PRD → Develop(가이드라인 기반 개발) → Review(/simplify + /review + security-audit + lighthouse + qa-inspector 5개 관점 중 사용자 선택 항목 병렬 + 재리뷰 루프) → Verify(E2E + 타입/빌드) 6단계 오케스트레이터를 제공합니다. 웹접근성·시맨틱 HTML·SEO/GEO·TDD·E2E·Lighthouse·QA 정합성·OWASP 보안 감사를 포함합니다.",
   "author": {
     "name": "seungah.hong",

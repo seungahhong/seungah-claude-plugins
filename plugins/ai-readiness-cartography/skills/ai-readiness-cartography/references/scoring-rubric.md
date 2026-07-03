@@ -45,8 +45,8 @@
 
 | Sub | 항목 | Pts | 만점 기준 |
 |-----|------|-----|-----------|
-| E1 | Reference Accuracy | 6 | dangling path 0 (Gate-1 연동) · 검증 대상 경로 0건이면 중립 3점 |
-| E2 | Executable Verification | 10 | test 명령 + 실제 test 하네스 + build (Gate-2 연동) |
+| E1 | Reference Accuracy | 6 | dangling path·line-range 0 (Gate-1 연동, 분모=검증한 path+range 참조) · 검증 대상 0건이면 중립 3점 |
+| E2 | Executable Verification | 10 | test 명령 + 실제 test 하네스 + build (Gate-2 연동) · Go/Rust/JVM 매니페스트는 build만 자동 인정, test 명령은 실제 테스트 흔적(파일/디렉토리) 필요 |
 | E3 | CI test pipeline | 4 | CI 워크플로가 test/build/lint 실행 |
 | E4 | Independent critic | 2 | CODEOWNERS + PR template |
 

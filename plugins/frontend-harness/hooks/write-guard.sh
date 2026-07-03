@@ -1,16 +1,15 @@
 #!/bin/bash
 # write-guard.sh — Write 실행 전 민감 파일 생성 차단
 # PreToolUse hook (Write matcher)
+# 주의: Write 도구만 가드한다(Bash 리다이렉션·Edit 경유 생성은 범위 밖). advisory 가드.
+# 파서(jq/python3)가 없으면 stderr 경고 후 통과한다(fail-open).
+set -u
+
+SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+. "$SCRIPT_DIR/lib.sh"
 
 INPUT=$(cat)
-FILE_PATH=$(echo "$INPUT" | python3 -c "
-import sys, json
-try:
-    d = json.load(sys.stdin)
-    print(d.get('tool_input', {}).get('file_path', ''))
-except:
-    print('')
-" 2>/dev/null)
+FILE_PATH=$(hook_field '.tool_input.file_path') || true
 
 [ -z "$FILE_PATH" ] && exit 0
 

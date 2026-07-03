@@ -1,13 +1,30 @@
 #!/bin/bash
-# Stop 훅: Claude Code 응답 완료 후 git 변경 파일에 대해 lint 체인 실행
+# stop-lint.sh — lint 체인 실행 훅
 # eslint --fix(ts,tsx,js,jsx) → stylelint --fix(css,scss) → prettier --write(ts,tsx,js,jsx)
+# 이벤트별 분기:
+#   PostToolUse(Edit|Write) → 방금 수정된 파일 1개만 린트 (전체 diff 재실행 방지)
+#   Stop                    → git 변경 파일 전체에 lint 체인 실행
 # 각 도구가 프로젝트에 설치되어 있지 않으면 건너뜀
 # 모노레포 지원: 변경 파일 기준으로 가장 가까운 node_modules를 탐색
+# 신뢰 전제: 변경 파일에서 가장 가까운 node_modules/.bin의 eslint/stylelint/prettier를
+# 자동 실행한다. 신뢰할 수 없는 저장소에서는 이 플러그인 훅을 활성화하지 말 것.
 
-# git 변경 파일 목록 수집 (staged + unstaged, 삭제된 파일 제외)
-changed_files=$(git diff --name-only --diff-filter=d HEAD 2>/dev/null)
-if [ -z "$changed_files" ]; then
-  changed_files=$(git diff --name-only --cached --diff-filter=d 2>/dev/null)
+SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+. "$SCRIPT_DIR/lib.sh"
+
+INPUT=$(cat)
+EVENT=$(hook_field '.hook_event_name') || true
+
+if [ "$EVENT" = "PostToolUse" ]; then
+  # 방금 수정된 파일만 대상
+  changed_files=$(hook_field '.tool_input.file_path') || true
+  [ -z "$changed_files" ] && exit 0
+else
+  # Stop(또는 이벤트 판별 불가): git 변경 파일 전체 (staged + unstaged, 삭제 제외)
+  changed_files=$(git -c core.quotepath=false diff --name-only --diff-filter=d HEAD 2>/dev/null)
+  if [ -z "$changed_files" ]; then
+    changed_files=$(git -c core.quotepath=false diff --name-only --cached --diff-filter=d 2>/dev/null)
+  fi
 fi
 
 if [ -z "$changed_files" ]; then

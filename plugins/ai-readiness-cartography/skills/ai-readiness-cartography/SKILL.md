@@ -54,7 +54,7 @@ python3 ${CLAUDE_PLUGIN_ROOT}/skills/ai-readiness-cartography/scripts/score.py <
 
 `assets/template.html`을 복사한 뒤 JSON 값을 끼워 넣는다. **처음부터 쓰지 말 것** — 복사 → 수정.
 
-**이스케이프(non-negotiable·보안)**: JSON에서 온 **모든 문자열 값**(repo 이름·branch·파일 경로·findings·impact·insights)은 삽입 전 반드시 HTML 이스케이프한다 — `&`→`&amp;`, `<`→`&lt;`, `>`→`&gt;`, `"`→`&quot;`. git 브랜치명·경로는 `<script>` 같은 문자를 합법적으로 포함할 수 있어(신뢰 불가 입력), 이스케이프 없이는 저장된 대시보드가 열람 시 임의 스크립트를 실행한다.
+**이스케이프(non-negotiable·보안)**: 대시보드 채움에는 반드시 score.py가 함께 출력한 **`*.htmlsafe.json`**(모든 문자열이 `html.escape`로 사전 이스케이프된 사본)만 사용한다 — 원본 `ai-readiness-score.json`의 문자열을 HTML에 직접 넣지 말 것. git 브랜치명·파일 경로·findings는 `<script>` 같은 문자를 합법적으로 포함할 수 있는 신뢰 불가 입력이라, 이스케이프는 LLM 판단이 아닌 결정론 코드로 강제된다. (숫자·점수 계산에는 어느 파일을 써도 무방하나, HTML로 들어가는 문자열은 htmlsafe 사본만.)
 
 바꿀 블록:
 - **헤더**: repo 이름·오늘 날짜·branch·modules·context_files·code_files(parseable)·dangling_refs

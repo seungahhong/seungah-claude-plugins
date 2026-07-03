@@ -110,5 +110,13 @@
   {
     "query": "코드베이스가 얼마나 agent-friendly한지 결정론적 스코어러로 채점해서 등급이랑 ROI 우선순위 뽑아줘",
     "should_trigger": false
+  },
+  {
+    "query": "운영 중인 LLM 챗봇 입력에 프롬프트 주입/탈옥 탐지 레일 달고 출력에 PII 마스킹 강제해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "우리 에이전트 tool 호출에 최소권한 스코핑이랑 인라인 가드레일 깔고 red-team으로 ASR/FPR 측정해줘",
+    "should_trigger": false
   }
 ]

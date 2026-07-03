@@ -118,5 +118,13 @@
   {
     "query": "리스크 기반 QA 파이프라인으로 테스트 생성·게이트된 자가치유·플래키 트리아지를 해줘",
     "should_trigger": false
+  },
+  {
+    "query": "이 코드 변경을 계획 계약 세우고 권한·샌드박스 안에서 한 번 실행한 뒤 결정적 센서로 검증해줘 — 통과까지 반복은 말고",
+    "should_trigger": false
+  },
+  {
+    "query": "이번 수정은 자율 반복 없이 Plan→Execute→Verify 한 사이클만 거버넌스 있게 돌려서 결과와 trace만 보고해줘",
+    "should_trigger": false
   }
 ]

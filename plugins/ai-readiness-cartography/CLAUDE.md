@@ -14,7 +14,8 @@ ai-readiness-cartography/
 ├── skills/
 │   └── ai-readiness-cartography/
 │       ├── SKILL.md                 # 오케스트레이터(스코어러 실행 → 대시보드 → ROI 가이드)
-│       ├── scripts/score.py         # v3 결정론적 스코어러(stdlib only, gating·import 그래프·결합도)
+│       ├── scripts/score.py         # v3 결정론적 스코어러(stdlib only, gating·import 그래프·결합도, htmlsafe.json 동시 출력)
+│       ├── scripts/test_score.py    # 회귀 테스트(unittest — 가중치 불변식·골든 픽스처·Gate-1 정밀도·htmlsafe)
 │       ├── assets/template.html     # 복사 후 채울 대시보드 원본(Inter/JetBrains Mono, 인라인 SVG)
 │       └── references/
 │           ├── scoring-rubric.md    # v3 루브릭(9 카테고리 + 2 gate, 근거 등급·auto/manual 라벨)
@@ -62,4 +63,5 @@ ai-readiness-cartography/
 
 | 날짜 | 변경 | 내용 |
 |------|------|------|
+| 2026-07-03 | 다각도 검토 반영 (v0.1.1) | score.py 보강 — E1↔Gate-1 비대칭 해소(dangling line-range를 E1 분모·분자에 포함), Gate-2 관대함 축소(Go/Rust/JVM 매니페스트는 build만 자동 인정·test는 실제 테스트 흔적 필요), `*.htmlsafe.json` 동시 출력(대시보드 XSS 차단을 LLM 지침→결정론 코드로), main() 최상위 예외 가드, read_text lru_cache. test_score.py 신설(11건 — 가중치 불변식·골든 픽스처 총점 40 핀·Gate-1 정밀도·회귀·이스케이프) |
 | 2026-07-03 | 플러그인 신설 | ai-readiness-cartography(코드베이스 AI 준비도 결정론적 측정·시각화). 외부 스킬 `ai-readiness-cartography`(v2 7카테고리 스코어러+대시보드)를 기반으로, deep-research(5 세션 적대 검증)로 수집한 2025~2026 1차 근거로 v3 리팩토링 — gating 집계 신설(2 blocking gate)·실행 검증 최상위 가중·기계 판독 의존 그래프·결합도 기반 god-file·보유율 폐기→anchor·redundancy discipline·신규 H/I 카테고리·success⁄efficiency 분리·auto/manual 라벨. 근거: ORACLE-SWE(2604.07789)·LocAgent(2503.09089)·ETH Zurich AGENTS.md(2602.11988)·USENIX slopsquatting(2025)·RepoMirage(2605.26177)·Factory/Kenogami readiness. |

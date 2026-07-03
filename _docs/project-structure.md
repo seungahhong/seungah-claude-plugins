@@ -15,9 +15,14 @@ plugins/
       review.md                                          # Review — /simplify + /review + security-audit + lighthouse + qa-inspector 5개 관점 병렬 + 재리뷰 루프
       verifier.md                                        # E2E 브라우저 검증 (e2e-verifier 스킬 기반)
       verify.md                                          # Verify 통합 — E2E 브라우저 검증 + 타입/빌드 검사
-    hooks/                                               # 플러그인 훅 디렉토리
-      hooks.json                                         # Stop 훅 설정 (lint 체인 자동 실행)
-      stop-lint.sh                                       # eslint → stylelint → prettier 자동 수정 스크립트
+    hooks/                                               # 플러그인 훅 디렉토리 (PreToolUse·PostToolUse·Stop)
+      hooks.json                                         # 훅 설정 (가드 2종 + 스킬 중복 방지 + 린트 + 의존성 알림)
+      lib.sh                                             # 공용 stdin JSON 파서 (jq→python3 폴백, 부재 시 경고 후 통과)
+      guard.sh                                           # PreToolUse(Bash) 위험 명령 차단 (advisory)
+      write-guard.sh                                     # PreToolUse(Write) 민감 파일 생성 차단
+      skill-dedup.sh                                     # PreToolUse(Write) SKILL.md 중복 생성 차단
+      stop-lint.sh                                       # PostToolUse(수정 파일만)·Stop(전체 diff) lint 체인
+      package-changed.sh                                 # PostToolUse package.json 의존성 변경 알림
     skills/                                              # 스킬 정의 디렉토리
       planner/                                           # 계획 수립 (+ references/)
       architecture/                                      # 아키텍처 설계
@@ -377,7 +382,8 @@ plugins/
       ai-readiness-cartography/                          # 진입점 오케스트레이터 (score.py 실행 → 대시보드 채우기 → ROI 가이드)
         SKILL.md
         scripts/
-          score.py                                       #   v3 결정론적 스코어러 (stdlib only, gating·import 그래프 파싱·결합도 god-file·reference integrity)
+          score.py                                       #   v3 결정론적 스코어러 (stdlib only, gating·import 그래프 파싱·결합도 god-file·reference integrity, htmlsafe.json 동시 출력)
+          test_score.py                                  #   회귀 테스트 (unittest — 가중치 불변식·골든 픽스처·Gate-1 정밀도·htmlsafe 이스케이프)
         assets/
           template.html                                  #   대시보드 원본 (Inter/JetBrains Mono·인라인 SVG·gate strip·9카테고리 차트)
         references/

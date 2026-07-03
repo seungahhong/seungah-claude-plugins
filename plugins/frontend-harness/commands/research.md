@@ -28,7 +28,7 @@ description: 요구사항을 체계적으로 분석하는 리서처 커맨드. g
 
 ### 2단계: grill-me 서브에이전트 실행 — 인터뷰
 
-Agent 도구를 사용하여 **grill-me 서브에이전트**를 spawn한다.
+Agent 도구를 사용하여 **grill-me 서브에이전트**를 spawn한다(`model: "opus"` 명시).
 
 **서브에이전트에게 전달할 프롬프트 구성:**
 ```

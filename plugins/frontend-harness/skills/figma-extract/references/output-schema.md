@@ -107,4 +107,4 @@
 
 - json의 `capturedViewportWidth`, spec.md '개요'의 캡처 뷰포트 폭, `-figma.png` 캡처 폭은 **동일 값**이어야 한다.
 - 세 산출물 파일명은 동일한 `{화면명-케밥}` 접두를 공유한다.
-- 시각 정합 검증(`./skills/e2e-verifier/references/figma-visual-diff.md`)은 이 `capturedViewportWidth`를 동일 뷰포트 폭 전제로 사용한다.
+- 시각 정합 검증(`../../e2e-verifier/references/figma-visual-diff.md`)은 이 `capturedViewportWidth`를 동일 뷰포트 폭 전제로 사용한다.
