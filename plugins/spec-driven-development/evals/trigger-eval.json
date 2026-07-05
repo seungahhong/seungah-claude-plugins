@@ -94,5 +94,9 @@
   {
     "query": "이 변경을 계획 계약으로 못 박고 권한·샌드박스에서 실행한 뒤 결정적 센서로 검증하는 거버넌스된 Plan→Execute→Verify 한 사이클로 해줘(영속하는 source-of-truth 명세 작성은 아님)",
     "should_trigger": false
+  },
+  {
+    "query": "이미 있는 인수조건을 계층별 테스트로 계획하고 계획→개별 승인 게이트로 하나씩 테스트를 생성·적용해줘(실행 가능 명세 작성 말고)",
+    "should_trigger": false
   }
 ]

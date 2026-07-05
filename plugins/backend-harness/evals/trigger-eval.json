@@ -110,5 +110,9 @@
   {
     "query": "내 에이전트/MCP 도구의 최소 권한 스코프·단명 토큰·위임 인가 모델을 설계해줘",
     "should_trigger": false
+  },
+  {
+    "query": "AC를 스모크/회귀/nightly랑 unit/통합/E2E 계층으로 배치해 계획하고 테스트별로 승인받아 순차 적용해줘",
+    "should_trigger": false
   }
 ]

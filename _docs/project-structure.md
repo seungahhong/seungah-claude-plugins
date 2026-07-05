@@ -411,4 +411,19 @@ plugins/
     evals/
       evals.json                                         # 수용 평가 (불변식 file:함수 인용 + test_efficiency 실행 채점)
       trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 6 / should_not 7, 인접 도메인 reciprocal 가드)
+  test-layering-harness/                                # [독립 플러그인] 인수조건(AC, Given-When-Then)을 방법론(Smoke/Sanity/Regression/nightly)×계층(Unit/Integration/E2E) 택소노미로 분해·CI 단계 배치해 계획하고, 계획→개별→최종 3단계 인간 승인 게이트로 테스트를 하나씩 순차 생성·적용·확정하는 도메인 무관 인터랙티브 단일 스킬. 초기 문의 AC·개발환경 각각 스킵 가능(환경 미입력 시 현재 경로), 적응형 3 프리셋 추천(비율% 미하드코딩), 오라클 강도 최대 리스크 가드(기대 기준 오검증·실행 그라운딩·flaky baseline). 경계: 자가치유 QA(qa-agent)·백엔드 test-generator(backend)·AC↔테스트 커버리지 읽기전용 검수(review/test-coverage-review)·FE TDD(frontend)·실행 명세(spec-driven)·커밋(git) 제외
+    .claude-plugin/
+      plugin.json
+    CLAUDE.md                                            # 하네스 포인터 + 5-Phase·3-Gate 요약 + 변경 이력
+    README.md                                            # 사용자용 개요·사용법·정직성 원칙·경계
+    skills/
+      test-layering-harness/                             # 진입점 오케스트레이터 (Phase 0 초기문의 → 1 적응형 구성 → 2 계획+게이트A → 3 개별 적용+게이트B → 4 반영+게이트C, 단일 스킬·에이전트 팀 없음)
+        SKILL.md
+        references/
+          test-layering-principles.md                    #   방법론×계층 매트릭스·AC 분해 규칙(GWT→AAA)·오라클 가드·3 프리셋·감지 신호·anti-pattern·경계
+          research/
+            test-strategy-research.md                    #     2025+ 근거 dossier (A~G, 신뢰도·folklore·모순 표기, deep-research plain-text fan-out 적대 검증)
+    evals/
+      evals.json                                         # 수용 평가 (핵심 불변식 file:section 인용 채점 — 3게이트·비율 미하드코딩·오라클 가드·경계)
+      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 14, 인접 하네스(qa-agent/backend/review/frontend/spec/git) reciprocal 가드)
 ```

@@ -1,0 +1,94 @@
+[
+  {
+    "query": "이 인수조건들 Given-When-Then으로 정리돼 있는데 unit/통합/E2E 계층으로 나눠서 테스트 계획 세우고 하나씩 승인받으며 추가해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "AC 기반으로 smoke/regression/nightly 어디에 어떤 테스트 둘지 CI 단계별로 계획 잡아줘",
+    "should_trigger": true
+  },
+  {
+    "query": "우리 프로젝트 테스트를 피라미드로 할지 트로피로 할지 정하고 각 인수조건을 계층별 테스트로 배치해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "이 스토리 수용기준으로 테스트 스위트 계획 만들고 테스트별로 적용 여부 물어보면서 순차로 넣어줘",
+    "should_trigger": true
+  },
+  {
+    "query": "acceptance criteria를 test로 바꾸는데 각 AC를 어느 레이어(unit/integration/e2e)에 둘지 정하고 계획부터 승인받고 싶어",
+    "should_trigger": true
+  },
+  {
+    "query": "PR 게이트엔 뭘 돌리고 nightly엔 뭘 돌릴지 방법론이랑 계층으로 우리 레포에 맞게 짜줘",
+    "should_trigger": true
+  },
+  {
+    "query": "이 기능 인수조건으로 테스트 계획표 만들어줘 — 계층 분해하고 오라클까지 명시해서, 승인하면 하나씩 파일로 추가",
+    "should_trigger": true
+  },
+  {
+    "query": "테스트 계층 전략 좀 잡아줘. 컴포넌트 위주라 integration 비중 어떻게 갈지랑 E2E는 어디까지 둘지",
+    "should_trigger": true
+  },
+  {
+    "query": "인수조건 줄게 이걸로 유닛/통합/이투이 테스트 나눠서 계획 세우고 내 승인 받으면서 넣자",
+    "should_trigger": true
+  },
+  {
+    "query": "리스크 노출도로 커버리지 우선순위 정하고 오라클 명시 시나리오 만들어서 자가치유로 실행하고 결함 vs 플래키 트리아지까지 해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이미 있는 인수조건이랑 테스트가 커버리지로 매핑되는지 착수 전에 읽기전용으로 검수만 해줘 (테스트는 쓰지 말고)",
+    "should_trigger": false
+  },
+  {
+    "query": "이 백엔드 서비스 기존 코드에 대해 generate→compile→execute→repair로 테스트 생성하고 컴파일 안 되면 수리하는 루프 돌려줘",
+    "should_trigger": false
+  },
+  {
+    "query": "프론트 기능 개발하면서 research→prd→develop 흐름 안에서 TDD로 테스트 먼저 쓰고 구현까지 해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "에이전트가 코드 생성할 수 있게 실행 가능한 명세(spec)랑 인수기준을 source of truth로 작성하고 명세대로 구현해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "테스트 다 짰으니 한국어 커밋 메시지 쓰고 PR 올려줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 유틸 함수 하나 유닛 테스트 짜줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 LLM 생성 출력들을 judge 루브릭으로 다중표본 채점하고 benchmark validity를 감사해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 기능 PRD랑 사용자 스토리(수용기준 포함) 기획문서로 작성해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "테스트가 다 통과할 때까지 자율 반복으로 실패 원인 진단하면서 고쳐줘",
+    "should_trigger": false
+  },
+  {
+    "query": "CI 파이프라인이랑 terraform plan/OPA policy로 릴리스 배포 게이트 설계해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "배포 후 프로덕션에서 장애 났는데 traces/logs로 국소화하고 RCA 해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "루트 CLAUDE.md랑 SKILL.md 하네스 자체가 부실한데 trace로 진단해서 고도화해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 레포가 AI 코딩 에이전트 친화적인지 100점 루브릭으로 채점하고 등급 대시보드 만들어줘",
+    "should_trigger": false
+  }
+]
