@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "분석 → 설계 → 개발 → 리뷰 → 검증까지, 소프트웨어 개발 전 과정을 지원하는 멀티 에이전트 스킬·커맨드·훅 모음. 정적 분석 5개 관점(간소화·코드 리뷰·보안·성능·정합성) 중 사용자 선택 항목 병렬 + 재리뷰 루프와 E2E·타입/빌드 검증, 그리고 코드 착수 *전* 상류 산출물(기획·디자인·API 계약·QA 인수조건) 핸드오프 게이트 검수를 포함합니다.",
-    "version": "1.19.0",
+    "version": "1.20.0",
     "homepage": "https://github.com/seungahhong/seungah-claude-plugins"
   },
   "plugins": [
@@ -324,28 +324,6 @@
       "strict": false
     },
     {
-      "name": "ai-readable-codebase",
-      "description": "코드베이스가 AI 코딩 에이전트가 읽고 안전하게 기여할 수 있는 구조인지를 진단·개선하는 도메인 무관 멀티 에이전트 하네스. 핵심 전제는 '구조가 프롬프트보다 먼저다(structure before prompt)'와 '코드 품질(Q축)과 AI 접근성(A축)은 다른 차원이다'이다 — 클린 코드라도 패턴 비일관·빌드 피드백 약함·모듈 경계 모호로 에이전트에 적대적일 수 있다. 4단계로 진행한다: (Phase 0) 2축(Q/A)으로 진단하고 L1~L5 AI 접근성 등급을 증거 기반으로 매긴 뒤 A축 격차 식별(진단 승인 게이트) → (Phase 1) 가장 중요한 아키텍처 규칙을 빌드/컴파일 계층으로 옮겨 의존 방향을 물리적으로 강제하고 빌드 피드백을 3차원(위치·원인·수정방향)으로 '가르치게' 설계하며 빌드(무엇이 불가능한지) vs CLAUDE.md(무엇이 바람직한지/왜) 역할 분담 → (Phase 2) 도메인 슬라이스를 전체 시스템 없이 독립 실행 가능하게(port/adapter 치환·use-case seed) 설계 → (Phase 3) 수용 증명(자동 E2E) 인프라로 리뷰를 '동작하나'에서 '설계가 좋은가'로 이동시키고 등급을 적대적으로 재측정(generator/checker 분리·reward-hacking 가드). 빌드가 강제하고 문서가 설명한다 — 자연어 가이드는 구조 강제 없이는 실패한다. 검증된 근거(flex.team 'AI가 읽을 수 있는 코드베이스' 5부작 + 2025+ 출처)를 vote/CAVEAT와 함께 인용하고 정량 수치를 과장하지 않는다(특히 CodeScene Code Health 9.4/10·업계 평균 5.15/10 수치는 peer-reviewed 출처(arXiv:2601.02200)에 없어 본문 근거로 쓰지 않음). 경계: 한 기능의 실행 기반 구현·검증(backend-harness)·상류 산출물 핸드오프 검수(review-harness)·하네스 자체 진단(meta-harness)·전달 파이프라인(cicd-harness)·실행 가능 명세 작성(spec-driven-development)·컨텍스트 페이로드 조립(context-engineering)·완성 코드 리뷰·커밋/PR(frontend/git-harness)은 범위가 아니며 '코드베이스의 구조적 AI 접근성 진단·개선'에 특화한다.",
-      "source": "./plugins/ai-readable-codebase",
-      "version": "0.1.1",
-      "author": { "name": "seungah.hong" },
-      "tags": [
-        "claude-code",
-        "plugin",
-        "ai-readable-codebase",
-        "ai-accessibility",
-        "build-guardrails",
-        "dependency-enforcement",
-        "standalone-app",
-        "acceptance-proof",
-        "codebase-grading",
-        "multi-agent",
-        "orchestration"
-      ],
-      "category": "workflow",
-      "strict": false
-    },
-    {
       "name": "human-agent-teaming",
       "description": "사람과 AI 에이전트가 한 팀으로 효과적으로 협업하도록 분업·공통기반·감독/신뢰·검증/지속을 설계하는 도메인 무관 멀티 에이전트 하네스. 핵심 축은 AI끼리의 병렬화·토폴로지가 아니라 사람↔에이전트의 분업과 감독이며, 산출물은 프롬프트가 아니라 협업 설계(teaming playbook)다. 일이 단일 플레이어에서 멀티플레이어(사람이 전략을 세우고 에이전트가 실행)로 옮겨갔다는 전제에서, 4단계로 진행한다: (Phase 0) 분업(사람=전략·하드 트레이드오프·최종 검증·책임 / 에이전트=전문 실행)·위임(human/agent/co-delegation·conditional delegation·trustworthy region)·자율 수준(작업 종류별 보수적 기본, 미입증이면 전수 검토)·운영 모드(human-in-the-loop vs human-on-the-loop)·고위험/비가역 결정점·역할 경계를 정하고(승인 게이트) → (Phase 1) '적혀 있지 않으면 에이전트엔 존재하지 않는다'는 전제로 팀원 온보딩식 공통기반·AI 오류 경계 노출·workspace awareness·재정렬 루프(SMM은 영속 협상, 일회성 설정 아님)를 세우며 → (Phase 2) 모든 행동을 일일이 승인하지 않는 모니터링 기반 감독(투명성·개입/스티어링·단계적 가역 권한 read-only→쓰기 전 승인→영속·위험 트리거)·적절한 의존으로의 신뢰 보정(신뢰 최대화가 아님)·특징적 실패모드(over-reach·조기 완료 선언)·자동화 편향 가드를 설계하고 → (Phase 3) 인간 검증을 요구되는 마지막 층으로 운영화(코드=테스트·그 외=루브릭·Doer-Verifier fresh-context)·검증 스캐폴딩·핸드오프 연속성·후속 재정렬(After-Action)·책임(moral crumple zone 금지)을 설계한다. 핵심 메시지는 '에이전트는 도구가 아니라 팀원이고, 자율성과 인간 통제의 균형을 작업 종류별로 잡는다'이다. 검증된 근거(Anthropic 'Building Effective Human-Agent Teams' 블로그 정독 + 'Building Effective Agents'·'Our framework for safe and trustworthy agents'·'Measuring Agent Autonomy'·'Effective harnesses for long-running agents' 1차 자료 + arXiv:2504.10918 Adaptive Human-Agent Teaming(133개 경험 연구 리뷰)·arXiv:2602.05987 Human-Agent Collaboration(CHI EA '26))를 vote/CAVEAT와 함께 인용하되, 벤더 1차 자료는 설계 의도로(크기 주장 미인용)·학술은 권장 메커니즘으로 쓰고 '개선 N% 보장'을 금지하며 반박된 패턴(에이전트 자기제한을 1차 감독으로)을 쓰지 않고 반례(METR RCT 경험 개발자 감속)도 정직히 기록한다. 경계: 여러 AI 에이전트로 병렬화할지·토폴로지(single/multi·centralized/independent) 결정·모델에 넣을 컨텍스트 페이로드 조립·압축·AI 출력의 엄밀한 평가(judge 구성)·한 목표를 통과까지 한 흐름으로 자율 반복·상류 산출물 핸드오프 게이트 검수·새 하네스 생성·하네스 자체 진단·PRD 작성·커밋/PR 리뷰·settings.json 설정은 범위가 아니며 '사람과 에이전트가 한 팀으로 어떻게 협업할지 설계'에 특화한다. 다른 마켓플레이스 플러그인에 의존하지 않는 독립 플러그인이다.",
       "source": "./plugins/human-agent-teaming",
@@ -467,9 +445,9 @@
     },
     {
       "name": "ai-readiness-cartography",
-      "description": "임의 git 저장소가 'AI 코딩 에이전트가 읽고 안전하게 기여할 수 있는 코드베이스'인지를 결정론적 스코어러(score.py, stdlib-only)로 정량 측정·시각화하는 도메인 무관 단일 스킬. 100점·9카테고리(E 검증·실행신호 22 / D 의존그래프 18 / B 문맥품질 15 / C 암묵지 12 / H 피드백루프 9 / A 네비게이션 8 / F 신선도 8 / I 환경재현 5 / G 성과 3) + 2개 blocking gate(Reference Integrity: dangling reference 0 / Executable Verification: 실행 가능한 test·build)로 채점한다. 핵심은 순수 가중합이 아니라 gating 집계 — 하나의 blocking 결함이 등급에 상한(AI-Fragile)을 씌워 다른 고득점에 희석되지 않게 한다(Kenogami lowest-as-ceiling·Factory 게이팅). 산출물은 JSON 점수표 + 단일 HTML 대시보드 + ROI 정렬 리팩토링 가이드. 루브릭은 2025~2026 1차 근거로 조작화됐다(ORACLE-SWE 2604.07789: reproduction/test 신호가 성공률 최대 기여 → E 최상위 가중 / LocAgent 2503.09089: 의존 그래프가 localization 예측 → D 기계 판독 그래프 / ETH Zurich AGENTS.md 2602.11988: 컨텍스트 보유율≠성능 → A 보유율 폐기·novelty로 / USENIX Security 2025 slopsquatting: hallucinated path 위험 → E1 binary gate / RepoMirage 2605.26177: structure-first anchor — 파일 노출≠성능; god-file=결합도는 defect-prediction 문헌·라인 수 근거 부재, session-4 C7·C8). 모든 지표에 auto/heuristic/manual 라벨과 근거 등급을 붙여 자동화 범위와 정직성을 명확히 하고, 코드를 자동 수정하지 않고 측정·시각화·제안만 낸다. 코드베이스의 구조적 AI 접근성을 정성 진단하고 빌드 가드레일·standalone·수용 증명으로 개선 설계하는 ai-readable-codebase(스코어러 없는 L1~L5 멀티 에이전트)와는 상보적이다(측정 vs 정성 진단→개선). 한 기능 구현(backend-harness), 하네스 자체 진단(meta-harness), AI 생성물 평가 judge(eval-harness), 컨텍스트 조립(context-engineering), 완성 코드 리뷰·PR(frontend/git-harness)은 범위 밖이며 '결정론적 점수·대시보드 산출'에 특화한다.",
+      "description": "임의 git 저장소가 'AI 코딩 에이전트가 읽고 안전하게 기여할 수 있는 코드베이스'인지를 측정하고(결정론 스코어러) 개선을 설계하는(멀티 에이전트) 도메인 무관 단일 스킬(2모드). ① 측정 모드: score.py(stdlib-only)로 100점·9카테고리(E 검증 22 / D 의존그래프 18 / B 문맥품질 15 / C 암묵지 12 / H 피드백루프 9 / A 네비게이션 8 / F 신선도 8 / I 환경재현 5 / G 성과 3) + 3 blocking gate를 채점해 JSON 점수표 + HTML 대시보드 + ROI 리팩토링 가이드를 낸다. ② 진단·개선 모드: score.py를 결정론 센서(진단 seed·재측정 델타)로 삼아 2축(Q 코드품질/A AI접근성) 진단(진단 승인 게이트) → 빌드 가드레일(의존 방향 물리 강제) → standalone 독립 실행 → 수용 증명·재측정을 4에이전트(model:opus)로 설계한다. 집계는 순수 가중합이 아니라 gating — Gate-1 Reference Integrity(dangling 0)·Gate-2 Executable Verification(test/build)은 Auto(실패 시 상한 AI-Fragile), Gate-3 Architecture Enforcement(금지 경계 위반이 실제 빌드 실패를 일으키는가)는 Heuristic·개선 모드 전용(실패 시 상한 AI-Assisted). 등급은 단일 5밴드(AI-Native 90+/AI-Ready 75+/AI-Assisted 60+/AI-Fragile 40+/AI-Hostile <40)만 쓴다(별도 L1~L5 수치 스케일 폐기, '점수/20=L' 선형 변환은 거짓 정밀이라 금지). 발동 시 먼저 모드를 확정한다(측정만 vs 개선까지 — 잘못된 모드는 비싼 오라우팅). 루브릭·원리는 2025~2026 1차 근거로 조작화됐다(ORACLE-SWE 2604.07789 → E 최상위 / LocAgent 2503.09089 → D 기계 판독 그래프 / ETH Zurich 2602.11988 → 보유율 폐기 / USENIX 2025 slopsquatting → E1 gate / RepoMirage 2605.26177 → structure-first anchor; 개선 모드 원리는 flex.team 5부작 + arXiv:2505.10443·2602.11481·2306.09896). 모든 지표에 auto/heuristic/manual 라벨·근거 등급을 붙이고 코드를 자동 수정하지 않는다(측정·시각화·설계 제안만, '개선 N% 보장' 금지). 경계: 한 기능 실행 기반 구현·검증(backend-harness), 상류 산출물 핸드오프 검수(review-harness), 하네스 자체 진단(meta-harness), 전달 파이프라인 CI/CD·IaC(cicd-harness), 실행 가능 명세 작성(spec-driven-development), 컨텍스트 페이로드 조립(context-engineering), AI 생성물 평가 judge(eval-harness), 병렬화·협업 토폴로지(agent-orchestration), 완성 코드 리뷰·PR(frontend/git-harness), settings.json 설정 변경은 범위 밖.",
       "source": "./plugins/ai-readiness-cartography",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "author": {
         "name": "seungah.hong"
       },
@@ -480,11 +458,18 @@
         "ai-readiness-score",
         "agent-readiness",
         "codebase-scoring",
+        "ai-accessibility",
         "dependency-graph",
+        "dependency-enforcement",
+        "build-guardrails",
+        "standalone-app",
+        "acceptance-proof",
         "reference-integrity-gate",
         "dashboard",
         "roi-refactoring",
-        "deterministic-scorer"
+        "deterministic-scorer",
+        "multi-agent",
+        "orchestration"
       ],
       "category": "workflow",
       "strict": false

@@ -1,7 +1,7 @@
 ---
 name: standalone-designer
 description: >-
-  ai-readable-codebase Phase 2(Standalone) 담당. 도메인 슬라이스를 전체 시스템(게이트웨이·인증 서버·여러 서비스) 없이
+  ai-readiness-cartography 진단·개선 모드 Phase 2(Standalone) 담당. 도메인 슬라이스를 전체 시스템(게이트웨이·인증 서버·여러 서비스) 없이
   *독립 실행·검증*할 수 있게 설계한다. Port/Adapter 의존성 역전을 활용해 운영 어댑터를 테스트 어댑터로 치환하고(도메인 로직 불변),
   필요한 도메인만 선택 조합하며, seed 데이터를 Repository 직접 호출이 아니라 UseCase 경유로 생성해 비즈니스 검증 경로를 타게 한다.
   목표는 자기 완결적(self-contained) 개발 환경 — 빠른 피드백 루프·격리된 검증·수용 증거의 토대다. 코드 자동 수정 없이 설계만 산출한다.

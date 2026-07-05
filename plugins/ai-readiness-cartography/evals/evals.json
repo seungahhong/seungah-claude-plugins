@@ -1,69 +1,114 @@
 {
   "eval_metadata": {
     "eval_id": "ai-readiness-cartography-acceptance",
-    "eval_name": "ai-readiness-cartography 수용 평가 (design-conformance dry-run)",
-    "prompt": "스킬은 임의 git 저장소를 결정론적 스코어러(score.py, stdlib only)로 채점해 JSON 점수표 + HTML 대시보드 + ROI 리팩토링 가이드를 산출한다. 100점·9 카테고리(E 검증·실행신호 22 / D 의존그래프 18 / B 문맥품질 15 / C 암묵지 12 / H 피드백루프 9 / A 네비게이션 8 / F 신선도 8 / I 환경재현 5 / G 성과 3) + 2개 blocking gate(Reference Integrity·Executable Verification)로 채점하되, 순수 가중합이 아니라 gating으로 하나의 blocking 결함이 등급에 상한(AI-Fragile)을 씌운다. 루브릭은 2025~2026 1차 근거로 조작화됐고 각 지표에 auto/heuristic/manual 라벨·근거 등급이 붙는다. 본 평가는 shipped SKILL.md·scripts/score.py·references/scoring-rubric.md·research/*가 하네스 불변식(gating 집계·실행 검증 최상위 가중·보유율 폐기·기계 판독 의존 그래프·결합도 god-file·redundancy discipline·auto/manual 라벨·정직성·경계·제안만)을 강제·명세하는지 file:section·score.py 함수 인용으로 채점한다(정적 정합 점검).",
-    "method": "design-conformance dry-run — 런타임 실행 없이 shipped 파일이 핵심 동작을 명세·강제하는지 인용으로 검증. score.py는 실제 실행 결과(gating·dangling 탐지)도 인용.",
+    "eval_name": "ai-readiness-cartography 수용 평가 (2모드 design-conformance dry-run)",
+    "prompt": "스킬은 두 모드를 가진다. ① 측정 모드: 결정론적 score.py(stdlib only)로 100점·9 카테고리(E22/D18/B15/C12/H9/A8/F8/I5/G3) + 3 blocking gate로 채점해 JSON 점수표 + HTML 대시보드 + ROI 가이드를 낸다. ② 진단·개선 모드: score.py를 결정론 센서(Phase 0 seed·Phase 3 재측정 델타)로 삼아 2축(Q/A) 진단(승인 게이트) → 빌드 가드레일(의존 방향 물리 강제) → standalone → 수용 증명·재측정을 4에이전트(model:opus)로 설계한다. 집계는 gating — Gate-1/2(Auto)는 실패 시 상한 AI-Fragile, Gate-3 Architecture Enforcement(Heuristic·개선 모드 전용)는 실패 시 상한 AI-Assisted. 등급은 단일 5밴드만 쓰고(L1~L5 폐기, 점수/20=L 선형변환 금지) enforcement 축은 Gate-3로 흡수한다. 본 평가는 shipped SKILL.md·scripts/score.py·references/*·agents/*가 하네스 불변식을 강제·명세하는지 file:section·score.py 함수 인용으로 채점한다(정적 정합 점검).",
+    "method": "design-conformance dry-run — 런타임 실행 없이 shipped 파일이 핵심 동작을 명세·강제하는지 인용으로 검증. score.py는 실제 실행 결과(gating·dangling·categories/actions emit)도 인용.",
     "assertions": [
       {
-        "text": "[Core/deterministic-first] 하네스는 결정론적 score.py가 먼저 자동 채점하고 LLM이 heuristic/manual 항목·E1 dangling 후보 확인을 보강하도록 규정한다(손채점부터 금지).",
+        "text": "[Mode/gate-first] 스킬은 두 모드(측정/진단·개선)를 가지며 발동 시 먼저 모드를 확정한다 — 측정만(python 1회) vs 개선까지(python + opus 4회). 잘못된 모드는 비싼 오라우팅임을 명시한다.",
         "passed": true,
-        "evidence": "SKILL.md '워크플로 1. 결정론적 자동 채점' + 내재화 원칙 '자동 우선, 사람 보강'. scripts/score.py main()·build_report(). CLAUDE.md Conventions '결정론 우선, 사람 보강'."
+        "evidence": "SKILL.md '두 모드 + 모드 게이트' 표 + '[모드 확인] ...' 게이트 문구 + Common pitfalls '모드 미확정'. plugin.json description '발동 시 먼저 모드를 확정한다'. CLAUDE.md Conventions '모드 게이트 먼저'."
       },
       {
-        "text": "[Core/gating] 집계는 순수 가중합이 아니라 gating이며, blocking gate(Gate-1 Reference Integrity·Gate-2 Executable Verification)가 실패하면 등급에 상한 AI-Fragile을 씌운다(blocking 결함이 다른 고득점에 희석되지 않게).",
+        "text": "[Measure/deterministic-first] 측정은 결정론적 score.py가 먼저 자동 채점하고 LLM이 heuristic/manual 항목·E1 dangling 후보 확인을 보강하도록 규정한다(손채점부터 금지).",
         "passed": true,
-        "evidence": "scripts/score.py apply_gates()·GATE_CEILING_SCORE=59·Gate dataclass. references/scoring-rubric.md '등급 밴드 + 게이팅' 섹션. 실제 실행: 이 repo 채점 시 두 gate 실패 확인(단 총점 35는 상한 이하라 캡은 no-op·grade_capped=False) — 캡 동작 자체는 apply_gates(85, 실패 gate) 합성 호출로 True 확인. 근거 session-5 C8(Kenogami lowest-as-ceiling)."
+        "evidence": "SKILL.md '측정 모드 워크플로 M1' + 내재화 원칙 '자동 우선, 사람 보강'. scripts/score.py main()·build_report(). CLAUDE.md Conventions '결정론 우선, 사람 보강'."
       },
       {
-        "text": "[E/executable-top-weight] E(Verification & Executable Signals)가 최상위 배점(22)이며 E2 Executable Verification(실행 가능한 test/build/하네스)이 E 최고 하위 배점(10)이다 — 정적 문서보다 실행 신호 우선(ORACLE-SWE reproduction +26~27pp).",
+        "text": "[Grade/gating-3gates] 집계는 순수 가중합이 아니라 gating이며, Gate-1 Reference Integrity·Gate-2 Executable Verification(Auto)은 실패 시 상한 AI-Fragile, Gate-3 Architecture Enforcement(Heuristic)는 실패 시 상한 AI-Assisted를 씌운다.",
         "passed": true,
-        "evidence": "scripts/score.py score_E() sub E2=/10, max=22. references/scoring-rubric.md 'E. Verification & Executable Signals /22'. research/session-1-comprehension-metrics.md C1. basis 필드 'ORACLE-SWE(2604.07789)'."
+        "evidence": "scripts/score.py apply_gates()·GATE_CEILING_SCORE·Gate dataclass(Gate-1/2 결정론). references/scoring-rubric.md '등급 밴드 + 게이팅' + 'Gate-3 · Architecture Enforcement (Heuristic ... 상한 AI-Assisted)'. SKILL.md '통합 등급 체계' 3 gate. 근거 session-5 C8(Kenogami lowest-as-ceiling)."
       },
       {
-        "text": "[A/coverage-not-scored] A(Navigation)는 컨텍스트 보유율(coverage %)을 점수화하지 않고 structure-first anchor(진입점·의존 이웃 명시)만 채점하며, 보유율은 진단 정보로만 보고한다(ETH Zurich 보유율≠성능 반증).",
+        "text": "[Grade/single-5band] 등급은 단일 5밴드(AI-Native/Ready/Assisted/Fragile/Hostile)만 쓰고 폐기된 L1~L5 수치 스케일이나 '점수/20=L' 선형 변환은 쓰지 않는다(거짓 정밀 회피).",
         "passed": true,
-        "evidence": "scripts/score.py score_A() — A1 root briefing·A2 anchors만 점수, evidence의 coverage_info_only는 '_info_only' 라벨로 미채점. references/scoring-rubric.md 'A. Navigation ... 보유율(coverage %)은 점수화하지 않는다'. research/session-2 C1."
+        "evidence": "SKILL.md '통합 등급 체계' 밴드표 + Common pitfalls '폐기된 L1~L5로 등급 매김'. references/scoring-rubric.md '등급 밴드'. references/ai-readable-codebase-principles.md §3 '단일 등급 체계(5밴드+Gate-3)'. agents/accessibility-assessor.md '단일 5밴드 등급 + Gate-3'."
       },
       {
-        "text": "[D/machine-readable-graph] D(Dependency)는 'mermaid 존재'가 아니라 기계 판독 import 그래프 파싱(Python AST·JS 상대 import)을 1급 신호로, architecture doc/mermaid는 부차(/2)로 둔다(LocAgent).",
+        "text": "[Grade/gate3-enforcement-not-scored-by-scorer] Gate-3(위반→빌드실패)는 score.py가 계산하지 않는 heuristic gate로, score.py는 import 그래프 가독성만 재고(강제 미측정) 측정 모드에서 '미평가', 개선 모드의 acceptance-verifier가 위반 probe로 판정한다.",
         "passed": true,
-        "evidence": "scripts/score.py build_import_graph()·score_D() D1 Graph=/8 vs D4 ArchDoc=/2. references/scoring-rubric.md 'D1 기계 판독 의존 그래프 8'. research/session-4 C2."
+        "evidence": "references/scoring-rubric.md 'Gate-3 ... score.py는 이 gate를 계산하지 않는다(import 그래프 가독성만 측정)' + 정직성 노트. SKILL.md '통합 등급 체계' Gate-3 항 + Common pitfalls 'Gate-3를 score.py가 잰다고 착각'. scripts/score.py 유일 subprocess는 git rev-parse(위반 빌드 probe 없음)."
       },
       {
-        "text": "[godfile/coupling-not-lines] god-file은 라인 수 단독 임계값이 아니라 결합도(fan-in+fan-out)로 판정하고, 라인 수(>500)는 '근거 약함' 보조 신호로만 라벨링한다(라인 임계값은 agent용 근거 부재).",
+        "text": "[Sensor/score-seeds-improve] 진단·개선 모드는 score.py 출력을 Phase 0 진단 seed(categories·actions 백로그)와 Phase 3 재측정 델타(baseline vs after)로 배선하며, 손채점을 금지하고 score.py가 결정론으로 잡는 신호는 인용한다.",
         "passed": true,
-        "evidence": "scripts/score.py COUPLING_HOTSPOT=14(god-file 1급 신호)·score_D D3_Coupling(결합도로 hotspot 판정)·find_large_files(LARGE_FILE_LINES=300은 '나열' 컷오프일 뿐 점수 신호 아님·결합도 우선 정렬). 라인 수는 어떤 카테고리 점수에도 감점으로 쓰이지 않음. references/scoring-rubric.md 'god-file은 결합도로 정의' + '넣지 말 것: N줄 초과 정량 감점'. research/session-4 C7·C8."
+        "evidence": "SKILL.md Phase 0a(score.py --json ai-readiness-score.json seed)·Phase 3a(재실행 ai-readiness-score.after.json 델타). agents/accessibility-assessor.md '결정론 센서 먼저(score.py seed) — 손채점 금지' + Input 'ai-readiness-score.json'. agents/acceptance-verifier.md '결정론 델타(score.py 재실행) + 정성 강제 probe 병행'. scripts/score.py serialize() categories·actions·gates emit."
       },
       {
-        "text": "[B/redundancy-not-linecount] B(Context Quality)는 절대 line 수 목표를 삭제하고 redundancy discipline(README/코드 중복↓)·command-first를 채점한다(문서 존재≠성능, 중복은 순비용).",
+        "text": "[Sensor/complement-not-replace] score.py 재실행 델타는 재현 가능한 reward-hacking 방어이나 강제(enforcement)를 측정 못 하므로 대체가 아닌 보완이다 — 결정론 델타가 올라도 Gate-3 강제 probe가 red build를 못 내면 등급 상승을 거절한다.",
         "passed": true,
-        "evidence": "scripts/score.py score_B() B1_RedundancyDiscipline(_readme_corpus 대조)·B2_CommandFirst. references/scoring-rubric.md 'B. ... 절대 line 수 목표는 삭제'. research/session-2 C3·C4·C6."
+        "evidence": "SKILL.md Phase 3b 규칙 '결정론 델타가 올랐어도 강제 probe가 red build를 못 내면 등급 상승 거절'. agents/acceptance-verifier.md Work Principles '결정론 델타 + 정성 강제 probe 병행'(score.py로 대체 불가). references/scoring-rubric.md Gate-3 정직성 노트."
       },
       {
-        "text": "[E1/reference-integrity-honesty] Gate-1은 절대 % 임계값이 아니라 dangling 0 불변식이며, score.py는 dangling 후보를 보수적으로(top-level 세그먼트·./·../ 만) flag하고 LLM이 placeholder/illustrative를 걸러 실 dangling만 반영하도록 규정한다.",
+        "text": "[E/executable-top-weight] E(Verification & Executable Signals)가 최상위 배점(22)이며 E2 Executable Verification이 E 최고 하위 배점(10)이다 — 정적 문서보다 실행 신호 우선(ORACLE-SWE).",
         "passed": true,
-        "evidence": "scripts/score.py check_reference_integrity()의 top_level 필터 + ext 종료 경계 lookahead(.json→.js 절단 방지) + repo-경계 가드(_inside_repo: resolve·is_relative_to — repo 밖 참조는 probe 없이 미집계). references/scoring-rubric.md 'Gate-1' 정직성 노트(명령·패키지 대조는 미구현 명시). SKILL.md 워크플로 1 'E1 dangling 후보 확인'. research/session-3 C9(절대 임계값 금지)."
+        "evidence": "scripts/score.py score_E() sub E2=/10, max=22. references/scoring-rubric.md 'E. Verification & Executable Signals /22'. research/session-1 C1. basis 'ORACLE-SWE(2604.07789)'."
       },
       {
-        "text": "[新/H-I-categories] 신규 H(Feedback-Loop Latency)·I(Environment & Task-Discovery) 카테고리가 존재하고 근거 등급 Med로 라벨링된다(DevEx·Factory 8-pillar).",
+        "text": "[A/coverage-not-scored] A(Navigation)는 컨텍스트 보유율(coverage %)을 점수화하지 않고 structure-first anchor만 채점한다(ETH Zurich 보유율≠성능 반증).",
         "passed": true,
-        "evidence": "scripts/score.py score_H()(/9, auto-med)·score_I()(/5, auto-med). references/scoring-rubric.md 'H'·'I' 섹션 '근거 등급 Med'. research/session-5 C6·C7. Factory 'Task Discovery' 귀속 정정(C6)도 dossier에 명시."
+        "evidence": "scripts/score.py score_A()(A1·A2만 점수, coverage _info_only). references/scoring-rubric.md 'A ... 보유율(coverage %)은 점수화하지 않는다'. research/session-2 C1."
       },
       {
-        "text": "[G/success-efficiency-split] G(Outcomes)는 success와 efficiency를 별도 하위지표(G1 success telemetry / G2 efficiency telemetry)로 분리한다(두 축은 독립적으로 움직임).",
+        "text": "[D/machine-readable-graph] D(Dependency)는 기계 판독 import 그래프 파싱(Python AST·JS 상대 import)을 1급(/8), architecture doc/mermaid는 부차(/2)로 둔다(LocAgent).",
         "passed": true,
-        "evidence": "scripts/score.py score_G() G1_SuccessTelemetry·G2_EfficiencyTelemetry. references/scoring-rubric.md 'G. ... success ⁄ efficiency'. research/session-5 C5(Lulla et al.)."
+        "evidence": "scripts/score.py build_import_graph()·score_D() D1=/8 vs D4=/2. references/scoring-rubric.md 'D1 기계 판독 의존 그래프 8'. research/session-4 C2."
       },
       {
-        "text": "[honesty/labels-no-overclaim] 모든 카테고리에 auto/heuristic/manual 라벨과 근거 등급이 붙고, 근거 부재 신호(라인 수 god-file 정량 감점·hallucination % 임계값·human 포매팅 가점)는 미채택이며 '개선 N% 보장' 같은 과장을 금지한다.",
+        "text": "[godfile/coupling-not-lines] god-file은 라인 수 단독이 아니라 결합도(fan-in+fan-out)로 판정하고, 라인 수는 '근거 약함' 보조 신호로만 라벨링한다.",
         "passed": true,
-        "evidence": "scripts/score.py CategoryScore.label·evidence_grade·basis 필드. references/scoring-rubric.md '넣지 말 것(근거 부재 — 정직성)' 섹션. SKILL.md 내재화 원칙 '정직성'. research/README.md 정직성 노트."
+        "evidence": "scripts/score.py COUPLING_HOTSPOT·score_D D3_Coupling·find_large_files(LINES는 나열 컷오프일 뿐 점수 신호 아님). references/scoring-rubric.md 'god-file은 결합도로 정의' + '넣지 말 것: N줄 초과 정량 감점'. research/session-4 C7·C8."
       },
       {
-        "text": "[boundary/vs-ai-readable-codebase] 하네스는 코드를 자동 수정하지 않고 측정·시각화·제안만 내며, 정성 진단→개선 설계(ai-readable-codebase)·기능 구현(backend-harness)·하네스 진단(meta-harness)·judge 평가(eval-harness)와 경계를 명시하고 ai-readable-codebase와 상보 관계임을 규정한다.",
+        "text": "[B/redundancy-not-linecount] B(Context Quality)는 절대 line 수 목표를 삭제하고 redundancy discipline·command-first를 채점한다(문서 존재≠성능).",
         "passed": true,
-        "evidence": "SKILL.md '이 스킬이 다른 것(경계)' 섹션 + 내재화 원칙 '제안만(사람 집행)'. CLAUDE.md Conventions '경계' + 'ai-readable-codebase와는 상보'. README.md 비교표. plugin.json description 경계 문단."
+        "evidence": "scripts/score.py score_B() B1_RedundancyDiscipline·B2_CommandFirst. references/scoring-rubric.md 'B ... 절대 line 수 목표는 삭제'. research/session-2 C3·C4·C6."
+      },
+      {
+        "text": "[E1/reference-integrity-honesty] Gate-1은 절대 % 임계값이 아니라 dangling 0 불변식이며, score.py는 dangling 후보를 보수적으로 flag하고 LLM이 placeholder/illustrative를 걸러 실 dangling만 반영하도록 규정한다.",
+        "passed": true,
+        "evidence": "scripts/score.py check_reference_integrity()의 top_level 필터·ext 경계 lookahead·repo-경계 가드(_inside_repo). references/scoring-rubric.md 'Gate-1' 정직성 노트. SKILL.md M1 'E1 dangling 후보 확인'. research/session-3 C9."
+      },
+      {
+        "text": "[honesty/labels-no-overclaim] 모든 카테고리에 auto/heuristic/manual 라벨·근거 등급이 붙고, 근거 부재 신호(라인 수 god-file 정량 감점·hallucination % 임계값·human 포매팅 가점)는 미채택이며 '개선 N% 보장' 과장을 금지한다.",
+        "passed": true,
+        "evidence": "scripts/score.py CategoryScore.label·evidence_grade·basis. references/scoring-rubric.md '넣지 말 것(근거 부재)'. SKILL.md 내재화 원칙 '정직성' + README '정직성'. research/README.md 정직성 노트."
+      },
+      {
+        "text": "[Improve/Q-A-separation] 진단·개선 모드는 Q축(코드 품질)과 A축(AI 접근성)을 별개 축으로 분리 측정하고 높은 Q축이 높은 A축을 보장하지 않음을 명시하며 A축 지표(패턴 일관성·빌드 피드백·모듈 경계·의존 방향 강제·독립 실행·에이전트 가이드·자동 수용)로 평가한다.",
+        "passed": true,
+        "evidence": "SKILL.md 내재화 원칙 'A축 ≠ Q축(분리)' + 전제. agents/accessibility-assessor.md 'A축 ≠ Q축(분리 측정)'·'A축 7개 지표'. references/ai-readable-codebase-principles.md §1·§2. CLAUDE.md Conventions."
+      },
+      {
+        "text": "[Improve/assessment-approval-gate] Phase 0 진단 승인 게이트는 사용자 승인 전 개선 설계(Phase 1~)로 진행하지 않고, 승인된 진단을 .claude/ai-readability/{대상-slug}/assessment.md에 기록한다.",
+        "passed": true,
+        "evidence": "SKILL.md Phase 0 '진단 승인 게이트' + '승인 전에는 개선 설계로 진행하지 않는다' + assessment.md write. agents/accessibility-assessor.md Output 1줄 보고(승인 게이트 문구)."
+      },
+      {
+        "text": "[Improve/build-enforces-docs-explain + feedback-3dim] Phase 1은 '빌드가 강제하고 문서가 설명한다'를 강제하고(의존 방향 물리 강제 = Gate-3 통과), 빌드 피드백을 3차원(위치·원인·수정방향)으로 설계하며 검증을 앞단으로(컴파일>런타임, 타입>컴파일) 옮긴다.",
+        "passed": true,
+        "evidence": "agents/guardrail-architect.md Work Principles + Output(역할 분담표·피드백 3차원·앞단화). SKILL.md Phase 1 규칙 '금지된 의존을 빌드에서 불가능하게 — 이것이 Gate-3를 통과시킨다'. references/ai-readable-codebase-principles.md §4."
+      },
+      {
+        "text": "[Improve/standalone-isolation] Phase 2는 도메인 슬라이스를 전체 없이 독립 실행하게 하고, Port/Adapter 의존성 역전으로 운영 어댑터를 테스트 어댑터로 치환하며 seed를 UseCase 경유로 생성하고 운영 전용 모듈을 명시적으로 제외한다.",
+        "passed": true,
+        "evidence": "agents/standalone-designer.md Work Principles·Output(어댑터 치환·UseCase seed·명시적 제외). SKILL.md Phase 2 규칙. references/ai-readable-codebase-principles.md §5."
+      },
+      {
+        "text": "[Improve/acceptance-and-regrade] Phase 3은 수용 증명(자동 E2E)으로 리뷰를 '동작하나→설계가 좋은가'로 옮기되 못 잡는 것(성능·보안·동시성·가독성)을 사람 몫으로 명시하고, 설계 에이전트와 분리된 검증자(generator/checker 분리)가 Gate-3·등급을 재측정하며 green≠개선·자기보고 불신·BLOCKED 분리를 지킨다.",
+        "passed": true,
+        "evidence": "agents/acceptance-verifier.md Core Role '분리된 독립 검증자' + Work Principles(수용 증명 한계·reward-hacking 가드·generator/checker 분리·BLOCKED). SKILL.md Phase 3b 규칙·분기(BLOCKED·reward-hacking·라우팅). references/ai-readable-codebase-principles.md §3·§6·§7."
+      },
+      {
+        "text": "[Orchestration/opus-and-routing] 진단·개선 모드는 4 에이전트 협업으로 SKILL.md의 모든 Agent 호출에 model:\"opus\"가 명시되고, 미해소 격차 시 해당 Phase(0/1/2)로 라우팅하며 산출물을 .claude/ai-readability/{대상-slug}/에 둔다. 코드를 자동 수정하지 않고 제안만 산출한다.",
+        "passed": true,
+        "evidence": "SKILL.md '에이전트 팀' 표 + '모든 Agent 호출은 model:\"opus\"' + Phase 0~3 각 Agent(model=\"opus\") + Phase 3 라우팅 + 산출물 배치. CLAUDE.md Structure(agents 모두 opus). 내재화 원칙 '제안만(사람 집행)'."
+      },
+      {
+        "text": "[Boundary/two-modes-and-neighbors] 하네스는 코드를 자동 수정하지 않고 측정·시각화·설계 제안만 내며, 인접 도메인(backend-harness 기능 구현·meta-harness 하네스 진단·eval-harness judge·cicd-harness 파이프라인·spec-driven 명세·context-engineering 조립·frontend/git 완성 코드 리뷰·PR)과 경계를 명시한다. 측정/개선은 별도 플러그인이 아니라 한 스킬의 두 모드다.",
+        "passed": true,
+        "evidence": "SKILL.md '경계' 섹션 + 내재화 원칙 '제안만(사람 집행)' + '두 모드 + 모드 게이트'. plugin.json description 경계 절. CLAUDE.md Conventions '경계'. evals/trigger-eval.json(측정·개선 모두 should_trigger, 인접 도메인 should_not)."
       }
     ]
   }

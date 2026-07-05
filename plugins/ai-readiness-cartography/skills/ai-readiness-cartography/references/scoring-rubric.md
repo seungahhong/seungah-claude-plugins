@@ -1,4 +1,4 @@
-# AI-Ready Codebase Rubric · v3 (100 pt · 9 categories + 2 blocking gates)
+# AI-Ready Codebase Rubric · v3 (100 pt · 9 categories + 3 blocking gates)
 
 이 문서는 자동/수동 채점의 단일 진실 기준이다. v2에서 2025~2026 1차 근거로 리팩토링됐다(근거·판정은 [research/](research/) 세션 md, 결정 서열은 [research/README.md](research/README.md) 참조).
 
@@ -27,7 +27,7 @@
 | 40-59 | **AI-Fragile** | amber |
 | <40 | **AI-Hostile** | red |
 
-**게이팅(핵심)**: 하나의 blocking gate가 실패하면 등급에 **상한 AI-Fragile**을 씌운다 — 총점이 높아도 blocking 결함이 있으면 AI-Ready 이상으로 올라가지 못한다. 순수 가중합은 blocking 결함을 다른 고득점에 희석해 오탐을 낸다(session-5 C1·C8).
+**게이팅(핵심)**: blocking gate가 실패하면 등급에 상한을 씌운다 — Gate-1/2(Auto) 실패는 **상한 AI-Fragile**, Gate-3(Heuristic, 아키텍처 강제) 실패는 **상한 AI-Assisted**. 총점이 높아도 blocking 결함이 있으면 그 위로 올라가지 못한다. 순수 가중합은 blocking 결함을 다른 고득점에 희석해 오탐을 낸다(session-5 C1·C8).
 
 ### Gate-1 · Reference Integrity *(Auto, 등급 상한)*
 문서(CLAUDE.md/AGENTS.md/ADR)가 인용한 **파일 경로·line range**에 **dangling(비존재) 참조가 1건이라도 있으면 실패**. hallucinated path는 agent를 능동적으로 오도한다(session-3 C1·C5). 절대 % 임계값이 아니라 **dangling 0**이라는 검증 가능한 불변식(비율은 모델·연도 의존, session-3 C9). *명령 실재·패키지 lock 대조는 session-3의 함의이나 v3 스코어러 미구현 — 향후 확장 후보이며, 그때까지는 LLM 수동 보강 항목이다.*
@@ -35,6 +35,10 @@
 
 ### Gate-2 · Executable Verification *(Auto, 등급 상한)*
 실행 가능한 **test/build/lint 명령이 하나도 없으면 실패**(package.json scripts·Makefile·pyproject/tox·CI + 실제 test 파일). reproduction/실행 신호는 agent 성공률 최대 기여자이므로 그 부재는 blocking(session-1 C1).
+
+### Gate-3 · Architecture Enforcement *(Heuristic · 진단·개선 모드 전용 · 등급 상한 AI-Assisted)*
+**금지된 의존 경계 위반이 *실제로 빌드 실패를 일으키지 않으면* 실패.** 구조가 legible해도(높은 D 점수) 아키텍처를 *물리적으로 강제*하지 않으면 에이전트가 경계를 조용히 넘는다 — codebase enforcement 축(구 L3 "빌드 통과·아키텍처 위반도 통과" vs L4 "빌드가 아키텍처 물리 강제")을 게이팅으로 흡수한 것이다. **score.py는 이 gate를 계산하지 않는다**(import 그래프 *가독성*만 측정) → 측정 모드에서는 "미평가", 진단·개선 모드의 `acceptance-verifier`가 위반 케이스를 만들어 red build를 관측해 판정한다.
+> **정직성**: Gate-3는 결정론이 아닌 heuristic(행위 probe)이다. score.py의 총점·Gate-1/2에는 영향을 주지 않으며, 개선 모드 등급 판정에서만 상한으로 작동한다. `점수/20 = L` 같은 선형 변환은 거짓 정밀이라 쓰지 않는다.
 
 ---
 
@@ -128,7 +132,7 @@ Five-Question(owns/patterns/non-obvious/deps, 각 2점) + MEMORY.md·ADR store(4
 | G1 | success telemetry(evals/benchmarks·결과 파일) | 2 |
 | G2 | efficiency telemetry(token·latency·cost 단서) | 1 |
 
-**합계 = 22+18+15+12+9+8+8+5+3 = 100** (+ 2 blocking gates)
+**합계 = 22+18+15+12+9+8+8+5+3 = 100** (+ 3 blocking gates: Gate-1/2 Auto, Gate-3 Heuristic·개선 모드)
 
 ---
 

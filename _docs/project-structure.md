@@ -259,25 +259,6 @@ plugins/
     evals/
       evals.json                                         # 수용 평가 (핵심 불변식 file:section 인용 채점)
       trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 15, 인접 도메인 reciprocal 가드)
-  ai-readable-codebase/                                 # [독립 플러그인] 코드베이스의 구조적 AI 접근성(A축≠Q축)을 진단·개선하는 하네스 (진단(2축·L1~L5 증거기반)→빌드 가드레일→standalone 독립 실행→수용 증명·재측정 4단계). 경계: 한 기능 구현·검증(backend)·상류 핸드오프 검수(review)·하네스 진단(meta)·전달 파이프라인(cicd)·실행 명세(spec)·컨텍스트 조립(context)·완성 코드 리뷰(frontend/git) 제외
-    .claude-plugin/
-      plugin.json
-    CLAUDE.md                                            # 하네스 포인터 + Phase 요약 + 변경 이력
-    README.md                                            # 사용자용 개요·사용법·도구 경계·L1~L5 등급·근거 자료
-    agents/                                              # 모두 model: "opus"
-      accessibility-assessor.md                          # Phase 0 Assess — 2축(Q/A) 진단 + L1~L5 등급(증거 기반, 자기보고 불신) + A축 격차·백로그
-      guardrail-architect.md                             # Phase 1 Guardrails — 빌드가 강제·문서가 설명(의존 방향 물리 강제 + 피드백 3차원 + 역할 분담)
-      standalone-designer.md                             # Phase 2 Standalone — 도메인 슬라이스 독립 실행(port/adapter 치환·use-case seed·명시적 제외)
-      acceptance-verifier.md                             # Phase 3 Acceptance & Re-grade — 수용 증명 인프라(+한계 명시) + 등급 적대 재측정(reward-hacking 가드·generator/checker 분리)
-    skills/
-      ai-readable-codebase/                              # 진입점 오케스트레이터 (Phase 0 진단 승인 게이트 → 4단계, 제안만·사람 집행)
-        SKILL.md
-        references/
-          ai-readable-codebase-principles.md             #   2축·L1~L5·빌드 가드레일·피드백 3차원·standalone·수용 증명·anti-pattern·경계
-          ai-readable-codebase-research.md               #   설계 근거 dossier (flex 5부작 + 2025+ 출처·인용·vote·CAVEAT; CodeScene 9.4/5.15 미입증 투명성 §D)
-    evals/
-      evals.json                                         # 수용 평가 (핵심 불변식 file:section 인용 채점)
-      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 17, 인접 도메인 reciprocal 가드)
   human-agent-teaming/                                  # [독립 플러그인] 사람과 AI 에이전트가 한 팀으로 협업하도록 분업·공통기반·감독/신뢰·검증을 설계하는 하네스 (분업·위임→공통기반→모니터링 기반 감독·신뢰 보정→비례 검증·핸드오프·책임 4단계). 축은 AI↔AI 토폴로지가 아니라 사람↔에이전트 분업·감독. 경계: 여러 AI 에이전트 병렬화·토폴로지(agent-orchestration)·컨텍스트 페이로드 조립(context)·AI 출력 평가(eval)·단일 자율 반복(loop)·상류 핸드오프 검수(review)·하네스 진단(meta)·PRD(product-spec)·커밋/PR(git) 제외
     .claude-plugin/
       plugin.json
@@ -373,13 +354,18 @@ plugins/
     evals/
       evals.json                                         # 수용 평가 (핵심 불변식 file:section 인용 채점)
       trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 14, 인접 도메인 reciprocal 가드)
-  ai-readiness-cartography/                             # [독립 플러그인] 임의 git 저장소가 'AI 에이전트가 읽고 안전하게 기여할 수 있는 코드베이스'인지를 결정론적 스코어러로 정량 측정·시각화하는 단일 스킬 (100점·9카테고리 + 2 blocking gate(gating 집계) → JSON 점수표+HTML 대시보드+ROI 리팩토링 가이드). 에이전트 팀 없음. ai-readable-codebase(정성 진단→개선)와 상보(측정 vs 개선 설계). 외부 스킬 v2를 deep-research 5세션 적대 검증으로 v3 리팩토링
+  ai-readiness-cartography/                             # [독립 플러그인] 임의 git 저장소가 'AI 에이전트가 읽고 안전하게 기여할 수 있는 코드베이스'인지를 측정하고(결정론 스코어러) 개선을 설계하는(멀티 에이전트) 단일 스킬(2모드). ① 측정: score.py 100점·9카테고리 + 3 blocking gate(Gate-1/2 Auto·Gate-3 Heuristic·gating) → JSON+HTML 대시보드+ROI. ② 진단·개선: score.py 센서 위 2축 진단→빌드 가드레일→standalone→수용 증명·재측정 4에이전트. 등급 단일 5밴드(L1~L5 폐기, enforcement는 Gate-3로 흡수). 별도 ai-readable-codebase 플러그인을 진단·개선 모드로 흡수(v0.2.0)
     .claude-plugin/
       plugin.json
-    CLAUDE.md                                            # 하네스 포인터 + 루브릭 v3 요약 + 변경 이력
-    README.md                                            # 사용자용 개요·사용법·경계·근거(ai-readable-codebase 비교표)
+    CLAUDE.md                                            # 하네스 포인터 + 루브릭 요약(3 gate) + 변경 이력
+    README.md                                            # 사용자용 개요·사용법·경계·근거(2모드)
+    agents/                                              # 진단·개선 모드 4 에이전트 (모두 model: "opus")
+      accessibility-assessor.md                          # Phase 0 Assess — score.py seed 위 2축(Q/A) 진단 + 5밴드 등급 + Gate-3 예비판정
+      guardrail-architect.md                             # Phase 1 Guardrails — 빌드가 강제·문서가 설명(의존 방향 물리 강제 + 피드백 3차원 + 역할 분담)
+      standalone-designer.md                             # Phase 2 Standalone — 도메인 슬라이스 독립 실행(port/adapter 치환·use-case seed·명시적 제외)
+      acceptance-verifier.md                             # Phase 3 Acceptance & Re-grade — 수용 증명 + 결정론 델타(score.py 재실행) 위 강제 probe로 Gate-3·등급 재측정
     skills/
-      ai-readiness-cartography/                          # 진입점 오케스트레이터 (score.py 실행 → 대시보드 채우기 → ROI 가이드)
+      ai-readiness-cartography/                          # 진입점 오케스트레이터 (모드 게이트 → 측정 워크플로 / 진단·개선 4-Phase)
         SKILL.md
         scripts/
           score.py                                       #   v3 결정론적 스코어러 (stdlib only, gating·import 그래프 파싱·결합도 god-file·reference integrity, htmlsafe.json 동시 출력)
@@ -387,8 +373,10 @@ plugins/
         assets/
           template.html                                  #   대시보드 원본 (Inter/JetBrains Mono·인라인 SVG·gate strip·9카테고리 차트)
         references/
-          scoring-rubric.md                              #   v3 루브릭 (9카테고리 + 2 gate, 근거 등급·auto/heuristic/manual 라벨)
-          ai-readiness-cartography-research.md           #   근거 dossier 인덱스 (루브릭→근거 매핑·정직성 노트)
+          scoring-rubric.md                              #   v3 루브릭 (9카테고리 + 3 gate: Gate-1/2 Auto·Gate-3 Heuristic, 근거 등급·auto/heuristic/manual 라벨)
+          ai-readable-codebase-principles.md             #   진단·개선 모드 원리 (2축·빌드 가드레일·피드백 3차원·standalone·수용 증명·anti-pattern)
+          ai-readable-codebase-research.md               #   개선 모드 근거 dossier (flex 5부작 + 2025+ 출처·인용·vote·CAVEAT)
+          ai-readiness-cartography-research.md           #   측정 근거 dossier 인덱스 (루브릭→근거 매핑·정직성 노트)
           research/                                      #   2025~2026 1차 근거 (deep-research 5세션 적대 검증)
             README.md                                    #     합성 (헤드라인 반전 7개 + 리팩토링 결정 R1~R12)
             session-1-comprehension-metrics.md           #     ORACLE-SWE(2604.07789)·Nemotron-CORTEXA — 실행 신호 최상위
@@ -397,8 +385,8 @@ plugins/
             session-4-repo-structure.md                  #     LocAgent(2503.09089)·RepoMirage(2605.26177) — 의존 그래프·결합도 god-file
             session-5-benchmark-operationalization.md    #     Factory/Kenogami readiness — gating 집계·H/I 신규
     evals/
-      evals.json                                         # 수용 평가 (v3 불변식 file:section·score.py 함수 인용 채점)
-      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 6 / should_not 9, ai-readable-codebase·token-efficiency reciprocal 가드)
+      evals.json                                         # 수용 평가 (2모드 불변식 file:section·score.py 함수 인용 채점)
+      trigger-eval.json                                  # 트리거 경계 평가 (측정+개선 should_trigger 15 / 인접 도메인 should_not 14)
   token-efficiency/                                    # [독립 플러그인] Claude Code 세션 JSONL 로그를 파싱해 레포 단위 토큰/컨텍스트 효율을 결정론적으로 측정·시각화하고 $ 절감안을 내는 단일 스킬 (4축 가중 점수 + 8개 비효율 탐지기 + 세션별 모델가 낭비 추정 → JSON 2종 + 오프라인/CSP 안전 HTML 대시보드). 에이전트 팀 없음. ai-readiness-cartography(정적 저장소 구조)와 상보(런타임 세션 로그 vs 정적 구조). 외부 스킬 improve-token-efficiency를 deep-research 5세션 적대 검증으로 개선
     .claude-plugin/
       plugin.json

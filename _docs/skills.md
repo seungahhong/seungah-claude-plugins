@@ -193,21 +193,6 @@
 
 > `spec-driven-development`는 에이전트가 코드를 생성할 **엔지니어용 실행 가능 구현 명세 contract**에 특화한 도메인 무관 하네스다. 4개 에이전트를 서브에이전트로 spawn한다(모두 `model: "opus"`; Phase 0→3 순차). **내재화 원칙** — 명세=source of truth · 명세 승인 게이트(구현 착수 전) · 구조화된 contract · 인수기준+자기검증 내재화 · 명세 대비 검증(추적성) · comprehension 게이트(comprehension debt 방지) · 과장 금지(정직성, 비판도 dossier에 기록). **경계** — 기획자용 PRD·사용자 스토리(문제정의·비즈니스 요구) 작성 · AI 출력 평가 judge 구성 · 컨텍스트 페이로드 조립 · 완성 코드 리뷰·커밋/PR · 하네스 자체 진단은 범위가 아니다(일반 개념으로 변별, 타 플러그인 의존 금지). 근거: Spec-Driven Development: From Code to Contract in the Age of AI Coding Assistants(arXiv:2602.00180)[명세=source of truth·워크플로 역전, vote 3-0; Martin Fowler의 non-determinism·overhead 비판 동반 — 'super-prompt' 주장은 반박되어 비인용] · Addy Osmani "How to write a good spec for AI agents"(2026-01, addyo.substack)[구조화·계획·반복, vote 3-0] · "The 80% Problem in Agentic Coding"(2026-01)[comprehension debt, vote 3-0].
 
-### Plugin: `ai-readable-codebase`
-
-| Skill | Command | Description |
-|-------|---------|-------------|
-| AI-Readable Codebase | `/ai-readable-codebase` | 코드베이스가 **AI 코딩 에이전트가 읽고 안전하게 기여할 수 있는 구조인지** 진단·개선하는 진입 오케스트레이터. 전제는 '구조가 프롬프트보다 먼저다'와 '코드 품질(Q축)과 AI 접근성(A축)은 다른 차원이다'. 진단(2축 Q/A·L1~L5 등급 증거기반·A축 격차) → 빌드 가드레일(의존 방향 물리 강제·피드백 3차원·빌드/CLAUDE.md 역할 분담) → standalone 독립 실행(port/adapter 치환·use-case seed) → 수용 증명·등급 재측정(reward-hacking 가드) 4단계. Phase 0 진단 승인 게이트, 코드 자동 수정 없이 제안만(사람 집행) |
-
-4개 에이전트 구성 (모두 `model: "opus"`):
-
-- **Assess** — `accessibility-assessor`. 코드베이스를 Q축(코드 품질)·A축(AI 접근성 7지표: 패턴 일관성·빌드 피드백 품질·모듈 경계 예측성·의존 방향 강제·독립 실행·에이전트 가이드·자동 수용)으로 분리 진단하고 L1~L5 등급을 **증거 기반**으로 판정("금지된 경계 위반이 빌드 실패를 일으키는가"를 file:line으로, 자기보고 불신). A축 격차·목표 등급·우선순위 백로그 산출.
-- **Guardrails** — `guardrail-architect`. '빌드가 강제하고 문서가 설명한다' — 핵심 아키텍처 규칙을 빌드/컴파일 계층으로 옮겨 의존 방향을 *물리적으로* 강제(린트 통과 가능 < 빌드 통과 불가), 빌드 피드백을 3차원(위치 특정성·원인 명확성·수정방향 추론가능성)으로 개선, 검증 앞단화(컴파일>런타임, 타입>컴파일 체크), 빌드/CLAUDE.md 역할 분담표.
-- **Standalone** — `standalone-designer`. 도메인 슬라이스를 전체 시스템 없이 독립 실행하게 — Port/Adapter 의존성 역전으로 운영 어댑터를 테스트 어댑터로 치환(도메인 로직 불변), seed는 UseCase 경유(Repository 직접 호출 금지), 운영 전용 모듈 명시적 제외, 외부 의존 컨테이너화·단일 명령 기동.
-- **Acceptance & Re-grade** — `acceptance-verifier`. (설계자와 분리된 독립 검증자) 수용 증명(자동 E2E·데모)으로 리뷰를 '동작하나→설계가 좋은가'로 이동(단 성능·보안·동시성·가독성 한계 명시) + 등급을 증거 기반으로 적대 재측정(green≠개선, reward-hacking 의심·역점검, 격차 해소 추적, 증거 불가는 BLOCKED 분리).
-
-> `ai-readable-codebase`는 **애플리케이션 코드베이스 자체의 구조적 AI 접근성 진단·개선**에 특화한 도메인 무관 하네스다. 4개 에이전트를 서브에이전트로 spawn한다(모두 `model: "opus"`; Phase 0→3 순차). 산출물은 `.claude/ai-readability/{대상-slug}/`(assessment.md / remediation-plan.md / acceptance-and-regrade.md). **내재화 원칙** — A축≠Q축 분리 측정 · 구조가 프롬프트보다 먼저 · 빌드가 강제하고 문서가 설명한다 · 피드백 3차원·앞단화 · standalone 독립 실행 · 수용 증명 우선+한계 명시 · 증거 기반 등급(reward-hacking 가드) · generator/checker 분리 · 스택 무관 일반화 · 제안만(사람 집행) · 과장 금지(정직성). **경계** — 한 기능의 실행 기반 구현·검증(`backend-harness`) · 상류 산출물 핸드오프 검수(`review-harness`) · 하네스 자체 진단(`meta-harness`, 표적이 *하네스*가 아니라 *제품 코드베이스*) · 전달 파이프라인(`cicd-harness`, *빌드 계층 구조* vs *전달 파이프라인*) · 실행 가능 명세 작성(`spec-driven-development`) · 컨텍스트 페이로드 조립(`context-engineering`) · 완성 코드 리뷰·커밋/PR(`frontend`/`git-harness`)은 범위가 아니다. 근거: flex.team "AI가 읽을 수 있는 코드베이스" 5부작(2026-05~06)[프레임워크 1차 출처] · 컴파일러-인-더-루프(arXiv:2602.11481)[로컬 컴파일 에러가 최대 개선, vote 3-0/2-0] · self-repair 병목=피드백 질(arXiv:2306.09896)[vote 3-0] · 의미보존 변형에 코드 이해 최대 70% 흔들림(arXiv:2505.10443)[vote 3-0] · 실행 트레이스 길이 지배(arXiv:2602.13962)[vote 3-0] · LLM 스타일 정규화 수렴(arXiv:2602.21833)[vote 3-0]. **정직성** — CodeScene "Code Health 9.4/10·업계 평균 5.15/10" 수치는 peer-reviewed 출처(arXiv:2601.02200 "Code for Machines", FORGE 2026)에 없어 본문 근거로 쓰지 않고(7.0 미만은 외삽), '9개 예시→10번째 추종'은 미검증 휴리스틱, '자연어 가이드는 실패' 절대명제도 비과장 — 모두 research dossier §D 투명성 섹션에만 기록.
-
 ### Plugin: `human-agent-teaming`
 
 | Skill | Command | Description |
@@ -287,16 +272,15 @@
 
 | Skill | Command | Description |
 |-------|---------|-------------|
-| AI-Readiness Cartography | `/ai-readiness-cartography` | 임의 git 저장소가 'AI 코딩 에이전트가 읽고 안전하게 기여할 수 있는 코드베이스'인지를 **결정론적 스코어러(score.py, stdlib-only)로 정량 측정·시각화**하는 단일 스킬. score.py 자동 채점 → LLM이 heuristic/manual 항목·E1 dangling 후보 보강 → HTML 대시보드 채우기 → ROI 리팩토링 가이드. 산출물: JSON 점수표 + 단일 HTML 대시보드 + ROI 정렬 리팩토링 가이드 |
+| AI-Readiness Cartography | `/ai-readiness-cartography` | 임의 git 저장소가 'AI 코딩 에이전트가 읽고 안전하게 기여할 수 있는 코드베이스'인지를 **측정하고(결정론 스코어러) 개선을 설계하는(멀티 에이전트)** 단일 스킬(2모드). ① 측정 모드: score.py 자동 채점 → HTML 대시보드 → ROI 가이드. ② 진단·개선 모드: score.py를 센서로 2축 진단(승인 게이트)→빌드 가드레일→standalone→수용 증명·재측정. 발동 시 모드 확정 |
 
-**단일 스킬 구성 (에이전트 팀 없음 — 결정론적 스코어러 본성에 충실)**. 핵심 자산:
+**단일 스킬 2모드 (측정 / 진단·개선). 개선 모드는 4 에이전트(모두 `model: "opus"`)를 spawn.** 핵심 자산:
 
-- **`scripts/score.py`** (stdlib only, Python 3.10+) — 100점·9카테고리(E 검증·실행신호 22/D 의존그래프 18/B 문맥품질 15/C 암묵지 12/H 피드백루프 9/A 네비게이션 8/F 신선도 8/I 환경재현 5/G 성과 3) + **2 blocking gate**(Gate-1 Reference Integrity: dangling reference 0 / Gate-2 Executable Verification: 실행 가능한 test·build). **gating 집계** — 하나의 blocking 결함이 등급에 상한(AI-Fragile)을 씌워 다른 고득점에 희석되지 않게(순수 가중합 아님). import 그래프 파싱(Python AST·JS 상대 import)·결합도(fan-in/out) god-file·reference integrity를 자동 산출.
-- **`references/scoring-rubric.md`** — v3 루브릭(9카테고리 + 2 gate, 근거 등급·auto/heuristic/manual 라벨).
-- **`references/research/`** — 2025~2026 1차 근거(합성 README + 5 세션, `deep-research` 5세션 적대 검증. 지어낸 인용 1건 적발·과장 수치 강등).
-- **`assets/template.html`** — 대시보드 원본(Inter/JetBrains Mono, 인라인 SVG, gate strip + 9카테고리 차트).
+- **`scripts/score.py`** (stdlib only, Python 3.10+) — 100점·9카테고리(E22/D18/B15/C12/H9/A8/F8/I5/G3) + **3 blocking gate**(Gate-1 Reference Integrity·Gate-2 Executable Verification=Auto·상한 AI-Fragile / Gate-3 Architecture Enforcement=Heuristic·개선 모드 전용·상한 AI-Assisted). **gating 집계** — blocking 결함이 등급에 상한을 씌운다(순수 가중합 아님). import 그래프·결합도 god-file·reference integrity 자동 산출. 개선 모드에서 Phase 0 진단 seed·Phase 3 재측정 델타로 재사용.
+- **4 에이전트** (`agents/`) — `accessibility-assessor`(Phase 0: score.py seed 위 2축 진단 + 5밴드 등급 + Gate-3 예비판정) · `guardrail-architect`(Phase 1: 빌드 가드레일·의존 방향 물리 강제·피드백 3차원) · `standalone-designer`(Phase 2: port/adapter·use-case seed) · `acceptance-verifier`(Phase 3: 수용 증명 + 결정론 델타 위 강제 probe로 Gate-3·등급 재측정).
+- **`references/scoring-rubric.md`** — v3 루브릭(9카테고리 + 3 gate). **`references/ai-readable-codebase-principles.md`** — 개선 모드 원리(2축·빌드 가드레일·standalone·수용 증명). **`references/research/`·dossier** — 2025~2026 1차 근거(`deep-research` 5세션 적대 검증). **`assets/template.html`** — 대시보드 원본.
 
-> `ai-readiness-cartography`는 **코드베이스 AI 준비도를 결정론적으로 점수·등급·대시보드로 측정**하는 데 특화한 단일 스킬이다. **내재화 원칙** — 결정론 우선·사람 보강 · gating(blocking > 가산) · 근거 서열=가중치 서열(실행·검증 ≫ 의존 구조 > 문서) · 문서 존재≠좋음(보유율 미채점, novelty·command-first만) · god-file=결합도(라인 수는 근거 약함 보조) · auto/heuristic/manual 라벨+근거 등급 · 제안만(자동 수정 안 함) · 과장 금지(근거 부재 신호 미채택). **경계** — 구조적 AI 접근성을 *정성 진단하고 빌드 가드레일·standalone·수용 증명으로 개선 설계*하는 `ai-readable-codebase`(스코어러 없는 L1~L5 멀티 에이전트)와는 **상보**(측정 vs 정성 진단→개선). 한 기능 구현(`backend-harness`)·하네스 자체 진단(`meta-harness`)·AI 생성물 judge 평가(`eval-harness`)·컨텍스트 조립(`context-engineering`)·완성 코드 리뷰·PR(`frontend/git-harness`)은 범위 밖. 근거: ORACLE-SWE(arXiv:2604.07789, reproduction/test +26~27pp→E 최상위)·LocAgent(2503.09089, 의존 그래프 localization 92.7%→D 기계 판독)·ETH Zurich AGENTS.md(2602.11988, 보유율≠성능→A 폐기·B novelty)·USENIX Security 2025 slopsquatting(→Gate-1)·RepoMirage(2605.26177, structure-first anchor — god-file=결합도는 defect-prediction 문헌·라인 수 근거 부재)·Factory/Kenogami readiness(lowest-as-ceiling 게이팅·DevEx→H/I). 출처: 외부 스킬 `ai-readiness-cartography` v2(7카테고리 스코어러+대시보드)를 deep-research 5세션 적대 검증으로 v3 리팩토링.
+> `ai-readiness-cartography`는 **코드베이스 AI 준비도를 측정(결정론 5밴드+3 gate)하고 그 위에서 구조 개선을 설계**하는 단일 스킬(2모드)이다. 등급은 단일 5밴드만 쓰고(L1~L5 폐기·`점수/20=L` 선형변환 금지) enforcement 축은 Gate-3로 흡수한다. **내재화 원칙** — 모드 게이트 먼저 · 결정론 우선·사람 보강 · gating(Gate-1/2→AI-Fragile, Gate-3→AI-Assisted) · 근거 서열=가중치 서열 · 문서 존재≠좋음(보유율 미채점) · god-file=결합도 · A축≠Q축·구조가 프롬프트보다 먼저·빌드가 강제하고 문서가 설명한다(개선 모드) · generator/checker 분리 · auto/heuristic/manual 라벨 · 제안만 · 과장 금지. **경계** — 한 기능 구현(`backend-harness`)·상류 핸드오프 검수(`review-harness`)·하네스 자체 진단(`meta-harness`)·전달 파이프라인(`cicd-harness`)·명세 작성(`spec-driven-development`)·컨텍스트 조립(`context-engineering`)·AI 생성물 judge(`eval-harness`)·병렬화·토폴로지(`agent-orchestration`)·완성 코드 리뷰·PR(`frontend/git-harness`)은 범위 밖. 근거: 측정은 ORACLE-SWE(2604.07789)·LocAgent(2503.09089)·ETH Zurich(2602.11988)·USENIX 2025 slopsquatting·RepoMirage(2605.26177)·Factory/Kenogami; 개선 모드는 flex.team 5부작 + arXiv:2505.10443·2602.11481·2306.09896. 출처: 외부 스킬 v2를 v3로 리팩토링(deep-research 5세션)한 뒤 별도 `ai-readable-codebase` 플러그인을 진단·개선 모드로 흡수(v0.2.0).
 
 ### Plugin: `token-efficiency`
 
