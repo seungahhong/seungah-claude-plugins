@@ -306,7 +306,7 @@
 
 **단일 스킬 구성 (에이전트 팀 없음 — 인터랙티브 오케스트레이터 본성에 충실)**. 핵심 자산:
 
-- **`SKILL.md`** — 5-Phase·3-Gate 오케스트레이터. Phase 0 초기 문의(AC **3지선다 명시 프롬프트** (a)붙여넣기 (b)파일·링크 경로 (c)없음→저장소 후보 채굴 — 채굴은 사용자 명시 선택이지 곧장 건너뛰기 아님·최초 요청 인라인 AC면 재질문 금지; 개발환경 스킵 시 현재 경로 기준 러너/디렉토리 관습 감지·부재 러너 보고·비차단) → Phase 1 적응형 방법론×계층 구성(감지 신호로 3 프리셋 추천 + 매트릭스 제시 + **방법론 스위트(Smoke/Sanity/Regression/nightly)·계층(Unit/Integration/E2E) 체크박스 다중선택** — 프리셋 기본체크·러너 부재 계층 '추가 필요' 명시·스코프 고정) → Phase 2 AC→계층 계획(GWT→AAA 분해·오라클 부착·계획표) + **게이트 A 계획 승인** → Phase 3 개별 순차 적용(오라클 오검증·flaky baseline·draft) + **게이트 B 개별 적용 승인** + 실행 그라운딩 → Phase 4 반영 + **게이트 C 최종 재확인**(커밋 직접 안 함·git-harness 핸드오프).
+- **`SKILL.md`** — 5-Phase·3-Gate 오케스트레이터. Phase 0 초기 문의(AC **3지선다 명시 프롬프트** (a)붙여넣기 (b)파일·링크 경로 (c)없음→저장소 후보 채굴 — 채굴은 사용자 명시 선택이지 곧장 건너뛰기 아님·최초 요청 인라인 AC면 재질문 금지; 개발환경 스킵 시 현재 경로 기준 러너/디렉토리 관습 감지·부재 러너 보고·비차단) → Phase 1 적응형 방법론×계층 구성(감지 신호로 3 프리셋 추천 + 매트릭스 제시 + **방법론 스위트(Smoke/Sanity/Regression/nightly)·계층(Unit/Integration/E2E) 체크박스 다중선택** — 프리셋 기본체크·러너 부재 계층 '추가 필요' 명시·스코프 고정) → Phase 2 AC→계층 계획(GWT→AAA 분해·오라클 부착·계획표) + **게이트 A 계획 승인** → Phase 3 개별 순차 적용(오라클 오검증·flaky baseline·draft + **durable 스위트 태그 물리 부여·분리 실행 스크립트 추가·셀렉터 실행 분리 검증**, sanity는 무-태그 변경-스코프 선택) + **게이트 B 개별 적용 승인** + 실행 그라운딩 → Phase 4 반영 + **게이트 C 최종 재확인**(커밋 직접 안 함·git-harness 핸드오프).
 - **`references/test-layering-principles.md`** — 방법론 정의·트리거·CI 배치 매트릭스(tier는 파이프라인 뒤로 갈수록 넓어짐)·AC→tier 분해 규칙(AC≠E2E)·오라클 강도 5개 가드·3 프리셋(Trophy-lean/Google-pipeline/Contract-honeycomb)·저장소 감지 신호·anti-pattern·경계.
 - **`references/research/test-strategy-research.md`** — 2025+ 근거 dossier(A~G, 신뢰도 HIGH/MED/LOW·folklore·모순 표기, `deep-research` plain-text fan-out 5각도 적대 검증).
 

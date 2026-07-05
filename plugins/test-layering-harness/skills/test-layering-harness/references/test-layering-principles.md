@@ -6,6 +6,7 @@
 1. 방법론(Smoke/Sanity/Regression/nightly) — 정의·트리거·실패 조치
 2. 계층(Unit/Integration/E2E) — 트레이드오프·비율 정직성
 3. 방법론 × 계층 매트릭스 (CI 단계 배치)
+3.5. 방법론 스위트 실체화(materialization) — 계획 라벨 → 실행 가능한 분리
 4. AC → tier 분해 규칙 (GWT→AAA)
 5. 오라클 강도 — LLM 생성 최대 리스크와 가드
 6. 3개 적응형 프리셋 (Trophy-lean / Google-pipeline / Contract-honeycomb)
@@ -64,6 +65,102 @@
 1. **선택(selection)·배치(batching) > 우선순위(prioritization)** — 우선순위는 실행 순서만 바꿔 총 실행량을 못 줄인다. PR-gate는 TIA로 영향받은 테스트만 돌리되, **이해 못 하는 커밋엔 전체 실행 안전 폴백**.
 2. **배포를 막는 게이트는 빠르고 신뢰도 높아야** — 느린 E2E를 배포 게이트에 두면 우회당한다. 무거운 것은 nightly로.
 3. **sanity는 고정 스테이지가 아니다** — 표적 수정 직후 좁은 확인이라는 성격이므로 매트릭스에 고정 칸을 두지 않고 "변경 표적"에 붙인다.
+
+---
+
+## 3.5 방법론 스위트 실체화(materialization) — 계획 라벨을 실행 가능한 분리로
+
+§3 매트릭스와 §4 row 형식에서 방법론 스위트(Smoke/Sanity/Regression/nightly)는 **계획표의 한 컬럼(라벨)** 으로만 존재한다. 라벨만으로는 (1) 코드에 물리 태그가 없고 (2) 그 스위트만 돌리는 실행 스크립트가 없고 (3) 분리가 실제로 되는지 확인할 방법이 없다 → **phantom suite**(계획엔 "smoke"가 있으나 독립 실행 단위로는 존재하지 않음). 이 절은 라벨을 **실행 가능한 분리**로 실체화하는 규칙이다.
+
+### 3.5.1 durable-tag vs transient-selection 비대칭 (핵심)
+
+네 방법론은 실행 모델이 **두 종류**로 갈린다. 이 비대칭은 임의가 아니라 근거에서 강제된다 — sanity는 "고정 스테이지 없음, 표적 수정 직후 좁은 확인이라는 성격"(§1 표·§3 배치원칙3).
+
+| 방법론 | 실행 모델 | 실체화 아티팩트 | CI 고정 스테이지 |
+|---|---|---|---|
+| **Smoke** | **durable 태그** | 코드 물리 태그 `@smoke` + `test:smoke` 스크립트 | 있음 (post-deploy, PR-gate 소수) |
+| **Regression** | **durable 태그/기본체** | `@regression`(또는 durable 기본체 전량) + `test:regression` | 있음 (merge full·PR 선택) |
+| **Nightly** | **durable 태그** | `@nightly` + `test:nightly` | 있음 (cron) |
+| **Sanity** | **transient 선택** | 태그 아님 — 변경-스코프 선택 **레시피(command)** | **없음** (변경 표적에 부착) |
+
+- **Smoke/Regression/Nightly = durable 태그**로 실체화: 고정 tag 토큰 → 러너 네이티브 기법으로 코드에 물리 부여 → 전용 스크립트 → 고정 CI 스테이지.
+- **Sanity = transient 선택**으로 실체화: `@sanity` 태그를 코드에 **심지 않는다**(무-태그 가드). 대신 "지금 이 변경이 건드린 테스트만" 조립하는 선택 레시피(§3.5.3)를 산출한다.
+
+### 3.5.2 durable 스위트 — 프레임워크별 정확 태깅·분리 실행 문법
+
+> 러너를 하나로 하드코딩하지 않는다. Phase 1에서 감지된 러너의 어댑터를 골라 적용한다. 각 문법에 최소 버전·출처를 병기.
+
+**Playwright** (태그는 `@`로 시작, 키는 단수 `tag`)
+- 태깅(권장, **v1.42+**): `test('로그인', { tag: '@smoke' }, async …)` / 복수·describe 상속: `test('리포트', { tag: ['@slow','@vrt'] }, …)`, `test.describe('그룹', { tag: '@regression' }, …)`. 출처: playwright.dev release-notes v1.42, docs/test-annotations.
+- 레거시(항상 지원): 제목 문자열에 `@smoke` 삽입 — `--grep`가 제목을 포함하므로 동작. 최초 도입 버전 **확인 필요**(1.42 이전부터).
+- 분리 실행(공식 확정): `playwright test --grep @smoke` / 제외 `--grep-invert @smoke` / OR `--grep "@smoke|@regression"` / AND(lookahead) `--grep "(?=.*@smoke)(?=.*@critical)"`. config 등가물 `grep`/`grepInvert`(전역·프로젝트). 출처: docs/test-annotations, API TestConfig.grep.
+- ⚠️ `test.describe.configure(...)`는 태그용이 **아니다**(mode/retries/timeout 전용). 그룹 태그는 `describe('name',{tag:[...]},fn)`. 어노테이션 `{ annotation:{type,description} }`(1.42+)도 필터 대상 아님(리포트 메타데이터).
+
+**Vitest** (네이티브 태그는 `@` 없이 이름, 키는 **복수 `tags`·배열**)
+- 네이티브 태그(**v4.1.0+**): `test('renders', { tags: ['smoke'] }, …)` / suite 상속 `describe('API', { tags: ['regression'] }, …)`. config에 선언 필요(`test.tags:[{name:'smoke'}]`), `strictTags` 기본 true → 미선언 태그 사용 시 에러. 출처: vitest.dev/guide/test-tags, config/tags.
+- 분리 실행: `vitest run --tags-filter="smoke"` / 불리언 `--tags-filter="regression && !flaky"` / `--list-tags`. 출처: vitest.dev/guide/test-tags.
+- **4.1.0 미만 대안**: 이름패턴 — 제목에 `[@smoke]`, `vitest run -t "@smoke"`(정규식, full name 매칭). 출처: vitest.dev/guide/filtering. ⚠️ annotations(`context.annotate()`, 3.2+)는 **필터 불가** — 분리에 쓰지 말 것.
+
+**Jest** (네이티브 태그 **없음** — 30.4 기준. "태그 전무"의 공식 부재 서술은 확인 필요)
+- 이름패턴(전 버전): 제목에 `@smoke`, `jest -t '@smoke'`(정규식, describe 포함 full name). 출처: jestjs.io/docs/cli.
+- 파일명 컨벤션 + projects: `jest.config.js` `projects:[{displayName:'smoke',testMatch:['<rootDir>/**/*.smoke.test.ts']}]` → `jest --selectProjects smoke`. 별도 config 분리 `jest -c jest.smoke.config.js`. 출처: jestjs.io/docs/cli, configuration.
+- 경로 필터: **Jest 30+** `jest --testPathPatterns smoke`(복수); **Jest ≤29**는 `--testPathPattern smoke`(단수). breaking change 주의. 출처: jestjs.io/docs/upgrading-to-jest30.
+
+**파일명 컨벤션 대안(러너 무관)**: `foo.smoke.test.ts` / `*.regression.test.ts`로 물리 분리. Vitest 위치 인자 `vitest run smoke`(경로 substring), Jest `testMatch`/`testRegex`, Playwright `testMatch:/.*smoke\.spec\.ts/`. Vitest 기본 include는 `*.smoke.test.ts`도 이미 전체 스위트에 잡으므로, 분리하려면 project/필터를 별도 지정해야 함.
+
+### 3.5.3 sanity — 변경-스코프 선택(transient), 태그 아님
+
+sanity는 "안정된 빌드 위, 표적 수정/핫픽스 직후, 그 변경이 건드린 것만"(§1). 태그·CI 스테이지를 갖지 않고 **호출 시점에만 리스트로 물질화**한다. 계획표에는 "레시피 command + 폴백"만 기록한다.
+
+1. **1순위(러너 무관·확정): git-diff + 경로 매핑** — `git diff --name-only`로 변경 소스 → 테스트 경로 관습(`*.test.*`/`__tests__`/mirror 경로)으로 역매핑. 문법 근거 불필요(git·경로 규칙).
+2. **2순위(러너 네이티브 change-selection)**: 러너가 diff/임포트 그래프로 변경-스코프 집합을 계산하는 플래그가 있으면 사용. 예: Jest `--onlyChanged`/`--findRelatedTests <files>`, Vitest `--changed`/`--related <files>`, Playwright `--only-changed` — **정확 플래그·최소 버전은 사용 러너 문서에서 확인 필요**(근거 dossier 범위 밖).
+3. **폴백 원칙**: 이해 못 하는(매핑 실패) 변경엔 좁힘을 포기하고 **전체(또는 해당 durable 스위트) 폴백** — under-selection으로 회귀를 놓치지 않기 위함(§3 배치원칙1).
+4. **무-태그 가드**: 코드에 `@sanity`를 심는 것을 금지한다. sanity는 선택이지 태그가 아니다(§3.5.6 caveat의 코드 레벨 대응물).
+
+### 3.5.4 분리 동작 검증 방법 (결정적 센서)
+
+계획 라벨 vs 실행 분리의 최종 증명. durable 스위트별로, **membership 대수를 Phase 1에서 택1 선언**한 뒤 검증한다:
+- **옵션 A(멀티태그)**: 각 테스트에 소속 durable 스위트 태그를 모두 부여(예 `@smoke`+`@regression`).
+- **옵션 B(기본체+carve-out)**: regression=durable 기본체 전량, smoke/nightly는 명시 태그로 잘라냄.
+
+durable 스위트 S(태그 T)마다 셀렉터를 **실제 실행/열거**해 확인:
+1. **비공집합**: `SELECT(T)`가 0개면 phantom → 실패.
+2. **정확 membership**: `SELECT(T)`가 계획이 선언한 집합과 정확히 일치(태그 누수=초과, 미부여=누락 둘 다 실패).
+3. **부분집합/containment**: `SELECT(T) ⊆ 전체 실행 집합`, 옵션 A면 `@smoke ⊆ @regression` 등.
+4. **양방향 대조**: 물리 태그된 테스트 각각이 계획 row에 추적, durable 계획 row 각각의 테스트가 태그를 지님(orphan 없음).
+
+**sanity(transient)**: 레시피를 현재(또는 probe) 변경에 실행 → 구체 리스트 반환 · 비퇴화(전체를 반환하면 매핑 고장) · 변경 파일에 추적 · 코드에 `@sanity` 태그 **없음** 단언.
+
+> 검증은 위 3.5.2의 **검증된 셀렉터**(`--grep`/`--tags-filter`/`-t`/`--selectProjects`)를 실제 실행해 어떤 테스트가 뽑히는지 관찰하는 것으로 성립한다. **자기보고("계획했으니 분리됨") 불신** — 셀렉터 실행 출력으로만 인정(§5-2 실행 그라운딩과 동형).
+
+### 3.5.5 CI 스테이지 ↔ 스위트 매핑 (§3 매트릭스 확장)
+
+tier는 파이프라인 뒤로 갈수록 넓어짐(Google presubmit/postsubmit·Fowler DeploymentPipeline, HIGH). 스킬은 이 표를 계획에 첨부하고 게이트 A에서 승인받는다. **CI yaml은 직접 편집하지 않고 이 스니펫을 제안**한다(배포 민감·게이트 경계).
+
+| CI 스테이지 | 트리거 | durable 실행(selector 스크립트) | sanity(transient) | 시간예산(목표치·대략) | 근거·신뢰도 |
+|---|---|---|---|---|---|
+| Pre-commit/local | 로컬 저장 | (훅) 빠른 unit 일부 | **주 사용처**: `test:sanity:changed`(표적 수정 직후) | 초~수십초 | HIGH [Google 로컬·Fowler] |
+| PR-gate | PR push | `test:smoke`(@smoke) + TIA 선택 regression(@regression 부분집합) | 없음(push 전 로컬 sanity) | <5~15분 | HIGH [Google presubmit ~11분·TIA] |
+| Merge to main | merge | `test:regression`(full 빠른 계층) + contract·security | — | ~10분 | MED [CircleCI] |
+| Post-deploy(staging/canary) | 배포 후 | `test:smoke`(@smoke, 넓고 얕게) + canary | — | 수분 | MED-HIGH [Harness] |
+| Nightly | cron | `test:nightly`(@nightly full E2E) + `test:regression`(full) | — | 20분~수시간 | HIGH [Google postsubmit/TAP] |
+| Pre-release(RC) | RC | 포괄 자동 스위트(=prod probers) | — | — | HIGH [Google Ch.23] |
+
+**표 정직성 주석(그대로 인쇄)**:
+- **sanity는 고정 스테이지가 없다** — 독립 행이 아니라 "표적 수정 직후 on-demand(주로 local/pre-push·hotfix)"(§3 배치원칙3).
+- **시간예산은 목표치/예시**(다수 벤더 출처)이며 절대 표준 아님. smoke 3~7분 vs 15~30분은 소스마다 다르고 1차 근거 약함 → 대략치로만(§1).
+- **선택·배치 > 우선순위**(우선순위는 총 실행량 불변); unknown 커밋엔 전체 폴백.
+- **비율% 없음** — smoke 집합 크기는 "전체의 N%"가 아니라 AC 분해 + 프리셋 무게중심으로 결정. 70/20/10은 folklore(§2).
+
+### 3.5.6 smoke=sanity 동의어 caveat를 유지하며 분리를 주는 법
+
+ISTQB 용어집은 **smoke=sanity 동의어**이고 "smoke=넓고 얕음/sanity=좁고 깊음"은 실무 컨벤션(folklore)이지 표준이 아니다(§1). 이 절은 **용어가 아니라 실행 모델로 분리**하므로 caveat를 위반하지 않는다:
+- 두 스위트를 "서로 다른 **표준** 방법론"이라 주장하지 않는다.
+- smoke는 durable 태그(고정 selector·스테이지)로, sanity는 transient 선택(무-태그·on-demand)으로 **운영 방식이 다를 뿐**이며 이 차이는 근거가 뒷받침한다(§3).
+- smoke/sanity가 등장하는 모든 산출물에 "ISTQB는 동의어; broad-shallow/narrow-deep 구분은 컨벤션·표준 아님"을 병기한다.
+- **무-태그 가드**(§3.5.3-4)가 caveat의 코드 레벨 대응 — `@sanity`를 심지 않음으로써 folklore 구분을 표준 택소노미로 못 박는 것을 물리적으로 방지한다.
+
+**추가 anti-pattern(§8에 합류)**: phantom suite(라벨만) · sanity reification(`@sanity` 고정 태그/스테이지) · 태그 누수/미부여(selector≠membership) · fake separation(러너 기능 없이 분리된 척 → "advisory label only" 정직 강등) · over-narrowing sanity(매핑 실패 시 전체 폴백 포기).
 
 ---
 
