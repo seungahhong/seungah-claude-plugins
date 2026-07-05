@@ -4,12 +4,12 @@
 
 | Command | File | Description |
 |---------|------|-------------|
-| Orchestrator | `/orchestrator` | research → prd → develop → **review → verify** 6단계 순차 실행 후 통합 리포트 생성. Review는 /simplify + /review + security-audit + lighthouse + qa-inspector 5개 관점 중 사용자 선택 항목만 병렬 + 재리뷰 루프. Verify는 E2E + 타입/빌드. 정적 분석을 먼저 끝낸 뒤 비싼 E2E를 실행. 커밋은 git-harness로 별도 진행 |
+| Orchestrator | `/orchestrator` | research → prd → develop → **review → verify** 6단계 순차 실행 후 통합 리포트 생성. Review는 /simplify + /review + security-audit + lighthouse + qa-inspector 5개 관점 중 사용자 선택 항목만 병렬 + 재리뷰 루프. Verify는 **인수조건(AC) 단위 E2E** + 타입/빌드이며, **인수조건 충족률<100%면 Develop→Review→Verify 수렴 루프**(미충족 AC만 재구현, 매 라운드 사용자 게이트·소프트 캡 5회). 정적 분석을 먼저 끝낸 뒤 비싼 E2E를 실행. 커밋은 git-harness로 별도 진행 |
 | Research | `/research` | grill-me 스킬을 서브에이전트로 실행하여 요구사항 분석 및 명세 도출 |
-| PRD | `/prd` | planner → architecture → critic 서브에이전트 루프로 개발 요구사항 정의서 작성 |
-| Frontend Guidelines | `/frontend-guidelines` | a11y, semantic-html, seo-geo, tdd 스킬을 서브에이전트로 병렬 실행하여 가이드라인 기반 개발(Develop) 진행 |
-| Verifier | `/verifier` | e2e-verifier 스킬을 로드하여 PRD 인수 조건 기반 E2E 브라우저 검증 수행 |
-| Verify | `/verify` | E2E 브라우저 검증(verifier.md 활용) + 타입/빌드 검사(`tsc --noEmit`, `npm run build`)를 통합 실행 |
+| PRD | `/prd` | planner → architecture → critic 서브에이전트 루프로 개발 요구사항 정의서 작성. 각 기능(FR)을 **사용자 스토리(US)+관찰형 인수조건(AC-n.m, Given/When/Then)**으로 전개하고 FR↔US↔AC 추적(개발·검증 공통 계약, product-spec 방법론 내재화) |
+| Frontend Guidelines | `/frontend-guidelines` | a11y·semantic-html·seo-geo·tdd 스킬로 가이드라인 기반 개발(Develop). **TDD 선택 시 TDD 선행(AC를 RED 테스트로)→나머지 병렬**, 미선택 시 전체 병렬. 최종 점검은 **기능(FR/US) 단위 인수조건 충족**. 수렴 루프 재호출 시 미충족 AC만 재구현 |
+| Verifier | `/verifier` | e2e-verifier 스킬을 로드하여 PRD **인수조건(AC) 단위** E2E 브라우저 검증 수행(AC별 PASS/FAIL·충족률) |
+| Verify | `/verify` | **인수조건 단위 E2E**(verifier.md 활용) + 타입/빌드 검사(`tsc --noEmit`, `npm run build`) 통합 실행. 인수조건 충족률<100%면 Develop 회귀 수렴 루프로 안내 |
 | Review | `/review` | /simplify(간소화) + 빌트인 /review(PR 리뷰) + security-audit(보안) + lighthouse-performance(성능) + qa-inspector(정합성) 5개 관점 중 **사용자가 선택한 항목만 병렬 spawn**(단일 메시지 동시 실행) → 통합 결과 통보 → 수정 적용 → 재리뷰 루프(최대 3회). 커밋은 git-harness `/commit` |
 
 ## Hooks
