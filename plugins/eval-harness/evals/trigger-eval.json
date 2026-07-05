@@ -118,5 +118,9 @@
   {
     "query": "우리 에이전트 tool 호출에 최소권한 스코핑이랑 인라인 가드레일 깔고 red-team으로 ASR/FPR 측정해줘",
     "should_trigger": false
+  },
+  {
+    "query": "내 Claude Code 세션들 토큰 효율 점수 매기고 등급 히스토그램·비용 리포트 만들어줘",
+    "should_trigger": false
   }
 ]

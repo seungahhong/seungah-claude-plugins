@@ -94,5 +94,9 @@
   {
     "query": "에이전트를 도구가 아니라 팀원으로 온보딩하는 공통기반·working agreement랑 분업·감독 체계를 설계해줘",
     "should_trigger": false
+  },
+  {
+    "query": "이 레포 세션 로그의 토큰 사용·캐시 적중률 분석해서 $ 절감안 내줘",
+    "should_trigger": false
   }
 ]

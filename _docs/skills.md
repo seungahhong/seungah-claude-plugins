@@ -297,3 +297,19 @@
 - **`assets/template.html`** — 대시보드 원본(Inter/JetBrains Mono, 인라인 SVG, gate strip + 9카테고리 차트).
 
 > `ai-readiness-cartography`는 **코드베이스 AI 준비도를 결정론적으로 점수·등급·대시보드로 측정**하는 데 특화한 단일 스킬이다. **내재화 원칙** — 결정론 우선·사람 보강 · gating(blocking > 가산) · 근거 서열=가중치 서열(실행·검증 ≫ 의존 구조 > 문서) · 문서 존재≠좋음(보유율 미채점, novelty·command-first만) · god-file=결합도(라인 수는 근거 약함 보조) · auto/heuristic/manual 라벨+근거 등급 · 제안만(자동 수정 안 함) · 과장 금지(근거 부재 신호 미채택). **경계** — 구조적 AI 접근성을 *정성 진단하고 빌드 가드레일·standalone·수용 증명으로 개선 설계*하는 `ai-readable-codebase`(스코어러 없는 L1~L5 멀티 에이전트)와는 **상보**(측정 vs 정성 진단→개선). 한 기능 구현(`backend-harness`)·하네스 자체 진단(`meta-harness`)·AI 생성물 judge 평가(`eval-harness`)·컨텍스트 조립(`context-engineering`)·완성 코드 리뷰·PR(`frontend/git-harness`)은 범위 밖. 근거: ORACLE-SWE(arXiv:2604.07789, reproduction/test +26~27pp→E 최상위)·LocAgent(2503.09089, 의존 그래프 localization 92.7%→D 기계 판독)·ETH Zurich AGENTS.md(2602.11988, 보유율≠성능→A 폐기·B novelty)·USENIX Security 2025 slopsquatting(→Gate-1)·RepoMirage(2605.26177, structure-first anchor — god-file=결합도는 defect-prediction 문헌·라인 수 근거 부재)·Factory/Kenogami readiness(lowest-as-ceiling 게이팅·DevEx→H/I). 출처: 외부 스킬 `ai-readiness-cartography` v2(7카테고리 스코어러+대시보드)를 deep-research 5세션 적대 검증으로 v3 리팩토링.
+
+### Plugin: `token-efficiency`
+
+| Skill | Command | Description |
+|-------|---------|-------------|
+| Token Efficiency | `/token-efficiency` | Claude Code **세션 JSONL 로그**를 파싱해 레포 단위 토큰/컨텍스트 효율을 정량 측정·시각화하고 $ 절감안을 내는 결정론적 단일 스킬. analyze_sessions.py(4축 가중 점수) → detect_patterns.py(8개 비효율 탐지기) → build_dashboard.py(오프라인/CSP 안전 인라인-SVG HTML). 산출물: session_analysis.json + pattern_analysis.json + 단일 HTML 대시보드 |
+
+**단일 스킬 구성 (에이전트 팀 없음 — 로그 분석기 본성에 충실)**. 핵심 자산:
+
+- **`scripts/analyze_sessions.py`** (stdlib only, Python 3.9+) — 4축 가중 점수(cache 35·redundancy 30·density 15·tool 20, 각 축에 근거 등급 CONFIRMED/PLAUSIBLE/HEURISTIC). 현행 PRICING(Opus $5/$25·Fable 5 $10/$50, 캐시배수를 입력가에서 파생 read 0.1×/write5m 1.25×/write1h 2×), `--pricing`·`--weights` 오버라이드. 종료 메시지에 "효율 프록시≠cost-of-pass" 경고.
+- **`scripts/detect_patterns.py`** — 8개 결정론 탐지기(context-bloat·giant-tool·poor-cache·duplicate·subagent + 신규 stale-observation·cache-invalidation-churn·read-exploration-heavy). 낭비 $는 각 세션 dominant 모델가로.
+- **`scripts/build_dashboard.py`** — 인라인 SVG HTML(외부 CDN 없음, CSP/오프라인 안전). 세션별 라우팅 후보 판별·compact 캐시-깨짐 caveat·근거 등급 rubric.
+- **`scripts/test_efficiency.py`** — 회귀 테스트 60건(가중치 합·양방향 가격 동기화·탐지기·사이드체인 배제·golden 점수·경로 인코딩).
+- **`references/research/`** — 2025~2026 1차 근거(합성 README + 5 세션, `deep-research` 5세션 적대 검증. ACON "무손실" claim REFUTED·Context-Folding 10× 강등 등 정직 반영).
+
+> `token-efficiency`는 **런타임 세션 로그의 토큰 경제를 결정론적으로 측정·시각화**하는 단일 스킬이다. 외부 스킬 `improve-token-efficiency`를 deep-research(5 세션 적대 검증)의 2025~2026 근거로 개선했다. **내재화 원칙** — 결정론 우선·제안만(자동 수정 안 함) · 점수=효율 프록시(≠cost-of-pass, task success 미관측) · 현행 가격(두 스크립트 동기화, `--pricing` 갱신) · 낭비는 세션 실제 모델가 · giant-tool fix는 blind 절단 금지(Squeez Last-N 0.05 recall) · compact엔 캐시-깨짐 caveat(35% 캐시 축 상충) · 대시보드 오프라인/CSP 안전. **경계** — 정적 저장소 AI 준비도(`ai-readiness-cartography`, 런타임 세션 로그 vs 정적 구조 — **상보**) · 새 코드·PR 리뷰(`frontend/git-harness`) · 하네스 진단(`meta-harness`) · AI 생성물 judge(`eval-harness`) · 컨텍스트 페이로드 조립(`context-engineering`)은 범위 밖. 근거: ACON(2510.00615, 컨텍스트 부풀림 품질 harm·압축 캐시 깸)·Squeez(2604.04979, 관측치 92% 프루닝·naive 절단 실패)·AgentDiet(2509.23586, 궤적낭비 3분류 useless/redundant/expired)·SWE-Pruner(2601.16746, task-aware 프루닝)·Complexity Trap(2508.21433, stale 마스킹 ~52% 절감)·읽기 지배(2606.14066, 76.1%)·cost-of-pass(2508.02694, 성공-가중 비용·작업 의존 라우팅)·Anthropic 캐싱 1차(exact-prefix·배수·최소 프리픽스). 출처: 외부 스킬 `improve-token-efficiency`(4축 점수+5 탐지기+6 절감 휴리스틱)를 deep-research 5세션 적대 검증으로 개선.

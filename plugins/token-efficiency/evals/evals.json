@@ -1,0 +1,115 @@
+{
+  "eval_metadata": {
+    "eval_id": "token-efficiency-acceptance",
+    "eval_name": "token-efficiency 수용 평가 (design-conformance + 실행 검증)",
+    "prompt": "스킬은 Claude Code 세션 JSONL 로그를 결정론적 스크립트(stdlib only)로 파싱해 4축 가중 점수(cache 35 / redundancy 30 / density 15 / tool 20, 각 축 근거 등급) + 8개 비효율 탐지기(context-bloat·giant-tool·poor-cache·duplicate·subagent + 신규 stale-observation·cache-invalidation-churn·read-exploration) + 세션별 실제 모델가 낭비 추정 + 오프라인 인라인-SVG 대시보드를 낸다. 외부 스킬 improve-token-efficiency를 deep-research(5 세션 적대 검증)의 2025~2026 근거로 개선했다. 본 평가는 shipped SKILL.md·scripts/*.py·references/research/*가 하네스 불변식(현행 가격·캐시배수·giant-tool fix 교정·신규 3탐지기·세션별 라우팅·캐시-깨짐 caveat·효율≠cost-of-pass 정직성·측정만)을 강제·명세하는지 file:함수 인용 + test_efficiency 실행으로 채점한다.",
+    "method": "design-conformance + 실행 검증 — shipped 파일 인용 + test_efficiency.py 60건 실행(양방향 가격 동기화·탐지기 회귀·세션별 모델가·사이드체인 배제·golden 점수·경로 인코딩).",
+    "assertions": [
+      {
+        "text": "[pricing/current-not-retired] PRICING이 현행 라인($5/$25 Opus·$10/$50 Fable 5)이며 캐시배수를 입력가에서 파생한다(read 0.1×/write5m 1.25×/write1h 2×). 외부 스킬의 폐기가 $15/$75를 교정.",
+        "passed": true,
+        "evidence": "analyze_sessions.py _row() 헬퍼·PRICING dict. test_efficiency TestPricing.test_opus_is_current_price_not_retired / test_cache_multipliers_derived_from_input 통과. research/session-2."
+      },
+      {
+        "text": "[giant-tool/no-blind-truncation] giant-tool-outputs 탐지기의 fix가 blind head/tail 절단을 금지하고 '작게 요청'을 권한다(Squeez Last-N 0.05 recall).",
+        "passed": true,
+        "evidence": "detect_patterns.py detect_giant_tool_outputs() fix 문자열 'Do NOT blind-truncate' + research 'Squeez'. test_efficiency test_giant_tool_output_fix_forbids_blind_truncation 통과. research/session-1 C4·C5."
+      },
+      {
+        "text": "[new-detectors] 신규 탐지기 3종(stale-observation·cache-invalidation-churn·read-exploration-heavy)이 PATTERN_KEYS에 등록되고 각각 근거를 인용한다.",
+        "passed": true,
+        "evidence": "detect_patterns.py PATTERN_KEYS + detect_stale_observation/detect_cache_churn/detect_read_exploration research 필드(2509.23586·session-2·2606.14066). test_efficiency test_new_detectors_registered / test_read_exploration_heavy 통과."
+      },
+      {
+        "text": "[waste/per-session-model] 낭비 $는 세션 dominant 모델가로 산정하며 플랫 Opus를 쓰지 않는다(혼합 플릿 과대계상 방지).",
+        "passed": true,
+        "evidence": "detect_patterns.py input_price_for()·analyze_session()의 dominant model 산정. test_efficiency test_waste_priced_at_session_model(Haiku < Opus) 통과. research/session-2·4."
+      },
+      {
+        "text": "[routing/per-session-candidate] model-routing 절감이 세션별 후보 판별(looks_downgradeable, Opus급 이상만)로 재조작화되고 플랫 30%를 쓰지 않으며 절감비를 세션별(1 − 3.0/dominant_input_price: Fable 70%·Opus 40%)로 계산한다.",
+        "passed": true,
+        "evidence": "build_dashboard.py looks_downgradeable()(dominant_input_price > SONNET_IN 가드)·compute_savings() save_model·SONNET_IN=3.0. analyze_sessions.py dominant_input_price 산출. research/session-4 (cost-of-pass 작업 의존)."
+      },
+      {
+        "text": "[honesty/efficiency-not-cost-of-pass] 점수가 효율 프록시이며 cost-of-pass가 아님(task success 미관측)을 명시하고 각 축에 근거 등급을 붙인다.",
+        "passed": true,
+        "evidence": "analyze_sessions.py main() 종료 메시지 'not cost-of-pass' + WEIGHT_EVIDENCE. SKILL.md '핵심 원칙(정직성)'. build_dashboard rubric ev 필드. research/session-5 C1."
+      },
+      {
+        "text": "[compact/cache-break-caveat] /compact 권고에 '과도한 compact는 캐시를 깬다' caveat가 붙는다(ACON/session-2, 35% 캐시 축과 상충).",
+        "passed": true,
+        "evidence": "build_dashboard.py 개선카드 2 '과도한 compact는 캐시를 깨 … 35% 캐시 축' + 근거 'ACON(2510.00615)'. detect_context_bloat fix 'Don't compact so often you thrash the cache'. research/session-1 C2·session-2."
+      },
+      {
+        "text": "[dashboard/offline-safe] 대시보드가 외부 CDN/스크립트 없이 인라인 SVG로 렌더된다(원 스킬의 Chart.js CDN 의존 제거, CSP 안전).",
+        "passed": true,
+        "evidence": "build_dashboard.py svg_bars() 인라인 SVG·<script> 태그·CDN 링크 없음. 스모크 테스트: 생성 HTML에 외부 script src 부재."
+      },
+      {
+        "text": "[boundary/vs-ai-readiness] 스킬은 런타임 세션 로그의 토큰 경제를 측정하며, 정적 저장소 AI 준비도(ai-readiness-cartography)·AI 생성물 judge(eval-harness)·컨텍스트 조립(context-engineering)·하네스 진단(meta-harness)과 경계를 명시하고 코드를 자동 수정하지 않는다.",
+        "passed": true,
+        "evidence": "SKILL.md '경계' 섹션 + '핵심 원칙(제안만)'. plugin.json description 경계 문단. README.md 경계 표. CLAUDE.md Conventions."
+      },
+      {
+        "text": "[encoding/nonalnum] encode_repo_path가 '/'만이 아니라 모든 비영숫자('.'·'_' 포함)를 '-'로 치환한다 — 실물 ~/.claude/projects 디렉토리 대조로 검증(외부 스킬은 '/'만 치환해 '.' 포함 경로에서 조용히 실패).",
+        "passed": true,
+        "evidence": "analyze_sessions.py·detect_patterns.py encode_repo_path() re.sub(r'[^A-Za-z0-9]', '-'). test_efficiency test_encode_repo_path_nonalnum 통과. 실물 대조: 'seungah.hong'→'seungah-hong', 'hyperframe_ai'→'hyperframe-ai'."
+      },
+      {
+        "text": "[sidechain/excluded] detect_patterns가 사이드체인(서브에이전트) 레코드를 메인 궤적에서 배제한다 — 별도 컨텍스트라 bloat run 리셋·n_turns 부풀림·정당한 재읽기의 중복 오분류를 막기 위함.",
+        "passed": true,
+        "evidence": "detect_patterns.py analyze_session() isSidechain skip + sidechain_msgs_excluded 필드. test_efficiency test_sidechain_does_not_break_bloat_run 통과(사이드체인 25개 개입에도 25턴 bloat run 유지)."
+      },
+      {
+        "text": "[robustness/per-line] 라이브로 append되는 jsonl의 절단된 마지막 줄·malformed 레코드·JSON은 유효하나 usage/message가 null인 레코드가 세션(또는 전체 실행)을 탈락시키지 않는다 — 두 스크립트 모두 레코드 단위 skip + None-가드.",
+        "passed": true,
+        "evidence": "analyze_sessions.py 줄 단위 parse + _consume_record 예외 격리 + `or {}`/`or 0` 가드. detect_patterns.py 줄 단위 try/except + 동일 None-가드(R2에서 usage:null 전체 크래시 발견·수정). test_efficiency test_truncated_last_line_keeps_session / test_null_usage_record_survives_both_scripts 통과."
+      },
+      {
+        "text": "[dedup/message-id] CLI가 한 API 메시지를 thinking/text/tool_use 레코드로 분할·usage 반복하므로, 두 스크립트가 message.id당 usage를 1회만 계상하고 tool_use는 전 레코드에서 수집한다(레코드 단위 합산 시 비용·턴 2~3배 과대).",
+        "passed": true,
+        "evidence": "analyze_sessions.py _consume_record seen_usage_ids/count_usage. detect_patterns.py analyze_session turn_by_key(message.id 병합). test_efficiency TestMessageIdDedup 4건 통과. 실측: 317레코드→182 message.id."
+      },
+      {
+        "text": "[subagent/files] 현행 CLI가 서브에이전트를 <sid>/subagents/**/*.jsonl 별도 파일에 저장하므로 analyze가 이를 재귀 수집해 비용에 합산하되, redundancy·dominant 모델 판정은 메인 스레드만 사용한다. SKILL의 'in-band 포함' 오기재는 정정됨.",
+        "passed": true,
+        "evidence": "analyze_sessions.py session_files()(subagents/ os.walk)·_consume_record is_sub 분기. num_subagent_files/num_sidechain_msgs. test_efficiency TestSubagentFiles 3건. SKILL.md '서브에이전트(사이드체인) 비용' 절. 실측 2524 subagent 파일."
+      },
+      {
+        "text": "[zero-usage/skip] 합성(<synthetic>)·컨텍스트 0 API-에러 레코드가 탐지기 궤적에서 제외되어 bloat run·carried-turn을 파괴하지 않는다.",
+        "passed": true,
+        "evidence": "detect_patterns.py analyze_session의 'model==<synthetic> or (context_size==0 and out==0)' skip. test_efficiency TestZeroUsageSkip 통과."
+      },
+      {
+        "text": "[duplicate/stateful] duplicate-tools가 입력뿐 아니라 결과 내용 해시까지 비교해 같은 입력·다른 결과의 정당한 재확인(git status dirty→clean)을 waste에서 제외한다(AgentDiet 'redundant'=내용 반복).",
+        "passed": true,
+        "evidence": "detect_patterns.py detect_duplicate_tools result_hash 비교·stateful_recheck_count. tool_results에 result_hash 저장. test_efficiency TestDuplicateStateful 2건."
+      },
+      {
+        "text": "[dashboard/tested] build_dashboard가 단위 테스트로 커버된다(성분합=KPI·hostile session_id esc·effective_input_price 0-division·looks_downgradeable 경계·dominant 모델 비용 라우팅·svg 빈값).",
+        "passed": true,
+        "evidence": "test_efficiency TestDashboard 6건 통과. build_dashboard.py compute_savings가 dominant_model_cost_usd 사용·cache-hit KPI 값기반 색·grade 범례 11단계."
+      },
+      {
+        "text": "[security/nofollow] 기본 /tmp 산출물을 O_NOFOLLOW로 열어 심볼릭링크 추종 clobber(CWE-59)를 차단하고, HTML/JSON의 절대경로·사용자명 노출은 공유 전 확인 caveat로 고지한다.",
+        "passed": true,
+        "evidence": "세 스크립트 safe_open_write(os.O_NOFOLLOW). SKILL.md '보고 시 주의(정보 노출)' 절."
+      },
+      {
+        "text": "[score/main-thread-only] 점수·토큰·캐시 KPI·cost_usd는 메인 스레드 기준이며 서브에이전트 비용은 subagent_cost_usd로 분리 — 서브에이전트 볼륨이 4축 점수를 오염시키지 않는다(직전 수정의 축 분모 불일치 회귀 해소).",
+        "passed": true,
+        "evidence": "analyze_sessions.py _consume_record의 is_side 분기(토큰·cost는 main만, subagent_cost_usd 별도). test_efficiency TestScoreMainThreadOnly(서브 cache 900k가 cache_score 0 유지)·TestSubagentFiles 통과. 실측: 메인 $717.75 + 서브 $832.35."
+      },
+      {
+        "text": "[pricing/dated-normalize] 날짜 접미사 모델 ID(claude-haiku-4-5-20251001)를 정규화해 정확 산정(Opus 5배 오산정 방지), 두 스크립트 동일.",
+        "passed": true,
+        "evidence": "analyze_sessions.py normalize_model()·price_for 폴백, detect_patterns.py input_price_for 폴백. test_efficiency TestDatedModelPricing. 실측 unknown-model 경고 0건."
+      },
+      {
+        "text": "[robustness/detect-corrupt] detect가 비-str message.id(unhashable)·비-dict message 손상 레코드에 전체 실행을 중단하지 않는다(레코드 단위 try/except + 타입 가드, analyze와 강건성 대칭).",
+        "passed": true,
+        "evidence": "detect_patterns.py analyze_session의 per-record try/except + _consume_detect_record 타입 가드(isinstance dict·mid hashable). test_efficiency TestDetectCorruptRecord 2건."
+      }
+    ]
+  }
+}

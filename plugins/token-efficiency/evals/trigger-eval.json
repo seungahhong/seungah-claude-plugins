@@ -1,0 +1,54 @@
+[
+  {
+    "query": "이 레포 Claude Code 세션들 토큰 효율 분석하고 비용 대시보드 만들어줘",
+    "should_trigger": true
+  },
+  {
+    "query": "analyze token efficiency across all my sessions and show a cost report with an efficiency score",
+    "should_trigger": true
+  },
+  {
+    "query": "내 세션들 캐시 적중률이랑 토큰 낭비 패턴 찾아서 $ 절감안 제시해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "how much did I spend on Claude in this repo and where is the token waste",
+    "should_trigger": true
+  },
+  {
+    "query": "세션 로그 파싱해서 거대 도구 출력·중복 도구 호출·서브에이전트 과다 같은 비효율 탐지해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "improve token efficiency — 여러 세션 전체 집계해서 등급 히스토그램이랑 rubric 보여줘",
+    "should_trigger": true
+  },
+  {
+    "query": "이 코드베이스가 AI 에이전트 친화적인지 100점 루브릭으로 채점하고 등급 대시보드 만들어줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 LLM 출력들을 judge 루브릭으로 채점하고 benchmark validity를 감사해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "모델에 넣을 컨텍스트 페이로드를 조립·압축·관리해서 lost-in-the-middle 피해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "루트 CLAUDE.md랑 SKILL.md 하네스 자체가 부실한데 trace로 진단해서 고도화해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 PR 코드 리뷰하고 한국어 커밋 메시지 써줘",
+    "should_trigger": false
+  },
+  {
+    "query": "settings.json에 hook 추가해서 저장할 때마다 lint 돌게 해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 함수 토큰을 적게 쓰도록 프롬프트를 리팩터해줘",
+    "should_trigger": false
+  }
+]

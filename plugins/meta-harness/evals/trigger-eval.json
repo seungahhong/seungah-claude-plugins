@@ -94,5 +94,9 @@
   {
     "query": "이 제품 코드베이스가 AI 에이전트가 읽고 기여하기 좋은 구조인지 진단하고 AI 접근성 등급(L1~L5)·빌드 가드레일·standalone으로 개선해줘",
     "should_trigger": false
+  },
+  {
+    "query": "내 세션들 토큰 효율 점수 매기고 캐시 적중률·비용 낭비 패턴 대시보드로 보여줘",
+    "should_trigger": false
   }
 ]

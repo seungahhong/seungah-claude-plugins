@@ -54,5 +54,9 @@
   {
     "query": "settings.json에 hook 추가해서 저장할 때마다 lint 돌게 해줘",
     "should_trigger": false
+  },
+  {
+    "query": "내 Claude Code 세션 로그들 토큰 효율 분석하고 캐시 적중률·비용 대시보드 만들어줘",
+    "should_trigger": false
   }
 ]

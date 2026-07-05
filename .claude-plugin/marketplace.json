@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "분석 → 설계 → 개발 → 리뷰 → 검증까지, 소프트웨어 개발 전 과정을 지원하는 멀티 에이전트 스킬·커맨드·훅 모음. 정적 분석 5개 관점(간소화·코드 리뷰·보안·성능·정합성) 중 사용자 선택 항목 병렬 + 재리뷰 루프와 E2E·타입/빌드 검증, 그리고 코드 착수 *전* 상류 산출물(기획·디자인·API 계약·QA 인수조건) 핸드오프 게이트 검수를 포함합니다.",
-    "version": "1.18.0",
+    "version": "1.19.0",
     "homepage": "https://github.com/seungahhong/seungah-claude-plugins"
   },
   "plugins": [
@@ -484,6 +484,30 @@
         "reference-integrity-gate",
         "dashboard",
         "roi-refactoring",
+        "deterministic-scorer"
+      ],
+      "category": "workflow",
+      "strict": false
+    },
+    {
+      "name": "token-efficiency",
+      "description": "Claude Code 세션 JSONL 로그를 파싱해 레포 단위 토큰/컨텍스트 효율을 정량 측정·시각화하고 $ 절감안을 내는 결정론적 단일 스킬. 4축 가중 점수(cache 35 / redundancy 30 / density 15 / tool 20, 각 축에 근거 등급 CONFIRMED/PLAUSIBLE/HEURISTIC)와 8개 비효율 탐지기(context-bloat·giant-tool·poor-cache·duplicate·subagent + 신규 stale-observation·cache-invalidation-churn·read-exploration-heavy), 세션별 실제 모델가 기반 낭비 추정, 오프라인/CSP 안전 인라인-SVG HTML 대시보드를 낸다. 외부 스킬 improve-token-efficiency를 기반으로 deep-research(5 세션 적대 검증)의 2025~2026 1차 근거로 개선했다 — PRICING 현행화(Opus $15/$75 폐기가→$5/$25·Fable 5 추가·캐시배수 입력가 파생 read 0.1×/write5m 1.25×/write1h 2×, Anthropic 캐싱 1차), giant-tool fix 교정(blind head/tail 절단 금지: Squeez 2604.04979 Last-N 0.05 recall), 신규 탐지기 3종(AgentDiet 2509.23586 궤적낭비 3분류 expired·session-2 exact-prefix churn·arXiv:2606.14066 읽기가 코딩 에이전트 토큰 76.1%), redundancy 축 0.20→0.30 상향, model-routing을 세션별 후보 판별로 재조작화(cost-of-pass 2508.02694 작업 의존·플랫 30% 폐기), compact 권고에 캐시-깨짐 caveat(ACON 2510.00615 history 압축은 KV/prompt 캐시를 깸), 점수=효율 프록시(≠cost-of-pass·task success 미관측) 정직성 명시, 대시보드 CDN 제거(인라인 SVG), test_efficiency 신설(60건, 양방향 가격 동기화·탐지기 회귀·세션별 모델가·사이드체인 배제·경로 인코딩). 측정·시각화·제안만 하고 코드를 자동 수정하지 않는다. 경계: 정적 저장소 AI 준비도는 ai-readiness-cartography(런타임 세션 로그 vs 정적 구조·상보), 새 코드·PR 리뷰(frontend/git-harness), 하네스 진단(meta-harness), AI 생성물 judge(eval-harness), 컨텍스트 조립(context-engineering)은 범위 밖.",
+      "source": "./plugins/token-efficiency",
+      "version": "0.1.0",
+      "author": {
+        "name": "seungah.hong"
+      },
+      "tags": [
+        "claude-code",
+        "plugin",
+        "token-efficiency",
+        "session-analysis",
+        "cost-analysis",
+        "prompt-caching",
+        "context-engineering",
+        "trajectory-redundancy",
+        "cost-of-pass",
+        "dashboard",
         "deterministic-scorer"
       ],
       "category": "workflow",
