@@ -23,13 +23,17 @@
 - ⚠️ **Regression과 조합 시 최고위험 오라클**: LLM이 명세가 아니라 현재 구현을 굳혀 버그를 초록으로 은폐(green-locks-bug) — [`methodology-regression.md`](methodology-regression.md)의 완화(AC 기준 오검증·실행 그라운딩)를 반드시 적용.
 - 스모크·동어반복 어서션 금지(§5-4): 틀렸을 때 실제로 실패해야 한다.
 
-## 5. 이 계층 × 방법론 조합 (선택된 방법론 안에서만 — 강도 값 단일 출처 _index §3 lookup)
+## 5. 테스트 배치 & mock 규약
+- **배치**: 테스트 대상(컴포넌트/유틸 함수) 파일이 있는 폴더에 `__test__/` 디렉토리를 만들고 그 안에 테스트 파일을 둔다(대상 파일과 co-locate). 예: `src/utils/format.ts` → `src/utils/__test__/format.test.ts`. **파일명은 `*.test.*`/`*.spec.*` 접미사**로 둬 러너 기본 glob이 `__test__`(단수) 폴더라도 잡히게 한다(Jest `testMatch`·Vitest `include` 기본값은 폴더명 무관하게 `*.test.*` 매칭). **저장소에 이미 co-location 관습(예 `__tests__` 복수·`test/`·bare `*.test.ts`)이 감지되면 그 관습을 따라 분산을 막고, 없을 때 `__test__/`를 기본값으로** 쓴다. 러너가 `__tests__` 폴더 자체를 요구하면 testMatch/include 조정은 '확인 필요'로 표기.
+- **mock**: unit은 외부 의존 0이 원칙이므로 API 클라이언트 등 외부 경로는 **실제 API 응답을 캡처해 mock 데이터(fixture)로 저장**하고 그 mock으로 double한다(live API 호출 금지·결정론 확보). 캡처 응답은 fixture 파일로 커밋해 재현 가능하게 하고, 오라클은 구현이 아니라 기대(AC) 기준으로 세운다(§4·§7).
+
+## 6. 이 계층 × 방법론 조합 (선택된 방법론 안에서만 — 강도 값 단일 출처 _index §3 lookup)
 - **Regression × Unit = STRONG(멤버십)·최고위험 오라클** — 경계/에러/edge 회귀의 정본. unit은 cheap → retest-all 종종 충분.
 - **Smoke × Unit = WEAK** — unit은 게이트 전량 실행이라 별도 smoke 선별 저부가. showstopper 저수준 단위(인증 토큰 파싱 등)일 때만.
 - **Sanity × Unit = DEGEN/WEAK** — ISTQB상 smoke 동의어 → transient change-scope(confirmation)로만, `@sanity` 안 심음.
 - **Nightly × Unit = DEGEN(빈셀)** — unit은 빠르고 싸서 게이트 소속, 이연 근거 없음.
 - 선택 스코프에 없는 방법론과는 조합하지 않는다(_index §1).
 
-## 6. 근거 & 정직성
+## 7. 근거 & 정직성
 - **SOURCE·TIER**: ISTQB Glossary(component testing) — official-standard, HIGH. IEEE 829-2008 §3.1.7(개별 컴포넌트 격리) — official-standard(문서 철회·정의 어휘 유효). Fowler UnitTest(solitary/sociable) — blog, MED. SWE@Google ch.11(small·size⊥scope·hermeticity) — vendor-doc, MED.
 - **caveat**: `small=unit` 1:1은 folklore(SWE@Google 반박). green-locks-bug 전이율·오라클 강도 정밀수치는 특정 벤치마크 산물 → 하드코딩 금지. 비율% 하드코딩 금지.

@@ -76,6 +76,7 @@ allowed-tools: Read, Write, Edit, Bash, Grep, Glob
 
 4. **대상 계층 — 체크박스 다중선택**: Unit / Integration / E2E를 **다중선택(체크박스)**으로 제시하고, 프리셋 무게중심을 기본 체크한다.
    - **Phase 0에서 감지한 인프라를 반영**한다 — 러너가 없는 계층은 `☐ Unit(러너 추가 필요: 예 vitest+@testing-library)`처럼 **"추가 필요"를 명시**해, 선택 시 러너 셋업이 계획(Phase 2)에 포함됨을 알린다. E2E는 **핵심 여정 소수**로 절제하도록 안내한다.
+   - **E2E가 선택되면 그 자리에서 E2E 테스트 경로를 문의**한다([`layer-e2e.md`](references/matrix/layer-e2e.md) §5) — E2E는 별도 러너·디렉토리 관습(`e2e/`, `tests/e2e/`, `cypress/e2e/` 등)이므로 경로를 초기에 받아 Phase 3의 E2E 스펙 파일 위치로 쓴다. 미입력이면 감지된 관습을 제안하고 확인받는다.
 
 5. 선택된 **(방법론 집합) × (계층 집합)**을 Phase 2/3의 **구속 스코프로 고정**한다(확정 문의). **이것이 스코프 가드의 기준선이다** — Phase 2/3는 이 선택 밖으로 어떤 테스트도 추가하지 않는다([`references/matrix/_index.md`](references/matrix/_index.md) §1). 선택 안 된 방법론/계층은 계획에서 제외하고, 비율은 하드코딩하지 않는다.
    - **조합 강도 lookup**([`references/matrix/_index.md`](references/matrix/_index.md) §3)을 한 줄로 제시해 — 실무 정합 최강(Smoke×Integration·Regression×{Unit,Integration}·Nightly×E2E)과 **WEAK/DEGENERATE 조합**(Sanity 전 조합·Nightly×Unit·Smoke×Unit)을 미리 알린다. 사용자가 WEAK/DEGENERATE만 나올 선택을 해도 강제로 채우지 않고 "보통 비움 + 스코프 내 STRONG 조합으로 라우팅"을 안내한다.
@@ -129,6 +130,7 @@ allowed-tools: Read, Write, Edit, Bash, Grep, Glob
    - **조합 프로필에 오라클 강도를 맞춘다**: Smoke×*는 얕은 reachability로 충분하되 "초록=검증" 오독 금지, Regression×{Unit,Integration}은 강한 값-동등/행위 보존 오라클을 요구(implementation-bias·green-locks-bug 최대 리스크), E2E 정확출력이 비현실적이면 메타모픽 관계(MR)를 옵션으로.
    - 첫 테스트 적용 전, 대상 영역의 **기존 flaky를 점검**한다(flakiness 전이 방지). 정렬 순서 의존(ORDER BY 누락류)을 특히 경계.
 2. **테스트 코드 draft 제시**: 감지된 프레임워크·디렉토리 관습에 맞춰 작성. 오라클을 명시하고 스모크·동어반복 어서션을 넣지 않는다. GWT→AAA 구조를 따른다.
+   - **배치·mock 규약**(계층 카드 §5): **unit/integration**은 테스트 대상(컴포넌트/유틸) 파일이 있는 폴더에 `__test__/`를 만들어 그 안에 `*.test.*`로 둔다 — **단 Phase 0에서 이미 co-location 관습(예 `__tests__` 복수·`test/`)이 감지되면 그 관습을 따르고(분산 방지), 없을 때 `__test__/`를 기본값**으로 한다. 외부 API는 **실제 응답을 캡처한 mock(fixture)** 로 double한다(live 호출 금지·fixture 커밋). **E2E**는 Phase 1에서 입력받은 경로에 여정 스펙을 둔다. **nightly** full-suite도 캡처 mock로 결정론 실행(cross-browser/real-device는 실제·API는 mock).
 2-b. **스위트 태그를 코드에 물리적으로 부여**(`references/test-layering-principles.md` §3.5.2):
    - durable 스위트(Smoke/Regression/nightly)에 배치된 테스트는 draft를 쓸 때 **러너 네이티브 기법으로 태그를 코드에 물리적으로 붙인다** — Playwright `{ tag: '@smoke' }`(1.42+), Vitest `{ tags: ['smoke'] }`(4.1.0+, config 선언 필요), Jest는 네이티브 태그가 없으므로 제목 `@smoke`+`-t` 또는 파일명 `*.smoke.test.ts`+projects. 계획 라벨만 있고 코드 태그가 없는 durable 테스트는 **실체화 실패로 거부/수정**한다(phantom suite 방지).
    - **sanity는 태그를 심지 않는다** — 변경-스코프 선택 레시피로만 처리(§3.5.3). `@sanity` 태그 부여 금지(무-태그 가드).
