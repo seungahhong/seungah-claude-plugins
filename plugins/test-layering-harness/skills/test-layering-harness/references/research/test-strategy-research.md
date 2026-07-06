@@ -12,7 +12,7 @@
 | **Smoke (BVT)** | 넓고 얕은(broad-shallow) 빌드 검증 관문 — "이 빌드를 더 테스트할 가치가 있나?" | 빌드/배포 직후(특히 staging 배포 후), production 승격 전 go/no-go 게이트 | 주요 기능 정상 여부로 후속 테스트 진행 판단 | 즉시 정지·아티팩트 캡처·fix-forward vs rollback 결정, 승격/심화 진행 차단(block) | 정의 HIGH [ISTQB smoke-test], 배치 HIGH [Harness DevOps Academy] |
 | **Sanity** | 좁고 깊은(narrow-deep) 확인 — 특정 버그픽스/소규모 변경이 의도대로 동작하는지, 이미 안정된 빌드 위에서 | 표적 수정/핫픽스 직후 (고정 스테이지 아님) | 변경 영역만 집중 검증 | 변경 영역 회귀 시 해당 수정 반려·재작업 | 정의 MED [Yuri Kan; Harness], **스테이지 배치는 근거 못 찾음** (성격 규정이지 파이프라인 고정 위치 아님) |
 | **Regression** | 넓고 깊은(broad-deep) 비회귀 — 변경 후 기존 기능이 깨지지 않았는지 | 이상적으로 매 커밋(속도 계층화), full은 main 머지·nightly | 전체 기능 보존 확인 | 짧은 피드백 루프로 PR 내에서 관찰·수정 후 재푸시(downstream 전파 전 교정) | HIGH [CircleCI], HIGH [Fowler 10분 빌드 원리] |
-| **Nightly** | 선택 로직 없이 full regression + full E2E를 스케줄(cron)로 실행하는 안전망 | 야간 스케줄(cron), 실 디바이스/병렬 | 커밋 단위 선택 실행의 커버리지 갭 헤지, 지속 모니터링 | 발견 결함을 티켓화, 다음날 컨텍스트 복원해 수리(24h 피드백은 비용) | HIGH [arXiv 2509.10279 nightly full run 안전망], MED [Drizz TIA] |
+| **Nightly** | 선택 로직 없이 full regression + full E2E를 스케줄(cron)로 실행하는 안전망 | 야간 스케줄(cron), 실 디바이스/병렬 | 커밋 단위 선택 실행의 커버리지 갭 헤지, 지속 모니터링 | 발견 결함을 티켓화, 다음날 컨텍스트 복원해 수리(24h 피드백은 비용) | HIGH [arXiv 2509.10279 Targeted Test Selection — 선택은 lossy이므로 nightly full은 파생된 안전망], MED [Drizz TIA] |
 
 핵심 배치 원칙(교차 합의, HIGH):
 - **스코프-트리거 매핑은 소스 간 일관** — Smoke=넓고 얕음/배포 후·승격 전, Regression=넓고 깊음/매 커밋~main 머지, Nightly=full/스케줄 안전망. [ISTQB · Yuri Kan · CircleCI · arXiv 2509.10279]

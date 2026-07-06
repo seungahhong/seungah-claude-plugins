@@ -417,12 +417,17 @@ plugins/
     CLAUDE.md                                            # 하네스 포인터 + 5-Phase·3-Gate 요약 + 변경 이력
     README.md                                            # 사용자용 개요·사용법·정직성 원칙·경계
     skills/
-      test-layering-harness/                             # 진입점 오케스트레이터 (Phase 0 초기문의 → 1 적응형 구성 → 2 계획+게이트A → 3 개별 적용+게이트B → 4 반영+게이트C, 단일 스킬·에이전트 팀 없음)
+      test-layering-harness/                             # 진입점 오케스트레이터 (Phase 0 초기문의 → 1 적응형 구성+조합 강도 lookup → 2 축 카드 조합 라우팅 계획(스코프 가드)+게이트A → 3 개별 적용+게이트B → 4 반영+게이트C, 단일 스킬·에이전트 팀 없음)
         SKILL.md
         references/
-          test-layering-principles.md                    #   방법론×계층 매트릭스·AC 분해 규칙(GWT→AAA)·오라클 가드·3 프리셋·감지 신호·anti-pattern·경계
+          test-layering-principles.md                    #   방법론×계층 매트릭스·AC 분해(§4)·축 카드 조합 라우팅(§4.5, 스코프 가드)·오라클 가드·실체화(§3.5)·3 프리셋·감지 신호·anti-pattern·경계
+          matrix/                                        #   방법론·계층 축 카드 7개 (12개 셀로 미리 물질화하지 않고 라우팅 시 조합)
+            _index.md                                    #     축 직교성·스코프 가드(선택 안에서만 추가)·조합 라우팅 절차·조합 강도 lookup(STRONG/WEAK/DEGENERATE)·정직성 불변식
+            methodology-{smoke,sanity,regression,nightly}.md  # 방법론 카드 4개 (suite 멤버십·실체화·CI배치·오라클 기대·조합 강도)
+            layer-{unit,integration,e2e}.md              #     계층 카드 3개 (scope+size/hermeticity 판정·AC 포함/제외·오라클 프로필·조합 강도)
           research/
-            test-strategy-research.md                    #     2025+ 근거 dossier (A~G, 신뢰도·folklore·모순 표기, deep-research plain-text fan-out 적대 검증)
+            test-strategy-research.md                    #     2025+ 상위 근거 dossier (A~G, 신뢰도·folklore·모순 표기, deep-research plain-text fan-out 적대 검증)
+            matrix-criteria-2025.md                      #     조합 라우팅 기준 근거 dossier (직교성·계층/방법론 판정·조합 강도 lookup·정직성 원장·소스 인덱스; ISO/IEC/IEEE 29119-1:2022·ISTQB·SWE@Google·arXiv 2025+, 인용 교정)
     evals/
       evals.json                                         # 수용 평가 (핵심 불변식 file:section 인용 채점 — 3게이트·비율 미하드코딩·오라클 가드·경계)
       trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 14, 인접 하네스(qa-agent/backend/review/frontend/spec/git) reciprocal 가드)

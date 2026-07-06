@@ -3,7 +3,7 @@
     "eval_id": "test-layering-harness-acceptance",
     "eval_name": "test-layering-harness 수용 평가 (design-conformance)",
     "prompt": "스킬은 인수조건(AC, Given-When-Then)을 방법론(Smoke/Sanity/Regression/nightly)×계층(Unit/Integration/E2E) 택소노미로 분해·CI 단계에 배치해 계획하고, 계획→개별→최종 3단계 인간 승인 게이트로 테스트를 하나씩 순차 생성·적용·확정한다. 초기 문의에서 AC와 개발 환경을 각각 스킵(pass) 가능하며(환경 미입력 시 현재 프로젝트 경로 기준), 저장소를 감지해 3 프리셋 중 근거와 함께 적응형으로 추천하되 비율%는 하드코딩하지 않는다. LLM 생성 최대 리스크인 오라클 강도를 오검증·실행 그라운딩·flaky baseline 선결로 가드한다. 본 평가는 shipped SKILL.md·references/*가 하네스 불변식을 강제·명세하는지 file:section 인용으로 채점한다.",
-    "method": "design-conformance — shipped SKILL.md Phase/게이트 + references/test-layering-principles.md 절 + references/research/test-strategy-research.md 근거 인용으로 핵심 불변식 채점(자동 수정·자동 커밋 없음).",
+    "method": "design-conformance — shipped SKILL.md Phase/게이트 + references/test-layering-principles.md 절(§3.5 실체화·§4.5 축 카드 조합 라우팅) + references/matrix/(_index + 7 축 카드: 방법론 4 + 계층 3) + references/research/(test-strategy-research·matrix-criteria-2025) 근거 인용으로 핵심 불변식 채점(자동 수정·자동 커밋 없음).",
     "assertions": [
       {
         "text": "[gates/three-stage] 3단계 승인 게이트(A 계획 승인 → B 개별 적용 승인 → C 최종 반영 재확인)를 강제하고, 승인 없이는 파일을 쓰지 않는다.",
@@ -79,6 +79,21 @@
         "text": "[methodology/materialized-separation] 방법론 스위트를 계획 라벨에서 실행 가능한 분리로 실체화한다 — durable(Smoke/Regression/nightly)은 러너 네이티브 기법으로 스위트 태그를 테스트 코드에 물리적으로 부여하고, 그 태그를 뽑는 분리 실행 스크립트를 package.json(또는 관습)에 추가하며, 셀렉터를 실제 실행해 계획 membership과 일치함을 확인한다. sanity는 durable 태그가 아니라 변경-스코프 선택(레시피)으로 실체화하며 @sanity 태그를 심지 않는다(무-태그 가드).",
         "passed": true,
         "evidence": "principles §3.5(방법론 스위트 실체화: durable-tag vs transient-selection 비대칭·프레임워크별 태깅/분리 문법·분리 검증·CI 매핑). SKILL.md Phase 2 항목 3-b(방법론 스위트 열=태그 토큰+셀렉터·'분리 실행 스크립트(추가될 것)'·membership 대수·CI 매핑표, 게이트 A 승인 대상 확장)·Phase 3 항목 2-b(물리 태그 부여·카테고리 첫 테스트 시 스크립트 추가)·항목 4(--grep/--tags-filter/-t·--selectProjects 셀렉터 실행 분리 검증). 문법 근거·버전: Playwright { tag }·--grep(v1.42+, playwright.dev), Vitest { tags }·--tags-filter(v4.1.0+, vitest.dev/guide/test-tags), Jest 네이티브 태그 부재→-t·--selectProjects·--testPathPatterns(30+, jestjs.io). smoke=sanity ISTQB 동의어 caveat·비율 미하드코딩 계승."
+      },
+      {
+        "text": "[axis-cards/compose-not-12] 방법론×계층을 12개 셀로 미리 물질화하지 않고 references/matrix/에 방법론 카드 4개(methodology-{smoke,sanity,regression,nightly}.md) + 계층 카드 3개(layer-{unit,integration,e2e}.md)를 두고, Phase 2가 각 AC를 필요한 시점에 두 축을 조합해 상황에 맞는 테스트로 라우팅한다(_index.md §2 절차: Step0 스코프→슬라이스→계층 배정→방법론 멤버십(비배타·다중)→조합 강도 lookup으로 상황 선택→계획행). 조합은 다중 멤버십이지 독립된 4번째 유형이 아니다.",
+        "passed": true,
+        "evidence": "references/matrix/_index.md(§0 직교성·§1 스코프 가드·§2 라우팅 절차·§3 조합 강도 lookup·§4 축 카드 목록·§5 정직성). 방법론 카드 4 + 계층 카드 3(각 6절). SKILL.md Phase 2 항목 1(축 카드 조합 라우팅)·항목 3(계획표 계층·방법론·조합강도 열). principles §4.5(축 카드 조합 라우팅). research/matrix-criteria-2025.md §3(조합 강도 lookup). 근거: ISO/IEC/IEEE 29119-1:2022 §4.4.6(regression=design/execution choice, 계층 직교)·ISTQB·SWE@Google test sizes."
+      },
+      {
+        "text": "[scope-guard/within-selection] 테스트는 사용자가 Phase 1에서 선택한 (방법론 집합)×(계층 집합) 안에서만 추가된다. 자연 계층/방법론이 미선택이면 선택된 것으로 push-down/up하거나 '선택 스코프 밖 — 추가 안 함'으로 표기하고 사용자에게 스코프 확장을 문의한다(임의 추가 금지). 이 스코프 가드는 3개 승인 게이트와 동급 불변식이다.",
+        "passed": true,
+        "evidence": "matrix/_index.md §1(스코프 가드)·§2 Step0/Step2/Step3(선택된 계층/방법론 중에서만). SKILL.md '축 카드' 포인터(⚠️ 스코프 가드)·Phase 1 단계 5(선택=구속 스코프)·Phase 2 항목 1(Step0 스코프 확정·미선택 처리·'추가 안 함' 표기)·Phase 3 항목 0(스코프 재확인)·정직성 체크리스트 스코프 항목. principles §4.5 Step0·§8 anti-pattern(선택 스코프 밖 추가). CLAUDE.md Conventions(스코프 가드)."
+      },
+      {
+        "text": "[cell-honesty/degenerate-and-axis] Sanity 전 조합·Nightly×Unit·Smoke×Unit은 WEAK/DEGENERATE로 표기해 억지로 채우지 않고 스코프 내 STRONG 조합으로 라우팅한다(ISTQB상 sanity≡smoke 동의어라 독립 근거 없음, unit은 게이트 전량 실행). nightly는 방법론이 아니라 CI-stage/스케줄 지연 축(ISTQB/ISO에 test type 없음)이며, prioritization은 CI 비용을 못 줄인다(latency만, 정의상(재정렬=총실행량 불변))·safe-RTS full fallback을 따른다. Regression×Unit은 최고위험 오라클 셀(LLM green-locks-bug)로 기대(AC) 기준 오검증을 강화한다.",
+        "passed": true,
+        "evidence": "matrix/_index.md §3 조합 강도 lookup·§5 정직성 불변식. matrix/methodology-sanity.md(DEGENERATE/WEAK·transient·@sanity 무-태그)·methodology-nightly.md(Nightly×Unit 빈 셀·CI-stage 축)·methodology-smoke.md(×Unit WEAK). matrix/methodology-regression.md(Regression×Unit 최고위험·implementation-bias 완화)·layer-unit.md. principles §4.5 조합 강도표·§8 anti-pattern(12셀 미리 물질화·선택 스코프 밖·degenerate 억지 채움·nightly 방법론 단정·prioritization 비용절감·small=unit 1:1 금지). research/matrix-criteria-2025.md §4 원장(arXiv:2308.13129 batching 무손실(ESEC/FSE 2023)·2410.21136 green-locks-bug). SKILL.md 정직성 체크리스트."
       }
     ]
   }

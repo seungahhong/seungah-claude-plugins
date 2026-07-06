@@ -7,7 +7,7 @@
 인수조건(Acceptance Criteria, Given-When-Then)을 입력받아:
 
 1. **저장소를 감지**해 테스트 구성 프리셋을 추천하고(Trophy-lean / Google-pipeline / Contract-honeycomb),
-2. 각 AC를 **Unit / Integration / E2E 계층**으로 분해하고 **Smoke / Sanity / Regression / nightly** 스위트와 CI 단계에 배치한 **계획표**를 만들고,
+2. 각 AC를 **방법론 카드 4개 + 계층 카드 3개(7개 축 카드)**를 조합해 **명확한 포함/제외 기준**으로 라우팅해 나누고(12개 셀로 미리 만들지 않고 상황에 맞게 조합; 기준은 2025+ 공식표준·논문에 연결) CI 단계에 배치한 **계획표**를 만들되 — **테스트는 사용자가 선택한 방법론·계층 안에서만** 추가하고(스코프 가드), 밖으로 필요하면 임의 추가 없이 확장을 묻고,
 3. **계획 전체를 먼저 승인**받은 뒤, **개별 테스트를 하나씩 승인**받으며 순차로 생성·적용·실행하고,
 4. 마지막에 **다시 확인받아** 확정("반영")한다.
 
@@ -48,9 +48,11 @@ AI가 테스트를 자동 생성할수록 위험은 "작성 속도"가 아니라
 
 ## 구성
 
-- `skills/test-layering-harness/SKILL.md` — 오케스트레이터(5 Phase · 3 게이트)
-- `skills/test-layering-harness/references/test-layering-principles.md` — 방법론×계층 매트릭스·AC 분해 규칙·오라클 가드·3 프리셋·anti-pattern·경계
-- `skills/test-layering-harness/references/research/test-strategy-research.md` — 2025+ 근거 dossier
+- `skills/test-layering-harness/SKILL.md` — 오케스트레이터(5 Phase · 3 게이트, Phase 2에서 축 카드 조합 라우팅)
+- `skills/test-layering-harness/references/test-layering-principles.md` — 방법론×계층 매트릭스·AC 분해(§4)·축 카드 조합 라우팅(§4.5)·오라클 가드·실체화(§3.5)·3 프리셋·anti-pattern·경계
+- `skills/test-layering-harness/references/matrix/` — **방법론·계층 축 카드 7개**(방법론 카드 4 + 계층 카드 3; `_index.md`에 스코프 가드·조합 라우팅 절차·조합 강도 lookup). 12개 셀로 미리 물질화하지 않고 라우팅 시 조합.
+- `skills/test-layering-harness/references/research/test-strategy-research.md` — 2025+ 상위 근거 dossier
+- `skills/test-layering-harness/references/research/matrix-criteria-2025.md` — 조합 라우팅 기준 근거 dossier(직교성·계층/방법론 판정·조합 강도 lookup·소스 인덱스)
 - `evals/` — 수용 평가 + 트리거 경계 평가
 
 다른 마켓플레이스 플러그인에 의존하지 않는 **독립 플러그인**이다.
