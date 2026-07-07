@@ -1,6 +1,6 @@
 {
   "name": "token-efficiency",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Claude Code 세션 JSONL 로그를 파싱해 레포 단위 토큰/컨텍스트 효율을 정량 측정·시각화하고 $ 절감안을 내는 결정론적 단일 스킬. 4축 가중 점수(cache 35 / redundancy 30 / density 15 / tool 20, 각 축에 근거 등급)와 8개 비효율 탐지기(context-bloat·giant-tool·poor-cache·duplicate·subagent + 신규 stale-observation·cache-invalidation-churn·read-exploration-heavy), 세션별 실제 모델가 기반 낭비 추정, 오프라인/CSP 안전 인라인-SVG HTML 대시보드를 낸다. 외부 스킬 improve-token-efficiency를 기반으로 deep-research(5 세션 적대 검증)의 2025~2026 1차 근거로 개선했다 — PRICING 현행화(Opus $15/$75 폐기가→$5/$25·Fable 5 추가·캐시배수 입력가 파생), giant-tool fix 교정(blind head/tail 절단 금지: Squeez 2604.04979 Last-N 0.05 recall), 신규 탐지기 3종(AgentDiet 2509.23586 expired·session-2 exact-prefix churn·arXiv:2606.14066 읽기 76.1%), model-routing을 세션별 후보 판별로 재조작화(cost-of-pass 2508.02694 작업 의존), compact 권고에 캐시-깨짐 caveat(ACON 2510.00615), 점수=효율 프록시(≠cost-of-pass) 정직성 명시, 테스트 신설. 측정·시각화·제안만 하고 코드를 자동 수정하지 않는다. 경계: 정적 저장소 AI 준비도는 ai-readiness-cartography(상보), 새 코드·PR 리뷰(frontend/git-harness), 하네스 진단(meta-harness), AI 생성물 judge(eval-harness), 컨텍스트 조립(context-engineering)은 범위 밖.",
   "author": {
     "name": "seungah.hong",

@@ -63,6 +63,12 @@ store="$root/.claude/experience-store/signals"
 mkdir -p "$store" 2>/dev/null || exit 0
 out="$store/$(date -u +%F).jsonl"; ts="$(date -u +%FT%TZ)"; raw="${prompt:-$payload}"
 
+# 무한 성장 가드: 트리거 패턴에 흔한 단어(변경/추가해/missing 등)가 포함되어 있어
+# 대용량 문서 붙여넣기도 전문 적재될 수 있다. 200KB 초과 발화는 교정 신호가 아니라
+# 붙여넣기로 간주하고 스킵한다(transcript_path는 이미 캡처되므로 healer가 원문 역추적 가능).
+# C2(원문 보존)는 '신호로 판정된 발화'에 적용되는 기준이며 이 임계 이하에선 그대로 유지된다.
+[ "${#raw}" -gt 200000 ] && exit 0
+
 # --- 레코드 append (원본 보존·요약 금지; jq로 안전 이스케이프, 없으면 python3) ---
 if command -v jq >/dev/null 2>&1; then
   jq -cn --arg ts "$ts" --arg kind "$kind" --arg strength "$strength" --arg raw "$raw" --arg sid "$sid" --arg cwd "$cwd" --arg root "$root" --arg tpath "$tpath" \

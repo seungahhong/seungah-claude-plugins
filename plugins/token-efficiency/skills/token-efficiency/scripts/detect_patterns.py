@@ -170,9 +170,13 @@ def analyze_session(path):
                 if not line:
                     continue
                 try:
-                    records.append(json.loads(line))
+                    rec = json.loads(line)
                 except Exception:
                     continue
+                # 비-dict 최상위 라인([1,2,3] 등)은 이후 r.get(...) 재스캔(sidechain 카운트)에서
+                # AttributeError로 세션 전체를 죽인다(analyze와의 강건성 비대칭) — 파싱 시점에 배제.
+                if isinstance(rec, dict):
+                    records.append(rec)
     except OSError:
         return None
 

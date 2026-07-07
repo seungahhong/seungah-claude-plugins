@@ -61,7 +61,7 @@ description: "개발 완료 후 검증(Verify) 단계를 실행하는 커맨드.
 
 ### Step 1: E2E 브라우저 검증 (인수조건 단위)
 
-`./commands/verifier.md`를 읽고 그 프로세스를 따른다. 내부적으로 `./skills/e2e-verifier/SKILL.md`를 로드한다. 이때 **`호출맥락=orchestrated`(상위가 메뉴 소유)를 전달**해 리프 스킬의 결정 메뉴를 억제한다 — 단독이든 오케스트레이션이든 결정 메뉴는 verify(§실패 처리) 또는 상위 오케스트레이터가 소유하므로 e2e-verifier는 메뉴를 띄우지 않고 충족률·미충족 AC만 보고한다.
+`./verifier.md`를 읽고 그 프로세스를 따른다. 내부적으로 `../skills/e2e-verifier/SKILL.md`를 로드한다. 이때 **`호출맥락=orchestrated`(상위가 메뉴 소유)를 전달**해 리프 스킬의 결정 메뉴를 억제한다 — 단독이든 오케스트레이션이든 결정 메뉴는 verify(§실패 처리) 또는 상위 오케스트레이터가 소유하므로 e2e-verifier는 메뉴를 띄우지 않고 충족률·미충족 AC만 보고한다.
 
 - 도구 선택: Chrome MCP / Playwright MCP / Agent-Browser
 - 입력: PRD 인수조건(AC-n.m) 목록 + 변경 파일 목록(`git diff --name-only`)

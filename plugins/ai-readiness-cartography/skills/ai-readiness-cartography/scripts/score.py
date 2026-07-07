@@ -72,7 +72,9 @@ RE_PATH_REF = re.compile(
     r"((?:(?:\.\./)+|\./|[A-Za-z0-9_]+/)[A-Za-z0-9_./-]+\.(?:tsx|jsx|mjs|cjs|jsonc|yaml|mdx|scss|ts|js|py|sql|json|yml|toml|md|html|css|sh|go|rs|java|kt|rb|php))"
     r"(?![A-Za-z0-9])"
 )
-RE_LINE_RANGE = re.compile(r"([A-Za-z0-9_./-]+\.[A-Za-z0-9]+):(\d+)(?:[-–](\d+))?")
+# 좌측 경계 lookbehind 필수: 없으면 긴 [A-Za-z0-9_./-]+ 런의 모든 내부 오프셋이 매치 시작점이
+# 되어 O(n²) 백트래킹(ReDoS) — 한 줄짜리 5MB 'aaa….md' 컨텍스트 파일로 수 분 CPU 소모 재현됨.
+RE_LINE_RANGE = re.compile(r"(?<![A-Za-z0-9_/])([A-Za-z0-9_./-]+\.[A-Za-z0-9]+):(\d+)(?:[-–](\d+))?")
 RE_BASH_FENCE = re.compile(r"```(?:bash|sh|shell|zsh|console)\s*\n([\s\S]*?)```", re.IGNORECASE)
 RE_NON_OBVIOUS = re.compile(r"\b(Why:|Note:|Gotcha|Warning|Don't|Caveat|Important:|반드시|주의|Hidden|Deprecated)", re.IGNORECASE)
 RE_DONE_CRITERIA = re.compile(r"\b(done when|verify|passes when|success criteria|검증|통과 기준|확인)\b", re.IGNORECASE)
@@ -214,17 +216,19 @@ def pick_context_file(d: Path) -> tuple[Path | None, str]:
 
 def find_core_modules(repo: Path) -> list[Module]:
     """Top-level + apps/* + packages/* + services/* + plugins/* code-bearing dirs."""
+    # is_dir()는 심링크를 따라가므로 repo 밖을 가리키는 최상위 심링크 디렉토리가 모듈로
+    # 채택되어 repo 밖 파일을 읽게 된다(path traversal) — is_symlink() 선제 배제 필수.
     candidates: list[Path] = []
     for d in sorted(repo.iterdir()):
-        if not d.is_dir() or d.name in IGNORE_DIRS or d.name.startswith("."):
+        if not d.is_dir() or d.is_symlink() or d.name in IGNORE_DIRS or d.name.startswith("."):
             continue
         candidates.append(d)
     for parent_name in ("apps", "packages", "services", "plugins"):
         parent = repo / parent_name
-        if parent.exists() and parent.is_dir():
+        if parent.exists() and parent.is_dir() and not parent.is_symlink():
             candidates = [c for c in candidates if c != parent]
             for d in sorted(parent.iterdir()):
-                if d.is_dir() and d.name not in IGNORE_DIRS and not d.name.startswith("."):
+                if d.is_dir() and not d.is_symlink() and d.name not in IGNORE_DIRS and not d.name.startswith("."):
                     candidates.append(d)
 
     modules: list[Module] = []
@@ -332,7 +336,9 @@ def build_import_graph(repo: Path) -> tuple[dict[str, GraphNode], int, int, int]
                         if top in top_level_names:
                             edges.append((rel, top))  # module-level target
                 nodes[rel].exports = len(re.findall(r"^\s*(?:def|class)\s+[A-Za-z_]", text, re.MULTILINE))
-            except SyntaxError:
+            except (SyntaxError, ValueError):
+                # ValueError: null byte 포함 소스는 SyntaxError가 아닌 ValueError를 던져
+                # 전체 스캔을 중단시킨다(악성/바이너리성 .py 1개로 DoS) — parse 실패로 처리.
                 parsed_ok = False
             if parsed_ok:
                 parseable += 1
@@ -432,6 +438,14 @@ def check_reference_integrity(repo: Path, context_files: list[Path]) -> dict[str
                 continue
             total_ranges += 1
             n = count_lines(target)
+            # count_lines는 MAX_READ_BYTES 초과/비정규 파일에 0을 반환한다 — 이를 "0줄"로
+            # 오독하면 정상 대형 파일(schema.sql 등)에 대한 모든 range 참조가 dangling으로
+            # 오판되어 Gate-1이 거짓 실패(등급 오상한)한다. 측정 불가면 판정하지 않는다.
+            try:
+                if n == 0 and target.stat().st_size > 0:
+                    continue
+            except OSError:
+                continue
             hi = int(end) if end else start
             if hi > n or start < 1:
                 dangling_ranges.append((str(p.relative_to(repo)), f"{fname}:{start}-{end or start} (파일 {n}줄)"))

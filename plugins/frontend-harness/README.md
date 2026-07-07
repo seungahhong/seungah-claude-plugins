@@ -92,8 +92,9 @@ Phase 6. 통합 리포트
 | guard | PreToolUse(Bash) | 위험 명령 차단 |
 | write-guard | PreToolUse(Write) | 민감 파일 생성 차단 |
 | skill-dedup | PreToolUse(Write `**/SKILL.md`) | 스킬 중복 방지 |
-| stop-lint | PostToolUse(Edit/Write), Stop | git 변경 파일에 eslint → stylelint → prettier 자동 수정 (모노레포 지원, 도구 미설치 시 건너뜀) |
-| package-changed | FileChanged(`package.json`) | 의존성 변경 알림 |
+| incremental-lint | PostToolUse(Edit/Write) | 방금 수정된 파일 1개만 eslint → stylelint → prettier 자동 수정, 잔여 에러는 모델에 전파 |
+| stop-lint | Stop | git 변경 파일 전체에 eslint → stylelint → prettier 자동 수정 (모노레포 지원, 도구 미설치 시 건너뜀, 비차단) |
+| package-changed | PostToolUse(Edit/Write, `package.json`) | 의존성 변경 알림 |
 
 ## 라이선스
 

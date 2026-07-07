@@ -19,7 +19,8 @@
 | guard (frontend-harness) | `PreToolUse` (Bash) | 위험 명령 차단 — `git add .`/`-A`/`./`, force push, `--no-verify`, stash drop/clear, publish, 루트/홈 삭제(`rm -rf /`·`/*`·`~/`, 분리형 플래그 포함), DROP TABLE, `reset --hard`, `checkout/restore .`. regex 기반 advisory 가드(보안 경계 아님), 파서(jq→python3) 부재 시 stderr 경고 후 통과 |
 | write-guard (frontend-harness) | `PreToolUse` (Write) | 민감 파일 생성 차단 — `.env*`, 인증서/키(`*.pem` 등), 자격증명 json. Write 도구만 가드(advisory) |
 | skill-dedup (frontend-harness) | `PreToolUse` (Write) | 새 `SKILL.md` 생성 시 같은 이름의 스킬이 이미 존재하면 차단 |
-| stop-lint (frontend-harness) | `PostToolUse` (Edit\|Write) + `Stop` | lint 체인(eslint --fix → stylelint --fix → prettier --write). PostToolUse는 방금 수정된 파일 1개만, Stop은 git 변경 파일 전체 (모노레포 지원, 도구 미설치 시 건너뜀, 신뢰 저장소 전제 — 가장 가까운 node_modules/.bin 자동 실행) |
+| incremental-lint (frontend-harness) | `PostToolUse` (Edit\|Write) | 방금 수정된 파일 1개만 lint(eslint --fix → stylelint --fix → prettier --write) — `--fix` 후 잔여 에러는 요약을 stderr로 내고 exit 2로 모델에 전파 (심링크 경계 하드닝, 신뢰 저장소 전제) |
+| stop-lint (frontend-harness) | `Stop` | git 변경 파일 전체 lint 체인(eslint --fix → stylelint --fix → prettier --write, best-effort 비차단) (모노레포 지원, 도구 미설치 시 건너뜀, 신뢰 저장소 전제 — 가장 가까운 node_modules/.bin 자동 실행) |
 | package-changed (frontend-harness) | `PostToolUse` (Edit\|Write) | 수정된 파일이 `package.json`이면 의존성 추가/제거를 요약해 알림 (advisory) |
 | self-heal-capture (meta-harness) | `UserPromptSubmit` | 사용자의 '수정/고쳐/다시/틀렸/보강/방향 다시'(+ 영어) 발화를 감지해 `.claude/experience-store/signals/<날짜>.jsonl`에 발화 **원형 적재**(요약 금지·캡처 전용·항상 exit 0). 추후 `/meta-harness`(healer)가 누적 신호를 진단·패치에 사용(적용은 승인 게이트 후). 비매칭 프롬프트는 무시. 트리거 문구는 env `SELF_HEAL_PATTERNS`로 교체 가능 |
 | warm-start-nudge (meta-harness) | `SessionStart` | 최근 7일 내 미소비 self-heal 신호가 있으면 세션 시작 시 건수를 표면화해 `/meta-harness` 실행을 넛지(비차단·읽기 전용) |

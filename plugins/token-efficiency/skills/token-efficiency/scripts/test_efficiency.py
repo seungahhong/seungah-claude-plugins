@@ -664,6 +664,20 @@ class TestDetectCorruptRecord(unittest.TestCase):
             r = D.analyze_session(p)
             self.assertIsNotNone(r)
 
+    def test_non_dict_top_level_record_survives(self):
+        # 비-dict 최상위 JSON 라인([1,2,3] 등)은 sidechain 재스캔(r.get)에서
+        # AttributeError 로 세션 전체를 죽였다(analyze 와의 강건성 비대칭) — 파싱 시점 배제 핀
+        with tempfile.TemporaryDirectory() as d:
+            p = os.path.join(d, "s.jsonl")
+            with open(p, "w") as f:
+                f.write(json.dumps(_assistant(inp=110_000, out=10)) + "\n")
+                f.write("[1,2,3]\n")
+                f.write("\"just a string\"\n")
+                f.write(json.dumps(_assistant(inp=110_000, out=10)) + "\n")
+            r = D.analyze_session(p)          # must not raise
+            self.assertIsNotNone(r)
+            self.assertGreaterEqual(r["n_turns"], 2)
+
 
 class TestCarriedTurnsBoundary(unittest.TestCase):
     def test_no_drop_charges_all_remaining(self):

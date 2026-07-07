@@ -183,6 +183,46 @@ class TestHtmlSafeOutput(ScoreTestCase):
             self.assertNotIn(">", s)
 
 
+class TestUntrustedRepoHardening(ScoreTestCase):
+    """악성/비정형 repo 입력 가드 회귀 — 2026-07 보안 검토 반영분을 핀."""
+
+    def test_symlinked_top_level_dir_not_walked_as_module(self):
+        # repo 밖을 가리키는 최상위 심링크 디렉토리가 모듈로 채택되면 path traversal
+        outside = Path(self._tmp.name) / "_outside"
+        outside.mkdir()
+        (outside / "x.py").write_text("print(1)\n", encoding="utf-8")
+        repo = Path(self._tmp.name) / "_repo"
+        repo.mkdir()
+        (repo / "README.md").write_text("# r\n", encoding="utf-8")
+        os.symlink(outside, repo / "vendored")
+        mods = score.find_core_modules(repo)
+        self.assertFalse(any(m.rel == "vendored" for m in mods))
+
+    def test_oversized_target_does_not_fail_gate1(self):
+        # MAX_READ_BYTES 초과 파일은 count_lines=0 — '0줄'로 오독해 range 참조를
+        # dangling 처리하면 정상 repo 의 Gate-1 이 거짓 실패한다
+        big = self.repo / "data.sql"
+        big.write_text("select 1;\n" * 700_000, encoding="utf-8")  # > 5MB
+        readme = self.repo / "README.md"
+        readme.write_text("See data.sql:1-3\n", encoding="utf-8")
+        result = score.check_reference_integrity(self.repo, [readme])
+        self.assertTrue(result["passed"], result["dangling_ranges"])
+
+    def test_null_byte_py_counts_as_parse_failure_not_abort(self):
+        # null byte 소스는 ast.parse 가 ValueError 를 던진다 — 전체 스캔 중단 금지
+        make_repo(self.repo, {"m/a.py": "x = 1\n", "m/b.py": "y = 2\n"})
+        (self.repo / "m" / "c.py").write_bytes(b"x=1\x00")
+        graph = score.build_import_graph(self.repo)  # 예외 없이 완료돼야 한다
+        self.assertIsNotNone(graph)
+
+    def test_line_range_regex_has_left_boundary(self):
+        # lookbehind 없으면 긴 문자 런에서 O(n²) 백트래킹(ReDoS) — 경계 유지 확인
+        self.assertTrue(score.RE_LINE_RANGE.pattern.startswith("(?<![A-Za-z0-9_/])"))
+        m = score.RE_LINE_RANGE.search("see src/app.py:10-20 for details")
+        self.assertIsNotNone(m)
+        self.assertEqual(m.group(1), "src/app.py")
+
+
 # 골든 픽스처 고정 총점 — GOLDEN_FILES/루브릭이 의도적으로 바뀌면 함께 갱신한다.
 # (2026-07 핀: E17 D12 B8 C0 H0 A1 F2 I0 G0 = 40, AI-Fragile, gate 2/2 통과)
 GOLDEN_TOTAL = 40

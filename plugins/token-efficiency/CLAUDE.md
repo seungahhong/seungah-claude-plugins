@@ -17,7 +17,7 @@ token-efficiency/
 │   │   ├── analyze_sessions.py      # 4축 가중 점수 + 현행 PRICING(입력가 파생 캐시배수) + --pricing/--weights
 │   │   ├── detect_patterns.py       # 8개 탐지기(5 기존 + 3 신규), 사이드체인 배제, 세션별 모델가 낭비 산정, --pricing
 │   │   ├── build_dashboard.py       # 오프라인/CSP 안전 인라인-SVG HTML(모델별 비용 성분·세션별 라우팅·캐시 caveat)
-│   │   └── test_efficiency.py       # 회귀 테스트(60건 — 양방향 가격 동기화·탐지기·사이드체인·golden·인코딩)
+│   │   └── test_efficiency.py       # 회귀 테스트(61건 — 양방향 가격 동기화·탐지기·사이드체인·golden·인코딩)
 │   └── references/research/         # 2025~2026 1차 근거(README + 5 세션, 적대 검증)
 └── evals/
     ├── evals.json                   # 수용 평가(불변식 file:함수 인용 + test 실행)
@@ -57,6 +57,7 @@ context-bloat · giant-tool-outputs · poor-cache-util · duplicate-tools · sub
 
 | 날짜 | 변경 | 내용 |
 |------|------|------|
+| 2026-07-07 | detect 비-dict 레코드 크래시 수정 (v0.1.1) | 보안·강건성 검토(재현 검증) — 비-dict 최상위 JSONL 라인(`[1,2,3]` 등)이 detect_patterns의 sidechain 재스캔(`r.get`)에서 AttributeError로 세션 전체를 죽이던 것(analyze와의 강건성 비대칭)을 파싱 시점 dict 필터로 배제. 테스트 60→61건 |
 | 2026-07-04 | 4관점 검증 R2 반영 | R2 4관점 워크플로가 실측으로 잡은 회귀(직전 서브에이전트-수집이 유발) 수정 — **점수축 오염**(비용은 서브 합산 맞으나 input/output/cache 토큰도 합산돼 cache·density는 main+sub, tool·redundancy는 main-only → 축 분모 불일치로 실측 3세션 등급 flip): **점수·토큰·캐시 KPI·cost_usd를 메인 스레드로 되돌리고 서브에이전트 비용은 subagent_cost_usd로 분리 보고**(대시보드 "서브에이전트 +$X"). **날짜접미사 모델 ID 오매칭**(서브 haiku-4-5-20251001을 Opus 5배로 오산정 $23 과대): normalize_model로 `-YYYYMMDD` 정규화(두 스크립트). **detect 손상레코드 크래시**(비-str message.id·비-dict message가 전체 실행 중단): 레코드 단위 try/except + 타입 가드. O_NOFOLLOW 도크스트링 POSIX 한정 명시·product-spec 카운트·analyze 트리 주석 nit. 테스트 52→60건. 실측: 메인 $717.75 + 서브에이전트 $832.35·경고 0·성분합=메인비용 |
 | 2026-07-04 | 4관점 검증(보안·설계·구조·테스트) 반영 | 워크플로 4관점 병렬 적대 리뷰 + 발견별 반증 검증이 실제 로그 대조로 잡은 **HIGH 3건** 수정 — **message.id 중복제거**(CLI가 한 API 메시지를 thinking/text/tool_use 레코드로 분할·usage 반복 → 레코드 단위 합산 시 비용·턴 2~3배 과대; 실측 317레코드→182메시지, 두 스크립트 모두 message.id당 usage 1회 계상·tool_use는 전 레코드 수집), **서브에이전트 별도파일 수집**(현행 CLI는 `<sid>/subagents/**/*.jsonl`에 저장 → analyze가 재귀 수집해 비용 합산, SKILL의 "in-band 포함" 오기재 정정; redundancy·dominance는 메인 스레드만), **합성·빈 레코드 궤적 제외**(context 0·`<synthetic>`이 bloat run·carried-turn 파괴). MED — 라우팅 절감을 dominant 모델 비용 성분에 적용(혼합 모델 세션 과대 방지)·duplicate를 결과 해시까지 비교(git status dirty→clean류 정당 재확인 제외)·절감카드 무근거 상수 라벨(top-14·30%·40%·3k×10턴)·"agree on one number" 도크스트링 정정. LOW — poor-cache/churn 이중계상 overlap_note·캐시적중 KPI 값기반 색·grade 범례 11단계 통일(대시보드·CLAUDE.md)·parse_weights 미지 축 exit·stale 도크스트링 mid-sized·session-2 매핑 1.9→1.15 갱신·allowed-tools를 Bash·Read로 축소·root 표 순서(ai-readiness→token-efficiency)·인접 10개 trigger-eval 카운트 정정·meta-harness 가드 다중세션화·심볼릭링크 O_NOFOLLOW·공유 시 경로노출 caveat. 테스트 24→52건(message.id·서브에이전트·zero-usage·stateful·미발화 3탐지기·대시보드 5·CLI 오류·곡선 연속). 실측 파이프라인 35세션 $1543.64·성분합=KPI·서브에이전트 2524파일 OK |
 | 2026-07-04 | R2 신선 재검증 반영 | 수정확인 체크리스트 16/16 PASS(VERIFIED) + 신선 스윕 발견 수정 — **detect의 usage:null/message:null 레코드 전체-실행 크래시**(analyze와 강건성 비대칭, 재현 후 `or {}`/`or 0` None-가드로 통일), --pricing 스키마를 두 스크립트 동일(in+out 필수)로 정렬, _docs/skills.md 잔존 "40% 캐시 축"→35%. 테스트 24건 |

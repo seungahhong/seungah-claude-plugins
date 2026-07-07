@@ -18,7 +18,7 @@ python3 $S/detect_patterns.py  --repo "$(pwd)" --out /tmp/pa.json
 python3 $S/build_dashboard.py  --input /tmp/sa.json --patterns /tmp/pa.json --out /tmp/report.html
 open /tmp/report.html
 ```
-테스트: `cd $S && python3 -m unittest test_efficiency -v` (60건).
+테스트: `cd $S && python3 -m unittest test_efficiency -v` (61건).
 
 ## 외부 스킬 대비 개선 (근거 기반)
 

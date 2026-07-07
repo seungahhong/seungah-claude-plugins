@@ -14,6 +14,8 @@ FILE_PATH=$(hook_field '.tool_input.file_path') || true
 [ -z "$FILE_PATH" ] && exit 0
 
 BASENAME=$(basename "$FILE_PATH")
+# macOS APFS/Windows NTFS는 기본 대소문자 무시라 .ENV/server.PEM 등이 가드를 우회 → 소문자 정규화 후 매칭
+BASENAME=$(printf '%s' "$BASENAME" | tr '[:upper:]' '[:lower:]')
 
 # .env 파일 생성 차단
 case "$BASENAME" in

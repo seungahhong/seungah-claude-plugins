@@ -21,7 +21,8 @@ plugins/
       guard.sh                                           # PreToolUse(Bash) 위험 명령 차단 (advisory)
       write-guard.sh                                     # PreToolUse(Write) 민감 파일 생성 차단
       skill-dedup.sh                                     # PreToolUse(Write) SKILL.md 중복 생성 차단
-      stop-lint.sh                                       # PostToolUse(수정 파일만)·Stop(전체 diff) lint 체인
+      incremental-lint.sh                                # PostToolUse(Edit|Write) 방금 수정된 파일 1개만 lint (--fix 후 잔여 에러 exit 2 전파)
+      stop-lint.sh                                       # Stop 전용(전체 diff) lint 체인 (best-effort 비차단)
       package-changed.sh                                 # PostToolUse package.json 의존성 변경 알림
     skills/                                              # 스킬 정의 디렉토리
       planner/                                           # 계획 수립 (+ references/)
@@ -124,7 +125,7 @@ plugins/
       contract-review/                                   # API 계약 게이트 (엔드포인트 완결성·breaking-change diff·소비자(CDC) 커버리지·코드↔spec drift)
       test-coverage-review/                              # 인수조건↔테스트 커버리지 (테스트가능성·AC↔테스트 매핑·커버리지 채점·누락 시나리오 발굴)
     evals/
-      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 14 / should_not 17, 자매 하네스(frontend/product-spec/git/meta) reciprocal 가드)
+      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 14 / should_not 18, 자매 하네스(frontend/product-spec/git/meta) reciprocal 가드)
   ops-harness/                                           # [독립 플러그인] 프로덕션 운영·인시던트 대응·관측성 하네스. AIOpsLab 4단계(탐지→국소화→RCA→완화). 경계: 하네스 진단(meta)·검증루프(loop)·코드리뷰(frontend/git)·상류 핸드오프(review)·PRD(product-spec) 제외
     .claude-plugin/
       plugin.json
@@ -164,7 +165,7 @@ plugins/
         references/
           test-generator-guide.md                        #   공진화 루프·5 경험적 수리 템플릿·커버리지 게이트·judge 캘리브레이션
     evals/
-      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 11 / should_not 17, 인접 하네스 reciprocal 가드)
+      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 11 / should_not 18, 인접 하네스 reciprocal 가드)
   cicd-harness/                                          # [독립 플러그인] 코드 커밋→프로덕션 전달 파이프라인 CI/CD·DevOps·릴리스·IaC 하네스. 경계: 배포 이후 인시던트(ops)·BE 구현(backend)·빌드그린 반복(loop)·커밋/PR(git)·계약검수(review) 제외
     .claude-plugin/
       plugin.json
@@ -258,7 +259,7 @@ plugins/
           spec-driven-development-research.md            #   설계 근거 dossier (출처·인용·vote·CAVEAT·반박된 주장; arXiv:2602.00180 + Osmani 2026-01)
     evals/
       evals.json                                         # 수용 평가 (핵심 불변식 file:section 인용 채점)
-      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 15, 인접 도메인 reciprocal 가드)
+      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 16, 인접 도메인 reciprocal 가드)
   human-agent-teaming/                                  # [독립 플러그인] 사람과 AI 에이전트가 한 팀으로 협업하도록 분업·공통기반·감독/신뢰·검증을 설계하는 하네스 (분업·위임→공통기반→모니터링 기반 감독·신뢰 보정→비례 검증·핸드오프·책임 4단계). 축은 AI↔AI 토폴로지가 아니라 사람↔에이전트 분업·감독. 경계: 여러 AI 에이전트 병렬화·토폴로지(agent-orchestration)·컨텍스트 페이로드 조립(context)·AI 출력 평가(eval)·단일 자율 반복(loop)·상류 핸드오프 검수(review)·하네스 진단(meta)·PRD(product-spec)·커밋/PR(git) 제외
     .claude-plugin/
       plugin.json
@@ -334,7 +335,7 @@ plugins/
           qa-agent-harness-research.md                   #   설계 근거 dossier (arXiv:2601.02454·2506.02943 CANDOR·2606.18168·2504.16777·등급·제외 범위·CAVEAT)
     evals/
       evals.json                                         # 수용 평가 (핵심 불변식 file:section 인용 채점)
-      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 14, 인접 도메인 reciprocal 가드)
+      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 15, 인접 도메인 reciprocal 가드)
   agent-authorization-harness/                          # [독립 플러그인] 에이전트/MCP 도구/A2A 시스템의 머신 아이덴티티·인가를 벤더 무관하게 설계·red-team하는 하네스 (신뢰·스코프 모델링→그랜트·위임 설계→동의·집행→적대 인가 검증 4단계, 설계+red-team 산출물이지 IdP 배포 아님). 경계: 런타임 콘텐츠·행동 레일(llm-guardrails, LLM06 공유 이음매)·사람↔에이전트 분업(human-agent-teaming)·파이프라인 policy-as-code(cicd)·코딩 에이전트 권한(code-as-harness) 제외
     .claude-plugin/
       plugin.json
@@ -399,7 +400,7 @@ plugins/
           analyze_sessions.py                            #   4축 가중 점수(메인 스레드) + message.id당 usage 1회 계상 + 서브에이전트 별도파일(subagents/**/*.jsonl) 재귀 수집(비용 분리 subagent_cost_usd) + 현행 PRICING(날짜접미사 정규화·입력가 파생 캐시배수)·--pricing/--weights·효율≠cost-of-pass 경고
           detect_patterns.py                             #   8개 탐지기 (5 기존 + 3 신규 stale/churn/read), 세션별 dominant 모델가 낭비 산정
           build_dashboard.py                             #   오프라인/CSP 안전 인라인-SVG HTML (패턴 병합·세션별 라우팅·캐시-깨짐 caveat)
-          test_efficiency.py                             #   회귀 테스트 (unittest 60건 — 가중치 합·양방향 가격 동기화·탐지기·사이드체인 배제·golden 점수·경로 인코딩)
+          test_efficiency.py                             #   회귀 테스트 (unittest 61건 — 가중치 합·양방향 가격 동기화·탐지기·사이드체인 배제·golden 점수·경로 인코딩)
         references/
           research/                                      #   2025~2026 1차 근거 (deep-research 5세션 적대 검증)
             README.md                                    #     합성 (헤드라인 반전 7개 + 개선 결정 C1~C12)

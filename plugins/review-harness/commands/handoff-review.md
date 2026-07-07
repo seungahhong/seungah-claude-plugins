@@ -62,14 +62,14 @@ git ls-files 2>/dev/null | grep -E '\.(feature|story)$|\.(test|spec)\.(t|j)sx?$|
 
 ### Phase 1: 선택 게이트 병렬 실행
 
-**Phase 0에서 선택된 게이트만** **하나의 어시스턴트 메시지 안에서 동시에** Agent로 spawn한다. 선택이 1개일 때만 단일 spawn으로 축소되고, 그 외에는 항상 병렬을 유지한다(순차 실행 금지).
+**Phase 0에서 선택된 게이트만** **하나의 어시스턴트 메시지 안에서 동시에** Agent로 spawn한다. 선택이 1개일 때만 단일 spawn으로 축소되고, 그 외에는 항상 병렬을 유지한다(순차 실행 금지). **모든 Agent spawn에 `model: "opus"`를 명시한다**(마켓플레이스 컨벤션).
 
 각 서브에이전트는 해당 스킬의 SKILL.md 절차를 그대로 따르게 한다.
 
-- **1번** → `./skills/dor-review/SKILL.md`
-- **2번** → `./skills/design-handoff-review/SKILL.md`
-- **3번** → `./skills/contract-review/SKILL.md`
-- **4번** → `./skills/test-coverage-review/SKILL.md`
+- **1번** → `../skills/dor-review/SKILL.md`
+- **2번** → `../skills/design-handoff-review/SKILL.md`
+- **3번** → `../skills/contract-review/SKILL.md`
+- **4번** → `../skills/test-coverage-review/SKILL.md`
 
 병렬 실행 규칙:
 

@@ -3,7 +3,7 @@
     "eval_id": "token-efficiency-acceptance",
     "eval_name": "token-efficiency 수용 평가 (design-conformance + 실행 검증)",
     "prompt": "스킬은 Claude Code 세션 JSONL 로그를 결정론적 스크립트(stdlib only)로 파싱해 4축 가중 점수(cache 35 / redundancy 30 / density 15 / tool 20, 각 축 근거 등급) + 8개 비효율 탐지기(context-bloat·giant-tool·poor-cache·duplicate·subagent + 신규 stale-observation·cache-invalidation-churn·read-exploration) + 세션별 실제 모델가 낭비 추정 + 오프라인 인라인-SVG 대시보드를 낸다. 외부 스킬 improve-token-efficiency를 deep-research(5 세션 적대 검증)의 2025~2026 근거로 개선했다. 본 평가는 shipped SKILL.md·scripts/*.py·references/research/*가 하네스 불변식(현행 가격·캐시배수·giant-tool fix 교정·신규 3탐지기·세션별 라우팅·캐시-깨짐 caveat·효율≠cost-of-pass 정직성·측정만)을 강제·명세하는지 file:함수 인용 + test_efficiency 실행으로 채점한다.",
-    "method": "design-conformance + 실행 검증 — shipped 파일 인용 + test_efficiency.py 60건 실행(양방향 가격 동기화·탐지기 회귀·세션별 모델가·사이드체인 배제·golden 점수·경로 인코딩).",
+    "method": "design-conformance + 실행 검증 — shipped 파일 인용 + test_efficiency.py 61건 실행(양방향 가격 동기화·탐지기 회귀·세션별 모델가·사이드체인 배제·golden 점수·경로 인코딩).",
     "assertions": [
       {
         "text": "[pricing/current-not-retired] PRICING이 현행 라인($5/$25 Opus·$10/$50 Fable 5)이며 캐시배수를 입력가에서 파생한다(read 0.1×/write5m 1.25×/write1h 2×). 외부 스킬의 폐기가 $15/$75를 교정.",

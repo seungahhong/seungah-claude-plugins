@@ -6,7 +6,7 @@
 
 ## 0. 제1 정정 — "rule"은 결정론이 아니다
 
-사용자/직관은 흔히 "결정론적 규칙 → rules로 빼라"고 말하지만, Claude Code에서 **`.claude/rules/*.md`는 advisory(모델이 해석하는 컨텍스트)이지 강제 실행이 아니다**. [V](`/en/memory`): rules도 CLAUDE.md처럼 "Claude treats them as context, not enforced configuration. To block an action regardless of what Claude decides, use a `PreToolUse` hook instead."
+사용자/직관은 흔히 "결정론적 규칙 → rules로 빼라"고 말하지만, Claude Code에서 **`.claude/rules/*.md`는 advisory(모델이 해석하는 컨텍스트)이지 강제 실행이 아니다**. [V](https://code.claude.com/docs/en/memory): rules도 CLAUDE.md처럼 "Claude treats them as context, not enforced configuration. To block an action regardless of what Claude decides, use a `PreToolUse` hook instead."
 
 따라서 보강 메커니즘은 **enforcement 성격**으로 갈린다.
 
@@ -16,10 +16,10 @@
 | **deterministic-record** | 매번 **반드시 기록/캡처**(비차단) | **hook(exit 0 = record-an-event)** | — |
 | **judgment** | 모델이 맥락을 **해석**해 판단 | 판단형 hook(prompt/agent type — 결정론 트리거 + 모델 판단) | `CLAUDE.md`(항상 로드 사실)·`Skill`(절차)·`.claude/rules`(path-scoped 컨텍스트) |
 
-- 결정론 근거 [V](`/en/hooks-guide`): "Hooks ... provide deterministic control ... ensuring certain actions always happen rather than relying on the LLM to choose to run them." PreToolUse deny는 "blocks the tool even in `bypassPermissions` mode."
-- permission 근거 [V](`/en/memory`): "Settings rules are enforced by the client regardless of what Claude decides to do." deny 우선: "deny rules ... always take precedence over hook approvals."
+- 결정론 근거 [V](https://code.claude.com/docs/en/hooks-guide): "Hooks ... provide deterministic control ... ensuring certain actions always happen rather than relying on the LLM to choose to run them." PreToolUse deny는 "blocks the tool even in `bypassPermissions` mode."
+- permission 근거 [V](https://code.claude.com/docs/en/memory): "Settings rules are enforced by the client regardless of what Claude decides to do." deny 우선: "deny rules ... always take precedence over hook approvals."
 - advisory 근거 [V]: CLAUDE.md/rules는 "delivered as a user message ... no guarantee of strict compliance."
-- **rules의 올바른 쓰임**: 결정론이 아니라 **path-scoped 컨텍스트 비용 최적화** — [V](`/en/memory`) `paths:` frontmatter 규칙은 "only apply when Claude is working with files matching the specified patterns"(필요할 때만 로드). unscoped rule은 CLAUDE.md와 기계적으로 동등.
+- **rules의 올바른 쓰임**: 결정론이 아니라 **path-scoped 컨텍스트 비용 최적화** — [V](https://code.claude.com/docs/en/memory) `paths:` frontmatter 규칙은 "only apply when Claude is working with files matching the specified patterns"(필요할 때만 로드). unscoped rule은 CLAUDE.md와 기계적으로 동등.
 
 ## 1. record vs enforce — hook의 두 역할
 
@@ -106,7 +106,7 @@ settings.json / 플러그인 `hooks/hooks.json` 공통:
 ## 7. 정직성 단서
 
 - `.claude/rules`는 **advisory**(결정론 아님) — §0 [V]. 결정론 강제는 hook(command/http/mcp_tool)+permissions뿐.
-- **slash command는 skill로 병합**됨[V](`/en/skills`) — "command"는 `disable-model-invocation:true` skill의 한 형태. 본 플러그인 다른 .md의 "commands/*.md"는 레거시 `.claude/commands/*.md`(여전히 `/명령` 생성)를 가리키며 현대적 표현은 skill이다.
+- **slash command는 skill로 병합**됨[V](https://code.claude.com/docs/en/skills) — "command"는 `disable-model-invocation:true` skill의 한 형태. 본 플러그인 다른 .md의 "commands/*.md"는 레거시 `.claude/commands/*.md`(여전히 `/명령` 생성)를 가리키며 현대적 표현은 skill이다.
 - **[~]** 표시 필드(per-event 입력/출력 세부, exit-2 차단 event 분할 일부)는 라이브 `/en/hooks#<event>` 재확인 시 verbatim 승격 가능. meta-harness 의존 사실은 모두 [V].
 - 본 reference는 event를 **고르는** 판단 보조다. 실제 hook 본문·exit·matcher는 patch 시 §3·§5로 명시하고, 적용은 항상 **승인 게이트** 통과 후.
 
