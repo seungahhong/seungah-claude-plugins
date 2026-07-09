@@ -1,0 +1,28 @@
+{
+  "name": "code-legibility-harness",
+  "version": "0.1.0",
+  "description": "AI 코딩 에이전트가 읽고·탐색하고·안전하게 수정하기 좋도록 코드 *본문* 층위(주석·독스트링 / 변수명·함수명·클래스·컴포넌트명 / 함수·모듈 granularity)를 다각도로 진단해 제안하고, 사용자 승인 후에만 단계별로 적용하는 도메인 무관 인터랙티브 단일 스킬. 결정론적 스캐너 legibility_scan.py(stdlib-only)가 census를 뽑아 seed로 삼고(탐지기마다 auto-high/auto-med/heuristic/report-only 근거 등급 라벨), 3개 진단 에이전트(comment-auditor·naming-analyst·structure-cartographer)를 병렬로 돌린 뒤, 제안자와 분리된 검증자(behavior-guard)가 개입 클래스별 센서를 실제로 실행해 관측한다(generator≠checker). 개입 우선순위는 직관이 아니라 위험조정 근거로 정한다 — P1 오도·stale 주석 삭제(효과 확실·위험 0, 오도 주석 −13.47pp ≈ 구조 변형 3종 결합 −14.04pp) → P2 안전 리네임(식별자 난독화 시 클래스 요약 11~29pt 붕괴) → P3 검증된 계약 주석 추가(자동 생성 주석은 최상위 모델도 ~20%, 특화 모델도 35~45% 부정확) → P4 구조 리팩터(기본 OFF·opt-in). 5단계로 진행한다: Phase 0 초기 문의(대상 경로·개입 클래스 체크박스=구속 스코프·안전 리네임 도구 탐지) → Phase 1 census + 다각도 병렬 진단 → Phase 2 제안표 + 게이트 A(계획 승인) → Phase 3 개별 순차 적용 + 게이트 B(개별 승인, 클래스별 센서 사전/사후 실행) → Phase 4 재확인 + 게이트 C(최종 승인, census 델타). 승인 없이는 어떤 파일도 쓰지 않는다. ⚠️ 스코프 가드(게이트와 동급 불변식): 사용자가 선택한 개입 클래스 안에서만 제안·적용하고 밖은 '추가 안 함'으로 표기해 확장을 문의한다. 정직성: 0~100 등급을 만들지 않는다(저장소 층 등급은 자매 플러그인 ai-readiness-cartography 소유, 코드 본문 층 등급을 정당화할 1차 근거 부재). '테스트 통과 = 동작 보존'이라고 말하지 않는다(LLM 리팩터링의 19~35%가 기능적으로 비등가이고 그중 ≈21%가 기존 테스트를 전부 통과). 구조 개입의 효과는 추론이며(강한 정량 델타 92.7%·+12%·+32.8%는 전부 코드를 파싱해 만든 툴 측 그래프 인덱스의 효과이지 본문 리팩터의 효과가 아니다) 수치를 약속하지 않는다. 리네임은 LLM 문자열 치환이 아니라 AST/LSP 도구에 위임하고 도구가 없으면 제안만 한다(자동 리팩터링의 주된 실패는 논리 오류가 아니라 컴파일·참조 깨짐). 판정 어휘는 VERIFIED/FAILED/UNVERIFIED 셋뿐이며 구조 리팩터는 최선에도 UNVERIFIED를 넘지 못한다. 공개 벤치마크 점수로 개선 델타를 주장하지 않는다(SWE-bench Pro 성공의 63%가 정답 회수). 자기보고로 동작 보존을 판정하지 않고 실행해 관측한다. 커밋하지 않는다(git-harness 핸드오프). 근거는 2025+ 1차 자료로 적대 검증됐다 — arXiv:2510.03178(명명 ablation)·2504.14119(CodeCrash, NeurIPS 2025)·2512.16790(ICSE 2026)·2512.19883(CCI)·2503.12207(함수명이 구현을 운반, 단 LLM이 부정확한 이름도 메워버려 이해도를 명명 오라클로 쓰면 안 됨)·2602.15761(19~35% 비등가·테스트 21% 누락)·2605.22526(컴파일 깨짐)·2601.00482(IDE API 위임·사람 감독 필수)·2511.03153(RefAgent)·2603.27745(구조가 최대 실패면, 의존성 통제 4.3%)·2503.09089·2410.14684·2505.16901·2605.03117·2603.01327(툴 측 그래프)·2605.02964(환경 하드닝)·Cursor 2026-06(reward hacking, VENDOR). 경계: 저장소 구조·문서·CI 준비도 측정·등급(ai-readiness-cartography), 세션 토큰 효율(token-efficiency), 테스트 계층 계획·생성(test-layering-harness), 리스크 기반 자가치유 QA(qa-agent-harness), 하네스 자체 진단(meta-harness), 실행 가능 명세 작성(spec-driven-development), 컨텍스트 페이로드 조립(context-engineering), 완성 코드 리뷰·PR·커밋(git-harness/frontend-harness), 버그 찾기는 범위 밖이다.",
+  "author": {
+    "name": "seungah.hong",
+    "email": "ssingah1030@gmail.com"
+  },
+  "tags": [
+    "claude-code",
+    "plugin",
+    "code-legibility-harness",
+    "ai-readable-code",
+    "identifier-naming",
+    "misleading-comments",
+    "stale-comments",
+    "comment-code-inconsistency",
+    "safe-rename",
+    "lsp-rename",
+    "behavior-preservation",
+    "approval-gate",
+    "human-in-the-loop",
+    "deterministic-scanner",
+    "census",
+    "multi-agent",
+    "orchestration"
+  ]
+}

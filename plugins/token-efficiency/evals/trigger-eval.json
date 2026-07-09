@@ -50,5 +50,13 @@
   {
     "query": "이 함수 토큰을 적게 쓰도록 프롬프트를 리팩터해줘",
     "should_trigger": false
+  },
+  {
+    "query": "코드 본문의 오도하는 주석이랑 무의미한 변수명을 진단해서 승인 후 고쳐줘",
+    "should_trigger": false
+  },
+  {
+    "query": "docstring이 시그니처랑 안 맞는 함수 찾아서 리네임·주석 정리 제안해줘",
+    "should_trigger": false
   }
 ]

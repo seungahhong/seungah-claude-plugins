@@ -114,5 +114,17 @@
   {
     "query": "settings.json에 hook 추가해서 저장할 때마다 lint 돌게 해줘",
     "should_trigger": false
+  },
+  {
+    "query": "AI 에이전트가 읽기 좋게 주석이랑 변수명·함수명 정리하고 승인하면 단계별로 적용해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "주석이 코드랑 안 맞는 것 찾아서 고치고, 의미 없는 식별자 안전하게 리네임해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "is_로 시작하는데 bool 안 돌려주는 함수처럼 이름이 하는 일과 어긋나는 것 감사해줘",
+    "should_trigger": false
   }
 ]
