@@ -98,5 +98,9 @@
   {
     "query": "내 세션들 토큰 효율 점수 매기고 캐시 적중률·비용 낭비 패턴 대시보드로 보여줘",
     "should_trigger": false
+  },
+  {
+    "query": "우리 팀 현행 프로세스 진단하고 스크럼 vs 칸반 등 개발 방법론을 순위로 추천해줘",
+    "should_trigger": false
   }
 ]

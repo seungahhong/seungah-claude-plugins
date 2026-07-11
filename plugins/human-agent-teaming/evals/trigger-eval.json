@@ -90,5 +90,9 @@
   {
     "query": "에이전트/MCP 도구의 머신 아이덴티티·인가(토큰·스코프·on-behalf-of 위임) 모델을 설계해줘",
     "should_trigger": false
+  },
+  {
+    "query": "우리 사람 개발팀에 맞는 개발 방법론(스크럼/칸반/Shape Up)을 현행 진단부터 해서 골라줘",
+    "should_trigger": false
   }
 ]

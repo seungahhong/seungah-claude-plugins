@@ -114,5 +114,9 @@
   {
     "query": "기획문서 말고, 엔지니어가 코딩 에이전트에게 줄 기술 구현 명세를 contract로 써줘",
     "should_trigger": false
+  },
+  {
+    "query": "우리 팀 현행 프로세스 진단하고 스크럼·칸반 중 뭐가 맞을지 개발 방법론을 순위로 추천해줘",
+    "should_trigger": false
   }
 ]

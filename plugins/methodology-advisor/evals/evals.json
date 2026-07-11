@@ -1,0 +1,75 @@
+{
+  "eval_metadata": {
+    "eval_id": "methodology-advisor-acceptance",
+    "eval_name": "methodology-advisor 수용 평가 (design-conformance + 근거 정직성)",
+    "prompt": "스킬은 팀의 현행 개발/회사/사업 프로세스를 먼저 진단(Phase 0)하고, grill-me 스타일 다각도 문진(Phase 1, 3축·한 번에 한 질문·답변 분기·충돌 감지)을 거쳐, 내장 방법론 카탈로그(14개) + 컨틴전시 프레임워크(Cynefin·Stacey·Boehm-Turner home ground)에 근거해 순위 shortlist + 1순위를 제안(Phase 2)하고, 적대적 적합성 검증(Phase 3)으로 은탄환·숨은 가정·안티패턴·정직성을 반증한다. 매 Phase 승인 게이트. 본 평가는 shipped SKILL.md·agents/*.md·references/*가 하네스 불변식(첫 행동=현행 진단·발명 금지·우열 금지·은탄환/'N% 개선' 금지·SOURCE-TIER 인용·트레이드오프+안티패턴 동반·제안만·additive-first·opt-in 저장·refuted 5건 교정)을 강제·명세하는지 file:섹션 인용으로 채점한다.",
+    "method": "design-conformance — shipped 파일(SKILL.md·agents/*.md·references/*)의 해당 섹션 인용으로 각 불변식 강제 여부를 확인. 별도 skill-creator 실행형 eval(with-skill vs baseline)은 methodology-advisor-workspace/에서 수행(런타임 rubric 채점).",
+    "assertions": [
+      {
+        "text": "[first-action/diagnosis-first] 첫 행동이 반드시 현행 진단이다 — 사용자가 특정 방법론을 지목해도 개발/회사/사업 3축 현행을 먼저 진단한 뒤 제안한다(명시적 진단 생략 요구 시에만 축약).",
+        "passed": true,
+        "evidence": "SKILL.md '첫 행동 규약(불변식)' + Phase 0 시작 질문. process-cartographer.md '관측만, 발명 금지'. trigger-eval 'Scrum 추천해줘'류도 진단 선행."
+      },
+      {
+        "text": "[no-invention] 현행 진단은 관측만 하고 프로세스/역할/도구를 발명하지 않으며 미관측은 unknowns('확인 필요')로 남긴다.",
+        "passed": true,
+        "evidence": "process-cartographer.md '관측만, 발명 금지'·'unknowns'. SKILL.md 내재화 원칙 '현행 먼저·발명 금지'."
+      },
+      {
+        "text": "[one-question/branching] 문진은 한 번에 한 질문·번호 선택지·직전 답이 다음 질문 결정·충돌 즉시 감지(고정 목록 순회 금지).",
+        "passed": true,
+        "evidence": "context-interviewer.md '인터뷰 원칙(grill-me 계승)'. interview-axes.md '충돌 감지 쌍' 표(규제 릴리스+잦은 배포 등). SKILL.md 내재화 원칙 '한 번에 한 질문'."
+      },
+      {
+        "text": "[three-axes] 문진·진단이 개발·회사·사업 3축을 균형 있게 커버하고 한 축만 파지 않는다.",
+        "passed": true,
+        "evidence": "interview-axes.md 개발/회사/사업 3축 질문뱅크. context-interviewer.md '한 축만 파지 말 것'. process-cartographer.md 3축 관측 항목."
+      },
+      {
+        "text": "[no-superiority] 방법론 우열 단정을 금지하고 맥락 적합성으로만 말한다.",
+        "passed": true,
+        "evidence": "methodology-catalog.md '방법론 선택의 정직성 원칙' 1번. methodology-matcher.md '우열 아니라 적합성'. SKILL.md 정직성 가드레일 ①."
+      },
+      {
+        "text": "[no-silver-bullet/no-Npct] 은탄환·'N% 개선' 약속을 금지하고 수치는 SOURCE-TIER·출처와 함께 관찰값으로만 인용한다.",
+        "passed": true,
+        "evidence": "SKILL.md 정직성 가드레일 ②. research/README.md '이 도구가 근거를 쓰는 규칙' 1·2. fit-critic.md 점검축 5(정직성 위반: 무근거 수치·N% 약속 색출)."
+      },
+      {
+        "text": "[tradeoff+antipattern] 모든 방법론 권고에 트레이드오프와 흔한 오적용(안티패턴)을 함께 붙인다.",
+        "passed": true,
+        "evidence": "methodology-matcher.md 제안서 구조 2(각 후보 트레이드오프+안티패턴)·5(하지 말 것). methodology-catalog.md 각 방법론 '안티패턴' 항목."
+      },
+      {
+        "text": "[contingency-grounded] 제안은 직관이 아니라 컨틴전시 프레임워크(Cynefin·Stacey·Boehm-Turner home ground 5인자)로 근거화한다.",
+        "passed": true,
+        "evidence": "selection-frameworks.md 1~4절(Cynefin/Stacey/home ground/매핑표). methodology-matcher.md '컨틴전시 매핑 절차'. SKILL.md '맥락 적합 프레임워크로 근거화'."
+      },
+      {
+        "text": "[adversarial-verify] Phase 3가 칭찬 금지·반증 모드로 은탄환(페인 인과)·숨은 가정(현행 관측 여부)·안티패턴·비가역·정직성을 캐고 필요 시 1순위를 재정렬한다.",
+        "passed": true,
+        "evidence": "fit-critic.md 점검축 1~5·'칭찬 금지'·'1순위를 흔들 수 있으면 흔든다'. SKILL.md Phase 3."
+      },
+      {
+        "text": "[suggest-only] 제안만 하고 조직·프로세스 변경을 자동 실행하지 않는다(도입은 사람 결정).",
+        "passed": true,
+        "evidence": "SKILL.md 정직성 가드레일 ④·마무리 요약 문구. methodology-matcher.md '제안만 한다'. README 정직성 원칙."
+      },
+      {
+        "text": "[additive-first] 잘 되는 현행은 보존하고 전면 전환보다 되돌리기 쉬운 최소 관행 시험을 먼저 제안한다.",
+        "passed": true,
+        "evidence": "SKILL.md 내재화 원칙 additive-first. methodology-matcher.md 제안서 구조 4(additive 도입 로드맵). fit-critic.md 'additive-first 방어'."
+      },
+      {
+        "text": "[opt-in-storage] 산출물은 사용자가 저장을 선택할 때만 .claude/_docs/<슬러그>/에 기록하고 각 파일 저장 여부를 개별 확인한다.",
+        "passed": true,
+        "evidence": "SKILL.md '산출물 배치'·마무리 1(각각 예/아니오). CLAUDE.md Conventions '파일 저장 opt-in'."
+      },
+      {
+        "text": "[refuted-corrections] 검증에서 refuted된 5건을 교정본으로만 인용한다 — DORA 2025 채택률 90%(95% 아님), Boehm-Turner 위험기반 5단계(4단계 아님, Step 3 하이브리드·Step 5 재조정 포함).",
+        "passed": true,
+        "evidence": "research/README.md 'REFUTED — 반드시 교정'. selection-frameworks.md 위험기반 5단계(4단계 오인용 경고). SDD '오류 50% 감소'는 미인용으로 표기."
+      }
+    ]
+  }
+}

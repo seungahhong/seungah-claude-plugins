@@ -1,0 +1,26 @@
+{
+  "name": "methodology-advisor",
+  "version": "0.1.0",
+  "description": "현재 팀의 개발·회사·사업 프로세스를 먼저 진단(intake)한 뒤, grill-me 스타일로 도메인 무관 다각도 문진을 진행하고, 여러 개발 방법론을 내장한 카탈로그와 컨틴전시(맥락 적합) 선택 프레임워크에 근거해 상황에 맞는 방법론을 순위 shortlist + 1순위 권고로 제안하는 도메인 무관 인터랙티브 멀티 에이전트 하네스. 4단계(Phase 0 현행 프로세스 진단 → Phase 1 다각도 문진(개발/회사/사업 3축, 한 번에 한 질문·답변 분기) → Phase 2 방법론 매칭·제안 → Phase 3 적대적 적합성 검증)로 진행하며 매 Phase 승인 게이트를 둔다. 첫 행동은 반드시 '현재 개발/회사/사업 프로세스가 어떻게 구성되어 있는지' 진단 질문으로 시작한다(자산·가정을 발명하지 않고 현행을 먼저 관측). 내장 방법론 카탈로그: Waterfall/V-Model, Agile 우산(Scrum, Kanban, Scrumban, XP, Lean SD, Crystal, FDD, DSDM), Shape Up, 스케일드 애자일(SAFe/LeSS/Nexus·Spotify model 주의), DevOps/DORA/Continuous Delivery, Wagile·하이브리드 — 각 방법론의 핵심 원칙·의식(ceremony)·아티팩트·적합 조건·안티패턴을 담는다. 선택 근거는 Cynefin·Stacey matrix·Boehm & Turner home ground(risk-based balancing) 등 컨틴전시 프레임워크로 맥락 적합성(팀 규모·요구 불확실성·규제/안전·릴리스 주기·조직 성숙도·사업 모델)을 매핑한다. 정직성 가드레일: 방법론 '우열'이 아니라 맥락 적합성과 트레이드오프를 말하고, 은탄환(silver bullet)·'도입하면 N% 개선' 약속을 금지하며(검증된 등급·출처 수치만 인용), 흔한 오적용(안티패턴)을 함께 경고하고, 제안은 제안일 뿐 조직 변경을 자동 실행하지 않는다(사람 결정 게이트). 산출물(현행 진단 카드·문진 로그·방법론 제안서·적합성 검증 리포트)은 사용자가 저장을 선택할 때만 `.claude/_docs/<슬러그>/`에 기록한다. 경계: 기획자용 PRD·사용자 스토리 작성(product-spec-harness), Claude 에이전트 하네스 자체를 생성(harness-generator)·진단·개선(meta-harness), 상류 산출물 핸드오프 게이트 검수(review-harness), 사람↔AI 에이전트 협업 토폴로지 설계(human-agent-teaming), 작업을 여러 AI 에이전트로 병렬화(agent-orchestration), 코드 구현·리뷰·커밋(frontend/backend/git-harness)은 범위가 아니며, '사람 개발팀이 어떤 개발 방법론/프로세스로 일할지'를 현행 진단 → 다각도 문진 → 근거 기반 제안하는 데 특화한다. 다른 마켓플레이스 플러그인에 의존하지 않는 독립 플러그인이다.",
+  "author": {
+    "name": "seungah.hong",
+    "email": "ssingah1030@gmail.com"
+  },
+  "tags": [
+    "claude-code",
+    "plugin",
+    "methodology-advisor",
+    "software-development-methodology",
+    "agile",
+    "scrum",
+    "kanban",
+    "shape-up",
+    "devops-dora",
+    "process-diagnosis",
+    "contingency-framework",
+    "cynefin",
+    "grill-me",
+    "multi-agent",
+    "interactive"
+  ]
+}

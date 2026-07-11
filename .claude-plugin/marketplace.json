@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "분석 → 설계 → 개발 → 리뷰 → 검증까지, 소프트웨어 개발 전 과정을 지원하는 멀티 에이전트 스킬·커맨드·훅 모음. 정적 분석 5개 관점(간소화·코드 리뷰·보안·성능·정합성) 중 사용자 선택 항목 병렬 + 재리뷰 루프와 E2E·타입/빌드 검증, 그리고 코드 착수 *전* 상류 산출물(기획·디자인·API 계약·QA 인수조건) 핸드오프 게이트 검수를 포함합니다.",
-    "version": "1.25.0",
+    "version": "1.26.0",
     "homepage": "https://github.com/seungahhong/seungah-claude-plugins"
   },
   "plugins": [
@@ -590,6 +590,34 @@
         "census",
         "multi-agent",
         "orchestration"
+      ],
+      "category": "workflow",
+      "strict": false
+    },
+    {
+      "name": "methodology-advisor",
+      "description": "팀의 현행 개발·회사·사업 프로세스를 먼저 진단(intake)하고, frontend-harness의 grill-me 인터뷰를 개발 방법론 선택에 특화·확장한 도메인 무관 다각도 문진(개발/회사/사업 3축·한 번에 한 질문·답변 분기·충돌 감지)을 거쳐, 여러 개발 방법론을 내장한 카탈로그와 컨틴전시(맥락 적합) 프레임워크에 근거해 상황에 맞는 방법론을 순위 shortlist + 1순위로 제안하는 인터랙티브 멀티 에이전트 하네스. 4단계(Phase 0 현행 진단 → Phase 1 다각도 문진 → Phase 2 방법론 매칭·제안 → Phase 3 적대적 적합성 검증) + 4 에이전트(process-cartographer/context-interviewer/methodology-matcher/fit-critic)로 진행하며 매 Phase 승인 게이트를 둔다. 첫 행동은 반드시 '현재 개발/회사/사업 프로세스가 어떻게 구성되어 있는지' 진단 질문이다(발명 금지·현행 먼저 관측). 내장 방법론(14): Waterfall/V-Model, Scrum, Kanban, Scrumban, XP, Lean SD, Crystal, FDD, DSDM, Shape Up, 스케일드 애자일(SAFe/LeSS/Nexus), Spotify model(복제 주의), DevOps/DORA/CD, Wagile·하이브리드 — 각 방법론의 핵심 원칙·의식·아티팩트·적합 조건·안티패턴을 담는다. 선택 근거는 Cynefin·Stacey matrix·Boehm & Turner home ground 5인자(risk-based balancing 5단계)로 맥락 적합성(팀 규모·요구 불확실성·규제/안전·릴리스 주기·조직 성숙도·사업 모델)을 매핑한다. 정직성: 방법론 우열이 아니라 맥락 적합성·트레이드오프·안티패턴, 은탄환·'N% 개선' 약속 금지(수치는 SOURCE-TIER·출처와 함께 관찰값으로만), 제안만 하고 조직 변경을 자동 실행하지 않는다(도입은 사람 결정). 근거는 deep-research 하네스로 24소스·75주장을 적대 검증(70 confirmed/5 refuted; DORA 2025 채택률 90%·Boehm-Turner 위험기반 5단계 교정 반영, PRIMARY: Boehm&Turner IEEE 2003·Clarke&O'Connor 2012·Ahimbisibwe 2015·DORA 2024/2025). 산출물은 사용자가 저장을 선택할 때만 `.claude/_docs/<슬러그>/`에 기록한다. 경계: 기획문서(PRD)·사용자 스토리 작성(product-spec-harness), 하네스 생성(harness-generator)·진단(meta-harness), 상류 핸드오프 게이트 검수(review-harness), 사람↔AI 에이전트 협업 설계(human-agent-teaming), AI 에이전트 병렬화(agent-orchestration), 코드 구현/리뷰/커밋(frontend/backend/git-harness)은 범위가 아니며 '사람 개발팀이 어떤 개발 방법론/프로세스로 일할지'를 현행 진단 → 다각도 문진 → 근거 기반 제안하는 데 특화한다. 다른 마켓플레이스 플러그인에 의존하지 않는 독립 플러그인이다.",
+      "source": "./plugins/methodology-advisor",
+      "version": "0.1.0",
+      "author": {
+        "name": "seungah.hong"
+      },
+      "tags": [
+        "claude-code",
+        "plugin",
+        "methodology-advisor",
+        "software-development-methodology",
+        "agile",
+        "scrum",
+        "kanban",
+        "shape-up",
+        "devops-dora",
+        "process-diagnosis",
+        "contingency-framework",
+        "cynefin",
+        "grill-me",
+        "multi-agent",
+        "interactive"
       ],
       "category": "workflow",
       "strict": false

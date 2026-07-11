@@ -461,4 +461,25 @@ plugins/
     evals/
       evals.json                                         # 수용 평가 (불변식 file:section 인용 + 스캐너 실행 검증 18 assertion)
       trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 10 / should_not 20, 인접 하네스(cartography/token-efficiency/test-layering/qa/meta/git) reciprocal 가드)
+
+  methodology-advisor/                                   # [독립 플러그인] 팀의 현행 개발·회사·사업 프로세스를 먼저 진단하고, frontend-harness grill-me를 개발 방법론 선택에 특화·확장한 다각도 문진(3축) 뒤, 내장 방법론 카탈로그(14) + 컨틴전시 프레임워크(Cynefin·Stacey·Boehm-Turner home ground)에 근거해 순위 shortlist + 1순위를 제안하는 인터랙티브 4에이전트 하네스. 첫 행동=현행 진단(발명 금지)·매 Phase 승인 게이트·우열 금지·은탄환/'N% 개선' 금지·제안만. deep-research 24소스·75주장 적대 검증(70 confirmed/5 refuted)
+    .claude-plugin/
+      plugin.json
+    CLAUDE.md                                            # 포인터 + 4 Phase 요약 + 원칙 + 변경 이력
+    README.md                                            # 사용자용 개요·사용법·방법론 목록·경계
+    agents/
+      process-cartographer.md                            # Phase 0 현행 진단(개발/회사/사업 3축·관측만·발명 금지)
+      context-interviewer.md                             # Phase 1 grill-me 다각도 문진(3축·한 번에 한 질문·충돌 감지)
+      methodology-matcher.md                             # Phase 2 방법론 매칭(shortlist + 1순위 + additive 로드맵·트레이드오프+안티패턴)
+      fit-critic.md                                      # Phase 3 적대적 적합성 검증(은탄환·숨은 가정·안티패턴·정직성)
+    skills/methodology-advisor/
+      SKILL.md                                           # 진입점 오케스트레이터 (Phase 0~3 + 매 Phase 승인 게이트 + opt-in 저장)
+      references/
+        methodology-catalog.md                           # 14 방법론(원칙·의식·아티팩트·적합 조건·안티패턴)
+        selection-frameworks.md                          # Cynefin·Stacey·Boehm-Turner home ground 5인자·risk-based 5단계·컨틴전시 축→방법론 매핑
+        interview-axes.md                                # 개발/회사/사업 3축 질문뱅크·후속 깊이 패턴·충돌 감지 쌍
+        research/README.md                               # 2024-2026 1차 조사(deep-research 24소스·75주장 → 70 confirmed/5 refuted, SOURCE-TIER, REFUTED 교정: DORA 90%·Boehm-Turner 5단계)
+    evals/
+      evals.json                                         # 수용 평가 (design-conformance + 근거 정직성 13 assertion)
+      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 9, 인접 하네스(product-spec/harness-generator/meta/human-agent-teaming/agent-orchestration/cicd/ops/review/git) reciprocal 가드)
 ```
