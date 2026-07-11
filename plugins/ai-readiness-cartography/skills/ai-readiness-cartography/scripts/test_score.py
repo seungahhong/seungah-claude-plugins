@@ -228,5 +228,131 @@ class TestUntrustedRepoHardening(ScoreTestCase):
 GOLDEN_TOTAL = 40
 
 
+DESIGN_FILES = {
+    # a ↔ b 모듈 순환 의존 + 두 파일에 동일한 6줄 블록(Type-1/2 중복) + 단일 구현 인터페이스
+    "a/x.ts": (
+        'import { fromB } from "../b/y";\n'
+        "export interface Repo { get(id: string): string; }\n"
+        "export class SqlRepo implements Repo { get(id: string) { return id; } }\n"
+        "export function dupBlock() {\n"
+        "  const total = items.reduce((s, i) => s + i.price, 0);\n"
+        "  const tax = total * 0.1;\n"
+        "  const grand = total + tax;\n"
+        '  const label = "invoice";\n'
+        "  const rounded = Math.round(grand);\n"
+        "  return { total, tax, grand, label, rounded };\n"
+        "}\n"
+        "export const fromA = 1;\n"
+    ),
+    "b/y.ts": (
+        'import { fromA } from "../a/x";\n'
+        "export function alsoDup() {\n"
+        "  const total = items.reduce((s, i) => s + i.price, 0);\n"
+        "  const tax = total * 0.1;\n"
+        "  const grand = total + tax;\n"
+        '  const label = "invoice";\n'
+        "  const rounded = Math.round(grand);\n"
+        "  return { total, tax, grand, label, rounded };\n"
+        "}\n"
+        "export const fromB = 2;\n"
+    ),
+}
+
+
+class TestDesignSignals(ScoreTestCase):
+    """설계 원칙 진단 신호(report-only) — 반드시 등급/총점에 반영되지 않아야 한다."""
+
+    def _signals(self, files: dict[str, str]) -> dict:
+        make_repo(self.repo, files)
+        # 프로덕션 main()과 동일하게 resolve된 경로로 채점한다(_resolve_js의 심링크 해석과 정합).
+        return score.build_report(self.repo.resolve()).extras["design_signals"]
+
+    def test_design_signals_are_report_only_and_do_not_change_total(self):
+        make_repo(self.repo, DESIGN_FILES)
+        report = score.build_report(self.repo.resolve())
+        # 불변식: 총점은 여전히 9 카테고리 합이며 design_signals는 extras에만 있다.
+        self.assertEqual(report.total, sum(c.score for c in report.categories.values()))
+        self.assertIn("design_signals", report.extras)
+        self.assertNotIn("design_signals", report.categories)
+        ds = report.extras["design_signals"]
+        self.assertIn("report-only", ds["_policy"])
+        # design_signals 안에는 0~100 점수/총점 키가 없다(진단만 — grade는 근거 등급 라벨이라 허용).
+        blob = json.dumps(ds, ensure_ascii=False)
+        for banned in ('"score"', '"total"', '"points"', '"weighted"'):
+            self.assertNotIn(banned, blob, f"design_signals에 점수성 키 {banned}")
+
+    def test_detects_module_cycle(self):
+        cyc = self._signals(DESIGN_FILES)["cyclic_dependencies"]
+        self.assertTrue(cyc["measured"])
+        self.assertGreaterEqual(cyc["cycle_count"], 1)
+        mods = {m for c in cyc["cycles"] for m in c["modules"]}
+        self.assertIn("a", mods)
+        self.assertIn("b", mods)
+
+    def test_detects_cycle_nested_under_src(self):
+        """회귀 핀: src/-루트 저장소의 intra-src 순환(services↔utils)을 잡아야 한다(디렉터리 수준 모듈)."""
+        files = {
+            "src/services/payment.ts": 'import { f } from "../utils/format";\nexport const data = 1;\n',
+            "src/utils/format.ts": 'import { data } from "../services/payment";\nexport function f() { return data; }\n',
+        }
+        cyc = self._signals(files)["cyclic_dependencies"]
+        self.assertGreaterEqual(cyc["cycle_count"], 1)
+        mods = {m for c in cyc["cycles"] for m in c["modules"]}
+        self.assertIn("src/services", mods)
+        self.assertIn("src/utils", mods)
+
+    def test_detects_exact_duplication(self):
+        dup = self._signals(DESIGN_FILES)["exact_duplication"]
+        self.assertGreaterEqual(dup["cluster_count"], 1)
+        self.assertTrue(any(c["occurrences"] >= 2 for c in dup["clusters"]))
+
+    def test_detects_single_impl_interface_over_abstraction(self):
+        oa = self._signals(DESIGN_FILES)["over_abstraction"]
+        self.assertGreaterEqual(oa["single_impl_interface_count"], 1)
+        self.assertTrue(any(e["interface"] == "Repo" for e in oa["examples"]))
+
+    def test_clean_repo_reports_no_cycles_gracefully(self):
+        ds = self._signals({"src/app.py": "import os\n\n\ndef main():\n    return os.getpid()\n"})
+        self.assertEqual(ds["cyclic_dependencies"]["cycle_count"], 0)
+        self.assertEqual(ds["exact_duplication"]["cluster_count"], 0)
+
+    def test_golden_total_unchanged_by_design_signals(self):
+        """design_signals 도입이 골든 총점을 이동시키지 않았음을 재확인."""
+        make_repo(self.repo, GOLDEN_FILES)
+        self.assertEqual(score.build_report(self.repo).total, GOLDEN_TOTAL)
+
+
+class TestIdentifierClarity(ScoreTestCase):
+    """R12 갭(식별자 명료성·낮은 난독도)을 cartography 내부에서 report-only로 채운다 — 등급 미반영."""
+
+    def test_flags_nondescriptive_and_single_char_declarations(self):
+        files = {"src/a.py": (
+            "def process_data(x):\n    return x\n\n"       # non-descriptive
+            "class Foo:\n    pass\n\n"                       # non-descriptive (foo)
+            "def compute_invoice_total(items):\n    return sum(items)\n"  # descriptive
+        )}
+        make_repo(self.repo, files)
+        ic = score.build_report(self.repo).extras["design_signals"]["identifier_clarity"]
+        self.assertTrue(ic["measured"])
+        self.assertGreaterEqual(ic["poor_count"], 2)
+        names = {e["name"] for e in ic["examples"]}
+        self.assertIn("process_data", names)
+        self.assertNotIn("compute_invoice_total", names)
+
+    def test_identifier_clarity_is_report_only_and_does_not_change_total(self):
+        make_repo(self.repo, {"src/a.py": "def tmp(x):\n    return x\n"})
+        report = score.build_report(self.repo)
+        self.assertEqual(report.total, sum(c.score for c in report.categories.values()))
+        ic = report.extras["design_signals"]["identifier_clarity"]
+        blob = json.dumps(ic, ensure_ascii=False)
+        for banned in ('"score"', '"total"', '"points"', '"weighted"'):
+            self.assertNotIn(banned, blob, f"identifier_clarity에 점수성 키 {banned}")
+
+    def test_descriptive_repo_has_low_poor_ratio(self):
+        make_repo(self.repo, {"src/a.py": "def compute_invoice_total(items):\n    return sum(items)\n"})
+        ic = score.build_report(self.repo).extras["design_signals"]["identifier_clarity"]
+        self.assertEqual(ic["poor_count"], 0)
+
+
 if __name__ == "__main__":
     unittest.main()

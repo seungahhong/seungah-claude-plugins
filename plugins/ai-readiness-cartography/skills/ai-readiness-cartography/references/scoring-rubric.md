@@ -149,3 +149,18 @@ Five-Question(owns/patterns/non-obvious/deps, 각 2점) + MEMORY.md·ADR store(4
 - readability를 성공률 인과로 직접 연결 (session-1 C5: 패턴 차이만 확인).
 - 특정 hallucination % 임계값 고정 (session-3 C9: 모델·연도 의존).
 - human-oriented 포매팅(들여쓰기·공백) 가점 (session-1 C3: LLM에 무익).
+- **설계 원칙(SOLID·응집/결합·복잡도·LCOM·DRY 준수) 점수를 100점 등급에 편입** — session-6: 고전 구조 지표는 코드 길이 통제 시 LLM 성능과 무상관(사람 대상 지표의 외삽)이고, 준수도 점수화는 Goodhart/reward-hacking을 부른다(정적 스멜을 오라클로 쓰면 표면 변형으로 게임). 보유율을 점수화하지 않는 것과 같은 기준.
+
+## Design Signals (report-only · 등급 미반영 · `extras.design_signals`)
+
+설계 원칙 관련 구조는 **진단 신호로만** 낸다 — 총점(9카테고리 합)에 절대 반영하지 않는다(`test_score.py`가 불변식 고정). 근거·채택 범위는 [research/session-6-design-principles.md](research/session-6-design-principles.md).
+
+| 신호 | 등급 | 채택 이유 / 경계 |
+|------|------|------------------|
+| **식별자 명료성·낮은 난독도(R12)** | heuristic-med | cartography 자신의 R12/session-1 C3~C5 갭을 **내부에서** 채움 — 무의미·난독형 선언 이름 비율(난독→comprehension 저하, arXiv:2601.05485 CONFIRMED). **등급 미반영**(session-1 C5: readability→성공 인과 미확립). 지역 변수·파라미터는 미측정 |
+| 모듈 순환 의존(acyclic dependencies) | heuristic-med | 툴 측 그래프 탐색(LocAgent/RepoGraph)을 저해 — 신뢰 가능·에이전트 관련. 개선 모드 가드레일 1급 표적 |
+| 정확 중복(Type-1/2) | heuristic-med | 토큰/AST로 신뢰 가능한 범위만. Type-3/4(의미 중복)는 측정 불가라 미보고(누락≠없음) |
+| 과대추상(단일 구현 인터페이스) | heuristic-low | over-applied SOLID의 가독성 저하 — 과소구조(god-file)의 반대편. 사람 판단 후보 |
+| 결합 hotspot(fan-in/out) | auto-med | D 카테고리에 이미 반영, 여기선 목록만 |
+
+**미채택**: 복잡도·LCOM 점수(무상관·신뢰 불가), 의미 중복·정확 God-class 판정(측정 불가), DI/IoC 준수도(런타임 배선 판정 불가·과적용 위험).

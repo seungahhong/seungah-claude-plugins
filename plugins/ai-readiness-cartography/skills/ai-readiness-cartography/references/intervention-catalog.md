@@ -1,7 +1,7 @@
 # 개입 카드 카탈로그 (intervention catalog)
 
 > Phase 2 제안표가 참조하는 **단일 진실 기준**. 코드 **본문** 층(주석·명명·구조)만 다룬다.
-> 저장소 층(README·CLAUDE.md·의존 그래프·CI)은 자매 플러그인 `ai-readiness-cartography` 소유 — 침범 금지.
+> 저장소 층(README·CLAUDE.md·의존 그래프·CI)은 측정 모드(score.py) 소관 — 본문 층 개입과 분리.
 > 모든 카드는 **게이트 B(개별 승인)** 후에만 적용한다. 승인 없이 파일을 쓰지 않는다. 커밋은 git-harness 핸드오프.
 > 인용은 근거 시트(`references/research/EVIDENCE-SHEET.md`) 밖으로 나가지 않는다.
 

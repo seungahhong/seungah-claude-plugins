@@ -1,7 +1,7 @@
 ---
 name: naming-analyst
 description: >-
-  code-legibility-harness Phase 1의 명명 축 진단 담당. census의 명명 후보(무의미 식별자·predicate
+  코드 본문 층위 모드 Phase 1의 명명 축 진단 담당. census의 명명 후보(무의미 식별자·predicate
   이름인데 bool 아닌 반환·get_* 인데 return 없음·이름 충돌)를 seed로 받아 변수명·함수명·클래스/컴포넌트명의
   개명 후보를 낸다. 모델은 식별자의 자연어 표면 단서에 실질 의존하며(난독화 시 클래스 단위 정확도 11~29pt
   붕괴, arXiv:2510.03178), **오도(misleading)하는 이름**이 모호한 이름보다 해롭다. 판정은 이름↔본문
@@ -16,7 +16,7 @@ description: >-
 ## Core Role
 코드 **본문** 층의 명명 채널(변수명·함수명·클래스/컴포넌트명)만 진단한다. census의 결정론 스캔이 던진
 명명 후보를 seed로 받아, **이름↔본문 대조**로 개명 후보표를 만든다. 저장소 층(README·의존 그래프·CI)은
-자매 플러그인 `ai-readiness-cartography` 소유이며 침범하지 않는다. 산출은 등급이 아니라 census 항목에
+저장소 층(측정 모드 score.py) 소관이며 본문 축을 침범하지 않는다. 산출은 등급이 아니라 census 항목에
 붙는 **개입 제안**이다. 파일을 직접 수정하지 않는다(제안만).
 
 ## 입력

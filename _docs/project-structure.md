@@ -432,36 +432,6 @@ plugins/
     evals/
       evals.json                                         # 수용 평가 (핵심 불변식 file:section 인용 채점 — 3게이트·비율 미하드코딩·오라클 가드·경계)
       trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 14, 인접 하네스(qa-agent/backend/review/frontend/spec/git) reciprocal 가드)
-  code-legibility-harness/                              # [독립 플러그인] AI 코딩 에이전트가 읽고·탐색하고·안전하게 수정하기 좋도록 코드 *본문* 층위(주석·독스트링 / 변수명·함수명·클래스·컴포넌트명 / 함수·모듈 granularity)를 다각도로 진단해 제안하고 승인 후에만 단계별로 적용하는 단일 스킬 + 4에이전트. 결정론 census(등급 없음) → 3에이전트 병렬 진단 → 분리된 검증자가 센서 실행·관측. 개입 우선순위는 위험조정 근거: P1 오도·stale 주석 삭제(위험 0) → P2 안전 리네임 → P3 검증된 계약 주석 → P4 구조(기본 OFF). ai-readiness-cartography(저장소 층 등급·수정 안 함)와 상보 — cartography session-1이 요구했으나 v3 루브릭에 없던 '식별자 명료성·낮은 난독도' 빈칸을 채움
-    .claude-plugin/
-      plugin.json
-    CLAUDE.md                                            # 하네스 포인터 + 개입 클래스표 + 불변식 + 정직성 가드 12개 + 변경 이력
-    README.md                                            # 사용자용 개요("주석을 더 다는 게 아니라 틀린 주석을 지우는 것부터")·사용법·탐지기표·경계·근거
-    agents/                                              # 4 에이전트 (모두 model: "opus", generator/checker 분리)
-      comment-auditor.md                                 # Phase 1 — 주석 4분류(오도/stale/noise/유효) → C0·C1 후보. 주석↔코드 모순 시 AMBIGUOUS로 사용자에게(코드가 버그일 수 있다)
-      naming-analyst.md                                  # Phase 1 — 명명 3축(오도>무의미>모호) → C2 후보. 위험 등급·안전 리네임 도구·동적 참조 판정. LLM 이해를 명명 오라클로 쓰지 않음
-      structure-cartographer.md                          # Phase 1 — 구조 후보 (opt-in 기본 OFF). 모든 제안에 "효과=추론(O-1)" 라벨 필수, 수치 약속 금지
-      behavior-guard.md                                  # Phase 3/4 — 개입 클래스별 센서 실행·관측(checker). 판정 VERIFIED/FAILED/UNVERIFIED, C3는 UNVERIFIED 상한. census 델타
-    skills/
-      code-legibility-harness/                           # 진입점 오케스트레이터 (Phase 0~4 + 3 승인 게이트 + 스코프 가드)
-        SKILL.md
-        scripts/
-          legibility_scan.py                             #   결정론 census 스캐너 (stdlib only·읽기 전용·등급 없음). 7 탐지기 + auto-high/auto-med/heuristic/report-only 근거 등급. --axes가 스코프 가드 물리 강제. 하드닝: 심링크·대용량·null byte·ReDoS, 측정 불가는 skipped(≠깨끗함)
-          test_legibility_scan.py                        #   회귀 테스트 49건 (unittest — 불변식 핀: 등급 부재·스코프 가드·report-only·측정 불가 보고 / 버그 회귀 핀 3건 / 독립성 핀 4건: stdlib-only import·링크 경계·cwd 비의존·git 선택)
-        references/
-          legibility-principles.md                       #   7 원리 (삭제>추가 · 이름은 채널 · 테스트는 등가성 오라클이 아니다 · 리네임은 도구가·판단은 사람이 · 구조 효과는 추론 · 자기보고 불신 · 사람 가독성 ≠ 에이전트 가독성)
-          intervention-catalog.md                        #   개입 카드 C0~C3 정본 (근거·동작/사실성 위험·1급/2급 센서·적용 도구·롤백·게이트·거부 조건 + 제안 랭킹 규칙)
-          research/                                      #   2025~2026 1차 근거 (deep-research 5각도·23소스·102주장 → 25주장 3표 적대 검증 → 24 confirmed / 1 refuted)
-            README.md                                    #     근거 서열·판정표·REFUTED 목록(ARISE R@1 인용 금지)·미해결 질문 O-1~O-5·넣지 말 것 12개·자매 경계
-            naming.md                                    #     E-N1~N6 — 2510.03178(11~29pt 붕괴)·2504.14119(REN)·2503.12207(함수명이 구현 운반, 단 부정확한 이름도 LLM이 메움)
-            comments.md                                  #     E-C1~C5 — CodeCrash(오도 주석 −13.47pp ≈ 구조 3종 −14.04pp·CoT 방어 실패)·2512.16790(ICSE 2026)·2512.19883(CCI)·C4RLLaMA
-            structure.md                                 #     E-S1~S2 — 강한 델타는 전부 툴 측 그래프 효과(경계선 박스)·2603.27745(의존성 통제 4.3%·13.3% 테스트 통과하며 구조 실패)
-            safe-application.md                          #     E-A1~A7 — 2602.15761(19~35% 비등가·테스트 ≈21% 누락)·2605.22526(컴파일 깨짐)·2601.00482(IDE API·사람 필수)·2511.03153(RefAgent)
-            measurement-delta.md                         #     E-M1~M2 — Cursor(성공 63%가 정답 회수·VENDOR)·2605.02964(환경 하드닝·exploit 28%는 trace 회피)
-    evals/
-      evals.json                                         # 수용 평가 (불변식 file:section 인용 + 스캐너 실행 검증 18 assertion)
-      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 10 / should_not 20, 인접 하네스(cartography/token-efficiency/test-layering/qa/meta/git) reciprocal 가드)
-
   methodology-advisor/                                   # [독립 플러그인] 팀의 현행 개발·회사·사업 프로세스를 먼저 진단하고, frontend-harness grill-me를 개발 방법론 선택에 특화·확장한 다각도 문진(3축) 뒤, 내장 방법론 카탈로그(14) + 컨틴전시 프레임워크(Cynefin·Stacey·Boehm-Turner home ground)에 근거해 순위 shortlist + 1순위를 제안하는 인터랙티브 4에이전트 하네스. 첫 행동=현행 진단(발명 금지)·매 Phase 승인 게이트·우열 금지·은탄환/'N% 개선' 금지·제안만. deep-research 24소스·75주장 적대 검증(70 confirmed/5 refuted)
     .claude-plugin/
       plugin.json

@@ -1,7 +1,7 @@
 ---
 name: comment-auditor
 description: >-
-  code-legibility-harness Phase 1의 주석 축 진단 담당. legibility_scan.py census의 주석
+  코드 본문 층위 모드 Phase 1의 주석 축 진단 담당. legibility_scan.py census의 주석
   후보(C1 dangling identifier·docstring param mismatch·commented-out code·TODO)를 seed로
   받아 주석을 오도(misleading)/stale/noise/유효 4분류하고, 각각에 근거와 위험을 붙여
   C0(삭제·수정)·C1(계약 주석 추가) 개입 후보를 낸다. 오도 주석은 −13.47pp로 구조 변형 3종
@@ -16,8 +16,7 @@ description: >-
 주석·독스트링만 담당하는 진단 에이전트. legibility_scan.py census가 낸 주석 후보를 seed로 받아 각 주석을
 **오도(misleading)/stale/noise/유효** 4분류하고, 근거·위험을 붙여 **C0(삭제·수정)·C1(계약 주석 추가)** 개입
 후보를 산출한다. **파일을 직접 수정하지 않는다** — 후보만 낸다. 적용은 Phase 3 게이트 B 이후 오케스트레이터 몫.
-명명·구조 축은 각 축 담당 에이전트 소관이며, 저장소 층(README·CLAUDE.md·의존 그래프 등)은 자매 플러그인
-`ai-readiness-cartography` 소관이다 — 둘 다 침범하지 않는다.
+명명·구조 축은 각 축 담당 에이전트 소관이며, 저장소 층(README·CLAUDE.md·의존 그래프 등)은 이 플러그인의 측정 모드(score.py) 소관이다 — 둘 다 침범하지 않는다.
 
 > **C0가 최우선인 이유(§6)**: 오도·stale 주석 삭제는 효과가 확실하고 **위험이 0**(주석은 실행되지 않음)이라
 > 기대이익 기준 P1이다. 효과 크기가 가장 커서가 아니다.

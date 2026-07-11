@@ -316,40 +316,6 @@
 
 ---
 
-## code-legibility-harness
-
-| Skill | Command | Description |
-|-------|---------|-------------|
-| Code Legibility Harness | `/code-legibility-harness` | AI 코딩 에이전트가 읽고·탐색하고·안전하게 수정하기 좋도록 **코드 본문 층위**(주석·독스트링 / 변수명·함수명·클래스·컴포넌트명 / 함수·모듈 granularity)를 다각도로 진단해 제안하고 **사용자 승인 후에만 단계별로 적용**하는 진입 오케스트레이터. Phase 0 초기 문의(대상 경로 스킵 가능 · **개입 클래스 체크박스 = 구속 스코프** · 안전 리네임 도구 탐지) → 1 결정론 census + 3에이전트 병렬 진단 → 2 제안표 + **게이트 A** → 3 개별 순차 적용 + **게이트 B**(사전/사후 센서 실행) → 4 재확인 + **게이트 C**(census 델타). **⚠️ 스코프 가드: 선택한 개입 클래스 안에서만 제안·적용**(밖은 '추가 안 함' 표기 후 확장 문의) |
-
-**4 에이전트 (모두 `model: "opus"`)** — generator/checker 분리:
-
-| Agent | Phase | 역할 |
-|-------|-------|------|
-| `comment-auditor` | 1 | 주석을 **오도 / stale / noise / 유효** 4분류 → C0(삭제·수정)·C1(계약 주석 추가) 후보. 주석↔코드 모순 시 어느 쪽이 명세인지 모르면 `AMBIGUOUS`로 사용자에게 올린다(**코드가 버그일 수 있다**) |
-| `naming-analyst` | 1 | 명명 3축(**오도 > 무의미 > 모호**) → C2 후보. 위험 등급(지역 < 모듈 내부 < **공개 API·직렬화 키·DB 컬럼·라우트·i18n 키**)·안전 리네임 도구·동적 참조 위험 판정 |
-| `structure-cartographer` | 1 | 구조 후보. **opt-in 기본 OFF.** 모든 제안에 "예상 효과: 추론(직접 측정 근거 없음 — O-1)" 라벨 필수 |
-| `behavior-guard` | 3·4 | 개입 클래스별 센서를 **실행해 관측**. 판정 어휘 `VERIFIED`/`FAILED`/`UNVERIFIED` 셋뿐. Phase 4 census 델타 |
-
-**개입 클래스 (정본 `references/intervention-catalog.md`)** — 우선순위는 직관이 아니라 **위험조정 기대이익**:
-
-| 클래스 | 개입 | 우선순위 | 동작 위험 | 1급 센서 | 기본값 |
-|--------|------|---------|----------|---------|--------|
-| C0 | 오도·stale 주석 삭제/수정 | **P1** | 없음(주석은 실행되지 않음) | 사람 확인 + 코드 대조 | ON |
-| C1 | 계약·불변식 주석 추가/수정 | P3 | 없음(사실성 ~20~45%) | 코드 대조(+document testing) | ON |
-| C2 | 무의미·오도 식별자 안전 리네임 | **P2** | 참조·컴파일 깨짐 | **컴파일/타입체크 + 참조 완전성** | ON |
-| C3 | 구조 리팩터(추출·이동·분할) | P4 | **높음**(19~35% 비등가) | 테스트+컴파일 + 사람 diff | **OFF · opt-in** |
-
-핵심 자산:
-
-- **`SKILL.md`** — 5-Phase·3-Gate 오케스트레이터. 승인 없이 어떤 파일도 쓰지 않는다. 커밋하지 않는다(git-harness 핸드오프).
-- **`scripts/legibility_scan.py`** — 결정론 census 스캐너(stdlib only, Python 3.10+, 읽기 전용). **등급을 내지 않는다.** 7 탐지기(N1 무의미 식별자 · N2 술어인데 비-bool 반환 · N3 조회인데 반환 없음 · N4 심볼 충돌(heuristic) · C1 dangling 식별자 · C2 docstring 파라미터 불일치 · C3 주석처리된 코드 · C4 부채 마커 · C6 git 주석 드리프트(opt-in))에 각각 `auto-high/auto-med/heuristic/report-only` 근거 등급. `--axes`가 스코프 가드를 물리 강제. 하드닝: 심링크·대용량·null byte·ReDoS 가드, **측정 불가는 `skipped`에 기록(≠깨끗함)**.
-- **`scripts/test_legibility_scan.py`** — 회귀 테스트 49건. 불변식 핀(등급 부재·스코프 가드·report-only·측정 불가 보고) + 버그 회귀 핀 3건 + **독립성 핀 4건**(stdlib-only import·문서 링크가 플러그인 경계를 넘지 않음·cwd 비의존 실행·git 선택 기능).
-- **`references/legibility-principles.md`** — 7 원리(삭제>추가 · 이름은 채널 · **테스트는 등가성 오라클이 아니다** · 리네임은 도구가·판단은 사람이 · 구조 효과는 추론 · 자기보고 불신 · 사람 가독성 ≠ 에이전트 가독성).
-- **`references/research/`** — 2025~2026 1차 근거 dossier(적대 검증 24 confirmed / 1 refuted). naming · comments · structure · safe-application · measurement-delta + README(판정표·**REFUTED 목록**·미해결 질문 O-1~O-5·넣지 말 것 12개).
-
-> `code-legibility-harness`는 **코드 본문 층위를 census로 재고 다각도로 진단해 제안하고 3게이트로 순차 적용**하는 도메인 무관 인터랙티브 단일 스킬이다. **내재화 원칙** — 3게이트를 건너뛰지 않음(승인 없이 파일 쓰기 없음) · **스코프 가드: 선택한 개입 클래스 안에서만**(3게이트와 동급) · **등급을 만들지 않음**(0~100은 `ai-readiness-cartography`의 저장소 층 소관, 코드 본문 층 등급의 1차 근거 부재 — `test_report_never_contains_a_grade_or_score`가 고정) · **"테스트 통과 = 동작 보존" 금지**(비등가 리팩터의 ≈21%가 기존 테스트 통과, 구조 오라클은 13.3% 누락) · **구조 개입 효과는 추론**(강한 델타 LocAgent 92.7%·+12% Pass@10 / RepoGraph +32.8% / CGM 43.00% / ARISE +4.7pp / SWE-Adept +4.3%는 전부 코드를 **파싱해 만든 툴 측 그래프 인덱스**의 효과이지 본문 리팩터의 효과가 아님 — 수치 약속 금지) · **리네임은 AST/LSP 도구에 위임**(LLM 문자열 치환 금지 · 자동 리팩터링의 주된 실패는 논리 오류가 아니라 컴파일·참조 깨짐 · 도구 없으면 제안만 · 공개 API·직렬화 키는 컴파일러가 못 잡는 런타임 파괴라 사람 판단) · **LLM의 코드 이해를 명명 품질의 오라클로 금지**(부정확한 이름도 모델이 메워서 맞춤 → false positive) · `heuristic`·`report-only` 탐지는 개입 후보로 승격 금지 · **함수 라인 수 임계값 금지**(근거 부재) · **주석 밀도 목표치 금지**(최적점 미상 O-4) · **공개 벤치마크 점수로 델타 주장 금지**(SWE-bench Pro 성공의 63%가 정답 *회수*) · 자기보고 불신(실행 관측만) · 사람 가독성 포매팅(들여쓰기·공백)은 다루지 않음(LLM에 무익) · 커밋 직접 안 함. **경계** — 저장소 구조·문서·CI 준비도 측정·등급(`ai-readiness-cartography`) · 세션 토큰 효율(`token-efficiency`) · 테스트 계층 계획·생성(`test-layering-harness`) · 리스크 기반 자가치유 QA(`qa-agent-harness`) · 하네스 자체 진단(`meta-harness`) · 실행 가능 명세(`spec-driven-development`) · 컨텍스트 페이로드 조립(`context-engineering`) · 완성 코드 리뷰·PR·커밋(`git-harness`/`frontend-harness`) · 버그 찾기는 범위 밖. 근거: arXiv:2510.03178(명명 ablation, 11~29pt) · 2504.14119 CodeCrash(NeurIPS 2025, 오도 주석 −13.47pp ≈ 구조 3종 −14.04pp, CoT로도 −13.8% 잔존) · 2512.16790(ICSE 2026, 주석=양방향 인과 인자, **CAV 개입치 인용 주의**) · 2512.19883(CCI 구조화 diff) · 2503.12207(좋은 함수명이 구현을 운반, **단 부정확한 이름도 LLM이 메움**) · 2602.15761(19~35% 비등가·테스트 ≈21% 누락) · 2605.22526(컴파일 깨짐) · 2601.00482 CoRenameAgent(IDE API 위임·사람 감독 필수, 피드백 제거 시 정밀도 4배 하락) · 2511.03153 RefAgent(test+compile 루프 90% median) · 2603.27745(구조가 최대 실패면·의존성 통제 4.3%·13.3%가 테스트 통과하며 구조 오라클 실패) · 2503.09089 LocAgent · 2410.14684 RepoGraph · 2505.16901 CGM · 2605.03117 ARISE(**R@1 수치 REFUTED — 인용 금지**) · 2603.01327 SWE-Adept · 2605.02964(환경 하드닝) · Cursor 2026-06(reward hacking, VENDOR) · 2406.14836(document testing, **pre-2025 배경**). 출처: `/deep-research`(5각도 · 23소스 fetch · 102주장 추출 · 25주장 3표 적대 검증 → 24 confirmed / 1 refuted) + 4렌즈 적대 검토(날조 인용 · 금지 항목 · 불변식 · 경계).
-
 ## methodology-advisor
 
 팀의 **현행 개발·회사·사업 프로세스를 먼저 진단**하고, frontend-harness `grill-me`를 **개발 방법론 선택**에 특화·확장한 다각도 문진 뒤, 내장 방법론 카탈로그 + 컨틴전시 프레임워크에 근거해 상황 적합 방법론을 **순위 shortlist + 1순위**로 제안하는 도메인 무관 인터랙티브 멀티 에이전트 하네스.

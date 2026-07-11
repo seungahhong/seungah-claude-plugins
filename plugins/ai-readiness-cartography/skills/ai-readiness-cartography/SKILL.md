@@ -1,26 +1,28 @@
 ---
 name: ai-readiness-cartography
-description: 임의 git 저장소가 "AI 코딩 에이전트가 읽고 안전하게 기여할 수 있는 코드베이스"인지를 **측정하고(결정론 스코어러) 개선을 설계하는(멀티 에이전트)** 도메인 무관 단일 스킬. 두 모드를 가진다 — **① 측정 모드**: `score.py`(stdlib-only)로 100점·9카테고리 + 3 gate를 결정론 채점해 JSON 점수표 + HTML 대시보드 + ROI 리팩토링 가이드를 낸다. **② 진단·개선 모드**: score.py를 결정론 센서로 삼아 2축(Q 코드품질/A AI접근성) 진단(진단 승인 게이트) → 빌드 가드레일(의존 방향 물리 강제) → standalone 독립 실행 → 수용 증명·재측정을 4에이전트로 설계한다. 발동 — "이 레포 AI-readiness 점수 매겨줘/등급/대시보드"(측정), "agent-friendly한지 정성 진단하고 빌드 가드레일·standalone·수용 증명으로 개선 설계"(개선), "코드 품질(Q축)은 괜찮은데 AI 접근성(A축) 낮은 격차 찾아줘", "의존 방향을 빌드에서 물리적으로 강제하게", "AI가 만든 PR에 자동 수용 증명(E2E)", "리팩토링 우선순위를 ROI로", "repo cartography/ai-readiness 지도". 발동 시 **먼저 모드를 확정**한다 — *점수·대시보드로 측정만* 원하면 측정 모드, *정성 진단 후 구조 개선을 설계*하려면 진단·개선 모드(측정이 그 seed). 발동하지 않는다 — 한 기능의 실행 기반 구현·검증(backend-harness), 코드 착수 전 상류 산출물(기획·디자인·API 계약·QA 인수조건) 핸드오프 게이트 검수(review-harness), 하네스(CLAUDE.md/SKILL.md/agents) 자체를 trace로 진단·개선(meta-harness), 커밋→프로덕션 전달 파이프라인(CI/CD·릴리스·IaC, cicd-harness), 실행 가능 명세(spec) 작성(spec-driven-development), 컨텍스트 페이로드 조립·압축(context-engineering), AI 생성물 평가 judge 구성(eval-harness), 작업 병렬화·협업 토폴로지 설계(agent-orchestration), 완성 코드 리뷰·커밋/PR(frontend/git-harness), 검증 가능 목표 자율 반복 루프(loop-engineering), 새 하네스/에이전트 팀 생성(harness-generator), settings.json 설정 변경.
+description: 임의 git 저장소가 "AI 코딩 에이전트가 읽고 안전하게 기여할 수 있는 코드베이스"인지를 **측정하고(결정론 스코어러) 개선을 설계하는(멀티 에이전트)** 도메인 무관 단일 스킬. 세 모드를 가진다 — **① 측정 모드**: `score.py`(stdlib-only)로 100점·9카테고리 + 3 gate를 결정론 채점해 JSON 점수표 + HTML 대시보드 + ROI 리팩토링 가이드를 낸다. **② 진단·개선 모드**: score.py를 결정론 센서로 삼아 2축(Q 코드품질/A AI접근성) 진단(진단 승인 게이트) → 빌드 가드레일(의존 방향 물리 강제) → standalone 독립 실행 → 수용 증명·재측정을 4에이전트로 설계한다. **③ 코드 본문 층위 모드**: `legibility_scan.py` census(등급 없음)를 seed로 주석·독스트링·변수명/함수명/클래스·컴포넌트명·함수/모듈 granularity를 다각도 진단하고, **3게이트 인간 승인(계획→개별→최종) 뒤에만 단계별로 코드를 수정**한다(P1 오도·stale 주석 삭제→P2 안전 리네임(AST/LSP)→P3 검증된 계약 주석→P4 구조 리팩터 opt-in). 발동 — "이 레포 AI-readiness 점수/등급/대시보드"(①), "agent-friendly한지 정성 진단하고 빌드 가드레일·standalone·수용 증명으로 개선 설계"(②), "코드 품질(Q축)은 괜찮은데 AI 접근성(A축) 낮은 격차 찾아줘", "의존 방향을 빌드에서 물리적으로 강제하게", "AI가 만든 PR에 자동 수용 증명(E2E)", "리팩토링 우선순위를 ROI로", "AI가 읽기 좋게 주석·변수명·함수명 정리하고 승인하면 단계별로 적용"(③), "주석이 코드랑 안 맞는 것 찾아 고쳐줘"(③), "의미 없는 변수명·함수명 리네임 제안"(③), "컴포넌트/모듈명이 하는 일이랑 맞는지 봐줘"(③). 발동 시 **먼저 모드를 확정**한다 — 점수·대시보드로 *측정만*(①), 정성 진단 후 *구조 개선 설계*(②), 주석·명명·granularity를 *AI가 읽기 좋게 진단하고 승인 후 코드 수정*(③). **①②는 코드를 수정하지 않고(제안·설계만), ③만 승인 게이트 뒤에서 코드를 실제로 수정하며 저장소 층 등급을 만들지 않는다(census만).** 발동하지 않는다 — 한 기능의 실행 기반 구현·검증(backend-harness), 코드 착수 전 상류 산출물(기획·디자인·API 계약·QA 인수조건) 핸드오프 게이트 검수(review-harness), 하네스(CLAUDE.md/SKILL.md/agents) 자체를 trace로 진단·개선(meta-harness), 커밋→프로덕션 전달 파이프라인(CI/CD·릴리스·IaC, cicd-harness), 실행 가능 명세(spec) 작성(spec-driven-development), 컨텍스트 페이로드 조립·압축(context-engineering), AI 생성물 평가 judge 구성(eval-harness), 작업 병렬화·협업 토폴로지 설계(agent-orchestration), 완성 코드 리뷰·커밋/PR(frontend/git-harness), 검증 가능 목표 자율 반복 루프(loop-engineering), 새 하네스/에이전트 팀 생성(harness-generator), settings.json 설정 변경.
 ---
 
 # AI-Readiness Cartography — 코드베이스 AI 준비도 측정·개선
 
 임의 저장소를 **AI-Ready 코드베이스 v3 루브릭**(100점 · 9 카테고리 + 3 gate)으로 **측정**하고, 그 위에서 **구조 개선을 설계**한다. 두 전제 위에 선다 — **"구조가 프롬프트보다 먼저다(structure before prompt)"**, **"코드 품질(Q축)과 AI 접근성(A축)은 다른 차원이다"**. 사람에게 깨끗한 코드라도 패턴 비일관·빌드 피드백 약함·모듈 경계 모호로 에이전트에게는 적대적일 수 있다.
 
-## 두 모드 + 모드 게이트 (먼저 확정하라)
+## 세 모드 + 모드 게이트 (먼저 확정하라)
 
-이 스킬은 하나의 저장소 질문을 두 깊이로 다룬다. **발동하면 먼저 한 질문으로 모드를 확정한다.**
+이 스킬은 하나의 저장소 질문을 세 깊이로 다룬다. **발동하면 먼저 한 질문으로 모드를 확정한다.**
 
-| | **① 측정 모드** | **② 진단·개선 모드** |
-|---|---|---|
-| 표적 | *점수·시각화 산출물* | *구조 개선 설계* |
-| 엔진 | `score.py` 1회(결정론) | score.py(센서) + 4 에이전트(정성) |
-| 산출 | JSON 점수표 · HTML 대시보드 · ROI 가이드 | 진단(2축) · 빌드 가드레일 · standalone · 수용 증명·재측정 |
-| 실행 비용 | python 1회 | python + opus 4회 |
+| | **① 측정 모드** | **② 진단·개선 모드** | **③ 코드 본문 층위 모드** |
+|---|---|---|---|
+| 표적 | *점수·시각화 산출물*(저장소 층) | *구조 개선 설계*(저장소 층) | *주석·명명·함수 granularity를 읽기 좋게* |
+| 엔진 | `score.py` 1회(결정론) | score.py(센서) + 4 에이전트 | `legibility_scan.py` census + 4 에이전트 |
+| 산출 | JSON 점수표·HTML 대시보드·ROI | 진단(2축)·가드레일·standalone·수용 증명 | census + 개입 제안 + **승인 후 단계별 적용(C0~C3)** |
+| **코드 수정** | 안 함(제안만) | 안 함(설계만) | **함 — 단, 3게이트 승인 후에만** |
+| 등급(0~100) | **낸다** | 낸다(seed) | **안 낸다**(본문층 등급 1차 근거 부재 — census만) |
+| 실행 비용 | python 1회 | python + opus 4회 | python + opus 3~4회 |
 
-`[모드 확인] 점수·등급·대시보드로 *측정만* 하시겠어요(측정 모드), 아니면 정성 진단 후 *구조 개선까지 설계*할까요(진단·개선 모드)? 개선 모드는 측정을 seed로 씁니다.`
+`[모드 확인] (①) 점수·대시보드로 *측정*, (②) 정성 진단 후 *구조 개선 설계*, (③) *주석·변수명·함수명·granularity를 AI가 읽기 좋게 진단하고 승인하면 단계별로 수정* — 어느 것을 할까요?`
 
-모호하면 물어서 확정한다 — 잘못된 모드는 비싼 오라우팅(python 원했는데 opus 4회, 또는 그 반대)이다.
+모호하면 물어서 확정한다 — 잘못된 모드는 비싼 오라우팅이다. **①②는 코드를 수정하지 않고(제안·설계만), ③만 승인 게이트 뒤에서 코드를 실제로 수정한다.** ③은 저장소 층 등급을 만들지 않는다(본문 층은 census + 개입 제안뿐).
 
 ## 경계 (범위 밖 — 인접 도메인)
 
@@ -63,6 +65,7 @@ description: 임의 git 저장소가 "AI 코딩 에이전트가 읽고 안전하
 
 - **측정 모드**: `docs/`가 있으면 `docs/ai-readiness-{map.html,score.json}`, `.claude/`가 있으면 `.claude/ai-readiness-{map.html,score.json}`, 둘 다 없으면 레포 루트.
 - **진단·개선 모드**: `.claude/ai-readability/{대상-slug}/`(assessment.md·remediation-plan.md·acceptance-and-regrade.md). Phase 0의 `ai-readiness-score.json`도 여기 둔다.
+- **코드 본문 층위 모드**: `.claude/ai-readability/`(census-before.json·census-after.json·proposals.md·verdicts.md). 커밋은 하지 않는다(git-harness 핸드오프).
 - 사용자가 경로를 명시하면 그 경로 우선. 문서 언어는 **한국어**.
 
 ## 에이전트 팀 (진단·개선 모드)
@@ -75,6 +78,8 @@ description: 임의 git 저장소가 "AI 코딩 에이전트가 읽고 안전하
 | 3 Acceptance & Re-grade | `acceptance-verifier` | 수용 증명 인프라 + 결정론 델타(score.py 재실행) 위 강제 probe로 Gate-3·등급 적대 재측정 |
 
 각 에이전트 정의는 `../../agents/{name}.md`. **모든 Agent 호출은 `model: "opus"`를 명시한다**(진단·설계·재측정의 추론 품질이 산출물 정합성을 좌우).
+
+**코드 본문 층위 모드(③) 에이전트** — `comment-auditor`(주석 4분류→C0·C1)·`naming-analyst`(명명 3축→C2)·`structure-cartographer`(구조 후보→C3·opt-in)·`behavior-guard`(개입 클래스별 센서 실행·관측=checker). 모두 `model: "opus"`.
 
 ---
 
@@ -233,6 +238,40 @@ Agent(
 
 ---
 
+# 코드 본문 층위 모드 워크플로 (③ · 승인 후 코드 수정)
+
+**이 모드만 코드를 실제로 수정한다 — 3게이트 승인 뒤에만.** 저장소 층 등급을 만들지 않는다(census + 개입 제안뿐). 개입 우선순위는 직관이 아니라 위험조정 근거다 — **P1 오도·stale 주석 삭제(효과 확실·위험 0) → P2 안전 리네임 → P3 검증된 계약 주석 추가 → P4 구조 리팩터(기본 OFF)**. 정본은 [`references/intervention-catalog.md`](references/intervention-catalog.md), 원리는 [`references/legibility-principles.md`](references/legibility-principles.md), 근거는 [`references/research/body-legibility/`](references/research/body-legibility/README.md).
+
+| 클래스 | 개입 | 우선순위 | 동작 위험 | 기본값 |
+|--------|------|---------|----------|--------|
+| **C0** | 오도·stale 주석 삭제/수정 | **P1** | 없음 | ON |
+| **C1** | 계약·불변식 주석 추가/수정 | P3 | 없음(사실성 ~20~45%) | ON |
+| **C2** | 무의미·오도 식별자 안전 리네임 | **P2** | 참조·컴파일 깨짐 | ON |
+| **C3** | 구조 리팩터(추출·이동·분할) | P4 | **높음**(19~35% 비등가) | **OFF·opt-in** |
+
+## B0 — 초기 문의 (스코프 확정)
+- **대상 경로**(스킵=레포 루트) + **개입 클래스 체크박스(C0/C1/C2/C3) = 구속 스코프**(밖은 "추가 안 함" 표기·확장 문의).
+- **C3 켜면 경고**: "구조 리팩터가 에이전트 성공률을 올린다는 직접 측정 근거는 없습니다(추론). LLM 리팩터의 19~35%가 비등가, 그중 ≈21%는 테스트를 통과합니다." + **테스트 스위트 존재 확인**(없으면 C3 거부).
+- **C2 선택 시 안전 리네임 도구 탐지**(rope·pyright / ts-morph·tsserver / gopls / rust-analyzer). 없으면 C2를 "제안만"으로 강등.
+
+## B1 — census + 다각도 진단
+```bash
+python3 ${CLAUDE_PLUGIN_ROOT}/skills/ai-readiness-cartography/scripts/legibility_scan.py <root> \
+  --axes <naming,comments,structure 중 선택된 것> --out .claude/ai-readability/census-before.json
+```
+census(등급 없음·`auto-high/auto-med/heuristic/report-only` 라벨)를 seed로, 선택된 클래스에 해당하는 에이전트만 병렬 호출(모두 `model: "opus"`): [`comment-auditor`](../../agents/comment-auditor.md)(C0/C1)·[`naming-analyst`](../../agents/naming-analyst.md)(C2)·[`structure-cartographer`](../../agents/structure-cartographer.md)(C3만). `skipped`·`coverage`(미측정≠결함 없음)를 함께 읽는다. **에이전트는 파일을 수정하지 않는다.**
+
+## B2 — 제안표 + 게이트 A (계획 승인)
+[`references/intervention-catalog.md`](references/intervention-catalog.md) 랭킹(위험조정 기대이익)으로 제안표(#·클래스·위치·현재→제안·근거·동작위험·1급센서·판정상한 VERIFIED/FAILED/**UNVERIFIED**). **계획 승인 없이는 어떤 파일도 수정하지 않는다.**
+
+## B3 — 개별 순차 적용 + 게이트 B (개별 승인)
+한 건씩, **게이트 B 개별 승인 후에만** 적용. 리네임은 **AST/LSP 도구에 위임**(문자열 치환 금지). **generator≠checker**: 제안 에이전트가 아니라 [`behavior-guard`](../../agents/behavior-guard.md)가 개입 클래스별 센서(컴파일/타입체크·참조 완전성·테스트·사람 diff)를 **실행해 관측**. **"테스트 통과=동작 보존" 금지**(비등가 ≈21%가 테스트 통과) — C3는 최선에도 **UNVERIFIED** 상한.
+
+## B4 — 재확인 + 게이트 C (최종 승인)
+census 재측정(`census-after.json`) 델타로 개입 반영을 결정론 확인(에이전트 성공률 대리 지표 아님). **커밋하지 않는다** — `git-harness` 핸드오프 제안만. 산출물: `.claude/ai-readability/`(census-before/after·proposals·verdicts).
+
+> **B-모드 불변식**: 3게이트(계획 A→개별 B→최종 C) 건너뛰지 않음 · 스코프 가드(선택 클래스 안에서만) · 등급 안 만듦(본문층 census만) · 자기보고 불신(센서 실행 관측) · 리네임=도구 위임 · 구조 효과=추론·수치 약속 없음.
+
 ## Style rules (측정 모드 대시보드 — non-negotiable)
 
 - **폰트**: Inter(본문)·JetBrains Mono(숫자/코드). 오프라인/폐쇄망이거나 외부 요청을 원치 않으면 Google Fonts `<link>` 제거 + 시스템 폰트 폴백(`-apple-system, system-ui`).
@@ -262,3 +301,6 @@ Agent(
 - `references/research/`·`references/ai-readiness-cartography-research.md`·`references/ai-readable-codebase-research.md` — 2025~2026 1차 근거(적대 검증). 루브릭·원리 조작화의 출처.
 - `assets/template.html` — 복사 후 채울 대시보드 원본.
 - `../../agents/{accessibility-assessor,guardrail-architect,standalone-designer,acceptance-verifier}.md` — 개선 모드 4 에이전트(model: opus).
+- `scripts/legibility_scan.py`·`scripts/test_legibility_scan.py` — **코드 본문 층위 모드(③)** census 스캐너(stdlib only·등급 없음·7 탐지기) + 회귀 테스트.
+- `references/intervention-catalog.md`·`references/legibility-principles.md`·`references/research/body-legibility/` — 본문 층위 개입 카드(C0~C3)·원리·근거 dossier.
+- `../../agents/{comment-auditor,naming-analyst,structure-cartographer,behavior-guard}.md` — 본문 층위 모드 4 에이전트(model: opus).

@@ -1,6 +1,6 @@
 # 주석 축 근거 dossier — comments · docstrings
 
-> 층위: 코드 **본문** 층의 주석·독스트링. 저장소 층(README·CLAUDE.md 등)은 자매 플러그인 `ai-readiness-cartography` 소유.
+> 층위: 코드 **본문** 층의 주석·독스트링. 저장소 층(README·CLAUDE.md 등)은 이 플러그인의 측정 모드(score.py) 소유.
 > 인용 원천은 정본 근거 시트(`EVIDENCE-SHEET.md`) §2 하나뿐. 여기 없는 수치·논문·URL은 쓰지 않는다.
 > 각 인용에는 SOURCE-TIER 라벨 + 발표연월을 붙인다.
 

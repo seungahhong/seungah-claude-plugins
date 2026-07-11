@@ -41,10 +41,11 @@ import os
 import re
 import subprocess
 import sys
+from collections import defaultdict
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterator
 
 # ----------------------------------------------------------------------------
 # Constants
@@ -81,6 +82,18 @@ RE_DONE_CRITERIA = re.compile(r"\b(done when|verify|passes when|success criteria
 RE_REL_LINK = re.compile(r"\[[^\]]+\]\((?!https?://)([^)]+)\)")
 RE_DEPS_HEADING = re.compile(r"^#+\s.*(depend|cross[- ]module|imports?|see also|related|entry point|진입점|의존)", re.IGNORECASE | re.MULTILINE)
 RE_NEIGHBOR = re.compile(r"\b(depends on|imports? from|entry point|진입점|의존 이웃|calls into|used by|downstream|upstream)\b", re.IGNORECASE)
+
+# 식별자 명료성(R12·session-1 C3~C5) — 무의미·난독형 식별자를 report-only로 진단(등급 미반영, C5 존중).
+# 근거: arXiv:2601.05485 — 난독화·식별자 변형 코드에서 LLM comprehension 저하(CONFIRMED).
+NONDESCRIPTIVE_NAMES = frozenset({
+    "tmp", "temp", "data", "datas", "val", "vals", "value2", "res", "resp", "ret", "retval",
+    "obj", "objs", "arr", "lst", "dct", "dict2", "foo", "bar", "baz", "qux", "thing", "things",
+    "stuff", "info", "aux", "misc", "var", "vars", "param", "params2", "arg2", "args2",
+    "flag2", "num2", "str2", "do_it", "do_stuff", "process_data", "handle_data", "my_func", "test1",
+})
+IDIOMATIC_SHORT = frozenset({"i", "j", "k", "n", "x", "y", "z", "_", "e", "f", "s", "t", "id", "ok", "db", "io"})
+RE_ID_PY = re.compile(r"(?m)^\s*(?:async\s+def|def|class)\s+([A-Za-z_][A-Za-z0-9_]{0,63})")
+RE_ID_JS = re.compile(r"(?<![A-Za-z0-9_$])(?:const|let|var|function|class)\s+([A-Za-z_$][A-Za-z0-9_$]{0,63})")
 RE_PURPOSE_HEADING = re.compile(r"^#+\s.*(purpose|owns?|configures?|overview|책임)", re.IGNORECASE | re.MULTILINE)
 RE_PATTERN_HEADING = re.compile(r"^#+\s.*(pattern|how to|common change|workflow|recipe|절차)", re.IGNORECASE | re.MULTILINE)
 RE_MERMAID = re.compile(r"```mermaid", re.IGNORECASE)
@@ -282,6 +295,9 @@ class GraphNode:
     fan_out: int = 0
     exports: int = 0
     lines: int = 0
+    # 이 파일이 import하는 대상(Python=top-level 모듈명 / JS=대상 파일 rel).
+    # design_signals의 모듈 수준 순환 의존(acyclic dependencies principle) 진단에만 쓰인다(등급 미반영).
+    imports: set[str] = field(default_factory=set)
 
 
 def build_import_graph(repo: Path) -> tuple[dict[str, GraphNode], int, int, int]:
@@ -335,6 +351,7 @@ def build_import_graph(repo: Path) -> tuple[dict[str, GraphNode], int, int, int]
                         top = m.split(".")[0]
                         if top in top_level_names:
                             edges.append((rel, top))  # module-level target
+                            nodes[rel].imports.add(top)
                 nodes[rel].exports = len(re.findall(r"^\s*(?:def|class)\s+[A-Za-z_]", text, re.MULTILINE))
             except (SyntaxError, ValueError):
                 # ValueError: null byte 포함 소스는 SyntaxError가 아닌 ValueError를 던져
@@ -351,6 +368,7 @@ def build_import_graph(repo: Path) -> tuple[dict[str, GraphNode], int, int, int]
                 target = _resolve_js(p, m, repo)
                 if target:
                     edges.append((rel, target))
+                    nodes[rel].imports.add(target)
             nodes[rel].exports = len(RE_JS_EXPORT.findall(text))
         else:
             # 다른 언어: 파싱기는 없지만 코드 존재는 카운트(그래프 미기여)
@@ -1105,6 +1123,258 @@ def generate_insights(cats: dict[str, CategoryScore], total: int, grade: str, ca
 
 
 # ----------------------------------------------------------------------------
+# Design signals (report-only 진단 — 등급/점수에 반영하지 않는다)
+#
+# 왜 '측정하되 점수화하지 않는가'(정직성 — 사용자 요청에 대한 근거 기반 응답):
+#   · 고전 구조 지표(cyclomatic·cognitive·Halstead·Maintainability Index·LCOM)는 코드 길이를
+#     통제하면 LLM 과제 성능과 통계적으로 유의한 상관이 없다(2026-05 preprint; 기존 지표는 전부
+#     사람 대상 검증이라 AI 가독성으로의 외삽). '보유율은 점수화하지 않는다'(ETH Zurich)와 같은
+#     상관-없음 기준으로 이들도 등급에 넣지 않는다.
+#   · 설계 원칙 준수를 점수·게이트로 만들면 Goodhart/reward-hacking을 부른다 — 정적 스멜 지표를
+#     오라클로 쓰면 표면 변형으로 게임되고(2026-05 architectural smell repair: 공격적 수정이 스멜
+#     140개를 새로 유발, 순 -109), 준수도 만점이어도 유지보수 불가일 수 있다.
+#   · LCOM은 8+ 변종이 같은 클래스에 다른 값을 주고(<5 메서드는 전부 0) 결정론 프록시로 신뢰 불가.
+# 그래서 신뢰 가능·에이전트 관련 신호만 '진단'으로 표면화하고 개선 모드가 참고한다(등급은 불변).
+# ----------------------------------------------------------------------------
+DUP_MIN_RUN = 6              # 연속 정규화 라인 이 개수 이상이 2곳+에 동일 → Type-1/2 중복 후보
+DUP_MAX_CLUSTERS = 40
+DUP_MAX_WINDOWS = 300_000    # 신뢰 불가 repo 비용 상한(초과 시 truncated 표기)
+MAX_CYCLE_MODULES = 800      # 모듈 수가 이보다 많으면 순환 탐지 스킵(비용·재귀 가드)
+
+
+def _module_of(rel: str) -> str:
+    """파일 rel → 모듈. 순환 의존은 파일이 아니라 모듈 수준에서 본다.
+
+    모듈 = 파일의 **디렉터리**(예: src/services). top-level 세그먼트만 쓰면 src/-루트 저장소에서
+    모든 파일이 'src' 한 모듈로 붕괴해 intra-src 순환(services↔utils)을 못 본다(실측). 디렉터리 기준은
+    JS/TS 파일 간 순환에 유효하고, Python top-level 패키지 순환도 잡는다(디렉터리명=import 모듈명 일치).
+    루트 파일(경로에 '/' 없음)은 stem(Python 루트 모듈명)으로 둔다.
+    """
+    return rel.rsplit("/", 1)[0] if "/" in rel else rel.rsplit(".", 1)[0]
+
+
+def _module_graph(nodes: dict[str, GraphNode]) -> dict[str, set[str]]:
+    node_rels = set(nodes)
+    adj: dict[str, set[str]] = {}
+    for rel, node in nodes.items():
+        src = _module_of(rel)
+        adj.setdefault(src, set())
+        for tgt in node.imports:
+            # JS: 대상이 파일 rel → 그 모듈. Python: 대상이 top-level 모듈명(노드 아님) → 그대로.
+            dst = _module_of(tgt) if tgt in node_rels else tgt
+            if dst != src:
+                adj[src].add(dst)
+    return adj
+
+
+def _sccs(adj: dict[str, set[str]]) -> list[list[str]]:
+    """Tarjan SCC(반복적·재귀 없음). 크기>1 성분 = 순환 의존 그룹. 모듈 그래프라 규모가 작다."""
+    idx: dict[str, int] = {}
+    low: dict[str, int] = {}
+    onstack: set[str] = set()
+    stack: list[str] = []
+    out: list[list[str]] = []
+    counter = 0
+    for start in list(adj):
+        if start in idx:
+            continue
+        work: list[tuple[str, Iterator[str]]] = [(start, iter(sorted(adj.get(start, ()))))]
+        idx[start] = low[start] = counter
+        counter += 1
+        stack.append(start)
+        onstack.add(start)
+        while work:
+            v, it = work[-1]
+            pushed = False
+            for w in it:
+                if w not in adj:      # 그래프 밖(외부/미walk 모듈) — SCC 대상 아님
+                    continue
+                if w not in idx:
+                    idx[w] = low[w] = counter
+                    counter += 1
+                    stack.append(w)
+                    onstack.add(w)
+                    work.append((w, iter(sorted(adj.get(w, ())))))
+                    pushed = True
+                    break
+                if w in onstack:
+                    low[v] = min(low[v], idx[w])
+            if pushed:
+                continue
+            if low[v] == idx[v]:
+                comp: list[str] = []
+                while True:
+                    w = stack.pop()
+                    onstack.discard(w)
+                    comp.append(w)
+                    if w == v:
+                        break
+                if len(comp) > 1:
+                    out.append(sorted(comp))
+            work.pop()
+            if work:
+                low[work[-1][0]] = min(low[work[-1][0]], low[v])
+    return out
+
+
+def _cyclic_dependencies(nodes: dict[str, GraphNode]) -> dict[str, Any]:
+    adj = _module_graph(nodes)
+    if len(adj) > MAX_CYCLE_MODULES:
+        return {"grade": "heuristic-med", "measured": False,
+                "note": f"모듈 {len(adj)}개 > {MAX_CYCLE_MODULES} — 순환 탐지 스킵(비용). 미측정(≠순환 없음)."}
+    cycles = _sccs(adj)
+    cycles.sort(key=lambda c: -len(c))
+    return {
+        "grade": "heuristic-med", "measured": True,
+        "cycle_count": len(cycles),
+        "cycles": [{"modules": c, "size": len(c)} for c in cycles[:20]],
+        "note": "모듈(=디렉터리) 수준 순환 의존(acyclic dependencies principle 위반). 툴 측 그래프 인덱스(LocAgent/RepoGraph) "
+                "탐색을 저해하는, 결정론적으로 신뢰 가능한 유일한 구조 신호에 가깝다. JS/TS 파일 간·Python top-level 패키지 순환에 유효하고 "
+                "Python 중첩 패키지 순환은 과소탐지될 수 있다(미측정≠없음). 그래도 등급엔 반영하지 않는다(진단).",
+    }
+
+
+def _exact_duplication(repo: Path, nodes: dict[str, GraphNode]) -> dict[str, Any]:
+    """Type-1/2(공백·식별자/리터럴 무시) 근사 중복만. Type-3/4(의미 중복)는 정적 도구로 측정 불가."""
+    buckets: dict[str, list[tuple[str, int]]] = defaultdict(list)
+    windows = 0
+    truncated = False
+    for rel, node in nodes.items():
+        if node.lines > 5000:
+            continue
+        text = read_text(repo / rel)
+        if not text:
+            continue
+        norms: list[str | None] = []
+        for ln in text.splitlines():
+            s = ln.strip()
+            if not s or s[0] in "#*" or s[:2] in ("//", "/*"):
+                norms.append(None)
+                continue
+            n = re.sub(r'"[^"\n]*"|\'[^\'\n]*\'|`[^`\n]*`', "§", s)   # 문자열 리터럴 → §
+            n = re.sub(r"\b\d[\w.]*\b", "№", n)                        # 숫자 리터럴 → №
+            n = re.sub(r"\s+", " ", n)
+            norms.append(n if len(n) >= 8 else None)                   # 사소한 라인 제외
+        i, total = 0, len(norms)
+        while i + DUP_MIN_RUN <= total:
+            window = norms[i:i + DUP_MIN_RUN]
+            gap = next((j for j, v in enumerate(window) if v is None), -1)
+            if gap != -1:
+                i += gap + 1
+                continue
+            buckets["\n".join(window)].append((rel, i + 1))  # 정규화 문자열 키(해시 충돌 없음)
+            windows += 1
+            i += 1
+            if windows >= DUP_MAX_WINDOWS:
+                truncated = True
+                break
+        if truncated:
+            break
+    clusters = []
+    for locs in buckets.values():
+        uniq = sorted(set(locs))
+        if len(uniq) >= 2:
+            files = sorted({r for r, _ in uniq})
+            clusters.append({"occurrences": len(uniq), "files": files[:6],
+                             "example": f"{uniq[0][0]}:{uniq[0][1]}", "run_lines": DUP_MIN_RUN})
+    clusters.sort(key=lambda c: -c["occurrences"])
+    return {
+        "grade": "heuristic-med", "measured": True, "truncated": truncated,
+        "cluster_count": len(clusters), "clusters": clusters[:DUP_MAX_CLUSTERS],
+        "note": "정확·매개변수 중복(Type-1/2, ~신뢰 가능)만. 의미 중복(Type-3/4)은 정적으로 측정 불가라 보고 안 함(누락≠없음).",
+    }
+
+
+def _over_abstraction(repo: Path, nodes: dict[str, GraphNode]) -> dict[str, Any]:
+    """단일 구현 TS 인터페이스 = premature abstraction/needless indirection 후보(heuristic-low).
+
+    과소구조(god-file)만 보던 기존 신호의 반대편 — 과대구조도 가독성을 해친다는 근거(over-applied
+    SOLID가 가독성을 낮춤)에 따른 진단. 판정이 아니라 사람이 볼 후보 목록이다.
+    """
+    iface_decls: dict[str, str] = {}
+    impls: dict[str, int] = defaultdict(int)
+    for rel, node in nodes.items():
+        if not rel.endswith((".ts", ".tsx")):
+            continue
+        text = read_text(repo / rel)
+        if not text:
+            continue
+        for m in re.finditer(r"\binterface\s+([A-Za-z_$][\w$]{0,63})", text):
+            iface_decls.setdefault(m.group(1), rel)
+        for m in re.finditer(r"\bimplements\s+([A-Za-z_$][\w$,\s]{0,200})", text):
+            for nm in re.split(r"[,\s]+", m.group(1).strip()):
+                if nm:
+                    impls[nm] += 1
+    single = [{"interface": name, "declared_in": loc}
+              for name, loc in sorted(iface_decls.items()) if impls.get(name, 0) == 1]
+    return {
+        "grade": "heuristic-low", "measured": bool(iface_decls),
+        "single_impl_interface_count": len(single), "examples": single[:20],
+        "note": "구현이 정확히 1개뿐인 TS 인터페이스(불필요한 간접참조 후보). 진단 신호일 뿐 — 정당한 경계일 수도 있어 사람이 판단.",
+    }
+
+
+def _identifier_clarity(repo: Path, nodes: dict[str, GraphNode]) -> dict[str, Any]:
+    """식별자 명료성·낮은 난독도(R12 갭)를 cartography 내부에서 채운다 — report-only.
+
+    선언(함수/클래스/최상위 변수) 이름 기준으로 무의미(tmp/data/x2..)·단일문자(비-관용) 식별자를 센다.
+    지역 변수·파라미터까지는 보지 않는다(선언 수준의 결정론 근사). **등급엔 반영하지 않는다**(session-1 C5).
+    """
+    total = 0
+    poor: list[dict[str, str]] = []
+    for rel, node in nodes.items():
+        ext = Path(rel).suffix
+        text = read_text(repo / rel)
+        if not text:
+            continue
+        if ext in (".py", ".pyi"):
+            names = RE_ID_PY.findall(text)
+        elif ext in JS_EXTS:
+            names = RE_ID_JS.findall(text)
+        else:
+            continue
+        for nm in names:
+            total += 1
+            if nm.lower() in NONDESCRIPTIVE_NAMES:
+                poor.append({"file": rel, "name": nm, "reason": "non-descriptive"})
+            elif len(nm) == 1 and nm.lower() not in IDIOMATIC_SHORT:
+                poor.append({"file": rel, "name": nm, "reason": "single-char"})
+    ratio = round(len(poor) / total, 3) if total else 0.0
+    return {
+        "grade": "heuristic-med", "measured": total > 0,
+        "declarations_scanned": total, "poor_count": len(poor), "poor_ratio": ratio,
+        "examples": poor[:20],
+        "note": "무의미·난독형 식별자(선언 기준)의 report-only 진단 — R12/session-1의 '식별자 명료성·낮은 난독도' "
+                "갭을 cartography 내부에서 채운다(난독→comprehension 저하, arXiv:2601.05485 CONFIRMED). "
+                "**등급엔 반영하지 않는다**(session-1 C5: readability→성공 인과 미확립). "
+                "지역 변수·파라미터·비-ASCII(유니코드) 식별자는 미측정(선언 수준 ASCII 근사 — 미측정≠명료함).",
+    }
+
+
+def compute_design_signals(repo: Path, nodes: dict[str, GraphNode]) -> dict[str, Any]:
+    """설계 원칙 관련 구조 신호(전부 report-only·등급 미반영). 개선 모드가 참고한다."""
+    hotspots = sorted(
+        (n for n in nodes.values() if (n.fan_in + n.fan_out) >= COUPLING_HOTSPOT),
+        key=lambda n: -(n.fan_in + n.fan_out),
+    )
+    return {
+        "identifier_clarity": _identifier_clarity(repo, nodes),
+        "_policy": "report-only — 등급/총점에 절대 반영하지 않는다. 근거: 고전 구조 지표는 코드 길이 통제 시 "
+                   "LLM 성능과 무상관(사람 대상 지표의 외삽)이고, 설계 원칙 점수화는 Goodhart/reward-hacking을 부른다. "
+                   "cartography는 이를 '진단 신호'로만 표면화한다(측정 모드 점수는 9카테고리 합 그대로).",
+        "cyclic_dependencies": _cyclic_dependencies(nodes),
+        "exact_duplication": _exact_duplication(repo, nodes),
+        "over_abstraction": _over_abstraction(repo, nodes),
+        "coupling_hotspots": {
+            "grade": "auto-med",
+            "note": "결합도(fan-in/out)는 god-file의 1급 신호(라인 수 아님). D 카테고리 채점에 이미 반영됨 — 여기선 목록만.",
+            "top": [{"path": n.rel, "fan_in": n.fan_in, "fan_out": n.fan_out,
+                     "coupling": n.fan_in + n.fan_out} for n in hotspots[:15]],
+        },
+    }
+
+
+# ----------------------------------------------------------------------------
 # Build report
 # ----------------------------------------------------------------------------
 def git_branch(repo: Path) -> str:
@@ -1147,6 +1417,7 @@ def build_report(repo: Path) -> Report:
     actions = derive_actions(cats, gates, refint, verif, nodes)
     insights = generate_insights(cats, total, grade, capped, raw_grade, gates)
     large = find_large_files(nodes)
+    design_signals = compute_design_signals(repo, nodes)
 
     return Report(
         meta={
@@ -1165,6 +1436,7 @@ def build_report(repo: Path) -> Report:
             "modules": [{"rel": m.rel, "code_files": m.code_files, "has_context": m.has_context,
                          "context_kind": m.context_kind} for m in modules],
             "large_files": large,
+            "design_signals": design_signals,
             "gate_ceiling_note": "gate 실패 시 등급 상한 AI-Fragile — blocking 결함이 다른 고득점에 희석되지 않게(Kenogami lowest-as-ceiling)",
         },
     )
@@ -1247,6 +1519,31 @@ def render_markdown(report: Report) -> str:
         L.append("## Large / Coupled Files (결합도 우선 · 라인 수는 보조·근거 약함)")
         for lf in report.extras["large_files"][:10]:
             L.append(f"- {lf['path']} — {lf['lines']} lines · coupling {lf['coupling']}(in{lf['fan_in']}/out{lf['fan_out']})")
+        L.append("")
+    ds = report.extras.get("design_signals")
+    if ds:
+        L.append("## Design Signals (진단 전용 · **등급/총점에 미반영**)")
+        L.append(f"> {ds['_policy']}")
+        cyc = ds["cyclic_dependencies"]
+        if cyc.get("measured"):
+            L.append(f"- **순환 의존(모듈)**: {cyc['cycle_count']}개 그룹 [{cyc['grade']}] — {cyc['note']}")
+            for c in cyc["cycles"][:5]:
+                L.append(f"  - 순환({c['size']}): {' ↔ '.join(c['modules'][:6])}")
+        else:
+            L.append(f"- **순환 의존(모듈)**: 미측정 — {cyc.get('note','')}")
+        dup = ds["exact_duplication"]
+        trunc = " (일부 truncated)" if dup.get("truncated") else ""
+        L.append(f"- **정확 중복(Type-1/2)**: {dup['cluster_count']}개 클러스터{trunc} [{dup['grade']}] — {dup['note']}")
+        for c in dup["clusters"][:5]:
+            L.append(f"  - {c['occurrences']}회 반복 · 예: {c['example']} (파일 {len(c['files'])}개)")
+        ic = ds.get("identifier_clarity")
+        if ic and ic.get("measured"):
+            L.append(f"- **식별자 명료성(R12)**: 무의미·난독형 {ic['poor_count']}/{ic['declarations_scanned']}건(비율 {ic['poor_ratio']}) [{ic['grade']}] — {ic['note']}")
+        oa = ds["over_abstraction"]
+        L.append(f"- **과대추상(단일 구현 인터페이스)**: {oa['single_impl_interface_count']}건 [{oa['grade']}] — {oa['note']}")
+        ch = ds["coupling_hotspots"]
+        if ch["top"]:
+            L.append(f"- **결합 hotspot**: {len(ch['top'])}건 [{ch['grade']}] — {ch['note']}")
         L.append("")
     return "\n".join(L)
 

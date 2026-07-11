@@ -14,6 +14,10 @@
 | 3 | hallucinated reference/grounding 검증·stale 문서 위험 | E·F | [session-3-grounding-hallucination.md](session-3-grounding-hallucination.md) |
 | 4 | repo 구조(모듈 경계·의존 그래프·god file) ↔ 편집 정확도·localization | D·A | [session-4-repo-structure.md](session-4-repo-structure.md) |
 | 5 | agentic 벤치마크 ↔ repo readiness 정량 조작화 방법론 | 전체 집계 구조 | [session-5-benchmark-operationalization.md](session-5-benchmark-operationalization.md) |
+| 6 | 설계 원칙(SOLID·응집/결합·복잡도·중복) ↔ AI 준비도: 왜 진단 신호(report-only)이고 점수화 아닌가 | extras.design_signals | [session-6-design-principles.md](session-6-design-principles.md) |
+| 7 | **코드 본문 층위(주석·명명·granularity)를 모드 ③로 흡수** — 무엇이 scorable 아니고 report-only인가·명명 인과·툴그래프 오귀속 금지 | 모드 ③·body-legibility/ | [session-7-body-legibility-integration.md](session-7-body-legibility-integration.md) |
+
+> **모드 ③(코드 본문 층위) 근거 dossier**는 [`body-legibility/`](body-legibility/README.md)에 별도로 있다(흡수한 code-legibility 원본 — naming·comments·structure·safe-application·measurement-delta, 적대 검증 24 confirmed/1 refuted).
 
 ---
 

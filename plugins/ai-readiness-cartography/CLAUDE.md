@@ -1,6 +1,6 @@
 # ai-readiness-cartography
 
-임의 git 저장소가 **AI 코딩 에이전트가 읽고 안전하게 기여할 수 있는 코드베이스**인지를 **측정하고(결정론 스코어러) 개선을 설계하는(멀티 에이전트)** 도메인 무관 단일 스킬(2 모드). 측정 모드는 100점·9 카테고리 + 3 gate로 채점해 JSON 점수표 + HTML 대시보드 + ROI 가이드를 내고, 진단·개선 모드는 그 측정을 센서로 삼아 2축 진단 → 빌드 가드레일 → standalone → 수용 증명·재측정을 4에이전트로 설계한다.
+임의 git 저장소가 **AI 코딩 에이전트가 읽고 안전하게 기여할 수 있는 코드베이스**인지를 **측정하고(결정론 스코어러) 개선을 설계하며(멀티 에이전트) 코드 본문을 승인 후 수정하는** 도메인 무관 단일 스킬(**3 모드**). ① 측정 모드는 100점·9 카테고리 + 3 gate로 채점해 JSON 점수표 + HTML 대시보드 + ROI 가이드를 낸다. ② 진단·개선 모드는 그 측정을 센서로 2축 진단 → 빌드 가드레일 → standalone → 수용 증명·재측정을 4에이전트로 설계한다. **③ 코드 본문 층위 모드**(구 code-legibility-harness 흡수·v0.3.0)는 `legibility_scan.py` census(등급 없음)를 seed로 주석·명명·함수/모듈 granularity를 다각도 진단하고, **3게이트 승인(계획→개별→최종) 뒤에만 단계별로 코드를 수정**한다(P1 오도·stale 주석 삭제→P2 안전 리네임(AST/LSP)→P3 검증된 계약 주석→P4 구조 opt-in). **①②는 코드를 수정하지 않고(제안·설계만), ③만 승인 후 수정하며 저장소 층 등급을 만들지 않는다(census만).**
 
 사용자용 개요·사용법은 [README.md](README.md) 참조.
 
@@ -11,23 +11,31 @@ ai-readiness-cartography/
 ├── .claude-plugin/plugin.json
 ├── CLAUDE.md                        # (이 문서) 포인터 + 루브릭 요약 + 변경 이력
 ├── README.md                        # 사용자용 개요·사용법·경계·근거
-├── agents/                          # 진단·개선 모드 4 에이전트 (모두 model: "opus")
-│   ├── accessibility-assessor.md    # Phase 0 — score.py seed 위 2축(Q/A) 진단 + 5밴드 등급 + Gate-3 예비판정
-│   ├── guardrail-architect.md       # Phase 1 — 빌드 가드레일(의존 방향 물리 강제 + 피드백 3차원)
-│   ├── standalone-designer.md       # Phase 2 — 도메인 슬라이스 독립 실행(port/adapter·use-case seed)
-│   └── acceptance-verifier.md       # Phase 3 — 수용 증명 + 결정론 델타(score.py 재실행) 위 강제 probe로 재측정
+├── agents/                          # 8 에이전트 (모두 model: "opus")
+│   ├── accessibility-assessor.md    # ②Phase 0 — score.py seed 위 2축(Q/A) 진단 + 5밴드 등급 + Gate-3 예비판정
+│   ├── guardrail-architect.md       # ②Phase 1 — 빌드 가드레일(의존 방향 물리 강제 + 피드백 3차원)
+│   ├── standalone-designer.md       # ②Phase 2 — 도메인 슬라이스 독립 실행(port/adapter·use-case seed)
+│   ├── acceptance-verifier.md       # ②Phase 3 — 수용 증명 + 결정론 델타(score.py 재실행) 위 강제 probe
+│   ├── comment-auditor.md           # ③ — 주석 4분류(오도/stale/noise/유효) → C0·C1 후보
+│   ├── naming-analyst.md            # ③ — 명명 3축(오도>무의미>모호) → C2 후보 + 도구·위험 판정
+│   ├── structure-cartographer.md    # ③ — 구조 후보(opt-in·"효과=추론" 라벨 필수)
+│   └── behavior-guard.md            # ③ — 개입 클래스별 센서 실행·관측 (generator≠checker)
 └── skills/
     └── ai-readiness-cartography/
-        ├── SKILL.md                 # 오케스트레이터(모드 게이트 → 측정 워크플로 / 진단·개선 4-Phase)
-        ├── scripts/score.py         # v3 결정론적 스코어러(stdlib only, gating·import 그래프·결합도, htmlsafe.json 동시 출력)
-        ├── scripts/test_score.py    # 회귀 테스트(가중치 불변식·골든 픽스처·Gate-1 정밀도·htmlsafe)
-        ├── assets/template.html     # 복사 후 채울 대시보드 원본(Inter/JetBrains Mono, 인라인 SVG)
+        ├── SKILL.md                 # 오케스트레이터(모드 게이트 → ① 측정 / ② 진단·개선 4-Phase / ③ 본문 5-Phase(B0~B4·3게이트))
+        ├── scripts/score.py         # ① v3 결정론 스코어러(gating·import 그래프·결합도·design_signals report-only·htmlsafe)
+        ├── scripts/test_score.py    # ① 회귀 테스트(가중치 불변식·골든·Gate-1·design_signals 불변)
+        ├── scripts/legibility_scan.py       # ③ 코드 본문 census 스캐너(stdlib only·등급 없음·7 탐지기)
+        ├── scripts/test_legibility_scan.py  # ③ 회귀 테스트(49건·불변식·독립성 핀)
+        ├── assets/template.html     # ① 대시보드 원본
         └── references/
-            ├── scoring-rubric.md                    # v3 루브릭(9 카테고리 + 3 gate, 근거 등급·auto/manual 라벨)
-            ├── ai-readable-codebase-principles.md   # 진단·개선 모드 원리(2축·빌드 가드레일·피드백 3차원·standalone·수용 증명)
-            ├── ai-readiness-cartography-research.md  # 측정 근거 dossier 인덱스
-            ├── ai-readable-codebase-research.md      # 개선 모드 근거 dossier(flex 5부작 + 2025+)
-            └── research/                            # 2025~2026 1차 근거(합성 + 5 세션, 적대 검증)
+            ├── scoring-rubric.md                    # ① v3 루브릭(9 카테고리 + 3 gate)
+            ├── ai-readable-codebase-principles.md   # ② 개선 모드 원리
+            ├── intervention-catalog.md              # ③ 개입 카드 C0~C3 정본(근거·위험·센서·거부 조건)
+            ├── legibility-principles.md             # ③ 본문 층위 원리(삭제>추가·이름은 채널·테스트≠등가성 오라클)
+            ├── ai-readiness-cartography-research.md  # 측정 근거 인덱스
+            ├── ai-readable-codebase-research.md      # 개선 근거
+            └── research/                            # 1차 근거(session 1~7 + body-legibility/ dossier, 적대 검증)
 └── evals/
     ├── evals.json                   # 수용 평가(루브릭·모드 불변식 file:section 인용 채점)
     └── trigger-eval.json            # 트리거 경계 평가(측정/개선 모드 + 인접 도메인 가드)
@@ -58,6 +66,7 @@ ai-readiness-cartography/
 - **A축 ≠ Q축 · 구조가 프롬프트보다 먼저 · 빌드가 강제하고 문서가 설명한다**: (개선 모드) 코드 품질과 AI 접근성은 별개 축. 빌드로 잡을 수 있는 것을 산문에 맡기지 않고, 가장 중요한 규칙을 가장 빠른 계층(컴파일)에서 잡는다.
 - **문서 존재 ≠ 좋음**: 컨텍스트 보유율은 점수화하지 않는다(ETH Zurich 2602.11988 반증). novelty·비중복·command-first만 가점.
 - **god-file=결합도**: fan-in/out가 1급, 라인 수(>500)는 "근거 약함" 보조 신호(session-4 C8).
+- **설계 원칙은 진단만, 점수화 안 함**: SOLID·응집/결합·복잡도·LCOM·중복 등은 `extras.design_signals`(report-only)로만 표면화하고 **100점 등급에 넣지 않는다** — 고전 구조 지표는 코드 길이 통제 시 LLM 성능과 무상관(session-6·보유율 미점수화와 같은 기준)이고 준수도 점수화는 Goodhart/reward-hacking을 부른다. 신뢰 가능·에이전트 관련 신호만 진단: **식별자 명료성(R12: 무의미·난독형 선언 이름 비율 — 자기 갭을 내부에서 채움)**·모듈 순환 의존(acyclic dependencies)·정확 중복(Type-1/2)·과대추상(단일 구현 인터페이스)·결합 hotspot. 미채택: 복잡도/LCOM 점수·의미 중복·DI/IoC 준수도. `test_score.py`가 "총점=9카테고리 합" 불변식을 고정한다.
 - **generator/checker 분리**: 개선 모드에서 가드레일·standalone을 *설계*한 에이전트(Phase 1/2)와 등급을 *재측정*하는 검증자(Phase 3)를 분리한다.
 - **제안만(사람 집행)**: 코드를 자동 수정하지 않는다. 측정·시각화·설계 제안만.
 - **과장 금지**: 외부 정량 수치는 근거 등급·CAVEAT와 함께만, "개선 N% 보장" 금지.
@@ -68,6 +77,9 @@ ai-readiness-cartography/
 
 | 날짜 | 변경 | 내용 |
 |------|------|------|
+| 2026-07-12 | code-legibility-harness 흡수 → 모드 ③ 신설 (v0.3.0) | 사용자 요청 — 별도 플러그인 `code-legibility-harness`의 **코드 본문 층위 진단 + 승인 후 단계별 적용**을 이 플러그인의 **모드 ③**으로 흡수하고 code-legibility 플러그인은 제거(마켓플레이스 단일화, ai-readable-codebase 흡수와 동형). `/deep-research`(104 에이전트·적대 검증 완료) 근거로 통합. **가져온 것**: `legibility_scan.py`(census 스캐너·등급 없음·7 탐지기) + `test_legibility_scan.py`(49건) + 4 에이전트(comment-auditor/naming-analyst/structure-cartographer/behavior-guard) + intervention-catalog·legibility-principles + research/body-legibility/ dossier. SKILL에 모드 ③ 워크플로(B0 스코프(C0~C3 체크박스)→B1 census+다각도 진단→B2 제안표+게이트 A→B3 개별 적용+게이트 B(behavior-guard 센서 실행)→B4 재확인+게이트 C) + 모드 게이트 3분기 추가. **핵심 정직성(session-7 근거)**: **모드 ③는 저장소 층 등급(0~100)을 만들지 않는다** — 본문 층 신호는 거의 전부 report-only(주석↔코드 정합성 현실분포 정밀 0.39·자동 주석 생성 ~20~45% 부정확·Type-4 클론 93% 오라벨·구조 리팩터 효과=추론 O-1). 명명 채널만 실측 인과(구조보존 난독화 -11~-29pt), 오도 주석 삭제(P1)만 위험 0. **저장소 층 델타(LocAgent 92.7%·RepoGraph +32.8%)는 툴 그래프 인덱스 효과지 본문 수정 효과 아님(오귀속·Goodhart 금지)**. ①②는 코드 수정 안 함·③만 3게이트 승인 후 수정·리네임=AST/LSP 위임·"테스트 통과≠동작 보존"·커밋 안 함. 테스트 25(score)+49(legibility)=74건. |
+| 2026-07-11 | 식별자 명료성(R12) 자기 갭 내부 구현 (v0.2.3) | 사용자 요청 — code-legibility-harness의 이번 회차 수정은 롤백하고, cartography가 **자매 플러그인에 의존하지 않도록**(측정 결과: cartography→code-legibility 종속 패스는 애초에 없었음) cartography의 **자체 미구현 갭**을 내부에서 채움. score.py `compute_design_signals`에 **`identifier_clarity`**(report-only) 추가 — 선언(함수/클래스/최상위 변수) 이름 기준 무의미(tmp/data/foo…)·단일문자(비-관용) 식별자 비율. cartography 자신의 **R12/session-1 C3~C5**("readability 지표 = 식별자 명료성·낮은 난독도", 난독→comprehension 저하 arXiv:2601.05485 CONFIRMED)가 요구했으나 v3 9카테고리에 없던 빈칸(code-legibility가 채우던 것)을 흡수. **등급 미반영**(session-1 C5: readability→성공 인과 미확립 — 사용자와 report-only 합의). 지역 변수·파라미터·비-ASCII 식별자는 미측정(선언 수준 ASCII 근사·미측정≠명료함). rubric Design Signals 표·accessibility-assessor 반영. **검증 2회차 + 예상 시나리오 실행**으로 발견·수정: (1) `identifier_clarity` note에 비-ASCII 미측정 명시(honesty), (2) **순환 의존 모듈 granularity를 top-level 세그먼트 → 디렉터리 수준으로 교정** — src/-루트 저장소에서 모든 파일이 'src' 한 모듈로 붕괴해 intra-src 순환(services↔utils)을 놓치던 것을 실측으로 발견, 디렉터리 기준(예: src/services)으로 잡도록 수정(JS/TS·top-level Python 패키지 유효, Python 중첩 패키지는 과소탐지 명시). 엣지 배터리(빈 repo·바이너리·대용량·유니코드·ReDoS 0.003s·결정론·손상 Python·htmlsafe XSS) 통과. 테스트 21→25건(총점 불변 핀·src-nested 순환 회귀 핀 포함). |
+| 2026-07-11 | 설계 원칙 진단 신호 추가 (v0.2.2) | 사용자 요청(SOLID·응집/결합·복잡도·중복 등을 측정·점수화)을 deep-research(24소스, 핵심 4건 적대 검증 완료·나머지 sourced)로 검토 → **점수화가 아니라 진단(report-only)** 으로 반영(사용자 합의). score.py에 `extras.design_signals` 신설 — **모듈 순환 의존**(Tarjan SCC, 기존 import 그래프 재사용·acyclic dependencies principle)·**정확 중복**(Type-1/2 정규화 라인 매칭, 문자열/숫자/공백 무시·의미 중복은 측정 불가라 미보고)·**과대추상**(단일 구현 TS 인터페이스, over-applied SOLID 반대편 신호)·**결합 hotspot**(재노출). 전부 등급/총점에 **미반영**(9카테고리 합 불변). **왜 점수화 안 하나**(session-6 신설): 고전 구조 지표(cyclomatic·LCOM·MI)는 코드 길이 통제 시 LLM 성능과 **무상관**(보유율 미점수화와 같은 기준)·설계 원칙 점수화는 **Goodhart/reward-hacking**(정적 스멜 오라클은 표면 변형으로 게임)·LCOM은 8변종 신뢰 불가. rubric '넣지 말 것'+Design Signals 절, 개선 모드 2에이전트(순환=가드레일 1급 표적·과대추상=간접참조 축소 후보) 반영. 테스트 15→21건(순환·중복·과대추상 탐지 + 총점 불변 핀). ReDoS-safe·비용 상한(윈도우·모듈 수). |
 | 2026-07-07 | 신뢰 불가 repo 하드닝 (v0.2.1) | 보안 검토(재현 검증) 발견 4건 수정 — **(1) RE_LINE_RANGE ReDoS**: 좌측 경계 lookbehind 부재로 긴 문자 런에서 O(n²) 백트래킹(5MB 한 줄 README로 수 분 CPU, 재현) → 형제 regex(RE_PATH_REF)와 동일한 `(?<![A-Za-z0-9_/])` 추가. **(2) 최상위 심링크 path traversal**: `is_dir()`가 심링크를 따라가 repo 밖을 가리키는 최상위 심링크가 모듈로 채택·repo 밖 파일 읽음(재현) → `is_symlink()` 선제 배제(모듈 탐색 + apps/packages/services/plugins 하위). **(3) Gate-1 거짓 실패**: MAX_READ_BYTES 초과 파일의 count_lines=0을 "0줄"로 오독해 정상 대형 파일(schema.sql 등) range 참조가 전부 dangling→등급 오상한(재현) → 측정 불가면 판정 안 함(스코어러 정직성). **(4) null byte .py**: ast.parse가 SyntaxError 아닌 ValueError를 던져 전체 스캔 중단 → parse 실패로 처리. test_score.py 11→15건(4건 모두 회귀 핀) |
 | 2026-07-05 | ai-readable-codebase 흡수 (v0.2.0) | 별도 플러그인 `ai-readable-codebase`(2축 진단→빌드 가드레일→standalone→수용 증명 4에이전트 하네스)를 이 플러그인의 **진단·개선 모드**로 흡수. 단일 스킬 2모드(측정/개선)로 통합, 4 에이전트(agents/) + 원리·근거 dossier 이관. **등급 단일화**: 폐기된 L1~L5 대신 score.py 5밴드로 통합하고 enforcement 축을 신규 **Gate-3 Architecture Enforcement**(Heuristic·개선 모드 전용)로 흡수(2→3 gate). score.py를 개선 모드의 결정론 센서(Phase 0 seed·Phase 3 재측정 델타)로 배선 — codebase가 LLM 판단으로만 주장하던 "계산적 통제·reward-hacking 가드"를 실제 코드로 충족. "단일 스킬이므로 에이전트 팀 없음" 정체성 규칙 제거. |
 | 2026-07-03 | 다각도 검토 반영 (v0.1.1) | score.py 보강 — E1↔Gate-1 비대칭 해소·Gate-2 관대함 축소·`*.htmlsafe.json` 동시 출력(대시보드 XSS 차단을 결정론 코드로)·main() 예외 가드·read_text lru_cache. test_score.py 신설(11건). |
