@@ -355,27 +355,35 @@ plugins/
     evals/
       evals.json                                         # 수용 평가 (핵심 불변식 file:section 인용 채점)
       trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 14, 인접 도메인 reciprocal 가드)
-  ai-readiness-cartography/                             # [독립 플러그인] 임의 git 저장소가 'AI 에이전트가 읽고 안전하게 기여할 수 있는 코드베이스'인지를 측정하고(결정론 스코어러) 개선을 설계하는(멀티 에이전트) 단일 스킬(2모드). ① 측정: score.py 100점·9카테고리 + 3 blocking gate(Gate-1/2 Auto·Gate-3 Heuristic·gating) → JSON+HTML 대시보드+ROI. ② 진단·개선: score.py 센서 위 2축 진단→빌드 가드레일→standalone→수용 증명·재측정 4에이전트. 등급 단일 5밴드(L1~L5 폐기, enforcement는 Gate-3로 흡수). 별도 ai-readable-codebase 플러그인을 진단·개선 모드로 흡수(v0.2.0)
+  ai-readiness-cartography/                             # [독립 플러그인] 임의 git 저장소가 'AI 에이전트가 읽고 안전하게 기여할 수 있는 코드베이스'인지를 측정하고(결정론 스코어러) 개선을 설계하며 코드 본문을 승인 후 수정하는(멀티 에이전트) 단일 스킬(3모드·자유 조합). ① 측정: score.py 100점·9카테고리 + 3 blocking gate(Gate-1/2 Auto·Gate-3 Heuristic·gating) → JSON+HTML 대시보드+ROI. ② 진단·개선: score.py 센서 위 2축 진단→빌드 가드레일→standalone→계획·개별 승인 뒤 코드 적용(S/M/L·고위험 opt-in·AST/LSP·behavior 센서)→수용 증명·재측정 4에이전트. ③ 코드 본문 층위: legibility_scan.py census→주석·명명·granularity 진단→3게이트 승인 후 코드 수정 4에이전트. 세 모드는 배타 아닌 자유 조합(여러 개면 ①→②→③ 순·score.py는 ①②가 1회 공유·②+③이면 구조 리팩터는 ②가 적용하고 ③의 C3는 끔). 등급 단일 5밴드(L1~L5 폐기, enforcement는 Gate-3로 흡수). 별도 ai-readable-codebase(v0.2.0)·code-legibility-harness(v0.3.0) 흡수·모드 게이트 자유 조합 전환(v0.3.1)
     .claude-plugin/
       plugin.json
     CLAUDE.md                                            # 하네스 포인터 + 루브릭 요약(3 gate) + 변경 이력
-    README.md                                            # 사용자용 개요·사용법·경계·근거(2모드)
-    agents/                                              # 진단·개선 모드 4 에이전트 (모두 model: "opus")
+    README.md                                            # 사용자용 개요·사용법·경계·근거(3모드·자유 조합)
+    agents/                                              # 8 에이전트 (② 개선 4 + ③ 본문 4, 모두 model: "opus")
       accessibility-assessor.md                          # Phase 0 Assess — score.py seed 위 2축(Q/A) 진단 + 5밴드 등급 + Gate-3 예비판정
       guardrail-architect.md                             # Phase 1 Guardrails — 빌드가 강제·문서가 설명(의존 방향 물리 강제 + 피드백 3차원 + 역할 분담)
       standalone-designer.md                             # Phase 2 Standalone — 도메인 슬라이스 독립 실행(port/adapter 치환·use-case seed·명시적 제외)
-      acceptance-verifier.md                             # Phase 3 Acceptance & Re-grade — 수용 증명 + 결정론 델타(score.py 재실행) 위 강제 probe로 Gate-3·등급 재측정
+      acceptance-verifier.md                             # Phase 4 Acceptance & Re-grade — 수용 증명 + 결정론 델타(score.py 재실행) 위 강제 probe로 Gate-3·등급 재측정
+      comment-auditor.md                                 # ③ 본문 — 주석 4분류(오도/stale/noise/유효) → C0·C1 후보
+      naming-analyst.md                                  # ③ 본문 — 명명 3축(오도>무의미>모호) → C2 후보 + 도구·위험 판정
+      structure-cartographer.md                          # ③ 본문 — 구조 후보(opt-in·'효과=추론' 라벨 필수)
+      behavior-guard.md                                  # ③ 본문 — 개입 클래스별 센서 실행·관측 (generator≠checker)
     skills/
-      ai-readiness-cartography/                          # 진입점 오케스트레이터 (모드 게이트 → 측정 워크플로 / 진단·개선 4-Phase)
+      ai-readiness-cartography/                          # 진입점 오케스트레이터 (모드 선택=①②③ 부분집합 → ①→②→③ 순차; ② 5-Phase(0~4·Phase 3 Apply 게이트)·③ 5-Phase B0~B4·3게이트)
         SKILL.md
         scripts/
           score.py                                       #   v3 결정론적 스코어러 (stdlib only, gating·import 그래프 파싱·결합도 god-file·reference integrity, htmlsafe.json 동시 출력)
-          test_score.py                                  #   회귀 테스트 (unittest — 가중치 불변식·골든 픽스처·Gate-1 정밀도·htmlsafe 이스케이프)
+          test_score.py                                  #   회귀 테스트 (unittest — 가중치 불변식·골든 픽스처·Gate-1 정밀도·htmlsafe·design_signals report-only 불변)
+          legibility_scan.py                             #   ③ 본문 census 스캐너 (stdlib only·등급 없음·7 탐지기: N1~N4 명명·C1~C6 주석·unit_sizes 구조)
+          test_legibility_scan.py                        #   ③ 회귀 테스트 (49건·등급 안 만듦·stdlib-only·스코프 이스케이프 핀)
         assets/
           template.html                                  #   대시보드 원본 (Inter/JetBrains Mono·인라인 SVG·gate strip·9카테고리 차트)
         references/
           scoring-rubric.md                              #   v3 루브릭 (9카테고리 + 3 gate: Gate-1/2 Auto·Gate-3 Heuristic, 근거 등급·auto/heuristic/manual 라벨)
           ai-readable-codebase-principles.md             #   진단·개선 모드 원리 (2축·빌드 가드레일·피드백 3차원·standalone·수용 증명·anti-pattern)
+          intervention-catalog.md                        #   ③ 개입 카드 C0~C3 정본 (근거·위험·1급 센서·거부 조건)
+          legibility-principles.md                       #   ③ 본문 층위 원리 (삭제>추가·이름은 채널·테스트≠등가성 오라클)
           ai-readable-codebase-research.md               #   개선 모드 근거 dossier (flex 5부작 + 2025+ 출처·인용·vote·CAVEAT)
           ai-readiness-cartography-research.md           #   측정 근거 dossier 인덱스 (루브릭→근거 매핑·정직성 노트)
           research/                                      #   2025~2026 1차 근거 (deep-research 5세션 적대 검증)
@@ -385,9 +393,12 @@ plugins/
             session-3-grounding-hallucination.md         #     USENIX slopsquatting(2025)·Ashik(2604.09515) — E1 gate·stale drift
             session-4-repo-structure.md                  #     LocAgent(2503.09089)·RepoMirage(2605.26177) — 의존 그래프·결합도 god-file
             session-5-benchmark-operationalization.md    #     Factory/Kenogami readiness — gating 집계·H/I 신규
+            session-6-design-principles.md               #     SOLID·응집/결합·복잡도·중복 → 왜 report-only이고 점수화 아닌가(extras.design_signals)
+            session-7-body-legibility-integration.md     #     코드 본문 층위 모드 ③ 흡수 — scorable 아닌 report-only·명명 인과·툴그래프 오귀속 금지
+            body-legibility/                             #     ③ 근거 dossier (naming·comments·structure·safe-application·measurement-delta·README, 적대 검증 24 confirmed/1 refuted)
     evals/
-      evals.json                                         # 수용 평가 (2모드 불변식 file:section·score.py 함수 인용 채점)
-      trigger-eval.json                                  # 트리거 경계 평가 (측정+개선 should_trigger 15 / 인접 도메인 should_not 14)
+      evals.json                                         # 수용 평가 (3모드 불변식 file:section·score.py 함수 인용 채점)
+      trigger-eval.json                                  # 트리거 경계 평가 (측정+개선+본문+조합 should_trigger 19 / 인접 도메인 should_not 14)
   token-efficiency/                                    # [독립 플러그인] Claude Code 세션 JSONL 로그를 파싱해 레포 단위 토큰/컨텍스트 효율을 결정론적으로 측정·시각화하고 $ 절감안을 내는 단일 스킬 (4축 가중 점수 + 8개 비효율 탐지기 + 세션별 모델가 낭비 추정 → JSON 2종 + 오프라인/CSP 안전 HTML 대시보드). 에이전트 팀 없음. ai-readiness-cartography(정적 저장소 구조)와 상보(런타임 세션 로그 vs 정적 구조). 외부 스킬 improve-token-efficiency를 deep-research 5세션 적대 검증으로 개선
     .claude-plugin/
       plugin.json
