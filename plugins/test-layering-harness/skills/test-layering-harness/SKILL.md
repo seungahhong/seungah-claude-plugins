@@ -130,7 +130,8 @@ allowed-tools: Read, Write, Edit, Bash, Grep, Glob
    - **조합 프로필에 오라클 강도를 맞춘다**: Smoke×*는 얕은 reachability로 충분하되 "초록=검증" 오독 금지, Regression×{Unit,Integration}은 강한 값-동등/행위 보존 오라클을 요구(implementation-bias·green-locks-bug 최대 리스크), E2E 정확출력이 비현실적이면 메타모픽 관계(MR)를 옵션으로.
    - 첫 테스트 적용 전, 대상 영역의 **기존 flaky를 점검**한다(flakiness 전이 방지). 정렬 순서 의존(ORDER BY 누락류)을 특히 경계.
 2. **테스트 코드 draft 제시**: 감지된 프레임워크·디렉토리 관습에 맞춰 작성. 오라클을 명시하고 스모크·동어반복 어서션을 넣지 않는다. GWT→AAA 구조를 따른다.
-   - **배치·mock 규약**(계층 카드 §5): **unit/integration**은 테스트 대상(컴포넌트/유틸) 파일이 있는 폴더에 `__test__/`를 만들어 그 안에 `*.test.*`로 둔다 — **단 Phase 0에서 이미 co-location 관습(예 `__tests__` 복수·`test/`)이 감지되면 그 관습을 따르고(분산 방지), 없을 때 `__test__/`를 기본값**으로 한다. 외부 API는 **실제 응답을 캡처한 mock(fixture)** 로 double한다(live 호출 금지·fixture 커밋). **E2E**는 Phase 1에서 입력받은 경로에 여정 스펙을 둔다. **nightly** full-suite도 캡처 mock로 결정론 실행(cross-browser/real-device는 실제·API는 mock).
+   - **배치·mock 규약**(계층 카드 §5): **unit/integration**은 테스트 대상(컴포넌트/유틸) 파일이 있는 **바로 그 폴더에 `__test__/` 디렉토리를 만들어**(없으면 생성) 그 안에 `*.test.*`로 둔다. **⚠️ `__test__/`는 무조건 강제(스코프 가드·3게이트와 동급 불변식) — 저장소에 이미 다른 배치 관습(`__tests__` 복수·`test/`·소스 폴더 bare `*.test.ts`)이 감지돼도 그 관습으로 대체하지 않고 항상 `__test__/`를 만들어 그 안에 둔다.** 러너 config가 특정 폴더로만 매칭을 제한해 `__test__/`가 안 잡히면 관습을 바꾸는 게 아니라 testMatch/include 조정을 이 게이트 B에서 제안한다('확인 필요'). 외부 API는 **실제 응답을 캡처한 mock(fixture)** 로 double한다(live 호출 금지·fixture 커밋). **E2E**는 Phase 1에서 입력받은 경로에 여정 스펙을 둔다(E2E는 `__test__/` 강제 대상 아님 — 별도 러너·디렉토리 관습). **nightly** full-suite도 캡처 mock로 결정론 실행(cross-browser/real-device는 실제·API는 mock).
+   - **배치 강제 검사(이 편차가 이 스킬의 흔한 실수)**: (a) **작성 전** — draft의 테스트 파일 경로가 `<대상 파일 폴더>/__test__/…`(unit/integration)인지 확인하고, 아니면 draft를 거부·경로를 `__test__/` 아래로 교정한 뒤에만 게이트 B로 넘긴다. (b) **작성 시** — `__test__/` 디렉토리가 없으면 파일 쓰기와 함께 생성한다(Write는 상위 폴더를 만들지만, mkdir이 필요한 러너 셋업이면 명시적으로 만든다). (c) **작성 후** — 실제 생성 경로가 `__test__/` 아래인지 확인(`Glob`/`ls`)하고 진행 보고에 경로를 남긴다.
 2-b. **스위트 태그를 코드에 물리적으로 부여**(`references/test-layering-principles.md` §3.5.2):
    - durable 스위트(Smoke/Regression/nightly)에 배치된 테스트는 draft를 쓸 때 **러너 네이티브 기법으로 태그를 코드에 물리적으로 붙인다** — Playwright `{ tag: '@smoke' }`(1.42+), Vitest `{ tags: ['smoke'] }`(4.1.0+, config 선언 필요), Jest는 네이티브 태그가 없으므로 제목 `@smoke`+`-t` 또는 파일명 `*.smoke.test.ts`+projects. 계획 라벨만 있고 코드 태그가 없는 durable 테스트는 **실체화 실패로 거부/수정**한다(phantom suite 방지).
    - **sanity는 태그를 심지 않는다** — 변경-스코프 선택 레시피로만 처리(§3.5.3). `@sanity` 태그 부여 금지(무-태그 가드).
@@ -177,6 +178,7 @@ allowed-tools: Read, Write, Edit, Bash, Grep, Glob
 - [ ] **prioritization으로 CI 비용 절감을 주장하지 않았는가**(latency만; selection·batching·병렬화로)?
 - [ ] 근거 없는 효과 수치를 인용하지 않았는가?
 - [ ] 모든 오라클을 기대(AC) 기준으로 오검증했는가(구현 스냅샷 거부)?
+- [ ] **배치 강제** — unit/integration 테스트를 **모두** 대상 파일 폴더의 `__test__/` 안에 두었는가? 저장소에 다른 관습이 있어도 예외 없이 `__test__/`를 만들었고, 작성 전 경로 검사·작성 후 경로 확인을 했는가(E2E는 Phase 1 경로 별개)?
 - [ ] 적용된 테스트를 실제로 실행해 결과를 확인했는가(자기보고 금지)?
 - [ ] 3개 게이트(계획→개별→최종)를 모두 통과했는가?
 - [ ] 커밋을 직접 하지 않고 git-harness로 핸드오프만 제안했는가?

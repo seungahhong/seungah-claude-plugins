@@ -94,6 +94,7 @@ python3 skills/ai-readiness-cartography/scripts/score.py /path/to/repo \
 - score.py가 flag한 E1 dangling은 *후보* — LLM이 illustrative/placeholder를 걸러 실 dangling만 gate에 반영.
 - 근거 부재 신호(라인 수 god-file 정량 감점·hallucination % 임계값·human 포매팅 가점)는 **미채택**.
 - "개선 N% 보장" 같은 과장 금지. **① 측정 모드는 코드를 자동 수정하지 않는다**(측정·시각화 제안만) — **②③은** 제안·설계 후 승인 게이트(②=계획·개별, ③=3게이트) 뒤 코드를 수정하며(고위험 변경 opt-in·AST/LSP 위임·behavior 센서 관측·"테스트 통과≠동작 보존"), 커밋은 하지 않는다(git-harness 핸드오프).
+- **결정 권한(위험은 경고, 수용은 사용자)**: 고위험 변경(②의 L·③의 C3)의 위험은 *경고*하되 감수는 *사용자*가 결정한다 — opt-in·승인된 항목을 에이전트가 조용히 보류·강등하지 않고(승인 게이트≠veto), 적용 중 새 차단은 사용자에게 escalate. **자동 테스트가 없어도 L/C3를 거부하지 않고 행위 센서(실제 실행·렌더로 baseline 대조)로 승격**한다(UNVERIFIED는 관측 한계 라벨·red 센서만 롤백). "리팩토링" 요청을 S 툴링으로 대체 충족하지 않는다(과소 인도 금지).
 
 ## 파일
 
