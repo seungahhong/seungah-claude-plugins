@@ -130,13 +130,5 @@
   {
     "query": "이 레포 점수도 매기고, 구조는 빌드 가드레일로 개선 설계하고, 본문 주석·변수명도 승인하면 정리해줘 (①+②+③ 한 번에)",
     "should_trigger": true
-  },
-  {
-    "query": "이 코드 설계 품질을 SOLID·응집/결합·복잡도·중복·DI/IoC·DRY/KISS/YAGNI로 점수화(scoring rubric)하고 쉬운 것부터 단계 승인으로 개선해줘 — 저장소 구조 AI 준비도 등급은 필요 없어",
-    "should_trigger": false
-  },
-  {
-    "query": "우리 코드 복잡도·결합도·중복 설계 원칙 점수표 만들고 개선 우선순위대로 명명·주석부터 고쳐줘, 무거운 SOLID 리팩터는 나중에",
-    "should_trigger": false
   }
 ]
