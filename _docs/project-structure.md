@@ -463,4 +463,32 @@ plugins/
     evals/
       evals.json                                         # 수용 평가 (design-conformance + 근거 정직성 13 assertion)
       trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 9, 인접 하네스(product-spec/harness-generator/meta/human-agent-teaming/agent-orchestration/cicd/ops/review/git) reciprocal 가드)
+  design-principle-harness/                              # [독립 플러그인] 임의 git 저장소를 'AI 에이전트가 읽고 안전하게 기여할 코드베이스'로 만들기 위해 코드 설계 품질을 3단계(① scoring-rubric 점수화 → ② 쉬운 것부터 섹션별 승인 개선 → ③ 종합 결과)로 진단·개선하는 인터랙티브 4에이전트 하네스. score.py(stdlib only) 채점 — Tier A 표면 가독성 명명·주석 60 / Tier B 설계 원칙 SOLID·응집결합·복잡도·중복·DI/IoC·DRY/KISS/YAGNI 40 = 총점 100 + Tier C AI-맥락 신호(시맨틱 마크업 C1·테스트 설명 C2, report-only·총점 미포함). 총점=진단 지표(Goodhart 가드·개입 연구 없어 안전 기여 인증 아님)·명명/주석은 사람 근거+오도/stale 신호가 LLM에도 해로워 Tier A 가중↑(LLM 리네임 효과 부호 불안정)·구조 지표는 낮은 confidence 진단(타당도 외삽)·Tier C는 이득이 모델 역량 조건부이거나 개입 근거 부재라 report-only(ARIA 볼륨 가점 금지·자동 ARIA/alt/어서션 생성 금지)·리네임 AST/LSP·"테스트 통과≠동작 보존"·측정은 코드 수정 없음·개선은 승인 뒤·커밋 안 함. deep-research 2023~2026 적대 검증(v0.2.0 Tier C 추가)
+    .claude-plugin/
+      plugin.json
+    CLAUDE.md                                            # 포인터 + 3단계 요약 + 원칙 + 변경 이력
+    README.md                                            # 사용자용 개요·사용법·두 층위·안전장치·경계
+    agents/                                              # 4 에이전트 (모두 opus)
+      code-scorer.md                                     # Step 1 score.py 실행·두 층위 점수표 해석(측정만)
+      staged-refiner.md                                  # Step 2 쉬운 것부터 개선안 제안·개별 승인 후 적용(구조 opt-in)
+      behavior-guard.md                                  # Step 2 generator≠checker·변경 클래스별 행위 센서 실행
+      acceptance-reporter.md                             # Step 3 재측정 델타·종합 결과·표면 편집 오귀속 금지
+    skills/design-principle-harness/
+      SKILL.md                                           # 진입점 오케스트레이터 (Phase 0 스코프 + Step 1~3 + 매 단계 승인 게이트)
+      scripts/
+        score.py                                         # 결정론 스코어러 (stdlib only, Python 3.10+, Tier A/B 총점 + Tier C report-only·confidence·개선 순서·하드닝)
+        test_score.py                                    # 회귀 테스트 28건 (불변식·A~C 탐지기·Tier C 미합산 불변식·하드닝)
+      references/
+        scoring-rubric.md                                # 루브릭 정본 (Tier A/B 총점·Tier C report-only·배점·confidence·개선 순서·넣지 말 것)
+        design-principles.md                             # SOLID·응집/결합·복잡도·중복·DI/IoC·DRY/KISS/YAGNI + Tier C(시맨틱 마크업·a11y·테스트 설명) 카탈로그·정적 측정 경계
+        improvement-playbook.md                          # 쉬운 것부터 안전 개선 (메커니즘·불변식·Tier C opt-in 절·generator≠checker)
+        research/                                         # 1차 근거 dossier (deep-research)
+          evidence-dossier.md                            #   명명·구조 근거(2023~2026 적대 검증)
+          rubric-design.md                               #   두 층위 루브릭 설계
+          semantic-a11y-test-dossier.md                  #   Tier C 근거(시맨틱 HTML·ARIA/WCAG·테스트 설명, 5렌즈·적대 감사·인용 교정)
+          semantic-a11y-test-raw-findings.md             #   Tier C 원자료(10 조사/검증 에이전트 원문)
+          README.md                                      #   research/ 인덱스·방법론·정직성
+    evals/
+      evals.json                                         # 수용 평가 (design-conformance + 근거 정직성 14 assertion)
+      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 10(+Tier C 2) / should_not 8, ai-readiness-cartography reciprocal 가드)
 ```

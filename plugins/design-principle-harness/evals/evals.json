@@ -1,0 +1,80 @@
+{
+  "eval_metadata": {
+    "eval_id": "design-principle-harness-acceptance",
+    "eval_name": "design-principle-harness 수용 평가 (design-conformance + 근거 정직성)",
+    "prompt": "스킬은 코드 설계 품질을 3단계로 다룬다 — Step 1 결정론 스코어러(score.py)가 두 층위(Tier A 표면 가독성 60 / Tier B 설계 원칙 40)로 점수화, Step 2 스코어러가 매긴 개선 순서(쉬운 것부터: 주석→명명→중복→구조)로 섹션마다 계획·개별 승인 게이트 뒤 하나씩 개선(구조는 opt-in), Step 3 재측정 델타 + 종합 결과. 4 에이전트(code-scorer/staged-refiner/behavior-guard/acceptance-reporter, opus). 본 평가는 shipped SKILL.md·agents/*.md·references/*·scripts/*가 하네스 불변식을 강제·명세하는지 file:섹션 인용으로 채점한다.",
+    "method": "design-conformance — shipped 파일의 해당 섹션 인용으로 각 불변식 강제 여부를 확인. score.py 동작은 test_score.py(19건)가 회귀 핀.",
+    "assertions": [
+      {
+        "text": "[two-tier] 점수를 Tier A 표면 가독성(명명·주석, act-first, 가중↑)과 Tier B 설계 원칙(SOLID·복잡도·중복·DI/IoC 등, defer, 낮은 confidence)으로 나눈다.",
+        "passed": true,
+        "evidence": "score.py Section/tier 구조·MAXP(A1 28·A2 12·A3 20·B1~B5 각 8). scoring-rubric.md 'Tier A/Tier B' 표. SKILL.md Step 1 '두 층위'."
+      },
+      {
+        "text": "[covers-requested-principles] 사용자 요청 항목(SOLID·응집/결합·복잡도·중복·DI/IoC·DRY/KISS/YAGNI) + 명명·주석을 모두 채점 섹션에 매핑한다.",
+        "passed": true,
+        "evidence": "scoring-rubric.md '사용자 요청 항목 → 섹션 매핑'. score.py B1(KISS)·B2(SRP·응집/결합)·B3(DRY·중복)·B4(순환)·B5(DIP·DI/IoC·YAGNI)·A1~A3."
+      },
+      {
+        "text": "[score-is-diagnostic] 총점을 인증/최적화 목표가 아니라 개선 우선순위용 진단 지표로 프레이밍하고 설계 원칙 점수 목표화의 Goodhart/reward-hacking을 경고한다.",
+        "passed": true,
+        "evidence": "score.py extras.honesty·render_markdown 경고 배너. scoring-rubric.md '왜 두 층위인가'. SKILL.md Step 1 정직성. code-scorer.md '총점은 인증이 아니라 진단 지표'."
+      },
+      {
+        "text": "[confidence+subjects] 각 섹션에 confidence(strong/medium/weak/report-only)와 근거 대상(human/LLM/both)을 표기하고 human 대상 지표의 LLM 외삽을 밝힌다.",
+        "passed": true,
+        "evidence": "score.py Section.confidence/subjects·각 섹션 caveat. scoring-rubric.md 표. design-principles.md '전부 사람 대상 검증(외삽)'."
+      },
+      {
+        "text": "[naming-weighted] 명명(A1)은 사람 근거가 견고하고 오도/무의미 이름이 LLM에도 해로워 Tier 최대 가중(단 LLM 대상 식별자 리네임 효과는 부호 불안정·과제 의존이라 단일 수치로 못 씀·개입 연구 없음), 고전 구조 지표는 길이 통제 시 LLM 무상관이라 낮은 가중.",
+        "passed": true,
+        "evidence": "score.py A1 MAXP=28·A1 caveat(부호 불안정·개입 연구 없음). scoring-rubric.md 'A1 가중이 가장 큰 이유'. design-principles.md 복잡도 '길이 통제 시 무상관'. research/README.md 정직성 교정 #1·#2."
+      },
+      {
+        "text": "[easiest-first] 개선 순서가 쉬움·근거강함부터(A3 주석→A1/A2 명명→B3 중복→B* 구조)이고 무거운 SOLID·구조는 뒤로·opt-in이다.",
+        "passed": true,
+        "evidence": "score.py act_order(A3=1…B5=8)·improvement_order. test_score.py test_improvement_order_easy_first. improvement-playbook.md 순서 표. SKILL.md Step 2 '무거운 작업은 사용자 요청 시에만'."
+      },
+      {
+        "text": "[safe-mechanisms] 오도·죽은 주석은 삭제 전용, 리네임은 AST/LSP 위임, 중복은 '잘못된 추상화보다 쌀 수 있음', 구조는 행위 센서+opt-in, '테스트 통과≠동작 보존'.",
+        "passed": true,
+        "evidence": "improvement-playbook.md 섹션별 상세. staged-refiner.md '안전 메커니즘'. behavior-guard.md '테스트 통과≠동작 보존'. score.py 각 Section.fix_mechanism."
+      },
+      {
+        "text": "[decision-authority] 위험은 경고·수용은 사용자·승인된 고위험 변경 조용한 보류 금지·무테스트→행위 센서 승격(거부 아님)·UNVERIFIED는 관측 한계 라벨·execute-or-escalate.",
+        "passed": true,
+        "evidence": "staged-refiner.md '결정 권한'. behavior-guard.md '불변식'. SKILL.md Step 2 '안전·결정 권한 불변식'."
+      },
+      {
+        "text": "[generator-neq-checker] 개선 적용(staged-refiner)과 행위 검증(behavior-guard)을 분리한다.",
+        "passed": true,
+        "evidence": "behavior-guard.md 'generator≠checker'. improvement-playbook.md 'generator ≠ checker'. SKILL.md Step 2 루프."
+      },
+      {
+        "text": "[no-misattribution] 표면 편집(주석·명명)의 점수 상승을 에이전트 성공률·툴그래프 이득으로 오귀속하지 않는다(그 이득은 툴 측 그래프 인덱스 효과).",
+        "passed": true,
+        "evidence": "acceptance-reporter.md '표면 편집을 과대 귀속하지 않는다'. SKILL.md Step 3 정직성. CLAUDE.md Conventions 정직성."
+      },
+      {
+        "text": "[measure-vs-modify] Step 1은 코드 수정 없음(측정만), Step 2·3은 승인 게이트 뒤에만 수정하고 커밋하지 않는다.",
+        "passed": true,
+        "evidence": "score.py docstring '측정만 한다'. SKILL.md Step 1/2/3·'커밋하지 않는다'. code-scorer.md '측정만'."
+      },
+      {
+        "text": "[independent] 다른 마켓플레이스 플러그인을 참조·의존하지 않는다(스코어러·루브릭·근거 내재화).",
+        "passed": true,
+        "evidence": "CLAUDE.md '독립성'. plugin.json description '다른 플러그인 비의존'. references/ 자족 dossier. score.py stdlib only."
+      },
+      {
+        "text": "[hardening] 스코어러가 신뢰 불가 repo에서 안전하다 — symlink 미추종·null byte .py·초대형 파일 캡·빈 repo·ReDoS 바운드.",
+        "passed": true,
+        "evidence": "score.py _safe_readable/MAX_READ_BYTES/walk_code_files symlink 배제·바운드 regex. test_score.py TestHardening(symlink·null byte·empty)."
+      },
+      {
+        "text": "[boundary] 저장소 구조 AI 준비도 측정·완성 코드 리뷰/PR/커밋·상류 핸드오프 게이트·하네스 자체 진단은 범위 밖으로 명시한다.",
+        "passed": true,
+        "evidence": "SKILL.md '경계(역방향 배제)'. CLAUDE.md Conventions 경계. trigger-eval.json should_trigger:false(구조 측정·핸드오프·PR·meta)."
+      }
+    ]
+  }
+}

@@ -1,0 +1,74 @@
+[
+  {
+    "query": "이 코드베이스 설계 품질을 점수로 매기고 SOLID·응집/결합·복잡도·중복까지 진단한 다음, 쉬운 것부터(주석·이름) 승인받아 단계별로 개선해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "시맨틱 태그랑 웹 접근성 체크해서 AI가 코드를 더 잘 이해하게 측정하고, 섹션별로 승인받으면 고쳐줘",
+    "should_trigger": true
+  },
+  {
+    "query": "테스트 코드 설명(테스트 이름·getByRole 셀렉터)을 측정해서 AI가 테스트로 코드 맥락을 파악하게 도와주고 승인 후 단계별로 개선해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "score my code's design quality — naming, comments, and design principles (SOLID, coupling/cohesion, complexity, duplication, DRY/KISS/YAGNI) — then improve the easy stuff first with my approval and defer the heavy refactors",
+    "should_trigger": true
+  },
+  {
+    "query": "변수명·함수명·주석부터 점수 매겨서 정리하고, SOLID 같은 무거운 설계 리팩터는 나중에 opt-in으로 하자. 마지막에 종합 결과 보여줘",
+    "should_trigger": true
+  },
+  {
+    "query": "우리 코드 DRY/KISS/YAGNI랑 결합도 점수화해서 개선 우선순위 뽑고, 승인하면 하나씩 고쳐줘",
+    "should_trigger": true
+  },
+  {
+    "query": "이 저장소 복잡도·중복·과대추상(DI/IoC) 설계 원칙 점수표(scoring rubric) 만들고 쉬운 개선부터 단계 승인으로 적용해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "AI 에이전트가 안전하게 기여하게 코드 설계 품질을 점수화하고, 명명·주석 → 중복 → 구조 순으로 승인받아 개선해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "SOLID 원칙 잘 지켜지는지 점수 내주고, 응집/결합 나쁜 god-file이랑 순환 의존도 찾아서 쉬운 것부터 개선 계획 세워줘",
+    "should_trigger": true
+  },
+  {
+    "query": "our codebase feels hard to read — give it a design-quality scorecard covering identifier clarity, comment health, complexity, cohesion and duplication, then walk me through fixing the low-risk sections first",
+    "should_trigger": true
+  },
+  {
+    "query": "이 레포 AI-readiness 점수 매기고 등급 대시보드(AI-Native~AI-Hostile) 만들어줘 — 문서 references 무결성·실행 검증·아키텍처 강제 게이트로",
+    "should_trigger": false
+  },
+  {
+    "query": "주석이 코드랑 안 맞는 것만 찾아서 고치고 의미 없는 변수명만 안전하게 리네임해줘 (설계 원칙 점수나 SOLID 진단은 필요 없어)",
+    "should_trigger": false
+  },
+  {
+    "query": "이 API 엔드포인트를 설계·구현하고 빌드·테스트로 실행 검증해서 기능을 완성해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "코드 착수 전에 기획·디자인 핸드오프·API 계약·QA 인수조건이 착수 준비됐는지 게이트로 검수해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이미 완성된 이 PR 리뷰하고 버그 찾고 한국어 커밋 메시지·PR 작성해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "루트 CLAUDE.md랑 SKILL.md 하네스 자체가 부실한데 trace로 진단해서 고도화해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 기획안으로 PRD랑 사용자 스토리 만들어줘",
+    "should_trigger": false
+  },
+  {
+    "query": "내 Claude Code 세션 로그들 토큰 효율 분석하고 캐시 적중률·비용 대시보드 만들어줘",
+    "should_trigger": false
+  }
+]

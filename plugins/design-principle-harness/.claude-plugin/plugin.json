@@ -1,0 +1,32 @@
+{
+  "name": "design-principle-harness",
+  "version": "0.2.0",
+  "description": "임의 git 저장소를 'AI 코딩 에이전트가 읽고 안전하게 기여할 수 있는 코드베이스'로 만들기 위해, 코드 설계 품질을 3단계(① scoring-rubric 점수화 → ② 쉬운 것부터 섹션별 사람 승인 개선 → ③ 종합 결과)로 진단·개선하는 도메인 무관 인터랙티브 멀티 에이전트 하네스. Step 1은 stdlib-only 결정론 스코어러(score.py)가 두 층위로 채점한다 — Tier A 표면 가독성(변수명·함수명·클래스/컴포넌트명 명료성, 명명 규약 일관성, 주석 건강도)과 Tier B 설계 원칙(SOLID·응집/결합·복잡도·중복·DI/IoC·DRY/KISS/YAGNI). Step 2는 스코어러가 매긴 개선 순서(쉬움·근거강함부터: 주석→명명→중복→복잡도/구조)를 따라 섹션마다 계획→개별 승인 게이트를 거쳐 하나씩 개선하고, SOLID·구조 리팩터 같은 무거운 작업은 뒤로 미뤄 opt-in으로만 적용한다. Step 3은 재측정 델타와 함께 종합 결과 리포트를 낸다. 4개 에이전트(code-scorer/staged-refiner/behavior-guard/acceptance-reporter, 모두 model opus). 핵심 정직성: 총점은 인증/최적화 목표가 아니라 개선 우선순위용 진단 지표이며(점수를 목표로 삼으면 Goodhart/reward-hacking), 고전 구조 지표(cyclomatic·LCOM·Maintainability Index)는 코드 길이를 통제하면 LLM 성능과 무상관이고 전부 사람 대상 검증(=AI 가독성으로의 외삽)이라 Tier B는 낮은 가중·낮은 confidence·진단 성격(타당도는 외삽)으로 싣고, 명명·주석은 사람 대상 근거가 견고하고 오도/stale 신호가 LLM에도 해로워 Tier A 가중을 높였다(단 LLM 식별자 리네임 효과는 부호 불안정·과제 의존이라 단일 수치로 못 씀). 어떤 점수를 올리면 같은 저장소에서 같은 에이전트 성공률이 오른다는 개입(intervention) 연구는 없어(모든 구조/설계 점수=측정된 예측자가 아닌 추론 휴리스틱) 총점은 '안전 기여' 인증이 아니라 진단 지표이며, 가장 강한 기여 신호(실행 가능·의존성 무결성)는 이 하네스 범위 밖이다. 개선은 삭제 우선(오도·죽은-코드 주석)·리네임은 AST/LSP 위임·구조 리팩터는 행위 센서 관측 + opt-in이며 '테스트 통과≠동작 보존'을 가드로 둔다. 측정만 하는 Step 1은 코드를 수정하지 않고, 개선(Step 2·3)은 사람 승인 게이트 뒤에만 코드를 수정하며 커밋은 하지 않는다. 다른 마켓플레이스 플러그인을 참조·의존하지 않는 독립 플러그인이다(스코어러·루브릭·근거 dossier 모두 내재화). 경계: 저장소 구조 AI 준비도 측정(references·실행검증·아키텍처 강제)·완성 코드 리뷰·PR·커밋·상류 산출물 핸드오프 게이트·하네스 자체 진단은 범위가 아니며, 코드 본문의 설계 품질을 점수화하고 쉬운 것부터 승인 개선하는 데 특화한다. v0.2.0에서 사용자 요청으로 Tier C(AI-맥락 신호·report-only·총점 미포함)를 추가 — C1 Semantic Markup & a11y(시맨틱 HTML 태그·ARIA/WCAG)·C2 Test Legibility(테스트 설명·getByRole 접근성 셀렉터)를 결정론 census로 측정하고 섹션별 승인 뒤 개선하되, 세 신호 모두 직접 개입 근거가 없어(시맨틱 HTML 이득은 모델 역량 조건부, ARIA 볼륨은 오류와 상관해 가점 금지, 올바른 테스트 설명 이득은 미미·오도만 해로움) 점수 합산 대신 개선 후보로만 보고하고 자동 ARIA/alt/어서션 생성은 금지한다. 근거는 deep-research로 2023~2026 1차 소스를 적대 검증했다(references/research/).",
+  "author": {
+    "name": "seungah.hong",
+    "email": "ssingah1030@gmail.com"
+  },
+  "tags": [
+    "claude-code",
+    "plugin",
+    "design-principle-harness",
+    "code-quality",
+    "design-principles",
+    "solid",
+    "cohesion-coupling",
+    "complexity",
+    "duplication",
+    "dry-kiss-yagni",
+    "naming",
+    "comments",
+    "scoring-rubric",
+    "staged-refactoring",
+    "ai-readable-code",
+    "semantic-html",
+    "accessibility",
+    "aria",
+    "test-legibility",
+    "multi-agent",
+    "interactive"
+  ]
+}
