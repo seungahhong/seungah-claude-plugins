@@ -40,7 +40,7 @@
     "should_trigger": true
   },
   {
-    "query": "이 레포 AI-readiness 점수 매기고 등급 대시보드(AI-Native~AI-Hostile) 만들어줘 — 문서 references 무결성·실행 검증·아키텍처 강제 게이트로",
+    "query": "이 저장소 파일 트리·디렉터리 구조를 재배치해서 모듈 경계를 다시 잡아줘",
     "should_trigger": false
   },
   {

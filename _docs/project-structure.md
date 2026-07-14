@@ -490,5 +490,5 @@ plugins/
           README.md                                      #   research/ 인덱스·방법론·정직성
     evals/
       evals.json                                         # 수용 평가 (design-conformance + 근거 정직성 14 assertion)
-      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 10(+Tier C 2) / should_not 8, ai-readiness-cartography reciprocal 가드)
+      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 10(+Tier C 2) / should_not 8, 인접 도메인 reciprocal 가드)
 ```
