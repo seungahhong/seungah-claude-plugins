@@ -107,6 +107,15 @@ RE_TS_IMPLEMENTS = re.compile(r"(?<![A-Za-z0-9_$])implements\s+([A-Za-z_$][\w$,\
 RE_CODEISH = re.compile(r"[;{}]|=>|\breturn\b|\bimport\b|\bfunction\b|\bdef\b|\bconst\b|==|!=|\)\s*\{|\w+\(")
 RE_TODO = re.compile(r"(?<![A-Za-z])(TODO|FIXME|HACK|XXX|WTF|BUG|REFACTOR|커멘트아웃|임시)(?![A-Za-z])", re.IGNORECASE)
 
+# --- 주석 도움 후보(comment-gap) 탐지기 — 코드만으로 '왜/맥락'을 알기 어려운 지점 -----
+# report-only: 점수에 반영하지 않는다(주석 볼륨 가점=Goodhart). 개선 모드에서 opt-in '왜' 주석 추가 후보로만.
+RE_PY_EMPTY_EXCEPT = re.compile(r"except\b[^\n:]{0,120}:\s*(?:#[^\n]*)?\n[ \t]*pass\b")
+RE_JS_EMPTY_CATCH = re.compile(r"catch\s*(?:\([^)\n]{0,80}\))?\s*\{\s*\}")
+# 매직 넘버: 3자리+ 정수 또는 소수(0/1/2… 관용값·인덱스는 제외). 문자열/주석 제거 후 스캔.
+RE_MAGIC_NUM = re.compile(r"(?<![\w.])(?:\d+\.\d+|\d{3,})(?![\w.\d])")
+# 정규식 리터럴(무엇을 매칭하는지 코드만으론 불명): 보수적으로 명시 API만.
+RE_REGEX_USE = re.compile(r"\bre\.(?:compile|match|search|sub|subn|findall|finditer|fullmatch)\s*\(|new\s+RegExp\s*\(")
+
 # --- Tier C (AI-맥락 신호 · report-only) 탐지기 -----------------------------
 # 근거: references/research/semantic-a11y-test-dossier.md
 #   - 세 신호(시맨틱 마크업·a11y·테스트 설명) 전부 report-only(직접 개입 근거는 명명 채널뿐).
@@ -425,6 +434,46 @@ def analyze_comments(text: str, lang: str) -> dict[str, int]:
             "commented_out": commented_out, "todo": todo}
 
 
+def _strip_py_noise(text: str) -> str:
+    """py 주석·문자열을 공백으로(매직 넘버·정규식이 주석/문자열 안에서 오탐되지 않게). 근사."""
+    text = re.sub(r"'''[\s\S]{0,20000}?'''|\"\"\"[\s\S]{0,20000}?\"\"\"", " ", text)
+    text = re.sub(r"#[^\n]*", "", text)
+    text = re.sub(r"'(?:\\.|[^'\\\n]){0,2000}'|\"(?:\\.|[^\"\\\n]){0,2000}\"", " ", text)
+    return text
+
+
+def find_comment_gap_candidates(files: list[Path]) -> dict[str, Any]:
+    """코드만으로 '왜/맥락'을 알기 어려운 지점(침묵 예외·매직 넘버·정규식)을 센다.
+    report-only — 점수에 반영하지 않고, 개선 모드의 opt-in '왜' 주석 추가 후보로만 쓴다."""
+    empty_handlers = magic = regex = 0
+    MAGIC_CAP_PER_FILE = 50
+    samples: list[str] = []
+    for p in files:
+        text = read_text(p)
+        if not text:
+            continue
+        if p.suffix in PY_EXTS:
+            eh = len(RE_PY_EMPTY_EXCEPT.findall(text))
+            body = _strip_py_noise(text)
+        else:
+            eh = len(RE_JS_EMPTY_CATCH.findall(text))
+            body = _strip_js_noise(_strip_js_comments(text))
+        mg = min(MAGIC_CAP_PER_FILE, len(RE_MAGIC_NUM.findall(body)))
+        rx = len(RE_REGEX_USE.findall(body))
+        empty_handlers += eh
+        magic += mg
+        regex += rx
+        if (eh or rx) and len(samples) < 8:
+            bits = []
+            if eh:
+                bits.append(f"침묵 예외 {eh}")
+            if rx:
+                bits.append(f"정규식 {rx}")
+            samples.append(f"{p.name}: {'·'.join(bits)}")
+    return {"empty_handlers": empty_handlers, "magic_numbers": magic,
+            "regex_literals": regex, "samples": samples}
+
+
 def score_A3_comments(files: list[Path]) -> Section:
     MAXP = 20
     agg = {"code": 0, "comment": 0, "commented_out": 0, "todo": 0}
@@ -450,12 +499,25 @@ def score_A3_comments(files: list[Path]) -> Section:
         findings.append(f"TODO/FIXME/HACK 마커 {agg['todo']}건 — 미해결 부채 신호(트리아지 후 처리/삭제)")
     density = agg["comment"] / code
     findings.append(f"[report-only] 주석 밀도 {density:.2f}(주석 {agg['comment']}/코드 {code}) — 밀도 자체는 점수에 반영하지 않음(많다≠좋다).")
+    # 주석 도움 후보(comment-gap) — 코드만으로 문맥 파악이 어려운 곳. report-only(점수 무관)·opt-in 추가 후보.
+    gap = find_comment_gap_candidates(files)
+    gap_total = gap["empty_handlers"] + gap["regex_literals"] + gap["magic_numbers"]
+    if gap["empty_handlers"]:
+        findings.append(f"[report-only·주석 도움 후보] 침묵 예외 처리(empty except/catch) {gap['empty_handlers']}건 — 왜 삼키는지 '왜' 주석 추가 후보(opt-in·사람이 정확성 검증).")
+    if gap["regex_literals"]:
+        findings.append(f"[report-only·주석 도움 후보] 정규식 사용 {gap['regex_literals']}건 — 무엇을 매칭/치환하는지 예시와 함께 주석 후보.")
+    if gap["magic_numbers"]:
+        findings.append(f"[report-only·주석 도움 후보] 매직 넘버(3자리+/소수) {gap['magic_numbers']}건 — 단위·의미·출처를 담은 주석 후보(코드만으로 문맥 파악 어려운 곳).")
+    if gap_total:
+        findings.append("↳ 주석 추가는 **opt-in·'왜/맥락'(what 아님)·사람이 정확성 검증**: 코드에 없는 의도·외부 제약·우회 이유를 보충하는 곳에만. 올바른 주석의 LLM 이해 이득은 약하나(개입 근거 미미) 코드로 못 얻는 맥락을 채우고, **오도 주석이 실측 해악**이라 정확성 게이트가 핵심(자동 생성 주석을 사실로 단정 금지).")
     return Section(
         "A3", "Comment Health (주석 건강도)", "surface", score, MAXP,
-        "medium", "both", "S", 1, "삭제 전용(오도·죽은 코드 주석 제거)·검증된 계약 주석만 신규 추가",
-        "주석은 '많을수록 좋다'가 아니다 — 자동 생성 주석 상당수 부정확·주석↔코드 정합 현실분포 약함. "
-        "그래서 밀도는 report-only이고, 오도/죽은-코드/미해결 마커 제거만 점수·개선 대상(삭제는 위험 ~0).",
-        {**agg, "comment_density": round(density, 3), "commented_out_ratio": round(co_ratio, 4)},
+        "medium", "both", "S", 1,
+        "삭제 우선(오도·stale·죽은 코드 주석 제거·위험 ~0) + **코드만으로 문맥 파악 어려운 곳(침묵 예외·매직 넘버·정규식·비자명 우회)에 '왜/맥락' 주석 opt-in 추가**(사람이 정확성 검증·검증된 계약 주석)",
+        "주석은 '많을수록 좋다'가 아니다 — 자동 생성 주석 상당수 부정확·주석↔코드 정합 현실분포 약함. 그래서 밀도·볼륨은 report-only(가점 안 함)이고, "
+        "오도/죽은-코드/미해결 마커 제거만 점수 대상(삭제는 위험 ~0). **추가**는 점수와 무관한 opt-in 개선으로만 — 코드만으로 '왜'를 알기 어려운 곳에 사람이 정확성을 검증한 맥락 주석을 넣는다(올바른 주석의 LLM 이해 이득은 약해도 사람·비파생 맥락에 도움·오도 주석은 실측 해악).",
+        {**agg, "comment_density": round(density, 3), "commented_out_ratio": round(co_ratio, 4),
+         "comment_gap": gap},
         findings,
     )
 
@@ -1105,7 +1167,7 @@ def build_report(repo: Path) -> Report:
 
     meta = {
         "tool": "design-principle-harness/score.py",
-        "version": "0.2.0",
+        "version": "0.3.0",
         "repo": str(repo.resolve()),
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "code_files": len(files),

@@ -12,6 +12,14 @@
     "should_trigger": true
   },
   {
+    "query": "AI 에이전트가 이 코드베이스를 이해하고 안전하게 수정하기 쉬운지 측정해줘 — 패턴 일관성·빌드 피드백·모듈 경계·의존성 방향 강제·독립 실행·CLAUDE.md 가이드로, 승인하면 단계별로 개선까지",
+    "should_trigger": true
+  },
+  {
+    "query": "허용되지 않은 의존성이 빌드에서 물리적으로 차단되는지 점검하고 dependency-cruiser·eslint 경계 가드레일이랑 CLAUDE.md 에이전트 가이드를 승인받아 정비해줘",
+    "should_trigger": true
+  },
+  {
     "query": "score my code's design quality — naming, comments, and design principles (SOLID, coupling/cohesion, complexity, duplication, DRY/KISS/YAGNI) — then improve the easy stuff first with my approval and defer the heavy refactors",
     "should_trigger": true
   },

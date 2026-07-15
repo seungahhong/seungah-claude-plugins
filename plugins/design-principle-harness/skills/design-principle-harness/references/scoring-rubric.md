@@ -20,7 +20,7 @@
 |------|------|------------|----------|--------------|
 | **A1 Identifier Clarity** (변수·함수·클래스·컴포넌트명) | 28 | medium | LLM | 선언 이름 중 무의미/난독형(tmp·data·foo·단일문자 비관용·무모음 약어) 비율. `clarity = 1 - bad/total`. |
 | **A2 Naming Consistency** (규약 일관성) | 12 | weak | human | 언어 기본 관례(py=snake/Pascal, js=camel/Pascal) 위반 비율. 팀 규약 상이 시 오탐 → weak. |
-| **A3 Comment Health** (주석 건강도) | 20 | medium | both | **감점식**: 커멘트아웃(죽은 코드) 주석·TODO/FIXME 마커 비율만 감점. **주석 밀도는 report-only(많다≠좋다)**. |
+| **A3 Comment Health** (주석 건강도) | 20 | medium | both | **감점식**: 커멘트아웃(죽은 코드) 주석·TODO/FIXME 마커 비율만 감점. **주석 밀도·볼륨은 report-only(많다≠좋다)**. 추가로 **comment-gap 후보**(침묵 예외·매직 넘버·정규식)를 report-only로 표면화 → 개선 모드에서 '왜/맥락' 주석 opt-in 추가 seed(점수 무관). |
 
 A1 가중이 가장 큰 이유: 명명은 **사람 comprehension 근거가 견고**하고 '오도/무의미' 이름이 LLM에도 해롭기 때문이다. 단 LLM 대상 식별자 리네임 효과는 **부호가 불안정·과제 의존적**(intent 과제 -11~-29pp[2510.03178]·알고리즘 ≈0·모델별 +14~-32pp[2505.10443])이라 **단일 수치로 못 쓰고**(가드레일 #14), *어떤 점수를 올리면 같은 에이전트 성공률이 오른다는 개입 연구도 없다*(§0.4). act-first는 '명백히 오도하는 이름'에 한정한다.
 

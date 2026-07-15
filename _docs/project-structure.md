@@ -468,25 +468,33 @@ plugins/
       plugin.json
     CLAUDE.md                                            # 포인터 + 3단계 요약 + 원칙 + 변경 이력
     README.md                                            # 사용자용 개요·사용법·두 층위·안전장치·경계
-    agents/                                              # 4 에이전트 (모두 opus)
-      code-scorer.md                                     # Step 1 score.py 실행·두 층위 점수표 해석(측정만)
-      staged-refiner.md                                  # Step 2 쉬운 것부터 개선안 제안·개별 승인 후 적용(구조 opt-in)
-      behavior-guard.md                                  # Step 2 generator≠checker·변경 클래스별 행위 센서 실행
-      acceptance-reporter.md                             # Step 3 재측정 델타·종합 결과·표면 편집 오귀속 금지
+    agents/                                              # 6 에이전트 (모두 opus)
+      code-scorer.md                                     # [A] A1 score.py 실행·층위 점수표 해석(측정만)
+      staged-refiner.md                                  # [A] A2 쉬운 것부터 개선안 제안·개별 승인 후 적용(구조 opt-in)
+      behavior-guard.md                                  # [A·B] generator≠checker·변경 클래스별 행위 센서 실행
+      acceptance-reporter.md                             # [A·B] 재측정 델타·종합 결과·표면 편집 오귀속 금지
+      ai-access-assessor.md                              # [B] B1 ai_access.py 실행·6지표 SCORED/report-only 해석(측정만)
+      ai-access-improver.md                              # [B] B2 지표별 개선안 제안·개별 승인 후 적용(build enforces·자동 생성 금지)
     skills/design-principle-harness/
-      SKILL.md                                           # 진입점 오케스트레이터 (Phase 0 스코프 + Step 1~3 + 매 단계 승인 게이트)
+      SKILL.md                                           # 진입점 오케스트레이터 (Phase 0 트랙 선택 + Track A(A1~A3)/Track B(B1~B3) + 트랙별·지표별 승인 게이트)
       scripts/
-        score.py                                         # 결정론 스코어러 (stdlib only, Python 3.10+, Tier A/B 총점 + Tier C report-only·confidence·개선 순서·하드닝)
-        test_score.py                                    # 회귀 테스트 28건 (불변식·A~C 탐지기·Tier C 미합산 불변식·하드닝)
+        score.py                                         # [A] 결정론 스코어러 (stdlib only, Python 3.10+, Tier A/B 총점 + Tier C report-only·comment-gap·하드닝)
+        test_score.py                                    # [A] 회귀 테스트 31건 (불변식·A~C 탐지기·Tier C 미합산·comment-gap·하드닝)
+        ai_access.py                                     # [B] AI 접근성 결정론 assessor (stdlib only, 6지표·SCORED=M1·M2만·독립 oracle 가드·하드닝)
+        test_ai_access.py                                # [B] 회귀 테스트 21건 (SCORED={M1,M2} 불변식·탐지기·bloat 감점·하드닝)
       references/
-        scoring-rubric.md                                # 루브릭 정본 (Tier A/B 총점·Tier C report-only·배점·confidence·개선 순서·넣지 말 것)
-        design-principles.md                             # SOLID·응집/결합·복잡도·중복·DI/IoC·DRY/KISS/YAGNI + Tier C(시맨틱 마크업·a11y·테스트 설명) 카탈로그·정적 측정 경계
-        improvement-playbook.md                          # 쉬운 것부터 안전 개선 (메커니즘·불변식·Tier C opt-in 절·generator≠checker)
+        scoring-rubric.md                                # [A] 루브릭 정본 (Tier A/B 총점·Tier C report-only)
+        design-principles.md                             # [A] SOLID·…·Tier C 카탈로그·정적 측정 경계
+        improvement-playbook.md                          # [A] 쉬운 것부터 안전 개선 (Tier C opt-in·generator≠checker)
+        ai-accessibility-rubric.md                       # [B] 6지표 루브릭 정본 (SCORED vs report-only·왜 대부분 report-only)
+        ai-accessibility-playbook.md                     # [B] 지표별 안전 개선 (build enforces·독립 oracle·자동 생성 금지)
         research/                                         # 1차 근거 dossier (deep-research)
-          evidence-dossier.md                            #   명명·구조 근거(2023~2026 적대 검증)
-          rubric-design.md                               #   두 층위 루브릭 설계
-          semantic-a11y-test-dossier.md                  #   Tier C 근거(시맨틱 HTML·ARIA/WCAG·테스트 설명, 5렌즈·적대 감사·인용 교정)
-          semantic-a11y-test-raw-findings.md             #   Tier C 원자료(10 조사/검증 에이전트 원문)
+          evidence-dossier.md                            #   [A] 명명·구조 근거(2023~2026 적대 검증)
+          rubric-design.md                               #   [A] 두 층위 루브릭 설계
+          semantic-a11y-test-dossier.md                  #   [A] Tier C 근거(시맨틱 HTML·ARIA/WCAG·테스트 설명)
+          semantic-a11y-test-raw-findings.md             #   [A] Tier C 원자료
+          ai-accessibility-dossier.md                    #   [B] AI 접근성 6지표 근거(intervention≠correlation·build-enforces·tool-index≠code-structure·독립 oracle)
+          ai-accessibility-raw-findings.md               #   [B] AI 접근성 원자료(13 조사/검증 에이전트 원문)
           README.md                                      #   research/ 인덱스·방법론·정직성
     evals/
       evals.json                                         # 수용 평가 (design-conformance + 근거 정직성 14 assertion)

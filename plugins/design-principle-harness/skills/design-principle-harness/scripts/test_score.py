@@ -195,6 +195,54 @@ class TestDesign(unittest.TestCase):
             self.assertGreaterEqual(b5.evidence["single_impl_interfaces"], 1)
 
 
+class TestCommentGap(unittest.TestCase):
+    def test_gap_candidates_detected(self):
+        with TempRepo() as repo:
+            _mk(repo, "a.py",
+                "import re\n"
+                "def f(x):\n"
+                "    limit = 86400\n"
+                "    r = re.compile(r'\\d+')\n"
+                "    try:\n"
+                "        g(x)\n"
+                "    except Exception:\n"
+                "        pass\n"
+                "    return limit\n")
+            rep = S.build_report(repo)
+            a3 = sect(rep, "A3")
+            gap = a3.evidence["comment_gap"]
+            self.assertGreaterEqual(gap["empty_handlers"], 1)
+            self.assertGreaterEqual(gap["regex_literals"], 1)
+            self.assertGreaterEqual(gap["magic_numbers"], 1)
+
+    def test_gap_is_report_only_not_scored(self):
+        # 매직 넘버/정규식이 많아도 A3 점수를 낮추지 않는다(볼륨 가점/감점 금지·report-only).
+        with TempRepo() as repo:
+            clean = "def add(a, b):\n    return a + b\n"
+            gappy = ("import re\n"
+                     "def h(x):\n"
+                     "    a = 12345\n    b = 67890\n"
+                     "    p = re.compile(r'x')\n"
+                     "    return a + b\n")
+            _mk(repo, "clean.py", clean)
+            rep_clean = S.build_report(repo)
+            score_clean = sect(rep_clean, "A3").score
+        with TempRepo() as repo:
+            _mk(repo, "gappy.py", gappy)
+            rep_gappy = S.build_report(repo)
+            a3 = sect(rep_gappy, "A3")
+            # gap 후보가 있어도 만점 유지(감점 없음) — 삭제 신호(오도/죽은 주석/TODO)만 감점.
+            self.assertEqual(a3.score, a3.max)
+            self.assertGreaterEqual(a3.evidence["comment_gap"]["magic_numbers"], 2)
+
+    def test_numbers_in_strings_not_magic(self):
+        with TempRepo() as repo:
+            _mk(repo, "s.py", "def f():\n    return '86400 seconds'\n")
+            rep = S.build_report(repo)
+            gap = sect(rep, "A3").evidence["comment_gap"]
+            self.assertEqual(gap["magic_numbers"], 0)
+
+
 class TestContextSignals(unittest.TestCase):
     def test_c1_flags_div_onclick(self):
         with TempRepo() as repo:
