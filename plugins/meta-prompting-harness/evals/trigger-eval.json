@@ -1,0 +1,62 @@
+[
+  {
+    "query": "CRM 만들 건데 여기에 넣을 메타 프롬프트 만들어줘. 좋은 프롬프트로 깎아줘",
+    "should_trigger": true
+  },
+  {
+    "query": "이거 Goal에 넣고 며칠 돌릴 건데 프롬프트를 제대로 최적화해서 만들어줘",
+    "should_trigger": true
+  },
+  {
+    "query": "help me craft a really good prompt to feed into an image generator — carve it down for me",
+    "should_trigger": true
+  },
+  {
+    "query": "프롬프트를 프롬프트로 만들어줘. 내 머릿속 컨텍스트를 던질 테니 질문 유도해서 최종 프롬프트로 깎아줘",
+    "should_trigger": true
+  },
+  {
+    "query": "리서치 에이전트에 넣을 지시 프롬프트를 출처·검증 조건까지 갖춰서 다듬어줘",
+    "should_trigger": true
+  },
+  {
+    "query": "긴 코딩 작업 돌릴 건데 처음부터 명확한 프롬프트 넣게 성공조건까지 넣어서 만들어줘",
+    "should_trigger": true
+  },
+  {
+    "query": "I want to meta-prompt this — dump my context, ask me clarifying questions, then give me the final prompt to paste into a fresh window",
+    "should_trigger": true
+  },
+  {
+    "query": "이 프롬프트 넣을 환경이 ultracode인데 제약 조건까지 반영해서 프롬프트 최적화해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "우리 팀에 맞는 개발 방법론 추천해줘. 스크럼 칸반 뭘 써야 할지 진단해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 저장소가 AI 에이전트가 읽기 좋은 코드베이스인지 점수 매기고 개선해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "PRD랑 사용자 스토리 작성해줘. 기획안 줄게",
+    "should_trigger": false
+  },
+  {
+    "query": "이 컨텍스트 페이로드가 너무 길어. 리트리벌해서 압축하고 정리해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "새 하네스 플러그인을 처음부터 만들어줘. 에이전트 팀이랑 스킬 구성해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "방금 그 스킬이 왜 이렇게 동작했는지 진단하고 루트 CLAUDE.md 고도화해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 코드 리뷰하고 버그 찾아서 커밋해줘",
+    "should_trigger": false
+  }
+]

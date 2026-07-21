@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "분석 → 설계 → 개발 → 리뷰 → 검증까지, 소프트웨어 개발 전 과정을 지원하는 멀티 에이전트 스킬·커맨드·훅 모음. 정적 분석 5개 관점(간소화·코드 리뷰·보안·성능·정합성) 중 사용자 선택 항목 병렬 + 재리뷰 루프와 E2E·타입/빌드 검증, 그리고 코드 착수 *전* 상류 산출물(기획·디자인·API 계약·QA 인수조건) 핸드오프 게이트 검수를 포함합니다.",
-    "version": "1.35.0",
+    "version": "1.36.0",
     "homepage": "https://github.com/seungahhong/seungah-claude-plugins"
   },
   "plugins": [
@@ -617,6 +617,32 @@
         "ai-readable-code",
         "multi-agent",
         "interactive"
+      ],
+      "category": "workflow",
+      "strict": false
+    },
+    {
+      "name": "meta-prompting-harness",
+      "description": "메타 프롬프팅(AI에게 입력할 프롬프트를 AI가 최적화해서 생성하게 하고 그 결과 프롬프트를 새 컨텍스트에 주입해 실제 작업을 돌리는 기법)을 4단계 인터랙티브 멀티 에이전트로 수행하는 도메인 무관 하네스. 널리 쓰이는 메타 프롬프팅 실천 방법론을 각 기법마다 1차 문헌과 대조해 근거 등급을 붙였다. 프로세스: Phase 0 인테이크(무엇을 만들지 + 어느 실행 환경에 넣을 프롬프트인지 확정 + 컨텍스트 덤핑 유도) → Phase 1 질문 유도(context-elicitor: 덤프에서 빠진 요소를 AI가 먼저 질문, 전부 위임 방지) → Phase 2 성공·검증 조건 명시(success-definer: 외부 성공 기준 대비 검증) → Phase 3 환경 맞춤 깎아내기(prompt-carver: execution-environments·carving-principles 참조, 큰그림→상한 내 축소) → Phase 4 적대 점검 + fresh context 주입 안내(prompt-critic: 모호·과대·환경 부적합·미검증·전부위임 점검, 완성 프롬프트만 새 창 주입). 4개 에이전트(context-elicitor/success-definer/prompt-carver/prompt-critic, 모두 model opus)·매 Phase 승인 게이트. 근거 등급(핵심 정직성): STRONG — 메타프롬프팅이 직접 프롬프팅을 상회(Suzgun&Kalai 2401.12954·OPRO 2309.03409·PromptAgent 2310.16427, 단 모델/과제 조건부·전이 불안정), 생성 전 명확화 질문이 정확도 상승(ClarifyGPT FSE2024·Orchid 2604.21505, 단 명확화는 코딩/추론과 분리된 모델 의존 역량이라 명시 유도 필요), 성공+검증 조건 명시는 Anthropic 공식 권고(외부 기준 대비 검증·순진한 자기수정 아님), fresh 컨텍스트 주입은 lost-in-the-middle 2307.03172·Chroma context-rot로 뒷받침(방향성 추론), 은탄환 아님도 Anthropic 공식. report-only(1차 근거 약함·folklore로만 제시) — 실행 환경 맞춤 변환·큰그림→축소는 실증 근거 생존 못 함. REFUTED(미사용) — '메타프롬프팅=지휘자가 전문가 인스턴스 생성' 프레이밍(0-3)·'LLM은 스스로 명확화 불가'(1-2). 정직성 가드: 최적화 프롬프트는 자기보고·불안정하므로 보편 법칙으로 서술 금지, 전부 위임 금지, AI가 깎은 프롬프트는 사용자 도메인 검증 필수, 이 하네스는 프롬프트 생성만 하고 실제 실행(새 창 주입·/goal·이미지 생성)은 사용자가 한다, 커밋 안 함. 경계: 이미 목표가 있는 컨텍스트 페이로드 조립·압축·리트리벌·Claude 에이전트 하네스/스킬 자체를 생성·진단·개선·기획문서(PRD)·사용자 스토리 작성·계획/방법론 정렬 인터뷰·자율 반복 루프 실행·코드 구현/리뷰/커밋은 범위 밖이며, 다른 도구에 주입할 '지시 프롬프트 자체'를 질문 유도·성공조건·환경 맞춤으로 깎아내는 데 특화한다. 다른 플러그인을 참조하거나 의존하지 않고 자족하는 독립 플러그인이다(references 3종·근거 dossier 내재화).",
+      "source": "./plugins/meta-prompting-harness",
+      "version": "0.1.0",
+      "author": {
+        "name": "seungah.hong"
+      },
+      "tags": [
+        "claude-code",
+        "plugin",
+        "meta-prompting",
+        "prompt-engineering",
+        "prompt-optimization",
+        "context-dumping",
+        "clarifying-questions",
+        "success-criteria",
+        "execution-environment",
+        "fresh-context",
+        "multi-agent",
+        "interactive",
+        "evidence-based"
       ],
       "category": "workflow",
       "strict": false
