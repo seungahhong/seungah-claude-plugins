@@ -517,4 +517,24 @@ plugins/
         evidence.md                                      # 기법별 학술 검증·등급·1차 소스(deep-research)
     evals/
       trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 8 / should_not 7, 인접 하네스 reciprocal 가드)
+  org-transformation-harness/                            # [독립 플러그인] 회사/팀을 목적조직·AI native로 바꾸려는 실무자·리더를 인터뷰해 현행 진단→목표 구체화→간극·실행계획→적대 검증의 4단계 4에이전트로 "무엇부터 시작할지"를 단계별 할 일로 정리하는 도메인 무관 하네스. 시드 인터뷰 프롬프트를 메타 프롬프팅 기법으로 깎아내 승격 + /deep-research(6각도) 2023~2026 1차 문헌 대조 근거 등급. Phase 0 현행 조직 진단 → 1 목표 구체화 문진(임의 정의 금지) → 2 간극표+우선순위 할 일(영향·노력·의존성)+로드맵 → 3 적대 검증·공유 요약. STRONG조건부(AI native 은탄환 아님·DORA 2024/2025 PRIMARY 체감≠delivery 안정성·team 조건 좌우)·MEDIUM(현행 진단 우선·목적조직 Cagan/Team Topologies 컨센서스)·report-only(quick-wins/additive-first Kotter·RICE/WSJF folklore)·REFUTED 미인용("GenAI 95% 실패" 반박·DORA tier 비고정). 첫 행동=현행 진단·목표 임의 정의 금지·발명 금지·은탄환/'N% 개선' 금지·제안만·점수화/커밋 안 함·다른 플러그인 비참조·비의존
+    .claude-plugin/
+      plugin.json
+    CLAUDE.md                                            # 포인터 + 4 Phase 요약 + 원칙 + 변경 이력
+    README.md                                            # 사용자용 개요·사용법·산출물·정직성·경계
+    agents/                                              # 4 에이전트 (모두 opus)
+      org-cartographer.md                                # Phase 0 현행 조직 진단(관측·발명 금지·강점도 관측)
+      vision-elicitor.md                                 # Phase 1 목표 구체화 문진(목적조직·일하는 방식·AI native·임의 정의 금지)
+      gap-planner.md                                     # Phase 2 간극표+우선순위 할 일+로드맵(quick-wins·additive-first)
+      plan-critic.md                                     # Phase 3 적대 검증 + 경영진/팀 공유용 요약
+    skills/org-transformation/
+      SKILL.md                                           # 진입점 오케스트레이터 (Phase 0~3·첫 행동=현행 진단·매 Phase 승인 게이트)
+      references/
+        interview-pillars.md                             # 4기둥 질문뱅크(현재/목표/간극·한 번에 한 질문·충돌 감지)
+        transformation-frames.md                         # 목적조직·AI native·일하는 방식 정의 렌즈(트레이드오프·안티패턴·등급)
+        prioritization.md                                # 영향·노력·의존성·quick-wins·additive-first·로드맵
+        research/README.md                               # 2023-2026 1차 조사 dossier(등급·출처·REFUTED 교정, deep-research)
+    evals/
+      evals.json                                         # 수용 평가 (design-conformance + 근거 정직성 13 assertion)
+      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 8 / should_not 9, 인접 하네스 reciprocal 가드)
 ```

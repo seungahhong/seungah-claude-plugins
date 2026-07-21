@@ -1,0 +1,27 @@
+{
+  "name": "org-transformation-harness",
+  "version": "0.1.0",
+  "description": "회사/팀을 목적조직·AI native 방향으로 바꾸려는 실무자·리더를 인터뷰해, 현행 조직을 진단하고 목표(목적조직·스프린트/일하는 방식·AI native)를 질문으로 함께 구체화한 뒤 '무엇부터 시작할지'를 단계별 할 일로 정리하는 도메인 무관 인터랙티브 멀티 에이전트 하네스. 4단계(Phase 0 현행 조직 진단 → Phase 1 목표 구체화 문진(한 번에 한 질문·답변 분기·임의 정의 금지) → Phase 2 간극 진단표+우선순위 할 일+단계별 로드맵 → Phase 3 적대적 검증+경영진/팀 공유용 요약)로 진행하며 매 Phase 승인 게이트를 둔다. 첫 행동은 반드시 '지금 회사/팀이 어떻게 구성되어 일하는지' 진단 질문이다(목표를 먼저 그리지 않고 현행을 먼저 관측). 산출물은 현재→목표 간극 진단표, '지금 바로 시작 가능한 것'을 맨 위로 영향·노력·의존성 기준 정렬한 우선순위 할 일 리스트, 3~4단계 실행 로드맵, 경영진/팀 공유용 5~7줄 요약. 근거는 조직 변화관리·목적조직(target operating model·mission teams)·AI native 도입·애자일 일하는 방식·변화 시퀀싱(quick-wins/additive-first)·우선순위화(RICE/ICE/WSJF)를 2023~2026 1차 문헌으로 deep-research 적대 검증해 근거 등급(STRONG/MEDIUM/report-only)을 부여했다. 정직성 가드레일: '목적조직/AI native면 다 해결된다'는 은탄환 프레이밍·'N% 개선' 약속을 금지하고(수치는 출처·등급과 함께 관찰값으로만 — 예: DORA 데이터상 AI 도입은 개인 체감 생산성↑과 시스템 delivery 성과가 갈림), 목적조직·AI native를 AI가 임의로 정의하지 않고 질문으로 함께 정의하며, 현행 미관측 항목은 '미확인'으로 남기고(발명 금지), 잘 되는 현행을 보존하는 additive-first·quick-wins 우선 시퀀싱을 따르고, 조직 변경을 자동 실행하지 않는다(제안만·도입은 사람 결정·점수화 안 함·커밋 안 함). 4개 에이전트(org-cartographer/vision-elicitor/gap-planner/plan-critic, 모두 model opus). 경계: 개발 방법론(Scrum/Kanban 등) 선택·추천, 기획문서(PRD)·사용자 스토리 작성, Claude 에이전트 하네스/스킬 자체 생성·진단, 사람↔AI 협업 토폴로지 설계, 작업을 여러 AI 에이전트로 병렬화, CI/CD 파이프라인·IaC 구축, 코드 구현·리뷰·커밋은 범위가 아니며, '사람 조직의 목적조직·AI native 전환을 현행 진단 → 목표 구체화 → 간극 → 실행 할 일'로 정리하는 데 특화한다. 경계는 범주로만 서술하고 다른 마켓플레이스 플러그인을 이름으로 참조하거나 의존하지 않는 독립 플러그인이다(references·근거 dossier 전부 내재화·단독 설치로 동작).",
+  "author": {
+    "name": "seungah.hong",
+    "email": "ssingah1030@gmail.com"
+  },
+  "tags": [
+    "claude-code",
+    "plugin",
+    "org-transformation-harness",
+    "organizational-transformation",
+    "target-operating-model",
+    "purpose-driven-org",
+    "ai-native",
+    "ways-of-working",
+    "sprint",
+    "change-management",
+    "current-state-diagnosis",
+    "prioritization",
+    "roadmap",
+    "multi-agent",
+    "interactive",
+    "evidence-based"
+  ]
+}

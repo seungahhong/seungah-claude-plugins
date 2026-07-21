@@ -58,5 +58,9 @@
   {
     "query": "이 코드 리뷰하고 버그 찾아서 커밋해줘",
     "should_trigger": false
+  },
+  {
+    "query": "우리 회사/팀 현행 조직을 인터뷰로 진단하고 목적조직·AI native 목표 대비 간극이랑 뭐부터 시작할지 할 일을 정리해줘",
+    "should_trigger": false
   }
 ]

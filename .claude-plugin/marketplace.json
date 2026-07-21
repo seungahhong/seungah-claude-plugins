@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "분석 → 설계 → 개발 → 리뷰 → 검증까지, 소프트웨어 개발 전 과정을 지원하는 멀티 에이전트 스킬·커맨드·훅 모음. 정적 분석 5개 관점(간소화·코드 리뷰·보안·성능·정합성) 중 사용자 선택 항목 병렬 + 재리뷰 루프와 E2E·타입/빌드 검증, 그리고 코드 착수 *전* 상류 산출물(기획·디자인·API 계약·QA 인수조건) 핸드오프 게이트 검수를 포함합니다.",
-    "version": "1.36.0",
+    "version": "1.37.0",
     "homepage": "https://github.com/seungahhong/seungah-claude-plugins"
   },
   "plugins": [
@@ -640,6 +640,34 @@
         "success-criteria",
         "execution-environment",
         "fresh-context",
+        "multi-agent",
+        "interactive",
+        "evidence-based"
+      ],
+      "category": "workflow",
+      "strict": false
+    },
+    {
+      "name": "org-transformation-harness",
+      "description": "회사/팀을 목적조직·AI native 방향으로 바꾸려는 실무자·리더를 인터뷰해, 현행 조직을 진단하고 목표(목적조직·스프린트/일하는 방식·AI native)를 질문으로 함께 구체화한 뒤 '무엇부터 시작할지'를 단계별 할 일로 정리하는 도메인 무관 인터랙티브 멀티 에이전트 하네스. 4단계(Phase 0 현행 조직 진단 → Phase 1 목표 구체화 문진(한 번에 한 질문·답변 분기·목표 임의 정의 금지) → Phase 2 현재→목표 간극 진단표+우선순위 할 일(영향·노력·의존성)+3~4단계 로드맵 → Phase 3 적대적 검증+경영진/팀 공유용 요약)로 진행하며 매 Phase 승인 게이트를 둔다. 첫 행동은 반드시 '지금 회사/팀이 어떻게 구성되어 일하는지' 진단 질문이다(목표를 먼저 그리지 않고 현행을 먼저 관측·발명 금지·지금 할 수 있는 업무·강점도 함께 관측). 산출물은 간극 진단표, '지금 바로 시작 가능한 것'을 맨 위로 정렬한 우선순위 할 일 리스트, 단계별 실행 로드맵, 공유용 5~7줄 요약. 근거는 조직 변화관리(current-state diagnosis)·목적조직(target/product operating model·Team Topologies)·AI native 도입·애자일 일하는 방식·변화 시퀀싱(quick-wins/additive-first)·우선순위화(RICE/ICE/WSJF)를 /deep-research(6각도)로 2023~2026 1차 문헌 적대 검증해 근거 등급(STRONG 조건부/MEDIUM 컨센서스/report-only folklore)을 부여했다. 정직성 가드레일: '목적조직/AI native면 다 해결된다'는 은탄환·'N% 개선' 약속 금지(수치는 출처·등급과 함께 관찰값으로만 — DORA 2024/2025 PRIMARY상 AI 도입은 개인 체감 생산성↑과 시스템 delivery 안정성↓이 갈리며 이득은 팀 조건(테스트·피드백·플랫폼)에 좌우, 'GenAI 파일럿 95% 실패'는 반박된 유행 수치라 미인용), 목적조직·AI native를 AI가 임의 정의하지 않고 질문으로 함께 정의, 현행 미관측은 '미확인'으로 남김(발명 금지), 잘 되는 현행 보존하는 additive-first·quick-wins 우선, 조직 변경 자동 실행 안 함(제안만·도입은 사람 결정·점수화 안 함·커밋 안 함). 4개 에이전트(org-cartographer/vision-elicitor/gap-planner/plan-critic, 모두 model opus). 경계: 개발 방법론(Scrum/Kanban) 선택·추천, 기획문서(PRD)·사용자 스토리 작성, 하네스 자체 생성·진단, 사람↔AI 협업 토폴로지 설계, 작업을 여러 AI 에이전트로 병렬화, CI/CD·IaC 구축, 코드 구현·리뷰·커밋은 범위가 아니며, '사람 조직의 목적조직·AI native 전환을 현행 진단→목표 구체화→간극→실행 할 일'로 정리하는 데 특화한다(명명된 개발 방법론 선택과 달리 이 하네스는 조직 목표 전환 실행계획). 경계는 범주로만 서술하고 다른 마켓플레이스 플러그인을 이름으로 참조하거나 의존하지 않는 독립 플러그인이다.",
+      "source": "./plugins/org-transformation-harness",
+      "version": "0.1.0",
+      "author": {
+        "name": "seungah.hong"
+      },
+      "tags": [
+        "claude-code",
+        "plugin",
+        "org-transformation-harness",
+        "organizational-transformation",
+        "target-operating-model",
+        "purpose-driven-org",
+        "ai-native",
+        "ways-of-working",
+        "change-management",
+        "current-state-diagnosis",
+        "prioritization",
+        "roadmap",
         "multi-agent",
         "interactive",
         "evidence-based"

@@ -1,0 +1,75 @@
+{
+  "eval_metadata": {
+    "eval_id": "org-transformation-acceptance",
+    "eval_name": "org-transformation-harness 수용 평가 (design-conformance + 근거 정직성)",
+    "prompt": "스킬은 회사/팀을 목적조직·AI native로 바꾸려는 실무자·리더를 인터뷰해 현행을 먼저 진단(Phase 0)하고, 목적조직·스프린트/일하는 방식·AI native 목표를 한 번에 한 질문으로 함께 정의(Phase 1, 임의 정의 금지)한 뒤, 현재→목표 간극 진단표 + 우선순위 할 일(영향·노력·의존성) + 단계별 로드맵을 만들고(Phase 2, quick-wins·additive-first), 적대적 검증 + 경영진/팀 공유용 요약(Phase 3)으로 마무리한다. 매 Phase 승인 게이트. 본 평가는 shipped SKILL.md·agents/*.md·references/*가 하네스 불변식(첫 행동=현행 진단·발명 금지·목표 임의 정의 금지·은탄환/'N% 개선' 금지·출처·등급 인용·트레이드오프+안티패턴 동반·quick-wins·additive-first·제안만·점수화 안 함·opt-in 저장·REFUTED 교정)을 강제·명세하는지 file:섹션 인용으로 채점한다.",
+    "method": "design-conformance — shipped 파일(SKILL.md·agents/*.md·references/*)의 해당 섹션 인용으로 각 불변식 강제 여부를 확인.",
+    "assertions": [
+      {
+        "text": "[first-action/diagnosis-first] 첫 행동이 반드시 현행 조직 진단이다 — 사용자가 목표(AI native 등)를 먼저 지목해도 현행을 먼저 진단한 뒤 목표 구체화로 넘어간다(명시적 진단 생략 요구 시에만 축약).",
+        "passed": true,
+        "evidence": "SKILL.md '첫 행동 규약(불변식)' + Phase 0 시작 질문. org-cartographer.md '관측만, 발명 금지'. trigger-eval 'AI native 로드맵만 짜줘'류도 진단 선행. 근거: research/ 각도1(진단 우선, MEDIUM)."
+      },
+      {
+        "text": "[no-invention] 현행 진단은 관측만 하고 조직/역할/프로세스/도구를 발명하지 않으며 미관측은 '미확인'으로 남긴다.",
+        "passed": true,
+        "evidence": "org-cartographer.md '관측만, 발명 금지'·unknowns. SKILL.md 내재화 원칙 '현행 먼저·발명 금지'. plan-critic.md 점검축 2(지어낸 사실)."
+      },
+      {
+        "text": "[no-arbitrary-definition] 목적조직·AI native를 AI가 임의로 정의하지 않고 한 번에 한 질문으로 사용자가 자기 맥락에서 정의하게 돕는다(렌즈는 정답 틀 아님).",
+        "passed": true,
+        "evidence": "vision-elicitor.md '핵심 원칙: 임의 정의 금지'. SKILL.md Phase 1 불변식. transformation-frames.md 상단 불변식·사용 절차 1. interview-pillars.md 기둥 ②④ 정의 유도."
+      },
+      {
+        "text": "[one-question/branching] 문진은 한 번에 한 질문·짧게·번호 선택지·직전 답이 다음 질문 결정·충돌 즉시 감지.",
+        "passed": true,
+        "evidence": "SKILL.md 내재화 원칙 '한 번에 한 질문(짧게)'. vision-elicitor.md·org-cartographer.md 동일. interview-pillars.md '충돌 감지' 절."
+      },
+      {
+        "text": "[no-silver-bullet/no-Npct] 은탄환·'N% 개선' 약속을 금지하고 수치는 출처·등급과 함께 관찰값으로만 인용한다(특히 AI 도입).",
+        "passed": true,
+        "evidence": "SKILL.md 정직성 가드레일 ①. research/README.md '근거 규칙' 1~2·각도3(체감≠성과). gap-planner.md '은탄환·N% 금지'. plan-critic.md 점검축 3."
+      },
+      {
+        "text": "[tradeoff+antipattern] 모든 목표·할 일에 트레이드오프와 흔한 안티패턴을 함께 붙인다.",
+        "passed": true,
+        "evidence": "transformation-frames.md 각 렌즈 '트레이드오프'·'안티패턴' 항목. vision-elicitor.md 목표 정의 표(트레이드오프 열). SKILL.md 정직성 가드레일 ②."
+      },
+      {
+        "text": "[quick-wins/additive-first] '지금 바로 시작 가능한 것'을 맨 위로, 잘 되는 현행 보존, 되돌리기 쉬운 개입을 전면 전환보다 앞에 둔다.",
+        "passed": true,
+        "evidence": "SKILL.md 내재화 원칙 'quick-wins·additive-first'. prioritization.md 1·2절. gap-planner.md 'quick-wins 우선·additive-first'. org-cartographer.md can_do_now 관측. 근거: research/ 각도5(report-only·정직 표기)."
+      },
+      {
+        "text": "[impact-effort-dependency] 우선순위는 영향·노력·의존성 신호 + 이 순서인 이유 1줄로 정렬하고 의존성 선행을 지키며 점수를 절대 진리로 포장하지 않는다.",
+        "passed": true,
+        "evidence": "prioritization.md 3절(영향·노력·의존성·의존성 우선 규칙)·정직성. gap-planner.md 산출 구조 2. SKILL.md Phase 2. 근거: research/ 각도6(RICE/WSJF report-only)."
+      },
+      {
+        "text": "[adversarial-verify] Phase 3가 칭찬 금지·반증 모드로 일반론·지어낸 사실·은탄환·우선순위 오류·숨은 가정·정직성을 캔다.",
+        "passed": true,
+        "evidence": "plan-critic.md 점검축 1~6·'칭찬 금지·반증 모드'. SKILL.md Phase 3."
+      },
+      {
+        "text": "[suggest-only/no-score] 제안만 하고 조직 변경을 자동 실행하지 않으며(도입은 사람 결정) 점수화하지 않는다.",
+        "passed": true,
+        "evidence": "SKILL.md 정직성 가드레일 ③④·마무리 요약 문구. gap-planner.md '제안만'. plan-critic.md 경계. 커밋 안 함(내재화 원칙)."
+      },
+      {
+        "text": "[opt-in-storage] 산출물은 채팅 제시 기본, 사용자가 저장을 선택할 때만 .claude/_docs/<슬러그>/에 기록하고 각 파일 개별 확인.",
+        "passed": true,
+        "evidence": "SKILL.md '산출물 배치'·마무리 1(각각 예/아니오). CLAUDE.md Conventions '파일 저장 opt-in'."
+      },
+      {
+        "text": "[refuted-corrections] AI 관련 REFUTED/과장을 교정본으로만 인용한다 — 'GenAI 파일럿 95% 실패'는 반박된 유행 수치로 미인용, 'AI=자동 생산성'은 DORA상 체감≠시스템 성과로 교정, DORA tier는 고정 벤치마크 아님.",
+        "passed": true,
+        "evidence": "research/README.md 각도3 'REFUTED — 반드시 교정'·주요 출처 'REFUTED' 절. transformation-frames.md B 안티패턴 '95% 실패 인용 금지'. 각도4 DORA tier 비고정."
+      },
+      {
+        "text": "[boundary] 개발 방법론 선택·추천·PRD/스토리 작성·하네스 자체 생성/진단·사람↔AI 협업 토폴로지·작업의 AI 에이전트 병렬화·CI/CD 구축·코드 구현/리뷰/커밋과 구분한다(경계는 범주로 서술·자매 플러그인 이름 비참조).",
+        "passed": true,
+        "evidence": "SKILL.md '경계' 절·description 발동/비발동. CLAUDE.md 경계. trigger-eval should_not(방법론 추천·PRD·하네스·협업·병렬화·CI/CD·PR 리뷰)."
+      }
+    ]
+  }
+}

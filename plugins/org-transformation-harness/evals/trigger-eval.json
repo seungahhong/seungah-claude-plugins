@@ -1,0 +1,70 @@
+[
+  {
+    "query": "우리 팀을 목적조직으로 바꾸려는데 현행부터 진단해보고 뭐부터 시작해야 할지 단계별로 정리해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "AI native 조직으로 전환하고 싶어. 지금 우리가 어떻게 일하는지 물어봐주고 간극이랑 할 일 로드맵 짜줘",
+    "should_trigger": true
+  },
+  {
+    "query": "회사/팀 구조를 단계별로 물어봐주고, 목적조직·스프린트·산출물 관리·AI native 목표를 받아서 문제랑 지금 할 수 있는 업무를 정리해줘. 그리고 뭐부터 시작할지 할 일로",
+    "should_trigger": true
+  },
+  {
+    "query": "we want to move toward a mission-based (purpose-driven) org and become AI-native. interview me about our current setup, then tell me the gaps and what to start first",
+    "should_trigger": true
+  },
+  {
+    "query": "조직 개편하려는데 지금 현행 진단하고 목표 조직 모습이랑 비교해서 우선순위 할 일 리스트랑 경영진 공유용 요약까지 만들어줘",
+    "should_trigger": true
+  },
+  {
+    "query": "스프린트랑 산출물 관리 방식을 바꾸고 AI를 업무에 넣고 싶은데, 지금 상황 인터뷰해서 뭐부터 해야 할지 단계별로 알려줘",
+    "should_trigger": true
+  },
+  {
+    "query": "우리 조직 AI 전환 로드맵을 짜고 싶어. 현행 진단부터 하고 quick-win이랑 단계별 로드맵으로 정리해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "목적조직이 우리한테 뭘 뜻하는지 질문으로 같이 정의하고, 현재랑의 간극이랑 지금 시작할 일 정리해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "우리 팀에 스크럼이 맞을지 칸반이 맞을지 진단해서 개발 방법론을 순위로 추천해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 기획안으로 PRD랑 사용자 스토리 만들어줘. 문제 정의랑 인수조건까지",
+    "should_trigger": false
+  },
+  {
+    "query": "다른 도구(Goal/리서치)에 넣을 프롬프트를 질문 유도·성공조건으로 잘 깎아서 만들어줘",
+    "should_trigger": false
+  },
+  {
+    "query": "새 도메인용 멀티 에이전트 하네스(에이전트 팀 + 스킬 + 오케스트레이터)를 처음부터 같이 만들어줘",
+    "should_trigger": false
+  },
+  {
+    "query": "방금 그 방향 말고 다시 해줘. 왜 그렇게 동작했는지 트레이스 보고 지금 쓰던 스킬이랑 루트 CLAUDE.md를 고도화해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "사람이랑 AI 에이전트가 한 팀으로 협업하도록 분업·감독·신뢰·검증을 설계해줘. HITL 게이트랑 자율 수준까지",
+    "should_trigger": false
+  },
+  {
+    "query": "이 작업을 여러 AI 에이전트로 병렬화할지, 어떤 토폴로지로 협업시킬지 결정하고 baseline 능가하는지 검증해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "우리 CI/CD 파이프라인 개선해줘. terraform plan에 OPA 게이트 걸고 카나리 승격 로직 잡아줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 PR 다각도로 리뷰해줘 — 버그·보안·테스트 관점으로. 그리고 한국어 커밋 메시지도 써줘",
+    "should_trigger": false
+  }
+]
