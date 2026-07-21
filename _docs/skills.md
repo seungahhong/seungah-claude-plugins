@@ -359,9 +359,9 @@
 
 | 스킬 | 명령 | 설명 |
 |------|------|------|
-| Meta-Prompting | `/meta-prompting` | 진입 오케스트레이터. Phase 0 인테이크·덤핑(목표+실행 환경 확정·컨텍스트 정제 없이 다 던지기 유도) → 1 질문 유도 → 2 성공·검증 조건 → 3 환경 맞춤 깎아내기 → 4 적대 점검·fresh 주입. 매 Phase 승인 게이트. |
+| Meta-Prompting | `/meta-prompting` | 진입 오케스트레이터. Phase 0 인테이크(목표+실행 환경 **한 번에 한 질문씩** 확정·컨텍스트는 있으면 붙여넣는 선택지) → 1 질문 유도(**한 번에 하나씩**) → 2 성공·검증 조건 → 3 환경 맞춤 깎아내기 → 4 적대 점검·fresh 주입. 매 Phase 승인 게이트. |
 
-**4 에이전트(opus)** — `context-elicitor`(Phase 1: 덤프에서 빠진 요소를 AI가 먼저 되묻기·타겟/핵심기능/완성도+환경 변수·전부위임 방지) / `success-definer`(Phase 2: specific 성공 + 외부 기준 대비 검증·순진한 자기수정 아님) / `prompt-carver`(Phase 3: 환경 규약·길이 상한 반영·큰그림→축소·복사 가능 최종 프롬프트) / `prompt-critic`(Phase 4: 모호·과대·환경 부적합·미검증·전부위임 적대 점검·점수화 금지·사용자 도메인 수정·fresh 창 주입 안내).
+**4 에이전트(opus)** — `context-elicitor`(Phase 1: 빠진 요소를 AI가 **한 번에 하나씩** 되묻기·번호 선택지·직전 답이 다음 질문 결정·타겟/핵심기능/완성도+환경 변수·전부위임 방지) / `success-definer`(Phase 2: specific 성공 + 외부 기준 대비 검증·순진한 자기수정 아님) / `prompt-carver`(Phase 3: 환경 규약·길이 상한 반영·큰그림→축소·복사 가능 최종 프롬프트) / `prompt-critic`(Phase 4: 모호·과대·환경 부적합·미검증·전부위임 적대 점검·점수화 금지·사용자 도메인 수정·fresh 창 주입 안내).
 
 **references 3종** — `execution-environments.md`(Goal/loop·ultracode·Claude Code·이미지·리서치·채팅별 하드 제약·필수 변수·엔딩 조건) · `carving-principles.md`(깎아내기 8원칙, 각 근거 등급) · `evidence.md`(기법별 학술 검증·등급·1차 소스).
 

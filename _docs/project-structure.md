@@ -499,13 +499,13 @@ plugins/
     evals/
       evals.json                                         # 수용 평가 (design-conformance + 근거 정직성 14 assertion)
       trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 10(+Tier C 2) / should_not 8, 인접 도메인 reciprocal 가드)
-  meta-prompting-harness/                                # [독립 플러그인] 메타 프롬프팅(AI에게 입력할 프롬프트를 AI가 최적화해 생성→새 컨텍스트에 주입해 실제 작업)을 4단계 인터랙티브 4에이전트로 수행하는 도메인 무관 하네스. 널리 쓰이는 메타 프롬프팅 실천 방법론 + /deep-research(6각도·25소스·23 confirmed/2 refuted) 1차 문헌 대조 근거 등급. Phase 0 인테이크·덤핑 → 1 질문 유도 → 2 성공·검증 조건 → 3 환경 맞춤 깎아내기 → 4 적대 점검·fresh 주입. STRONG(메타프롬프팅>직접 2401.12954·2309.03409·2310.16427 조건부·명확화 질문 ClarifyGPT·Orchid·성공+검증 Anthropic 공식·fresh context 2307.03172·은탄환 아님)·report-only folklore(환경 맞춤 변환·큰그림→축소 1차 근거 없음)·REFUTED 미사용(지휘자-전문가 프레이밍·LLM 스스로 명확화 불가). 전부위임 금지·사용자 도메인 검증 필수·프롬프트 생성만·실행은 사용자·커밋/점수화 안 함·다른 플러그인 비참조·비의존
+  meta-prompting-harness/                                # [독립 플러그인] 메타 프롬프팅(AI에게 입력할 프롬프트를 AI가 최적화해 생성→새 컨텍스트에 주입해 실제 작업)을 4단계 인터랙티브 4에이전트로 수행하는 도메인 무관 하네스. 널리 쓰이는 메타 프롬프팅 실천 방법론 + /deep-research(6각도·25소스·23 confirmed/2 refuted) 1차 문헌 대조 근거 등급. Phase 0 인테이크(한 번에 한 질문씩·덤프는 선택) → 1 질문 유도(한 번에 하나씩) → 2 성공·검증 조건 → 3 환경 맞춤 깎아내기 → 4 적대 점검·fresh 주입. STRONG(메타프롬프팅>직접 2401.12954·2309.03409·2310.16427 조건부·명확화 질문 ClarifyGPT·Orchid·성공+검증 Anthropic 공식·fresh context 2307.03172·은탄환 아님)·report-only folklore(환경 맞춤 변환·큰그림→축소 1차 근거 없음)·REFUTED 미사용(지휘자-전문가 프레이밍·LLM 스스로 명확화 불가). 전부위임 금지·사용자 도메인 검증 필수·프롬프트 생성만·실행은 사용자·커밋/점수화 안 함·다른 플러그인 비참조·비의존
     .claude-plugin/
       plugin.json
     CLAUDE.md                                            # 포인터 + 4 Phase 요약 + 근거 등급 + 변경 이력
     README.md                                            # 사용자용 개요·사용법·근거 등급·경계·예시
     agents/                                              # 4 에이전트 (모두 opus)
-      context-elicitor.md                                # Phase 1 질문 유도(빠진 요소 되묻기·전부위임 방지)
+      context-elicitor.md                                # Phase 1 질문 유도(빠진 요소 한 번에 하나씩 되묻기·번호 선택지·답변 분기·전부위임 방지)
       success-definer.md                                 # Phase 2 성공·검증 조건(외부 기준 대비·순진한 자기수정 아님)
       prompt-carver.md                                   # Phase 3 환경 맞춤 깎아내기(큰그림→축소·최종 프롬프트)
       prompt-critic.md                                   # Phase 4 적대 점검 + fresh context 주입 안내
