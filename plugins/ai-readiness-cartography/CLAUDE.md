@@ -1,6 +1,6 @@
 # ai-readiness-cartography
 
-임의 git 저장소가 **AI 코딩 에이전트가 읽고 안전하게 기여할 수 있는 코드베이스**인지를 **측정하고(결정론 스코어러) 개선을 설계·적용하며(멀티 에이전트) 승인 게이트 뒤에 구조·본문 코드를 수정하는** 도메인 무관 단일 스킬(**3 모드·자유 조합**). ① 측정 모드는 100점·9 카테고리 + 3 gate로 채점해 JSON 점수표 + HTML 대시보드 + ROI 가이드를 낸다. ② 진단·개선 모드는 그 측정을 센서로 2축 진단 → 빌드 가드레일 → standalone → **계획·개별 승인 게이트 뒤 코드 적용**(위험 등급 S/M/L·고위험 구조 리팩터 opt-in·AST/LSP 위임·behavior 센서) → 수용 증명·재측정을 4에이전트로 제안·설계·적용한다. **③ 코드 본문 층위 모드**(구 code-legibility-harness 흡수·v0.3.0)는 `legibility_scan.py` census(등급 없음)를 seed로 주석·명명·함수/모듈 granularity를 다각도 진단하고, **3게이트 승인(계획→개별→최종) 뒤에만 단계별로 코드를 수정**한다(P1 오도·stale 주석 삭제→P2 안전 리네임(AST/LSP)→P3 검증된 계약 주석→P4 구조 opt-in). **세 모드는 배타 택일이 아니라 자유 조합**이며(임의 부분집합), 여러 개를 고르면 **①→②→③ 순으로 이어 수행**한다(score.py는 ①②가 1회 공유·②+③이면 구조 리팩터는 ②가 적용하고 ③의 C3는 끔). **①은 측정만(코드 수정 안 함)·②③은 제안·설계 후 승인 게이트 뒤에 코드를 수정하며**(②=계획·개별 승인·고위험 opt-in, ③=3게이트), ③은 저장소 층 등급을 만들지 않는다(census만). ②③ 모두 커밋 안 함(git-harness 핸드오프).
+임의 git 저장소가 **AI 코딩 에이전트가 읽고 안전하게 기여할 수 있는 코드베이스**인지를 **측정하고(결정론 스코어러) 개선을 설계·적용하며(멀티 에이전트) 승인 게이트 뒤에 구조·본문 코드를 수정하는** 도메인 무관 단일 스킬(**3 모드·자유 조합**). ① 측정 모드는 100점·9 카테고리 + 3 gate로 채점해 JSON 점수표 + HTML 대시보드 + ROI 가이드를 낸다. ② 진단·개선 모드는 그 측정을 센서로 2축 진단 → 빌드 가드레일 → standalone → **계획·개별 승인 게이트 뒤 코드 적용**(위험 등급 S/M/L·고위험 구조 리팩터 opt-in·AST/LSP 위임·behavior 센서) → 수용 증명·재측정을 4에이전트로 제안·설계·적용한다. **③ 코드 본문 층위 모드**(구 code-legibility-harness 흡수·v0.3.0 + 구 design-principle-harness 고유 자산 흡수·v0.5.0)는 `legibility_scan.py` census(등급 없음·**5축**)를 seed로 주석·명명·함수/모듈 granularity + **마크업 시맨틱·테스트 설명**을 다각도 진단하고, **3게이트 승인(계획→개별→최종) 뒤에만 단계별로 코드를 수정**한다(P1 오도 제거 C0·C4a → P2 안전 교정 C2·C5a → P3 계약 주석 C1 + **comment-gap '왜' 주석 opt-in** → P4 고위험 opt-in C3·C4b·C5b). 마크업·테스트 설명 축은 **AI 이해 개입 근거가 없어** 접근성·사람 가독성 개선으로만 말하고 **볼륨 가점·자동 ARIA/alt/어서션 생성을 금지**한다. **세 모드는 배타 택일이 아니라 자유 조합**이며(임의 부분집합), 여러 개를 고르면 **①→②→③ 순으로 이어 수행**한다(score.py는 ①②가 1회 공유·②+③이면 구조 리팩터는 ②가 적용하고 ③의 C3는 끔). **①은 측정만(코드 수정 안 함)·②③은 제안·설계 후 승인 게이트 뒤에 코드를 수정하며**(②=계획·개별 승인·고위험 opt-in, ③=3게이트), ③은 저장소 층 등급을 만들지 않는다(census만). ②③ 모두 커밋 안 함(git-harness 핸드오프).
 
 사용자용 개요·사용법은 [README.md](README.md) 참조.
 
@@ -11,7 +11,7 @@ ai-readiness-cartography/
 ├── .claude-plugin/plugin.json
 ├── CLAUDE.md                        # (이 문서) 포인터 + 루브릭 요약 + 변경 이력
 ├── README.md                        # 사용자용 개요·사용법·경계·근거
-├── agents/                          # 8 에이전트 (모두 model: "opus")
+├── agents/                          # 9 에이전트 (모두 model: "opus")
 │   ├── accessibility-assessor.md    # ②Phase 0 — score.py seed 위 2축(Q/A) 진단 + 5밴드 등급 + Gate-3 예비판정
 │   ├── guardrail-architect.md       # ②Phase 1 — 빌드 가드레일(의존 방향 물리 강제 + 피드백 3차원)
 │   ├── standalone-designer.md       # ②Phase 2 — 도메인 슬라이스 독립 실행(port/adapter·use-case seed)
@@ -19,20 +19,21 @@ ai-readiness-cartography/
 │   ├── comment-auditor.md           # ③ — 주석 4분류(오도/stale/noise/유효) → C0·C1 후보
 │   ├── naming-analyst.md            # ③ — 명명 3축(오도>무의미>모호) → C2 후보 + 도구·위험 판정
 │   ├── structure-cartographer.md    # ③ — 구조 후보(opt-in·"효과=추론" 라벨 필수)
-│   └── behavior-guard.md            # ②③ 공용 — 변경/개입 클래스별 센서 실행·관측 (generator≠checker·②Phase 3 적용 + ③)
+│   ├── markup-test-auditor.md       # ③ — 마크업 시맨틱(C5)·테스트 설명(C4) 후보(볼륨 가점 금지·자동 생성 금지)
+│   └── behavior-guard.md            # ②③ 공용 — 변경/개입 클래스별 센서 실행·관측 (generator≠checker·②Phase 3 적용 + ③ C0~C5)
 └── skills/
     └── ai-readiness-cartography/
         ├── SKILL.md                 # 오케스트레이터(모드 선택=①②③ 부분집합 → 선택분을 ①→②→③ 순차; ② 5-Phase(0~4·Phase 3 Apply 게이트)·③ 5-Phase(B0~B4·3게이트))
         ├── scripts/score.py         # ① v3 결정론 스코어러(gating·import 그래프·결합도·design_signals report-only·htmlsafe)
         ├── scripts/test_score.py    # ① 회귀 테스트(가중치 불변식·골든·Gate-1·design_signals 불변)
-        ├── scripts/legibility_scan.py       # ③ 코드 본문 census 스캐너(stdlib only·등급 없음·7 탐지기)
-        ├── scripts/test_legibility_scan.py  # ③ 회귀 테스트(49건·불변식·독립성 핀)
+        ├── scripts/legibility_scan.py       # ③ 코드 본문 census 스캐너(stdlib only·등급 없음·5축 20 탐지기)
+        ├── scripts/test_legibility_scan.py  # ③ 회귀 테스트(69건·불변식·독립성 핀·흡수 자산 핀)
         ├── assets/template.html     # ① 대시보드 원본
         └── references/
             ├── scoring-rubric.md                    # ① v3 루브릭(9 카테고리 + 3 gate)
             ├── ai-readable-codebase-principles.md   # ② 개선 모드 원리
-            ├── intervention-catalog.md              # ③ 개입 카드 C0~C3 정본(근거·위험·센서·거부 조건)
-            ├── legibility-principles.md             # ③ 본문 층위 원리(삭제>추가·이름은 채널·테스트≠등가성 오라클)
+            ├── intervention-catalog.md              # ③ 개입 카드 C0~C5 정본(근거·위험·센서·거부 조건)
+            ├── legibility-principles.md             # ③ 본문 층위 원리 8(삭제>추가·이름은 채널·테스트≠등가성 오라클·존재 가점 금지)
             ├── ai-readiness-cartography-research.md  # 측정 근거 인덱스
             ├── ai-readable-codebase-research.md      # 개선 근거
             └── research/                            # 1차 근거(session 1~7 + body-legibility/ dossier, 적대 검증)
@@ -59,7 +60,7 @@ ai-readiness-cartography/
 
 ## Conventions
 
-- **모드 선택 먼저(자유 조합)**: 발동 시 ①측정/②진단·개선/③본문 중 원하는 **부분집합**을 한 질문으로 고른다(다중 선택 허용·기본은 물어봄). 여러 개면 ①→②→③ 순으로 이어 수행하고 `score.py`는 ①②가 **1회만** 공유 실행한다(③은 `legibility_scan.py` 별도). ②가 함께 돌면 Gate-3 판정이 측정의 "미평가"를 대체하고, ②+③이면 구조 리팩터는 ②가 설계·적용으로 소유하며 ③의 C3는 끈다(이중 처리 방지). 비용은 선택분의 가산 합 — 택일이 아니라 '불필요한 모드 미선택'으로 통제한다.
+- **모드 선택 먼저(자유 조합) · 문의는 한 번에 하나씩**: 발동 시 ①측정/②진단·개선/③본문 중 원하는 **부분집합**을 한 질문으로 고른다(다중 선택 허용·기본은 물어봄). 모드를 확정한 *뒤에* 세부 스코프(경로→축→개입 클래스→고위험 opt-in)를 **하나씩** 묻는다 — 한꺼번에 나열해 던지면 사용자가 고르지 못한 채 넘어가고 그게 곧 잘못된 스코프다(직전 답이 다음 질문을 결정: 마크업 파일이 없으면 마크업 축은 묻지 않는다). 여러 개면 ①→②→③ 순으로 이어 수행하고 `score.py`는 ①②가 **1회만** 공유 실행한다(③은 `legibility_scan.py` 별도). ②가 함께 돌면 Gate-3 판정이 측정의 "미평가"를 대체하고, ②+③이면 구조 리팩터는 ②가 설계·적용으로 소유하며 ③의 C3는 끈다(이중 처리 방지). 비용은 선택분의 가산 합 — 택일이 아니라 '불필요한 모드 미선택'으로 통제한다.
 - **결정론 우선, 사람 보강**: score.py(stdlib only, Python 3.10+)가 자동 채점하고 LLM은 heuristic/manual 항목·E1 dangling 후보 확인·Gate-3 강제 판단을 보강한다. 손채점부터 하지 않는다.
 - **gating(blocking > 가산)**: blocking 결함이 등급에 상한을 씌운다(Gate-1/2→AI-Fragile, Gate-3→AI-Assisted). 순수 가중합의 오탐을 피한다.
 - **근거 서열 = 가중치 서열**: 실행·검증(E) ≫ 의존 구조(D) > 문맥 문서(B/C). ORACLE-SWE ablation 서열을 루브릭에 이식.
@@ -70,6 +71,7 @@ ai-readiness-cartography/
 - **generator/checker 분리**: 개선 모드에서 가드레일·standalone을 *설계*한 에이전트(Phase 1/2)·*적용*(Phase 3)과 등급을 *재측정*하는 검증자(Phase 4)를 분리한다.
 - **제안만(사람 집행) — ②③은 승인 후 적용**: ① 측정 모드는 코드를 자동 수정하지 않는다(측정·시각화 제안만). ②③은 제안·설계 후 승인 게이트(②=계획·개별, ③=3게이트) 뒤에 코드를 수정하고(고위험 변경=②의 구조 리팩터·③의 C3는 opt-in·AST/LSP 위임·behavior 센서 관측·"테스트 통과≠동작 보존"), 커밋은 하지 않는다(git-harness 핸드오프).
 - **결정 권한(위험은 경고, 수용은 사용자)**: 고위험 변경(②의 L 구조 리팩터·③의 C3)의 위험은 *경고*하되 감수는 *사용자*가 결정한다. opt-in·개별 승인된 항목을 에이전트가 회귀 위험을 이유로 **조용히 보류·강등·"제안만"으로 되돌리지 않는다**(승인 게이트는 무단 실행 방지 장치이지 승인된 실행의 veto가 아니다). 적용 중 새 차단 요인은 **execute-or-escalate**로 사용자에게 되돌린다. **자동 테스트 부재는 L/C3 거부 사유가 아니라 행위 센서(실제 실행·렌더로 baseline 대조·`verify`/`run`) 승격 사유**다(UNVERIFIED는 관측 한계 라벨이지 거부 신호 아님·red 센서만 롤백). "리팩토링" 요청을 S 툴링으로 대체 충족하지 않고, 인도분이 요청 클래스와 다르면 정직히 밝힌다(과소 인도 금지).
+- **본문 층 신호는 존재·볼륨에 가점하지 않는다(③)**: 마크업 시맨틱(C5)·테스트 설명(C4) 축은 **AI 이해 개입 근거가 없다** — 랜드마크·button-vs-div·테스트 설명을 격리해 LLM 이해 델타를 잰 연구가 없고(O-6), 유일한 대조는 표현 형식이며 승자가 모델 역량에 따라 뒤집힌다. 그래서 ⑴ 개선 효과는 **접근성·사람 가독성**으로만 말하고 에이전트 성공률·툴그래프 이득으로 귀속하지 않으며, ⑵ ARIA·role·셀렉터·테스트 제목의 **볼륨에 가점하지 않고**(ARIA 볼륨↑ ⇒ 탐지 오류↑) **명백한 결함만** 다루고, ⑶ **자동 ARIA/alt/어서션 생성을 금지**한다(confident-but-wrong·green-locks-bug). comment-gap(C7~C9)도 결함이 아니라 **'왜' 주석 추가 후보**이며 추가는 opt-in·사람 검증·주석 볼륨 무점수다.
 - **과장 금지**: 외부 정량 수치는 근거 등급·CAVEAT와 함께만, "개선 N% 보장" 금지.
 - **경계**: 한 기능 구현·검증(backend-harness), 상류 핸드오프 검수(review-harness), 하네스 자체 진단(meta-harness), 전달 파이프라인(cicd-harness), 명세 작성(spec-driven-development), 컨텍스트 조립(context-engineering), AI 생성물 평가 judge(eval-harness), 병렬화·협업 토폴로지(agent-orchestration), 완성 코드 리뷰·PR(frontend/git-harness)은 범위 밖.
 - 진단·개선 모드는 4 에이전트(+ 적용 Phase 3에서 `behavior-guard` 재사용) 협업이므로 SKILL.md의 **모든 Agent 호출에 `model: "opus"`를 명시**한다.
@@ -78,6 +80,7 @@ ai-readiness-cartography/
 
 | 날짜 | 변경 | 내용 |
 |------|------|------|
+| 2026-07-25 | design-principle-harness 흡수 → 모드 ③ 5축 확장 (v0.5.0) | 사용자 요청 — 두 플러그인 중복 검토 결과 **DPH 기능의 ~80~85%가 이 플러그인에 이미 존재**함을 확인하고(정체성 문장 동일·DPH Track B 6지표 ≈ ②의 A축 진단+Gate-3+guardrail/standalone·DPH Tier A ≈ ③의 naming/comments 축·`behavior-guard` 이름까지 중복·두 `score.py`가 Tarjan SCC·import 그래프·중복·과대추상을 각자 재구현), **DPH 고유 3자산만 흡수하고 플러그인은 제거**(ai-readable-codebase·code-legibility-harness 흡수와 동형). **흡수한 것 ①** Tier C → 모드 ③의 **신규 2축**: `markup`(MK1 div/span onClick·MK2 native로 대체 가능한 role=·MK3 무-alt img·MK4 ARIA 볼륨 census)·`tests`(TL1 모호·오도 테스트 제목·TL2 비의미 셀렉터) + 개입 카드 **C4(테스트 설명·셀렉터)·C5(마크업 시맨틱)** + 신규 에이전트 `markup-test-auditor`. **②** comment-gap 탐지기 → `comments` 축 **C7 침묵 예외·C8 매직 넘버·C9 정규식**(report-only)을 seed로 C1에 **'왜/맥락' 주석 opt-in 추가** 경로 신설(`C1-gap`). **③** **한 번에 한 질문 인터랙션** → 모드 게이트·B0 스코프 확정을 경로→축→클래스→고위험 opt-in 순 **단계별 문의**로 전환(덤프 금지). **흡수하지 않은 것(의도적)**: DPH Track A Tier A/B 점수화·Track B 6지표 — 전자는 ③ census·`extras.design_signals`와, 후자는 ② 진단·개선 모드와 중복. 이로써 **설계 원칙 점수화 정책 모순도 해소** — DPH는 순환/중복/과대추상/복잡도를 40점 배점했으나 이 플러그인의 기존 판정(고전 구조 지표는 코드 길이 통제 시 LLM 성능과 무상관·준수도 점수화는 Goodhart)에 따라 **report-only 유지**가 최종. **정직성(흡수 자산 고유)**: 마크업·테스트 설명 축은 **AI 이해 개입 근거 부재**(랜드마크·button-vs-div·테스트 설명 격리 연구 없음 → 신규 미해결 질문 **O-6**), 유일한 대조는 표현 형식이고 **승자가 모델 역량에 따라 뒤집힘**(강한 모델 full-HTML +11~17.5pp / 약한 모델 a11y-tree 우세 −7.9~−18.8pp·단 동일 저자군 companion이라 독립 삼각검증 아님) → 개선은 **접근성·사람 가독성으로만** 서술·에이전트 성공률 귀속 금지; **ARIA 볼륨 가점 금지**(WebAIM 방향성만·고정 배수 금지·상관≠인과); **올바른 테스트 설명 이득은 미미하고 오도만 해악**(비대칭 2404.03114·단일 proxy task caveat)·tests-as-oracle overfitting(2511.16858 방향성만); **자동 ARIA/alt/어서션 생성 금지**; comment-gap 이득은 **사람 이해+비파생 맥락**으로만(2404.03114 null과 화해·E-CG1)·주석 볼륨 무점수(Goodhart). 신규 근거 dossier `research/body-legibility/semantic-markup-tests.md`(E-MK1~3·E-TL1~2·E-CG1) + README 판정표·정직성 가드 3건·O-6 추가, `legibility-principles.md` **원리 8**(존재에 가점하지 않는다) 신설, `behavior-guard` 센서 매트릭스에 C4a/C4b/C5a/C5b 4행 + 클래스별 고유 맹점(**C4a=이름 기반 CI 필터가 실행 집합을 바꿈 → 1급 센서는 통과가 아니라 수집 개수 불변** · C4b=조용히 다른 요소를 잡아도 초록 → 의도적 red 확인 · C5b=기본 스타일·`type="submit"`·이벤트 전파 차이 → 행위 센서 필수·UNVERIFIED 상한) 추가. 스코어러 실측 교정 1건: `describe('Widget')` 같은 **한 단어 describe 제목을 모호로 오판**하던 것을 시정(describe는 *대상*을 이름 짓는 자리·모호 판정은 `it`/`test`만). `score.py` **불변**. 테스트 legibility 49→**69**건(+20: comment-gap 6·markup 6·tests 5·흡수 자산 불변식 3) + score 25 = **94건**. |
 | 2026-07-12 | 결정 권한·센서 승격 (v0.4.1) | 플러그인 테스트 실측 결함 수정 — 사용자가 고위험 구조 리팩터(L/C3)를 두 번 opt-in 했는데도 에이전트가 회귀 위험을 이유로 **조용히 보류**해 실제 코드 리팩토링이 거의 일어나지 않고 툴링(eslint·CI·설정)만 남은 **권한 전도(authority inversion)**를 교정. 근본 원인 3+1: (D1) 4곳의 "**테스트 스위트 부재 시 L/C3 거부**" 규칙이 무테스트 god-file 분할을 애초에 차단 — 테스트는 약한 오라클(≈21% 누락)인데 그 부재를 유일 실격 사유로 삼는 비정합; (D2) L/C3 프레이밍이 거부 일방 래칫(경고·거부조건·UNVERIFIED)뿐 **결정 권한 불변식 부재**(승인 게이트를 에이전트 veto로 오독); (D3) S 추가형 기본 ON이 "리팩토링" 요청을 툴링으로 대체 충족(인도 정합 점검 부재); (D4) 올바른 센서(**행위 실행·렌더**)를 하네스가 명명하지 않아 "무테스트=무센서=거부"로 붕괴. **수정 4 불변식**: INV-1 결정 권한(위험은 경고·수용은 사용자·승인된 고위험 변경 조용한 보류 금지·새 차단은 execute-or-escalate), INV-2 센서 승격(무테스트→행위 센서·거부 아님·모든 센서 불가 시에만 사용자에게 결정 escalate), INV-3 행위 센서 명명(behavior-guard 매트릭스에 행위 실행·렌더 추가·`verify`/`run` 연계·UNVERIFIED는 관측 한계 라벨이지 거부 신호 아님·red 센서만 롤백), INV-4 인도 정합(리팩토링 요청에 L 전면화·요청vs적용 클래스 정직 보고·과소 인도 금지). **정직성 전부 보존**(효과=추론 O-1·19~35% 비등가·UNVERIFIED 상한·테스트≠동작 보존·수치 약속 없음·AST/LSP 위임·승인 게이트 유지). 스코어러/스캐너 코드·테스트 **불변**(오케스트레이션·에이전트 계약만 변경). SKILL(내재화 원칙·Phase 3 3a/3b·마무리 인도 정합·③ B0/B3·B-모드 불변식·Common pitfalls 2)·intervention-catalog(C3 센서/도구/게이트/거부조건)·structure-cartographer(opt-in 결정 안 뒤집음·거부조건·schema)·behavior-guard(C3 행위 센서·UNVERIFIED 라벨·금지사항)·CLAUDE·README·evals 반영. **적대 검증 반영(4-lens 5-agent workflow, YES-WITH-FIXES)**: (H1) 무테스트 거부 제거가 벗겨낸 *격리 렌더 센서 맹점*(공개 API·파일 라우트·직렬화/lazy-chunk·동적/리플렉션 import·외부 소비자)을 C2 런타임 파괴 거부 조건과 대칭으로 3 C3 사이트(catalog 경계 주의·structure-cartographer 경계 노출 schema·behavior-guard 격리 센서 맹점)에 이식 — 거부가 아니라 *실제 라우트/소비자 구동 센서로 승격 + 사람 escalate*·격리 green을 VERIFIED로 안 올림(결정 권한 유지); (H2) SKILL 하드홀드 트리거가 *적용 도구*(LSP extract/move)를 *센서* 부재로 혼동하고 항상 가용한 사람 diff 리뷰를 누락하던 것을 정정; (H3) 사용자 지목 구조 대상의 계획표 누락 금지(사전 단계 권한 전도 차단). 정직성 8종(효과=추론·19~35% 비등가·UNVERIFIED 상한·테스트≠동작 보존·수치 약속 없음·리네임 AST/LSP·3승인 게이트·reward-hacking 불신) 전부 intact 확인. |
 | 2026-07-12 | ②도 승인 후 코드 적용 (v0.4.0) | 사용자 요청 — 통합 파이프라인 **'측정 → 제안·설계 → 사용자 승인 → 코드 수정'**. ② 진단·개선 모드를 **설계 전용 → 게이트된 적용**으로 확장: Phase 0 진단 → 1·2 설계 → **Phase 3 적용(NEW·계획 승인 게이트→개별 승인 게이트→위험 등급 S/M/L·추가형 직접 write·이동/리네임=AST/LSP 위임·`behavior-guard` 센서 관측·고위험 구조 리팩터 opt-in·"테스트 통과≠동작 보존"·L은 UNVERIFIED 상한)** → Phase 4 수용 증명·재측정. `behavior-guard`를 ②③ 공용 검증자로 확장. **핵심 불변식 전환**: '①②는 코드 수정 안 함·③만 수정' → **'① 측정만·②③은 승인 게이트 뒤에만 수정'**. ②③ 모두 커밋 안 함(git-harness 핸드오프). **정직성 보존**: 구조 리팩터 효과=추론(직접 측정 근거 없음)·LLM 리팩터 19~35% 비등가·≈21%가 테스트 통과 → 고위험 opt-in·강제 probe로만 등급 상승 귀속·오귀속 금지. 스코어러/스캐너 코드·테스트(25+49) **불변**(오케스트레이션·에이전트 계약만 변경). SKILL·plugin.json·marketplace·README·CLAUDE·`_docs`×2·evals + 에이전트 5종(guardrail/standalone/acceptance/assessor/behavior-guard) 반영. |
 | 2026-07-12 | 모드 자유 조합 (v0.3.1) | 사용자 요청 — 발동 시 세 모드를 **3분기 택일**로 확정하던 모드 게이트를 **부분집합 다중선택(자유 조합)**으로 전환. 선택분을 **①→②→③ 순차** 실행하고, `score.py`는 ①②가 **1회만 공유** seed(③은 `legibility_scan.py` 별도), **②가 함께 돌면 Gate-3 판정이 측정의 '미평가'를 대체**, **②+③이면 ③의 P4 구조 리팩터를 ②의 remediation-plan에 위임**(구조를 두 번 설계 안 함·코드를 쓰는 건 여전히 ③뿐·②는 쓰기 없음 유지), **③ 본문 편집 효과를 저장소 등급/툴그래프 델타에 귀속 금지**(오귀속·Goodhart), 산출물은 ②③가 같은 `.claude/ai-readability/{slug}/` 하위로 정렬. 스코어러(`score.py`)·census(`legibility_scan.py`) 코드·테스트(25+49)는 **불변**(오케스트레이션 계약만 변경). 함께 교정한 v0.3.0 staleness: README·marketplace.json·`_docs/skills.md`·`_docs/project-structure.md`·evals.json가 '2모드'로 남아 모드 ③를 누락하던 것, SKILL.md·README·CLAUDE의 전역 '코드 자동 수정 안 함' 규약이 ③와 모순되던 것을 '①②만 제안·③만 승인 후 수정'으로 정정. 적대 리뷰(4차원×verify 10에이전트)로 조합 실행 규약을 워크플로 명령까지 배선(census 출력 경로·Phase 0a 재실행 금지·대시보드 Gate-3 타이밍·②+③ C3 억제). |

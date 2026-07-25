@@ -50,6 +50,12 @@ deep-research 워크플로 `wf_d868b865-ec4` 산출: **5각도(명명·주석·�
 | **E-A7** | (근거) | 반복 리팩터는 재구조화→안정화로 수렴 · 특정 가독성 요인 타깃 지시 효과는 modest. |
 | **E-M1** | **VENDOR** | 벤치 점수는 능력과 정답 회수를 혼동(63% 회수) — 설계 경고로만, 수치 일반화 금지. |
 | **E-M2** | PRIMARY-2025+ | 환경 하드닝은 정확도 희생 없이 exploit 억제 · **trace 감시만으론 부족(28% 무근거 exploit)**. |
+| **E-MK1** | report-only · 타당도 외삽 | 시맨틱 HTML 이득은 **모델 역량 조건부**(강한 모델 full-HTML +11~17.5pp / 약한 모델 a11y-tree 우세) · **랜드마크·button-vs-div 격리 연구 부재**. |
+| **E-MK2** | ESTABLISHED(표준) | native 우선('First rule of ARIA') · 잘못된 ARIA는 no-ARIA보다 나쁨 · **자동 ARIA/alt 생성 금지**. |
+| **E-MK3** | report-only · **가점 금지** | ARIA 볼륨↑ ⇒ 탐지 오류↑(WebAIM 방향성·상관≠인과·고정 배수 금지) → 볼륨은 census 전용. |
+| **E-TL1** | report-only · 반증 STRONG | **올바른 설명은 이득 미미, 오도 설명만 해악**(비대칭) · tests-as-oracle은 버그를 초록으로 굳힘. |
+| **E-TL2** | report-only | 접근성 셀렉터=**벤더 관용**(refactor-robust MEDIUM) · **AI 이해 향상 근거 ABSENT** · getByRole green ≠ a11y. |
+| **E-CG1** | report-only · 효과 추론 | comment-gap은 결함이 아니라 **'왜' 주석 추가 후보** · opt-in·사람 검증·볼륨 무점수. |
 
 ## 🚫 REFUTED 목록 — 인용 금지
 
@@ -65,6 +71,7 @@ deep-research 워크플로 `wf_d868b865-ec4` 산출: **5각도(명명·주석·�
 | [`structure.md`](./structure.md) | 구조 (정직성 경계) | E-S1~E-S2 |
 | [`safe-application.md`](./safe-application.md) | 안전 적용·개입 위험 | E-A1~E-A7 |
 | [`measurement-delta.md`](./measurement-delta.md) | 델타 재측정·reward hacking | E-M1~E-M2 |
+| [`semantic-markup-tests.md`](./semantic-markup-tests.md) | 시맨틱 마크업·테스트 설명·comment-gap (**흡수 자산**) | E-MK1~E-MK3 · E-TL1~E-TL2 · E-CG1 |
 
 ## 미해결 질문 O-1~O-5 (플러그인이 답한다고 주장하면 안 되는 것)
 
@@ -73,6 +80,7 @@ deep-research 워크플로 `wf_d868b865-ec4` 산출: **5각도(명명·주석·�
 - **O-3**: '좋은 명명·주석을 **추가**'하는 것의 **양(positive) 효과 크기**? 현 근거는 대부분 제거 ablation(감소분)이며 **대칭 가정 불가**.
 - **O-4**: 주석 밀도의 최적점 — 도움이 되다가 중복·오도로 해로워지는 교차점은? 모델·태스크별로 어떻게 다른가?
 - **O-5**: 명명·주석·구조 개입의 상호작용(가법적인가 포화하는가), 그리고 델타 재측정 시 명명이 정답 단서를 노출하는 reward-hacking을 어떻게 차단하는가?
+- **O-6**: 시맨틱 마크업(랜드마크·`<button>` vs `<div onclick>`)·테스트 설명·접근성 셀렉터를 **treatment로 격리**해 같은 에이전트의 이해·기여 델타를 잰 연구는 존재하지 않는다(E-MK1·E-TL2). 유일한 대조는 *표현 형식*(a11y-tree vs full-HTML)이고 승자가 모델 역량에 따라 뒤집힌다.
 
 ## 넣지 말 것 (정직성 가드 — 위반 시 근거 충돌)
 
@@ -88,6 +96,9 @@ deep-research 워크플로 `wf_d868b865-ec4` 산출: **5각도(명명·주석·�
 10. 🚫 **사람 가독성 포매팅**(들여쓰기·공백) 개선을 AI 가독성 근거로 제시 — LLM에 무익(cartography session-1 C3, arXiv:2508.13666).
 11. 🚫 **공개 벤치마크(SWE-bench류) 점수로 개선 델타 주장** — 63%가 정답 회수(E-M1).
 12. 🚫 **에이전트 자기보고로 동작 보존 판정** — 실행 관측만(E-A2·E-M2).
+13. 🚫 **시맨틱 마크업·테스트 설명 개선을 에이전트 성공률로 귀속** — 격리 연구 부재(E-MK1·E-TL1·E-TL2, O-6). 접근성·사람 가독성 개선으로만 말한다.
+14. 🚫 **ARIA·role·셀렉터·테스트 제목의 '볼륨'에 가점** — WebAIM 역상관(E-MK3). 존재 채우기 금지.
+15. 🚫 **자동 ARIA/alt/어서션 생성** — confident-but-wrong(E-MK2)·green-locks-bug(E-TL1). 삭제·교정만 자신 있게.
 
 ## 저장소 층(측정 모드)과의 경계 (§9 · 중복 금지)
 

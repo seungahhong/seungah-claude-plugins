@@ -16,9 +16,13 @@ stdlib only · Python 3.10+ · 코드를 수정하지 않는다(읽기 전용).
 
 사용:
     python3 legibility_scan.py <repo_root> [--out census.json]
-                               [--axes naming,comments,structure]
+                               [--axes naming,comments,structure,markup,tests]
                                [--git-drift] [--drift-days 90]
                                [--top 20] [--max-files 5000]
+
+축(axis)은 사용자가 고른 개입 클래스에 대응한다 — naming(C2)·comments(C0/C1)·structure(C3)·
+markup(C5 시맨틱 마크업)·tests(C4 테스트 설명). 선택 밖의 축은 스캔하지 않는다(스코프 가드).
+markup·tests 축의 신호는 **AI 이해 개입 근거가 없어** 접근성·사람 가독성 개선으로만 말한다.
 """
 
 from __future__ import annotations
@@ -165,6 +169,87 @@ RE_JS_DECL = re.compile(
 )
 RE_IDENT_TOKEN = re.compile(r"[A-Za-z_$][A-Za-z0-9_$]{0,63}")
 
+# ---------------------------------------------------------------------------
+# comment-gap — 코드만으로 '왜/맥락'을 알기 어려운 지점 (report-only)
+#
+# 이 세 탐지기는 *결함*이 아니라 **주석 추가 후보**를 표면화한다. C1(계약·불변식 주석)의
+# seed이며 점수·등급을 만들지 않는다 — 주석 볼륨에 가점하면 곧바로 Goodhart다.
+# 전부 문자열·주석을 마스킹한 본문에서만 센다(리터럴 안의 숫자를 매직 넘버로 오판하지 않게).
+# 각 패턴은 중첩 수량자가 없고 상한이 걸려 있어 백트래킹 폭발이 불가능하다(ReDoS 가드).
+# ---------------------------------------------------------------------------
+RE_PY_TRIPLE = re.compile(r'"""[\s\S]{0,20000}?"""|\'\'\'[\s\S]{0,20000}?\'\'\'')
+RE_PY_STRING = re.compile(r"'(?:\\.|[^'\\\n]){0,2000}'|\"(?:\\.|[^\"\\\n]){0,2000}\"")
+RE_PY_COMMENT = re.compile(r"#[^\n]*")
+RE_JS_TEMPLATE = re.compile(r"`(?:\\.|[^`\\]){0,4000}`")
+RE_JS_STRING = re.compile(r"'(?:\\.|[^'\\\n]){0,2000}'|\"(?:\\.|[^\"\\\n]){0,2000}\"")
+RE_JS_LINE_COMMENT = re.compile(r"//[^\n]*")
+RE_JS_BLOCK_COMMENT = re.compile(r"/\*[\s\S]{0,20000}?\*/")
+
+# 침묵 예외 처리 — 삼킨 이유가 코드에 없다(의도적 무시인지 버그인지 구분 불가).
+RE_PY_SILENT_EXCEPT = re.compile(r"except\b[^\n:]{0,160}:[^\S\n]{0,200}(?:\n[^\S\n]{0,120})?pass\b")
+RE_JS_SILENT_CATCH = re.compile(r"catch[^\S\n]{0,20}(?:\([^)\n]{0,120}\))?[^\S\n]{0,20}\{\s{0,60}\}")
+# 매직 넘버: 3자리+ 정수 또는 소수. 0/1/2 같은 관용값·인덱스는 잡지 않는다.
+RE_MAGIC_NUM = re.compile(r"(?<![\w.])(?:\d+\.\d+|\d{3,})(?![\w.\d])")
+# 정규식 사용: 무엇을 매칭/치환하는지 코드만으론 불명. 보수적으로 명시 API만 본다.
+RE_REGEX_USE = re.compile(
+    r"\bre\.(?:compile|match|search|sub|subn|findall|finditer|fullmatch)[^\S\n]{0,10}\(|"
+    r"\bnew\s+RegExp[^\S\n]{0,10}\("
+)
+
+# ---------------------------------------------------------------------------
+# markup 축 — 시맨틱 마크업 & a11y (report-only)
+#
+# 정직성(근거 dossier `research/body-legibility/semantic-markup-tests.md`):
+#   - 랜드마크·heading·`<button>` vs `<div onclick>`를 격리해 LLM 이해 델타를 잰 연구는 **없다**.
+#     유일한 깨끗한 대조는 *표현 형식*(a11y-tree vs full-HTML) ablation이고 승자가 **모델 역량에
+#     따라 뒤집힌다** → 전부 report-only, 등급 없음.
+#   - **ARIA/role 볼륨에는 절대 가점하지 않는다**(WebAIM: ARIA 많을수록 탐지 오류↑·상관≠인과).
+#     볼륨은 census로만 싣고, 개입 후보는 native로 대체 가능한 role·무-alt 같은 *명백한 결함*뿐.
+# ---------------------------------------------------------------------------
+MARKUP_EXT = frozenset({".html", ".htm", ".vue", ".svelte"})
+JSX_EXT = frozenset({".jsx", ".tsx"})
+
+RE_NONSEMANTIC_CLICK = re.compile(r"<(?:div|span)\b[^>]{0,600}?\bon[Cc]lick\b", re.DOTALL)
+RE_NATIVE_SEMANTIC = re.compile(
+    r"<(?:button|nav|main|header|footer|article|section|aside|label|form|table|figure|figcaption|"
+    r"h[1-6]|ul|ol|fieldset|legend|dialog|details|summary|time|address)\b", re.IGNORECASE)
+RE_ROLE_ATTR = re.compile(r"""\brole\s{0,10}=\s{0,10}['"]([a-zA-Z]{1,40})['"]""")
+RE_ARIA_ATTR = re.compile(r"\baria-[a-z]{1,30}\s{0,10}=", re.IGNORECASE)
+RE_IMG_TAG = re.compile(r"<img\b", re.IGNORECASE)
+RE_IMG_ALT = re.compile(r"<img\b[^>]{0,600}?\balt\s{0,10}=", re.IGNORECASE | re.DOTALL)
+# native 요소가 이미 제공하는 role — 'First rule of ARIA'(W3C) 위반 후보.
+ROLES_WITH_NATIVE = frozenset({
+    "button", "link", "navigation", "main", "banner", "contentinfo", "heading",
+    "list", "listitem", "checkbox", "radio", "textbox", "article", "form",
+    "table", "row", "cell", "img", "figure", "complementary", "dialog", "search",
+})
+
+# ---------------------------------------------------------------------------
+# tests 축 — 테스트 설명 건강도 (report-only)
+#
+# 정직성: 통제 연구상 **올바른 설명은 LLM 이해에 유의한 이득이 없고, 오도 설명만 측정 가능하게
+# 해롭다**(비대칭·2404.03114). 그래서 존재·개수에 가점하지 않고 **모호·오도 제목만** 후보로 낸다.
+# 셀렉터는 refactor-robust라는 *관용*이지 AI 이해 향상 근거가 아니다 → 이관은 opt-in.
+# ---------------------------------------------------------------------------
+RE_JS_TEST_TITLE = re.compile(
+    r"\b(it|test|describe)\s{0,10}(?:\.\w{1,20})?\s{0,10}\(\s{0,10}(['\"`])((?:\\.|(?!\2).){1,240})\2",
+    re.DOTALL)
+RE_PY_TEST_DEF = re.compile(r"\bdef\s+(test[A-Za-z0-9_]{0,80})\s{0,10}\(")
+RE_ACCESSIBLE_QUERY = re.compile(
+    r"\b(?:get|find|query)(?:All)?By(?:Role|LabelText|Text|PlaceholderText|AltText|DisplayValue|Title)\b")
+RE_NONSEMANTIC_QUERY = re.compile(
+    r"\b(?:get|find|query)(?:All)?ByTestId\b|data-testid|\bquerySelector(?:All)?\b|"
+    r"\.locator\(\s{0,10}['\"][.#\[]|By\.(?:css|xpath)\b")
+VAGUE_TEST_TITLES = frozenset({
+    "", "test", "tests", "test1", "test 1", "test case", "testcase", "case", "case1",
+    "works", "it works", "should work", "should works", "works correctly", "ok", "todo",
+    "wip", "placeholder", "example", "sample", "foo", "bar", "baz", "temp", "tmp",
+    "동작", "동작함", "된다", "잘된다", "테스트", "테스트1",
+})
+
+# 파일 하나가 한 탐지기로 findings를 뒤덮지 않게 하는 상한. 초과분은 truncated로 정직히 표기한다.
+MAX_FINDINGS_PER_FILE = 20
+
 
 # ---------------------------------------------------------------------------
 # 자료구조
@@ -205,9 +290,16 @@ class ScanState:
     files_scanned: int = 0
     py_files: int = 0
     generic_files: int = 0
+    markup_files: int = 0
+    test_files: int = 0
     # repo-wide symbol index: simple name -> set(relpath)
     repo_symbols: dict[str, set[str]] = field(default_factory=lambda: defaultdict(set))
     unit_sizes: list[dict[str, Any]] = field(default_factory=list)
+    # markup/tests 축의 census 집계 (등급 아님 — 볼륨은 가점·감점 어느 쪽으로도 쓰지 않는다)
+    markup_stats: dict[str, int] = field(default_factory=lambda: defaultdict(int))
+    test_stats: dict[str, int] = field(default_factory=lambda: defaultdict(int))
+    # 파일당 상한에 걸려 잘린 목록 (미보고 ≠ 없음)
+    truncated: list[dict[str, Any]] = field(default_factory=list)
 
     def add(self, f: Finding) -> None:
         if f.axis in self.axes:
@@ -228,7 +320,7 @@ def iter_source_files(root: Path, max_files: int, skipped: list[dict[str, str]])
         for name in sorted(filenames):
             path = parent_dir / name
             ext = path.suffix.lower()
-            if ext not in PY_EXT and ext not in GENERIC_LANGS:
+            if ext not in PY_EXT and ext not in GENERIC_LANGS and ext not in MARKUP_EXT:
                 continue
             if path.is_symlink():
                 skipped.append({"file": relpath(path, root), "reason": "symlink"})
@@ -900,6 +992,208 @@ def _strip_comments(src: str, comments: list[tuple[int, str]]) -> str:
 
 
 # ---------------------------------------------------------------------------
+# comment-gap · markup · tests 공용 유틸
+# ---------------------------------------------------------------------------
+def _line_of(src: str, pos: int) -> int:
+    return src.count("\n", 0, pos) + 1
+
+
+def _mask(src: str, patterns: tuple[re.Pattern[str], ...]) -> str:
+    """매치 구간을 **같은 길이의 공백**으로 덮는다 — 길이·줄바꿈이 보존되므로
+    마스킹 후에도 원본과 오프셋·줄번호가 일치한다(그래서 file:line을 그대로 쓸 수 있다).
+    패턴은 순서대로 누적 적용한다(문자열 먼저, 그 다음 주석)."""
+    out = src
+    for pat in patterns:
+        chars = list(out)
+        for m in pat.finditer(out):
+            for i in range(m.start(), m.end()):
+                if chars[i] != "\n":
+                    chars[i] = " "
+        out = "".join(chars)
+    return out
+
+
+def _masked_body(path: Path, src: str) -> str:
+    """문자열·주석을 지운 코드 본문. 리터럴 안의 숫자를 매직 넘버로 오판하지 않기 위함이다."""
+    if path.suffix.lower() in PY_EXT:
+        return _mask(src, (RE_PY_TRIPLE, RE_PY_STRING, RE_PY_COMMENT))
+    return _mask(src, (RE_JS_TEMPLATE, RE_JS_STRING, RE_JS_BLOCK_COMMENT, RE_JS_LINE_COMMENT))
+
+
+def is_test_file(path: Path) -> bool:
+    name = path.name.lower()
+    parts = {seg.lower() for seg in path.parts}
+    if parts & {"__tests__", "__test__", "tests", "e2e", "cypress", "playwright", "spec"}:
+        return True
+    return (".test." in name or ".spec." in name
+            or (path.suffix.lower() in PY_EXT and (name.startswith("test_") or name.endswith("_test.py"))))
+
+
+def _capped(state: ScanState, rel: str, detector: str, matches: Iterator[Any]) -> Iterator[Any]:
+    """파일 하나가 findings를 뒤덮지 않게 상한을 건다.
+    잘린 사실은 반드시 기록한다 — **미보고는 '없음'이 아니다**(이 스캐너의 정직성 규약)."""
+    shown = 0
+    for m in matches:
+        if shown >= MAX_FINDINGS_PER_FILE:
+            state.truncated.append({"file": rel, "detector": detector, "shown": MAX_FINDINGS_PER_FILE})
+            return
+        shown += 1
+        yield m
+
+
+# ---------------------------------------------------------------------------
+# comment-gap 축 (comments · report-only · C1 '왜' 주석 추가 후보의 seed)
+# ---------------------------------------------------------------------------
+def scan_comment_gap(path: Path, src: str, state: ScanState) -> None:
+    """코드만으로 '왜'를 알기 어려운 지점을 표면화한다. **결함 판정이 아니다.**
+
+    여기서 나온 후보는 C1(계약·불변식 주석) 개입의 seed일 뿐이고, 주석을 **추가해야 한다는
+    의무가 아니다** — 추가는 opt-in이고 사람이 정확성을 검증한다. 개수에 가점하지 않는다."""
+    if "comments" not in state.axes:
+        return
+    rel = relpath(path, state.root)
+    is_py = path.suffix.lower() in PY_EXT
+    body = _masked_body(path, src)
+
+    silent = RE_PY_SILENT_EXCEPT if is_py else RE_JS_SILENT_CATCH
+    for m in _capped(state, rel, "C7_SILENT_HANDLER", silent.finditer(body)):
+        state.add(Finding(
+            "C7_SILENT_HANDLER", "report-only", "comments", rel, _line_of(body, m.start()), "",
+            "예외를 조용히 삼킨다 — *왜* 무시해도 되는지가 코드에 없다('왜' 주석 후보, opt-in).",
+            {"kind": "silent-handler",
+             "note": "의도적 무시인지 버그인지 구분할 정보가 코드에 없다. 주석 추가는 선택이며 사람이 사실을 확인한다."},
+        ))
+
+    for m in _capped(state, rel, "C8_MAGIC_NUMBER", RE_MAGIC_NUM.finditer(body)):
+        state.add(Finding(
+            "C8_MAGIC_NUMBER", "report-only", "comments", rel, _line_of(body, m.start()), m.group(0),
+            f"매직 넘버 `{m.group(0)}` — 단위·의미·출처가 코드에 없다('왜' 주석 후보 또는 명명 상수화).",
+            {"kind": "magic-number",
+             "note": "이름 있는 상수로 바꾸는 편이 주석보다 나을 수 있다. 둘 다 opt-in."},
+        ))
+
+    for m in _capped(state, rel, "C9_REGEX_LITERAL", RE_REGEX_USE.finditer(body)):
+        state.add(Finding(
+            "C9_REGEX_LITERAL", "report-only", "comments", rel, _line_of(body, m.start()), "",
+            "정규식 사용 — 무엇을 매칭/치환하는지 코드만으로 읽기 어렵다(예시를 담은 '왜' 주석 후보).",
+            {"kind": "regex", "note": "매칭 예시 1~2개가 패턴 자체보다 이해에 도움이 된다."},
+        ))
+
+
+# ---------------------------------------------------------------------------
+# markup 축 (시맨틱 마크업 & a11y · report-only)
+# ---------------------------------------------------------------------------
+def scan_markup(path: Path, src: str, state: ScanState) -> None:
+    """시맨틱 마크업 census + *명백한 결함*만 개입 후보로.
+
+    **볼륨에 가점하지 않는다** — ARIA가 많을수록 탐지 오류가 많다는 관측(WebAIM)이 있고
+    상관≠인과이므로, ARIA 수는 census로만 싣는다. 자동 ARIA/alt 생성은 금지다."""
+    if "markup" not in state.axes:
+        return
+    rel = relpath(path, state.root)
+    state.markup_files += 1
+    state.markup_stats["files"] += 1
+    state.markup_stats["native_semantic"] += len(RE_NATIVE_SEMANTIC.findall(src))
+
+    for m in _capped(state, rel, "MK1_NONSEMANTIC_CLICK", RE_NONSEMANTIC_CLICK.finditer(src)):
+        state.markup_stats["nonsemantic_click"] += 1
+        state.add(Finding(
+            "MK1_NONSEMANTIC_CLICK", "auto-med", "markup", rel, _line_of(src, m.start()), "",
+            "`<div/span onClick>` — native `<button>`/`<a>`는 키보드·포커스·역할을 자동으로 얻는다(승격 후보).",
+            {"evidence": "승격이 *AI 이해*를 올린다는 격리 근거는 없다(접근성 개선으로만 말할 것). 행위 위험 있음 → opt-in·행위 센서."},
+        ))
+
+    for m in _capped(state, rel, "MK2_REDUNDANT_ROLE", RE_ROLE_ATTR.finditer(src)):
+        state.markup_stats["role_total"] += 1
+        role = m.group(1).lower()
+        if role not in ROLES_WITH_NATIVE:
+            continue
+        state.markup_stats["role_with_native"] += 1
+        state.add(Finding(
+            "MK2_REDUNDANT_ROLE", "auto-med", "markup", rel, _line_of(src, m.start()), role,
+            f"`role=\"{role}\"` — 같은 의미의 native 요소가 있다('First rule of ARIA': native 우선).",
+            {"evidence": "W3C/MDN 표준(ESTABLISHED). 잘못된 ARIA는 native 시맨틱을 덮어써 no-ARIA보다 해로울 수 있다."},
+        ))
+
+    imgs = list(RE_IMG_TAG.finditer(src))
+    state.markup_stats["img"] += len(imgs)
+    with_alt = {m.start() for m in RE_IMG_ALT.finditer(src)}
+    missing = [m for m in imgs if m.start() not in with_alt]
+    state.markup_stats["img_missing_alt"] += len(missing)
+    for m in _capped(state, rel, "MK3_IMG_MISSING_ALT", iter(missing)):
+        state.add(Finding(
+            "MK3_IMG_MISSING_ALT", "auto-med", "markup", rel, _line_of(src, m.start()), "",
+            "`alt` 없는 `<img>` — 대체 텍스트 보완 후보(**사람이 의미를 확인**).",
+            {"evidence": "WCAG(ESTABLISHED). **자동 생성 alt 금지** — confident-but-wrong 위험이 실증된 벡터다."},
+        ))
+
+    aria = len(RE_ARIA_ATTR.findall(src))
+    state.markup_stats["aria_attrs"] += aria
+    if aria:
+        state.add(Finding(
+            "MK4_ARIA_VOLUME", "report-only", "markup", rel, 0, "",
+            f"ARIA 속성 {aria}건 — **census일 뿐 가점·감점 대상이 아니다**.",
+            {"aria_attrs": aria,
+             "evidence": "WebAIM: ARIA가 많은 페이지일수록 탐지 오류가 많다(방향성·상관≠인과). 볼륨을 늘리는 개입은 제안하지 않는다."},
+        ))
+
+
+# ---------------------------------------------------------------------------
+# tests 축 (테스트 설명 건강도 · report-only)
+# ---------------------------------------------------------------------------
+def scan_tests(path: Path, src: str, state: ScanState) -> None:
+    """테스트 제목·셀렉터 census.
+
+    **존재·개수에 가점하지 않는다** — 통제 연구상 올바른 설명의 LLM 이해 이득은 유의하지 않고
+    오도 설명만 측정 가능하게 해롭다(비대칭). 그래서 후보는 **모호·오도 제목**뿐이다."""
+    if "tests" not in state.axes or not is_test_file(path):
+        return
+    rel = relpath(path, state.root)
+    state.test_files += 1
+    state.test_stats["files"] += 1
+
+    if path.suffix.lower() in PY_EXT:
+        titles = [(m.group(1), m.start()) for m in RE_PY_TEST_DEF.finditer(src)]
+    else:
+        # `describe`는 *대상*을 이름 짓는 자리라 한 단어가 관용이다(`describe('Widget')`).
+        # 모호함을 따지는 것은 기대 동작을 서술해야 하는 `it`/`test` 제목뿐 — 거짓양성 억제.
+        titles = [(m.group(3), m.start()) for m in RE_JS_TEST_TITLE.finditer(src)
+                  if m.group(1) != "describe"]
+        state.test_stats["describe_blocks"] += sum(
+            1 for m in RE_JS_TEST_TITLE.finditer(src) if m.group(1) == "describe")
+    state.test_stats["titles"] += len(titles)
+
+    vague: list[tuple[str, int]] = []
+    for title, pos in titles:
+        norm = re.sub(r"[\s_]+", " ", title.strip().lower()).strip()
+        stripped = re.sub(r"^test\s*", "", norm).strip()
+        if (norm in VAGUE_TEST_TITLES or stripped in VAGUE_TEST_TITLES
+                or len(norm.split()) <= 1 or re.fullmatch(r"test\s*\d{0,4}", norm)):
+            vague.append((title, pos))
+    state.test_stats["vague_titles"] += len(vague)
+    for title, pos in _capped(state, rel, "TL1_VAGUE_TEST_TITLE", iter(vague)):
+        state.add(Finding(
+            "TL1_VAGUE_TEST_TITLE", "auto-med", "tests", rel, _line_of(src, pos), title[:80],
+            f"테스트 제목 `{title[:60]}` 이 대상·동작·기대결과를 담지 않는다(리네임 후보).",
+            {"evidence": "올바른 설명의 LLM 이해 이득은 유의하지 않고 **오도 설명만** 해롭다(2404.03114) → 오도는 교정·모호는 리네임이지 '설명 늘리기'가 아니다.",
+             "note": "제목↔본문 괴리는 컴파일러가 검증하지 않는다. 리네임 전 본문이 실제로 무엇을 검증하는지 읽어라."},
+        ))
+
+    accessible = len(RE_ACCESSIBLE_QUERY.findall(src))
+    nonsemantic = len(RE_NONSEMANTIC_QUERY.findall(src))
+    state.test_stats["accessible_queries"] += accessible
+    state.test_stats["nonsemantic_queries"] += nonsemantic
+    if nonsemantic:
+        state.add(Finding(
+            "TL2_NONSEMANTIC_QUERY", "report-only", "tests", rel, 0, "",
+            f"비의미 셀렉터 {nonsemantic}건(접근성 셀렉터 {accessible}건) — `getByRole`류 이관 후보(opt-in).",
+            {"accessible": accessible, "nonsemantic": nonsemantic,
+             "evidence": "accessible 셀렉터가 refactor-robust라는 것은 **벤더 관용**이지 AI 이해 향상 근거가 아니다. "
+                         "getByRole가 green이어도 a11y가 보장되지 않는다(axe 대체 아님)."},
+        ))
+
+
+# ---------------------------------------------------------------------------
 # 이름 충돌 (heuristic · 진단 정보)
 # ---------------------------------------------------------------------------
 def scan_collisions(state: ScanState, min_modules: int = 3) -> None:
@@ -1002,6 +1296,15 @@ DETECTOR_META = {
     "C4_DEBT_MARKER": ("comments", "TODO/FIXME 부채 마커", "존재는 결정론·해악은 heuristic"),
     "C5_DOCSTRING_PARAM_UNDOCUMENTED": ("comments", "문서화되지 않은 파라미터", "report-only"),
     "C6_COMMENT_DRIFT": ("comments", "주석-코드 시간 드리프트", "E-C3(프록시)"),
+    "C7_SILENT_HANDLER": ("comments", "침묵 예외 처리('왜' 주석 후보)", "report-only(비파생 맥락·추가는 opt-in)"),
+    "C8_MAGIC_NUMBER": ("comments", "매직 넘버('왜' 주석 후보)", "report-only(비파생 맥락·추가는 opt-in)"),
+    "C9_REGEX_LITERAL": ("comments", "정규식 사용('왜' 주석 후보)", "report-only(비파생 맥락·추가는 opt-in)"),
+    "MK1_NONSEMANTIC_CLICK": ("markup", "div/span onClick(비시맨틱 클릭)", "E-MK1(격리 연구 부재·접근성 근거로만)"),
+    "MK2_REDUNDANT_ROLE": ("markup", "native로 대체 가능한 role=", "E-MK2(W3C 'First rule of ARIA'·ESTABLISHED)"),
+    "MK3_IMG_MISSING_ALT": ("markup", "alt 없는 <img>", "E-MK2(WCAG·ESTABLISHED)·자동 생성 금지"),
+    "MK4_ARIA_VOLUME": ("markup", "ARIA 속성 볼륨(census 전용)", "E-MK3(WebAIM 방향성·상관≠인과·가점 금지)"),
+    "TL1_VAGUE_TEST_TITLE": ("tests", "모호·무의미 테스트 제목", "E-TL1(오도만 해악·올바른 설명 이득 미미)"),
+    "TL2_NONSEMANTIC_QUERY": ("tests", "비의미 셀렉터(testid/CSS/xpath)", "E-TL2(벤더 관용·AI 이해 근거 없음)"),
 }
 
 HONESTY_NOTES = [
@@ -1012,6 +1315,12 @@ HONESTY_NOTES = [
     "N4_SYMBOL_COLLISION은 근거 없는 진단 정보다. 개입 후보로 승격하지 않는다.",
     "측정 불가(too-large·parse-failed·symlink)는 '결함 없음'이 아니다. skipped 목록을 반드시 함께 읽어라.",
     "census 델타는 '개입이 반영되었는가'의 결정론적 확인이지 에이전트 성공률의 대리 지표가 아니다.",
+    "comment-gap(C7~C9)은 결함이 아니라 '왜' 주석 **추가 후보**다. 추가는 opt-in이고 사람이 사실성을 검증한다 — "
+    "주석 개수를 늘리는 것은 목표가 아니다(볼륨 가점 = Goodhart).",
+    "markup·tests 축(MK*·TL*)의 신호는 **AI 이해 개입 근거가 없다**. 랜드마크·button-vs-div·테스트 설명을 격리해 "
+    "LLM 이해 델타를 잰 연구는 존재하지 않는다 → 개선은 접근성·사람 가독성 개선으로만 말하고 에이전트 성공률로 귀속하지 않는다.",
+    "ARIA·role·셀렉터·테스트 제목의 '볼륨'은 어느 방향으로도 점수가 아니다. 자동 ARIA/alt/어서션 생성은 금지다"
+    "(confident-but-wrong·green-locks-bug).",
 ]
 
 
@@ -1036,6 +1345,8 @@ def build_report(state: ScanState, top: int) -> dict[str, Any]:
             "files": state.files_scanned,
             "python": state.py_files,
             "generic": state.generic_files,
+            "markup": state.markup_files,
+            "tests": state.test_files,
             "skipped": state.skipped[:200],
             "skipped_total": len(state.skipped),
         },
@@ -1043,6 +1354,7 @@ def build_report(state: ScanState, top: int) -> dict[str, Any]:
             "total_findings": len(state.findings),
             "by_axis": dict(sorted(by_axis.items())),
             "by_detector": dict(sorted(by_detector.items())),
+            "truncated": state.truncated[:200],
         },
         "detector_meta": {
             k: {"axis": v[0], "what": v[1], "evidence": v[2]} for k, v in DETECTOR_META.items()
@@ -1052,6 +1364,18 @@ def build_report(state: ScanState, top: int) -> dict[str, Any]:
             "note": "임계값 없음. 크기는 진단 정보이지 판정 기준이 아니다.",
             "largest_units": unit_sizes,
         },
+        "markup_report_only": {
+            "note": "시맨틱 마크업 census. **가점·감점 어느 쪽으로도 점수가 아니다** — "
+                    "랜드마크·button-vs-div를 격리해 LLM 이해 델타를 잰 연구는 없고, ARIA 볼륨은 "
+                    "오히려 탐지 오류와 상관한다(WebAIM·상관≠인과). 개입 후보는 명백한 결함(MK1~MK3)뿐.",
+            "stats": dict(sorted(state.markup_stats.items())),
+        },
+        "tests_report_only": {
+            "note": "테스트 설명 census. **존재·개수는 점수가 아니다** — 올바른 설명의 LLM 이해 이득은 "
+                    "유의하지 않고 오도 설명만 측정 가능하게 해롭다(비대칭). 후보는 모호·오도 제목뿐이며 "
+                    "자동 어서션·오라클 생성은 금지다(green-locks-bug).",
+            "stats": dict(sorted(state.test_stats.items())),
+        },
         "honesty_notes": HONESTY_NOTES,
     }
 
@@ -1059,7 +1383,7 @@ def build_report(state: ScanState, top: int) -> dict[str, Any]:
 # ---------------------------------------------------------------------------
 # main
 # ---------------------------------------------------------------------------
-VALID_AXES = frozenset({"naming", "comments", "structure"})
+VALID_AXES = frozenset({"naming", "comments", "structure", "markup", "tests"})
 
 
 def run_scan(
@@ -1081,8 +1405,11 @@ def run_scan(
         src = read_text(path)
         if src is None:
             continue
+        ext = path.suffix.lower()
+        if ext in MARKUP_EXT:
+            continue  # 마크업 전용 파일은 코드 심볼 인덱스의 출처가 아니다
         rel = relpath(path, root)
-        pattern = RE_PY_TOPLEVEL if path.suffix.lower() in PY_EXT else RE_JS_DECL
+        pattern = RE_PY_TOPLEVEL if ext in PY_EXT else RE_JS_DECL
         for m in pattern.finditer(src):
             state.repo_symbols[m.group(1)].add(rel)
 
@@ -1093,12 +1420,19 @@ def run_scan(
             state.skipped.append({"file": relpath(path, root), "reason": "binary-or-unreadable"})
             continue
         state.files_scanned += 1
-        if path.suffix.lower() in PY_EXT:
+        ext = path.suffix.lower()
+        if ext in PY_EXT:
             state.py_files += 1
             scan_python(path, src, state)
-        else:
+            scan_comment_gap(path, src, state)
+        elif ext in GENERIC_LANGS:
             state.generic_files += 1
             scan_generic(path, src, state)
+            scan_comment_gap(path, src, state)
+        # 마크업 전용 확장자(.html/.vue/.svelte)는 주석·명명 축을 타지 않고 markup 축만 탄다.
+        if ext in MARKUP_EXT or ext in JSX_EXT:
+            scan_markup(path, src, state)
+        scan_tests(path, src, state)
 
     scan_collisions(state)
     if git_drift:
@@ -1110,8 +1444,9 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="코드 본문 층위 AI 가독성 census (등급 없음)")
     ap.add_argument("root", help="스캔할 저장소 루트")
     ap.add_argument("--out", help="JSON 출력 경로 (기본: stdout)")
-    ap.add_argument("--axes", default="naming,comments,structure",
-                    help="스캔할 축 (쉼표 구분). 사용자가 선택한 스코프 밖은 스캔하지 않는다.")
+    ap.add_argument("--axes", default="naming,comments,structure,markup,tests",
+                    help="스캔할 축 (쉼표 구분: naming,comments,structure,markup,tests). "
+                         "사용자가 선택한 스코프 밖은 스캔하지 않는다.")
     ap.add_argument("--git-drift", action="store_true", help="git blame 기반 주석 드리프트(heuristic·느림)")
     ap.add_argument("--drift-days", type=int, default=90)
     ap.add_argument("--top", type=int, default=20, help="구조 진단 목록 길이")

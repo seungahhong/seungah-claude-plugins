@@ -355,34 +355,35 @@ plugins/
     evals/
       evals.json                                         # 수용 평가 (핵심 불변식 file:section 인용 채점)
       trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 14, 인접 도메인 reciprocal 가드)
-  ai-readiness-cartography/                             # [독립 플러그인] 임의 git 저장소가 'AI 에이전트가 읽고 안전하게 기여할 수 있는 코드베이스'인지를 측정하고(결정론 스코어러) 개선을 설계하며 코드 본문을 승인 후 수정하는(멀티 에이전트) 단일 스킬(3모드·자유 조합). ① 측정: score.py 100점·9카테고리 + 3 blocking gate(Gate-1/2 Auto·Gate-3 Heuristic·gating) → JSON+HTML 대시보드+ROI. ② 진단·개선: score.py 센서 위 2축 진단→빌드 가드레일→standalone→계획·개별 승인 뒤 코드 적용(S/M/L·고위험 opt-in·AST/LSP·behavior 센서)→수용 증명·재측정 4에이전트. ③ 코드 본문 층위: legibility_scan.py census→주석·명명·granularity 진단→3게이트 승인 후 코드 수정 4에이전트. 세 모드는 배타 아닌 자유 조합(여러 개면 ①→②→③ 순·score.py는 ①②가 1회 공유·②+③이면 구조 리팩터는 ②가 적용하고 ③의 C3는 끔). 등급 단일 5밴드(L1~L5 폐기, enforcement는 Gate-3로 흡수). 별도 ai-readable-codebase(v0.2.0)·code-legibility-harness(v0.3.0) 흡수·모드 게이트 자유 조합 전환(v0.3.1)
+  ai-readiness-cartography/                             # [독립 플러그인] 임의 git 저장소가 'AI 에이전트가 읽고 안전하게 기여할 수 있는 코드베이스'인지를 측정하고(결정론 스코어러) 개선을 설계하며 코드 본문을 승인 후 수정하는(멀티 에이전트) 단일 스킬(3모드·자유 조합). ① 측정: score.py 100점·9카테고리 + 3 blocking gate(Gate-1/2 Auto·Gate-3 Heuristic·gating) → JSON+HTML 대시보드+ROI. ② 진단·개선: score.py 센서 위 2축 진단→빌드 가드레일→standalone→계획·개별 승인 뒤 코드 적용(S/M/L·고위험 opt-in·AST/LSP·behavior 센서)→수용 증명·재측정 4에이전트. ③ 코드 본문 층위: legibility_scan.py census(5축)→주석·명명·granularity + 마크업 시맨틱·테스트 설명 진단→3게이트 승인 후 코드 수정 5에이전트(개입 C0~C5·마크업/테스트 축은 AI 이해 개입 근거 부재라 접근성·사람 가독성 언어로만·볼륨 가점 및 자동 ARIA/alt/어서션 생성 금지). 세 모드는 배타 아닌 자유 조합(여러 개면 ①→②→③ 순·score.py는 ①②가 1회 공유·②+③이면 구조 리팩터는 ②가 적용하고 ③의 C3는 끔). 등급 단일 5밴드(L1~L5 폐기, enforcement는 Gate-3로 흡수). 별도 ai-readable-codebase(v0.2.0)·code-legibility-harness(v0.3.0) 흡수·모드 게이트 자유 조합 전환(v0.3.1)·design-principle-harness 고유 3자산 흡수(Tier C 마크업/테스트·comment-gap·한 번에 한 질문, v0.5.0 — 중복 층인 DPH Tier A/B 점수화·Track B 6지표는 미흡수)
     .claude-plugin/
       plugin.json
     CLAUDE.md                                            # 하네스 포인터 + 루브릭 요약(3 gate) + 변경 이력
     README.md                                            # 사용자용 개요·사용법·경계·근거(3모드·자유 조합)
-    agents/                                              # 8 에이전트 (② 개선 4 + ③ 본문 4, 모두 model: "opus")
+    agents/                                              # 9 에이전트 (② 개선 4 + ③ 본문 5, 모두 model: "opus")
       accessibility-assessor.md                          # Phase 0 Assess — score.py seed 위 2축(Q/A) 진단 + 5밴드 등급 + Gate-3 예비판정
       guardrail-architect.md                             # Phase 1 Guardrails — 빌드가 강제·문서가 설명(의존 방향 물리 강제 + 피드백 3차원 + 역할 분담)
       standalone-designer.md                             # Phase 2 Standalone — 도메인 슬라이스 독립 실행(port/adapter 치환·use-case seed·명시적 제외)
       acceptance-verifier.md                             # Phase 4 Acceptance & Re-grade — 수용 증명 + 결정론 델타(score.py 재실행) 위 강제 probe로 Gate-3·등급 재측정
-      comment-auditor.md                                 # ③ 본문 — 주석 4분류(오도/stale/noise/유효) → C0·C1 후보
+      comment-auditor.md                                 # ③ 본문 — 주석 4분류(오도/stale/noise/유효) → C0·C1 후보 + comment-gap(C7~C9) → '왜/맥락' 주석 opt-in 추가
       naming-analyst.md                                  # ③ 본문 — 명명 3축(오도>무의미>모호) → C2 후보 + 도구·위험 판정
       structure-cartographer.md                          # ③ 본문 — 구조 후보(opt-in·'효과=추론' 라벨 필수)
-      behavior-guard.md                                  # ③ 본문 — 개입 클래스별 센서 실행·관측 (generator≠checker)
+      markup-test-auditor.md                             # ③ 본문 — 마크업 시맨틱(C5)·테스트 설명(C4) 후보 (볼륨 가점 금지·자동 ARIA/alt/어서션 생성 금지·접근성 언어로만)
+      behavior-guard.md                                  # ②③ 공용 — 개입 클래스별 센서 실행·관측 (generator≠checker·C0~C5·C4a 수집개수 불변/C4b 의도적 red/C5b 행위 센서)
     skills/
       ai-readiness-cartography/                          # 진입점 오케스트레이터 (모드 선택=①②③ 부분집합 → ①→②→③ 순차; ② 5-Phase(0~4·Phase 3 Apply 게이트)·③ 5-Phase B0~B4·3게이트)
         SKILL.md
         scripts/
           score.py                                       #   v3 결정론적 스코어러 (stdlib only, gating·import 그래프 파싱·결합도 god-file·reference integrity, htmlsafe.json 동시 출력)
           test_score.py                                  #   회귀 테스트 (unittest — 가중치 불변식·골든 픽스처·Gate-1 정밀도·htmlsafe·design_signals report-only 불변)
-          legibility_scan.py                             #   ③ 본문 census 스캐너 (stdlib only·등급 없음·7 탐지기: N1~N4 명명·C1~C6 주석·unit_sizes 구조)
-          test_legibility_scan.py                        #   ③ 회귀 테스트 (49건·등급 안 만듦·stdlib-only·스코프 이스케이프 핀)
+          legibility_scan.py                             #   ③ 본문 census 스캐너 (stdlib only·등급 없음·5축 20 탐지기: N1~N4 명명·C1~C9 주석(+comment-gap)·unit_sizes 구조·MK1~MK4 마크업·TL1~TL2 테스트)
+          test_legibility_scan.py                        #   ③ 회귀 테스트 (69건·등급 안 만듦·stdlib-only·스코프 이스케이프 핀·흡수 자산 불변식)
         assets/
           template.html                                  #   대시보드 원본 (Inter/JetBrains Mono·인라인 SVG·gate strip·9카테고리 차트)
         references/
           scoring-rubric.md                              #   v3 루브릭 (9카테고리 + 3 gate: Gate-1/2 Auto·Gate-3 Heuristic, 근거 등급·auto/heuristic/manual 라벨)
           ai-readable-codebase-principles.md             #   진단·개선 모드 원리 (2축·빌드 가드레일·피드백 3차원·standalone·수용 증명·anti-pattern)
-          intervention-catalog.md                        #   ③ 개입 카드 C0~C3 정본 (근거·위험·1급 센서·거부 조건)
+          intervention-catalog.md                        #   ③ 개입 카드 C0~C5 정본 (근거·위험·1급 센서·거부 조건·통합 서열)
           legibility-principles.md                       #   ③ 본문 층위 원리 (삭제>추가·이름은 채널·테스트≠등가성 오라클)
           ai-readable-codebase-research.md               #   개선 모드 근거 dossier (flex 5부작 + 2025+ 출처·인용·vote·CAVEAT)
           ai-readiness-cartography-research.md           #   측정 근거 dossier 인덱스 (루브릭→근거 매핑·정직성 노트)
@@ -395,7 +396,7 @@ plugins/
             session-5-benchmark-operationalization.md    #     Factory/Kenogami readiness — gating 집계·H/I 신규
             session-6-design-principles.md               #     SOLID·응집/결합·복잡도·중복 → 왜 report-only이고 점수화 아닌가(extras.design_signals)
             session-7-body-legibility-integration.md     #     코드 본문 층위 모드 ③ 흡수 — scorable 아닌 report-only·명명 인과·툴그래프 오귀속 금지
-            body-legibility/                             #     ③ 근거 dossier (naming·comments·structure·safe-application·measurement-delta·README, 적대 검증 24 confirmed/1 refuted)
+            body-legibility/                             #     ③ 근거 dossier (naming·comments·structure·safe-application·measurement-delta·semantic-markup-tests(E-MK/E-TL/E-CG)·README, 적대 검증 24 confirmed/1 refuted)
     evals/
       evals.json                                         # 수용 평가 (3모드 불변식 file:section·score.py 함수 인용 채점)
       trigger-eval.json                                  # 트리거 경계 평가 (측정+개선+본문+조합 should_trigger 19 / 인접 도메인 should_not 14)
@@ -463,42 +464,6 @@ plugins/
     evals/
       evals.json                                         # 수용 평가 (design-conformance + 근거 정직성 13 assertion)
       trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 9, 인접 하네스(product-spec/harness-generator/meta/human-agent-teaming/agent-orchestration/cicd/ops/review/git) reciprocal 가드)
-  design-principle-harness/                              # [독립 플러그인] 임의 git 저장소를 'AI 에이전트가 읽고 안전하게 기여할 코드베이스'로 만들기 위해 코드 설계 품질을 3단계(① scoring-rubric 점수화 → ② 쉬운 것부터 섹션별 승인 개선 → ③ 종합 결과)로 진단·개선하는 인터랙티브 4에이전트 하네스. score.py(stdlib only) 채점 — Tier A 표면 가독성 명명·주석 60 / Tier B 설계 원칙 SOLID·응집결합·복잡도·중복·DI/IoC·DRY/KISS/YAGNI 40 = 총점 100 + Tier C AI-맥락 신호(시맨틱 마크업 C1·테스트 설명 C2, report-only·총점 미포함). 총점=진단 지표(Goodhart 가드·개입 연구 없어 안전 기여 인증 아님)·명명/주석은 사람 근거+오도/stale 신호가 LLM에도 해로워 Tier A 가중↑(LLM 리네임 효과 부호 불안정)·구조 지표는 낮은 confidence 진단(타당도 외삽)·Tier C는 이득이 모델 역량 조건부이거나 개입 근거 부재라 report-only(ARIA 볼륨 가점 금지·자동 ARIA/alt/어서션 생성 금지)·리네임 AST/LSP·"테스트 통과≠동작 보존"·측정은 코드 수정 없음·개선은 승인 뒤·커밋 안 함. deep-research 2023~2026 적대 검증(v0.2.0 Tier C 추가)
-    .claude-plugin/
-      plugin.json
-    CLAUDE.md                                            # 포인터 + 3단계 요약 + 원칙 + 변경 이력
-    README.md                                            # 사용자용 개요·사용법·두 층위·안전장치·경계
-    agents/                                              # 6 에이전트 (모두 opus)
-      code-scorer.md                                     # [A] A1 score.py 실행·층위 점수표 해석(측정만)
-      staged-refiner.md                                  # [A] A2 쉬운 것부터 개선안 제안·개별 승인 후 적용(구조 opt-in)
-      behavior-guard.md                                  # [A·B] generator≠checker·변경 클래스별 행위 센서 실행
-      acceptance-reporter.md                             # [A·B] 재측정 델타·종합 결과·표면 편집 오귀속 금지
-      ai-access-assessor.md                              # [B] B1 ai_access.py 실행·6지표 SCORED/report-only 해석(측정만)
-      ai-access-improver.md                              # [B] B2 지표별 개선안 제안·개별 승인 후 적용(build enforces·자동 생성 금지)
-    skills/design-principle-harness/
-      SKILL.md                                           # 진입점 오케스트레이터 (Phase 0 트랙 선택 + Track A(A1~A3)/Track B(B1~B3) + 트랙별·지표별 승인 게이트)
-      scripts/
-        score.py                                         # [A] 결정론 스코어러 (stdlib only, Python 3.10+, Tier A/B 총점 + Tier C report-only·comment-gap·하드닝)
-        test_score.py                                    # [A] 회귀 테스트 31건 (불변식·A~C 탐지기·Tier C 미합산·comment-gap·하드닝)
-        ai_access.py                                     # [B] AI 접근성 결정론 assessor (stdlib only, 6지표·SCORED=M1·M2만·독립 oracle 가드·하드닝)
-        test_ai_access.py                                # [B] 회귀 테스트 21건 (SCORED={M1,M2} 불변식·탐지기·bloat 감점·하드닝)
-      references/
-        scoring-rubric.md                                # [A] 루브릭 정본 (Tier A/B 총점·Tier C report-only)
-        design-principles.md                             # [A] SOLID·…·Tier C 카탈로그·정적 측정 경계
-        improvement-playbook.md                          # [A] 쉬운 것부터 안전 개선 (Tier C opt-in·generator≠checker)
-        ai-accessibility-rubric.md                       # [B] 6지표 루브릭 정본 (SCORED vs report-only·왜 대부분 report-only)
-        ai-accessibility-playbook.md                     # [B] 지표별 안전 개선 (build enforces·독립 oracle·자동 생성 금지)
-        research/                                         # 1차 근거 dossier (deep-research)
-          evidence-dossier.md                            #   [A] 명명·구조 근거(2023~2026 적대 검증)
-          rubric-design.md                               #   [A] 두 층위 루브릭 설계
-          semantic-a11y-test-dossier.md                  #   [A] Tier C 근거(시맨틱 HTML·ARIA/WCAG·테스트 설명)
-          semantic-a11y-test-raw-findings.md             #   [A] Tier C 원자료
-          ai-accessibility-dossier.md                    #   [B] AI 접근성 6지표 근거(intervention≠correlation·build-enforces·tool-index≠code-structure·독립 oracle)
-          ai-accessibility-raw-findings.md               #   [B] AI 접근성 원자료(13 조사/검증 에이전트 원문)
-          README.md                                      #   research/ 인덱스·방법론·정직성
-    evals/
-      evals.json                                         # 수용 평가 (design-conformance + 근거 정직성 14 assertion)
-      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 10(+Tier C 2) / should_not 8, 인접 도메인 reciprocal 가드)
   meta-prompting-harness/                                # [독립 플러그인] 메타 프롬프팅(AI에게 입력할 프롬프트를 AI가 최적화해 생성→새 컨텍스트에 주입해 실제 작업)을 4단계 인터랙티브 4에이전트로 수행하는 도메인 무관 하네스. 널리 쓰이는 메타 프롬프팅 실천 방법론 + /deep-research(6각도·25소스·23 confirmed/2 refuted) 1차 문헌 대조 근거 등급. Phase 0 인테이크(한 번에 한 질문씩·덤프는 선택) → 1 질문 유도(한 번에 하나씩) → 2 성공·검증 조건 → 3 환경 맞춤 깎아내기 → 4 적대 점검·fresh 주입. STRONG(메타프롬프팅>직접 2401.12954·2309.03409·2310.16427 조건부·명확화 질문 ClarifyGPT·Orchid·성공+검증 Anthropic 공식·fresh context 2307.03172·은탄환 아님)·report-only folklore(환경 맞춤 변환·큰그림→축소 1차 근거 없음)·REFUTED 미사용(지휘자-전문가 프레이밍·LLM 스스로 명확화 불가). 전부위임 금지·사용자 도메인 검증 필수·프롬프트 생성만·실행은 사용자·커밋/점수화 안 함·다른 플러그인 비참조·비의존
     .claude-plugin/
       plugin.json

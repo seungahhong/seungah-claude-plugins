@@ -130,5 +130,25 @@
   {
     "query": "이 레포 점수도 매기고, 구조는 빌드 가드레일로 개선 설계하고, 본문 주석·변수명도 승인하면 정리해줘 (①+②+③ 한 번에)",
     "should_trigger": true
+  },
+  {
+    "query": "코드만으로 문맥 파악 어려운 곳에 설명 주석 추가해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "시맨틱 태그랑 웹 접근성 점검하고 승인받아 개선해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "테스트 제목이랑 셀렉터 정리해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "ARIA 속성 최대한 많이 붙여서 접근성 점수 올려줘",
+    "should_trigger": false
+  },
+  {
+    "query": "테스트 어서션 자동으로 생성해줘",
+    "should_trigger": false
   }
 ]

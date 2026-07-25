@@ -420,6 +420,148 @@ class IndependenceTests(unittest.TestCase):
         self.assertTrue(any("git-drift" in r for r in reasons), reasons)
 
 
+class CommentGapTests(unittest.TestCase):
+    """C7~C9 — 코드만으로 '왜'를 알기 어려운 지점(주석 *추가* 후보 · report-only)."""
+
+    def test_silent_handler_is_a_candidate_not_a_defect(self):
+        report = scan({"a.py": "def f(x):\n    try:\n        g(x)\n    except ValueError:\n        pass\n"},
+                      axes="comments")
+        found = findings_of(report, "C7_SILENT_HANDLER")
+        self.assertEqual(len(found), 1, report["counts"]["by_detector"])
+        # 후보는 report-only 라벨이어야 한다 — 결함 판정으로 승격하면 '주석 의무'가 된다.
+        self.assertEqual(found[0]["grade"], "report-only")
+
+    def test_js_silent_catch(self):
+        report = scan({"a.js": "try { g(); } catch (e) {}\n"}, axes="comments")
+        self.assertEqual(len(findings_of(report, "C7_SILENT_HANDLER")), 1)
+
+    def test_magic_number_inside_string_or_comment_is_not_counted(self):
+        """회귀 핀: 리터럴·주석 안의 숫자를 매직 넘버로 오판하면 census가 소음이 된다."""
+        src = ('MSG = "error 404 not found"\n'
+               '# see RFC 2616 for details\n'
+               'TIMEOUT_MS = 5000\n')
+        report = scan({"a.py": src}, axes="comments")
+        found = findings_of(report, "C8_MAGIC_NUMBER")
+        self.assertEqual([f["symbol"] for f in found], ["5000"], found)
+        # 마스킹은 길이·줄바꿈을 보존하므로 줄번호가 원본과 일치해야 한다.
+        self.assertEqual(found[0]["line"], 3)
+
+    def test_small_numbers_are_not_magic(self):
+        report = scan({"a.py": "x = arr[0] + 1 + 2\n"}, axes="comments")
+        self.assertEqual(findings_of(report, "C8_MAGIC_NUMBER"), [])
+
+    def test_regex_use_is_flagged(self):
+        report = scan({"a.py": "import re\nP = re.compile(r'^a+$')\n"}, axes="comments")
+        self.assertEqual(len(findings_of(report, "C9_REGEX_LITERAL")), 1)
+
+    def test_comment_gap_is_off_when_comments_axis_not_selected(self):
+        """스코프 가드 — 고르지 않은 축은 스캔하지 않는다."""
+        report = scan({"a.py": "TIMEOUT = 5000\n"}, axes="naming")
+        self.assertEqual(findings_of(report, "C8_MAGIC_NUMBER"), [])
+
+
+class MarkupTests(unittest.TestCase):
+    """MK1~MK4 — 시맨틱 마크업 & a11y (report-only · 볼륨 가점 금지)."""
+
+    def test_nonsemantic_click_and_redundant_role(self):
+        report = scan({"W.jsx": '<div onClick={go} role="button">go</div>\n'}, axes="markup")
+        self.assertEqual(len(findings_of(report, "MK1_NONSEMANTIC_CLICK")), 1)
+        self.assertEqual(len(findings_of(report, "MK2_REDUNDANT_ROLE")), 1)
+
+    def test_role_without_native_equivalent_is_not_flagged(self):
+        report = scan({"W.jsx": '<div role="tabpanel">x</div>\n'}, axes="markup")
+        self.assertEqual(findings_of(report, "MK2_REDUNDANT_ROLE"), [])
+
+    def test_img_with_alt_is_not_flagged(self):
+        report = scan({"W.jsx": '<img src="a.png" alt="설명" />\n<img src="b.png" />\n'}, axes="markup")
+        found = findings_of(report, "MK3_IMG_MISSING_ALT")
+        self.assertEqual(len(found), 1)
+        self.assertEqual(found[0]["line"], 2)
+
+    def test_html_and_vue_files_are_scanned(self):
+        report = scan({"page.html": "<div onClick=go></div>", "C.vue": "<div onclick=go></div>"},
+                      axes="markup")
+        self.assertEqual(report["scanned"]["markup"], 2, report["scanned"])
+
+    def test_aria_volume_is_census_only_and_never_a_verdict(self):
+        """불변식 핀: ARIA 볼륨은 어느 방향으로도 점수가 아니다(WebAIM: 볼륨↑ ⇒ 오류↑)."""
+        report = scan({"W.jsx": '<nav aria-label="main" aria-hidden="false">x</nav>\n'}, axes="markup")
+        found = findings_of(report, "MK4_ARIA_VOLUME")
+        self.assertEqual(len(found), 1)
+        self.assertEqual(found[0]["grade"], "report-only")
+        self.assertEqual(report["markup_report_only"]["stats"]["aria_attrs"], 2)
+
+    def test_markup_axis_off_means_no_markup_findings(self):
+        report = scan({"W.jsx": '<div onClick={go}>go</div>\n'}, axes="naming,comments")
+        self.assertEqual(report["counts"]["by_axis"].get("markup", 0), 0)
+
+
+class TestLegibilityTests(unittest.TestCase):
+    """TL1~TL2 — 테스트 설명 건강도 (report-only · 존재 가점 없음)."""
+
+    def test_vague_title_flagged_but_descriptive_one_is_not(self):
+        src = ("it('works', () => {});\n"
+               "it('rejects a withdrawal larger than the balance', () => {});\n")
+        report = scan({"a.test.js": src}, axes="tests")
+        found = findings_of(report, "TL1_VAGUE_TEST_TITLE")
+        self.assertEqual([f["symbol"] for f in found], ["works"], found)
+
+    def test_describe_block_single_word_is_not_vague(self):
+        """회귀 핀: describe 는 *대상*을 이름 짓는 자리라 한 단어가 관용이다(거짓양성 억제)."""
+        report = scan({"a.test.js": "describe('Widget', () => {});\n"}, axes="tests")
+        self.assertEqual(findings_of(report, "TL1_VAGUE_TEST_TITLE"), [])
+        self.assertEqual(report["tests_report_only"]["stats"].get("describe_blocks"), 1)
+
+    def test_python_test_names(self):
+        src = "def test_works():\n    pass\n\ndef test_rejects_expired_token():\n    pass\n"
+        report = scan({"test_auth.py": src}, axes="tests")
+        found = findings_of(report, "TL1_VAGUE_TEST_TITLE")
+        self.assertEqual([f["symbol"] for f in found], ["test_works"], found)
+
+    def test_nonsemantic_selectors_reported_per_file(self):
+        report = scan({"a.spec.ts": "getByTestId('x'); getByRole('button');\n"}, axes="tests")
+        found = findings_of(report, "TL2_NONSEMANTIC_QUERY")
+        self.assertEqual(len(found), 1)
+        self.assertEqual(found[0]["extra"]["accessible"], 1)
+        self.assertEqual(found[0]["grade"], "report-only")
+
+    def test_non_test_files_are_ignored(self):
+        report = scan({"app.js": "it('works', () => {});\n"}, axes="tests")
+        self.assertEqual(report["scanned"]["tests"], 0)
+
+
+class PortedAssetInvariantTests(unittest.TestCase):
+    """흡수한 3자산이 이 하네스의 정직성 규약을 깨지 않는지 고정한다."""
+
+    def test_markup_and_tests_axes_produce_no_grade(self):
+        report = scan({"W.jsx": '<div onClick={go}>go</div>', "a.test.js": "it('works',()=>{});"},
+                      axes="markup,tests")
+        blob = json.dumps(report, ensure_ascii=False).lower()
+        for banned in ('"score"', '"total_score"', '"level"', '"band"'):
+            self.assertNotIn(banned, blob, f"census에 등급성 키 {banned} 가 들어갔다")
+        # `grade` 는 오직 탐지기의 *근거 등급* 라벨로만 쓰인다 — 품질 등급이 아니다.
+        allowed = {"auto-high", "auto-med", "auto-low", "heuristic", "report-only"}
+        markup_and_tests = report["findings"].get("markup", []) + report["findings"].get("tests", [])
+        self.assertTrue(markup_and_tests)
+        for f in markup_and_tests:
+            self.assertIn(f["grade"], allowed)
+
+    def test_report_states_intervention_evidence_is_absent(self):
+        """markup·tests 신호를 '에이전트 성공률'로 귀속하지 못하게 하는 정직성 문구가 살아 있어야 한다."""
+        report = scan({"a.py": "x = 1\n"}, axes="comments")
+        notes = " ".join(report["honesty_notes"])
+        self.assertIn("개입 근거가 없다", notes)
+        self.assertIn("Goodhart", notes)
+
+    def test_truncation_is_recorded_not_silent(self):
+        """미보고 ≠ 없음 — 파일당 상한에 걸리면 반드시 기록한다."""
+        src = "\n".join(f"x{i} = {1000 + i}" for i in range(ls.MAX_FINDINGS_PER_FILE + 5))
+        report = scan({"a.py": src}, axes="comments")
+        self.assertEqual(len(findings_of(report, "C8_MAGIC_NUMBER")), ls.MAX_FINDINGS_PER_FILE)
+        self.assertTrue(any(t["detector"] == "C8_MAGIC_NUMBER"
+                            for t in report["counts"]["truncated"]), report["counts"]["truncated"])
+
+
 class CliTests(unittest.TestCase):
     def test_cli_rejects_unknown_axis(self):
         with tempfile.TemporaryDirectory() as td:
