@@ -1,6 +1,6 @@
 # 개입 카드 카탈로그 (intervention catalog)
 
-> Phase 2 제안표가 참조하는 **단일 진실 기준**. 코드 **본문** 층(주석·명명·구조 + 마크업 시맨틱·테스트 설명)만 다룬다.
+> Phase 2 제안표가 참조하는 **단일 진실 기준**. 코드 **본문** 층(주석·명명·구조)만 다룬다.
 > 저장소 층(README·CLAUDE.md·의존 그래프·CI)은 측정 모드(score.py) 소관 — 본문 층 개입과 분리.
 > 모든 카드는 **게이트 B(개별 승인)** 후에만 적용한다. 승인 없이 파일을 쓰지 않는다. 커밋은 git-harness 핸드오프.
 > 인용은 근거 시트(`references/research/EVIDENCE-SHEET.md`) 밖으로 나가지 않는다.
@@ -122,61 +122,14 @@ census의 `C7_SILENT_HANDLER`·`C8_MAGIC_NUMBER`·`C9_REGEX_LITERAL`은 **코드
 
 ---
 
-## C4 · 테스트 설명·셀렉터
+## markup·tests 축 — census 전용(개입 카드 없음)
 
-> 대상 축: `tests`. 근거 정본: [`research/body-legibility/semantic-markup-tests.md`](research/body-legibility/semantic-markup-tests.md) E-TL1·E-TL2.
-> **지배 단서**: 올바른 설명의 LLM 이해 이득은 유의하지 않고 **오도 설명만 측정 가능하게 해롭다**(비대칭). 그래서 이 카드는 **설명을 늘리는 개입이 아니라 오도·모호를 걷어내는 개입**이다.
+census의 `MK*`(마크업 시맨틱)·`TL*`(테스트 설명·셀렉터) 신호에는 **대응 개입 카드가 없다.** 결함 후보를
+*보여주기만* 하고 코드 수정 경로를 만들지 않는다 — 마크업 시맨틱·테스트 설명을 격리해 LLM 이해 델타를 잰
+연구가 존재하지 않고(O-6), 접근성 개선 자체는 이 하네스의 표적이 아니다. 근거: [`research/body-legibility/semantic-markup-tests.md`](research/body-legibility/semantic-markup-tests.md).
 
-### C4a · 오도·모호 테스트 제목 교정 (**P1** · 위험 0 · ON)
-
-- **무엇을 바꾸나** — census `TL1_VAGUE_TEST_TITLE` 후보의 제목을 **대상·동작·기대결과**가 드러나게 고친다. 오도(본문과 다른 주장) 제목은 **교정 우선**.
-  ```js
-  it('works', () => { expect(withdraw(acct, 200)).toThrow(); });
-  ```
-  →
-  ```js
-  it('rejects a withdrawal larger than the balance', () => { ... });
-  ```
-- **근거** — E-TL1 `[PRIMARY-pre2025 · 배경]` "incorrect documentation can greatly hinder code understanding, while incomplete or missing documentation does not seem to significantly affect…". 제목↔본문 괴리는 **컴파일러가 검증하지 않는** 실패 모드다.
-- **동작 위험**: 없음(테스트 이름은 로직이 아니다). ⚠️ 단 **이름으로 테스트를 선별 실행하는 CI 필터**(`-k`·`--grep`·tag)가 있으면 **선택 집합이 바뀐다** — 리네임 전 CI 설정을 확인하고, 걸리면 사람에게 보고한다.
-- **1급 센서**: 테스트 스위트 재실행(수집 개수·통과 개수 불변). · **2급 센서**: 사람이 본문을 읽고 제목이 실제 검증 내용과 맞는지 대조.
-- **거부 조건**: 본문이 **무엇을 검증하는지 읽어 확인하기 전에는 리네임하지 않는다**(잘못된 제목으로 바꾸면 오도를 새로 만든다). **자동 어서션·오라클 생성 금지** — 테스트를 LLM 최적화 대상으로 쓰면 구현을 굳혀 버그를 초록으로 은폐한다(green-locks-bug).
-
-### C4b · 비의미 셀렉터 → `getByRole`류 이관 (**P4** · **opt-in** · 기본 OFF)
-
-- **무엇을 바꾸나** — `getByTestId`/CSS/xpath 셀렉터를 `getByRole`/`getByLabelText`류로 이관한다.
-- **근거** — E-TL2: refactor-robust는 **벤더 관용(MEDIUM)**이고, **"AI 이해를 향상한다"는 근거는 ABSENT**다. 이관의 이득은 사용자 관점 테스트·마크업 churn 내성으로만 말한다.
-- **동작 위험**: 있음 — accessible name 계산에 의존해 ARIA/label 변경에 깨지고, 셀렉터가 **다른 요소를 잡을 수 있다**(테스트가 조용히 다른 것을 검증하게 된다).
-- **1급 센서**: 이관 전후 **같은 테스트가 같은 이유로 통과/실패하는지** 관측(의도적으로 대상을 깨뜨려 red가 나는지 확인 — 초록만으로 판정 금지).
-- **거부 조건**: **`getByRole` green을 a11y 보장으로 취급 금지**(axe 대체 아님 — `<div role="button">`은 통과하면서 키보드·포커스를 잃는다). 이관은 접근성 개선이 아니라 셀렉터 변경일 뿐이다.
-
----
-
-## C5 · 마크업 시맨틱
-
-> 대상 축: `markup`. 근거 정본: 같은 dossier E-MK1~E-MK3.
-> **지배 단서**: 랜드마크·`<button>` vs `<div onclick>`를 **격리해 LLM 이해 델타를 잰 연구는 없다**(O-6). 유일한 대조는 표현 형식이고 승자가 모델 역량에 따라 뒤집힌다 → **개선은 접근성·사용성 개선으로만 말한다.**
-
-### C5a · native 우선 교정 (**P2** · 위험 낮음 · ON)
-
-- **무엇을 바꾸나** — census `MK2_REDUNDANT_ROLE`(native가 이미 주는 `role=`)를 **제거**하고, `MK3_IMG_MISSING_ALT`에 **사람이 의미를 확인한** `alt`를 넣는다.
-  ```html
-  <button role="button">저장</button>   →   <button>저장</button>
-  ```
-- **근거** — E-MK2 `[ESTABLISHED · W3C/MDN]` 'First rule of ARIA'. 잘못된 ARIA는 native 시맨틱을 덮어써 **no-ARIA보다 나쁠 수 있다**.
-- **동작 위험**: 낮음(중복 role 제거는 의미 불변). alt 추가는 렌더에 영향 없음.
-- **1급 센서**: 렌더 스냅샷·기존 테스트 통과 + **사람 확인**(alt 문구가 실제 이미지 의미와 맞는가).
-- **거부 조건**: **자동 ARIA/alt 생성 금지** — confident-but-wrong이 실증된 벡터다(자동 remediation overlay가 focus order를 파괴한 사례). 이미지의 의미를 모르면 채우지 말고 **사람에게 질의**. `role=`이 native와 어긋나게(의도적으로) 쓰인 경우는 제거가 아니라 **보고**.
-
-### C5b · `<div/span onClick>` → `<button>`/`<a>` 승격 (**P4** · **opt-in** · 기본 OFF)
-
-- **무엇을 바꾸나** — census `MK1_NONSEMANTIC_CLICK` 후보를 native 인터랙티브 요소로 승격한다(키보드·포커스·역할을 자동 획득).
-- **근거** — E-MK1: 접근성 이득은 표준·명확하나 **AI 이해 이득은 격리 근거 없음**. 이 카드를 "AI가 더 잘 읽는다"로 팔지 않는다.
-- **동작 위험**: **있음** — `<button>`은 기본 스타일·`type="submit"` 기본값·이벤트 전파·폼 제출 동작이 `<div>`와 다르다. 레이아웃이 깨지거나 **폼이 예기치 않게 제출**될 수 있다.
-- **1급 센서**: **행위 센서 필수** — 영향 화면을 실제 렌더해 클릭·키보드(Enter/Space)·포커스 이동·레이아웃을 baseline과 대조(`verify`·`run` 스킬). · **2급 센서**: 스냅샷 diff.
-- **판정 상한**: **UNVERIFIED**(렌더 관측도 등가 증명은 아니다).
-- **게이트**: B **+ 사람 diff 리뷰**. 위험은 경고하되 **감수 결정은 사용자** — opt-in·승인된 C5b를 조용히 보류·강등하지 않는다(새 차단 요인은 escalate).
-- **거부 조건**: 한 번에 한 요소씩(일괄 치환 금지). 스타일 회귀를 관측할 수단이 전혀 없으면 사용자에게 "미관측 진행/센서 먼저/건너뛰기?"로 결정을 넘긴다.
+이 후보를 실제로 고치려면 접근성 도구(axe 등)와 사람 리뷰로 별도 작업한다. 자동 ARIA/alt/어서션 생성은
+어느 경로에서도 금지다(confident-but-wrong·green-locks-bug).
 
 ---
 
@@ -192,7 +145,7 @@ Phase 2 제안표는 각 개입 후보를 **위험조정 기대이익**으로 �
 - **효과 방향**: 오도 제거(확실한 +) > 검증된 명료화 > 미검증 추가.
 - **분모**: 동작 위험 + 사실성 위험. C0은 분모≈0이라 효과 크기가 작아도 최상위(P1이 1순위인 이유 = 위험 0·확실). C3는 분모가 최대라 효과가 추론이면 최하위(P4가 마지막인 이유).
 - **동률 처리**: 기대이익이 같으면 **P 번호가 낮은 쪽 우선**(P1 > P2 > P3 > P4).
-- **전체 서열(개입 클래스 통합)**: `C0(P1) · C4a(P1)` → `C2(P2) · C5a(P2)` → `C1/C1-gap(P3)` → `C3 · C4b · C5b(P4 · 전부 opt-in)`.
-  P1 두 카드는 **삭제·교정이라 분모≈0**이고, P4 세 카드는 **동작 위험이 실재하고 효과가 추론**이라 마지막이다.
-- **축 대응**: `naming→C2` · `comments→C0/C1(+C7~C9 seed)` · `structure→C3` · `tests→C4` · `markup→C5`. 사용자가 고르지 않은 축은 census를 돌리지도 않는다.
+- **전체 서열**: `C0(P1)` → `C2(P2)` → `C1/C1-gap(P3)` → `C3(P4 · opt-in)`.
+  C0은 **삭제라 분모≈0**이고, C3는 **동작 위험이 실재하고 효과가 추론**이라 마지막이다.
+- **축 대응**: `naming→C2` · `comments→C0/C1(+C7~C9 seed)` · `structure→C3` · `markup`·`tests`→**개입 없음(census 전용)**. 사용자가 고르지 않은 축은 census를 돌리지도 않는다.
 - **스코프 가드**: 사용자가 Phase 0에서 선택한 개입 클래스 **밖**의 후보는 제안표에 점수를 매기지 않고 **"추가 안 함(스코프 밖)"** 으로 표기하며, **확장 여부를 사용자에게 문의**한다(임의 적용 금지). 이 플러그인은 등급이 아니라 **census + 개입 제안 + 승인 후 적용**만 낸다.

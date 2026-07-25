@@ -17,12 +17,13 @@ stdlib only · Python 3.10+ · 코드를 수정하지 않는다(읽기 전용).
 사용:
     python3 legibility_scan.py <repo_root> [--out census.json]
                                [--axes naming,comments,structure,markup,tests]
-                               [--git-drift] [--drift-days 90]
                                [--top 20] [--max-files 5000]
 
-축(axis)은 사용자가 고른 개입 클래스에 대응한다 — naming(C2)·comments(C0/C1)·structure(C3)·
-markup(C5 시맨틱 마크업)·tests(C4 테스트 설명). 선택 밖의 축은 스캔하지 않는다(스코프 가드).
-markup·tests 축의 신호는 **AI 이해 개입 근거가 없어** 접근성·사람 가독성 개선으로만 말한다.
+축(axis) — **개입 축** naming(C2)·comments(C0/C1)·structure(C3)는 개입 클래스에 대응하고,
+**census 전용 축** markup(MK*)·tests(TL*)는 목록만 낸다(대응 개입 클래스 없음).
+후자에 개입 카드를 두지 않는 이유: 마크업 시맨틱·테스트 설명을 격리해 LLM 이해 델타를 잰 연구가
+없고(O-6) 접근성 개선은 이 하네스의 표적이 아니다 — 결함 후보를 *보여주되* 코드 수정 경로는 만들지 않는다.
+선택 밖의 축은 스캔하지 않는다(스코프 가드).
 """
 
 from __future__ import annotations
@@ -35,7 +36,6 @@ import json
 import keyword
 import os
 import re
-import subprocess
 import sys
 import tokenize
 from collections import defaultdict
@@ -50,7 +50,6 @@ SCHEMA_VERSION = "1.0.0"
 # ---------------------------------------------------------------------------
 MAX_FILE_BYTES = 1_000_000       # 초과 시 스킵. "0줄"로 오독하지 않는다.
 MAX_FILES_DEFAULT = 5_000
-GIT_TIMEOUT_SEC = 15
 
 SKIP_DIRS = frozenset({
     ".git", ".hg", ".svn", "node_modules", "dist", "build", "out",
@@ -1212,76 +1211,6 @@ def scan_collisions(state: ScanState, min_modules: int = 3) -> None:
 # ---------------------------------------------------------------------------
 # git 기반 주석 드리프트 (heuristic · opt-in)
 # ---------------------------------------------------------------------------
-def git_available(root: Path) -> bool:
-    if not (root / ".git").exists():
-        return False
-    try:
-        subprocess.run(
-            ["git", "-C", str(root), "rev-parse", "--is-inside-work-tree"],
-            check=True, capture_output=True, timeout=GIT_TIMEOUT_SEC,
-        )
-        return True
-    except (subprocess.SubprocessError, OSError):
-        return False
-
-
-def scan_git_drift(state: ScanState, drift_days: int) -> None:
-    """주석 라인의 마지막 수정 시각이 함수 본문보다 drift_days 이상 오래됐으면 후보."""
-    if "comments" not in state.axes:
-        return
-    if not git_available(state.root):
-        state.skipped.append({"file": ".", "reason": "git-drift: not a git worktree"})
-        return
-
-    targets = defaultdict(list)
-    for f in state.findings:
-        if f.detector in ("C1_DANGLING_IDENT", "C3_COMMENTED_OUT_CODE"):
-            targets[f.file].append(f.line)
-
-    threshold = drift_days * 86400
-    for rel, lines in list(targets.items())[:200]:
-        times = _git_line_times(state.root, rel)
-        if not times:
-            continue
-        file_newest = max(times.values(), default=0)
-        for line_no in lines:
-            line_time = times.get(line_no)
-            if line_time is None:
-                continue
-            if file_newest - line_time >= threshold:
-                state.add(Finding(
-                    "C6_COMMENT_DRIFT", "heuristic", "comments", rel, line_no, "",
-                    f"주석 라인이 파일 최신 변경보다 {int((file_newest - line_time) / 86400)}일 오래됐다 (drift 후보).",
-                    {"days_behind": int((file_newest - line_time) / 86400),
-                     "evidence": "코드-주석 불일치(CCI) 문헌의 조작적 프록시. 확정 판정 아님."},
-                ))
-
-
-def _git_line_times(root: Path, rel: str) -> dict[int, int]:
-    try:
-        proc = subprocess.run(
-            ["git", "-C", str(root), "blame", "--line-porcelain", "--", rel],
-            check=True, capture_output=True, timeout=GIT_TIMEOUT_SEC,
-        )
-    except (subprocess.SubprocessError, OSError):
-        return {}
-    out: dict[int, int] = {}
-    cur_line = None
-    for raw in proc.stdout.decode("utf-8", errors="replace").splitlines():
-        if re.match(r"^[0-9a-f]{7,40} \d+ \d+", raw):
-            parts = raw.split()
-            try:
-                cur_line = int(parts[2])
-            except (IndexError, ValueError):
-                cur_line = None
-        elif raw.startswith("author-time ") and cur_line is not None:
-            try:
-                out[cur_line] = int(raw.split()[1])
-            except (IndexError, ValueError):
-                pass
-    return out
-
-
 # ---------------------------------------------------------------------------
 # 출력
 # ---------------------------------------------------------------------------
@@ -1295,7 +1224,6 @@ DETECTOR_META = {
     "C3_COMMENTED_OUT_CODE": ("comments", "주석처리된 코드", "E-C1(noise)"),
     "C4_DEBT_MARKER": ("comments", "TODO/FIXME 부채 마커", "존재는 결정론·해악은 heuristic"),
     "C5_DOCSTRING_PARAM_UNDOCUMENTED": ("comments", "문서화되지 않은 파라미터", "report-only"),
-    "C6_COMMENT_DRIFT": ("comments", "주석-코드 시간 드리프트", "E-C3(프록시)"),
     "C7_SILENT_HANDLER": ("comments", "침묵 예외 처리('왜' 주석 후보)", "report-only(비파생 맥락·추가는 opt-in)"),
     "C8_MAGIC_NUMBER": ("comments", "매직 넘버('왜' 주석 후보)", "report-only(비파생 맥락·추가는 opt-in)"),
     "C9_REGEX_LITERAL": ("comments", "정규식 사용('왜' 주석 후보)", "report-only(비파생 맥락·추가는 opt-in)"),
@@ -1317,10 +1245,9 @@ HONESTY_NOTES = [
     "census 델타는 '개입이 반영되었는가'의 결정론적 확인이지 에이전트 성공률의 대리 지표가 아니다.",
     "comment-gap(C7~C9)은 결함이 아니라 '왜' 주석 **추가 후보**다. 추가는 opt-in이고 사람이 사실성을 검증한다 — "
     "주석 개수를 늘리는 것은 목표가 아니다(볼륨 가점 = Goodhart).",
-    "markup·tests 축(MK*·TL*)의 신호는 **AI 이해 개입 근거가 없다**. 랜드마크·button-vs-div·테스트 설명을 격리해 "
-    "LLM 이해 델타를 잰 연구는 존재하지 않는다 → 개선은 접근성·사람 가독성 개선으로만 말하고 에이전트 성공률로 귀속하지 않는다.",
-    "ARIA·role·셀렉터·테스트 제목의 '볼륨'은 어느 방향으로도 점수가 아니다. 자동 ARIA/alt/어서션 생성은 금지다"
-    "(confident-but-wrong·green-locks-bug).",
+    "markup·tests 축(MK*·TL*)은 **census 전용이다 — 대응 개입 클래스가 없다**. 랜드마크·button-vs-div·테스트 설명을 "
+    "격리해 LLM 이해 델타를 잰 연구가 존재하지 않으므로(O-6) 결함 후보만 보여주고 코드 수정 경로를 만들지 않는다. "
+    "볼륨(ARIA·role·셀렉터·제목 개수)은 어느 방향으로도 점수가 아니고, 자동 ARIA/alt/어서션 생성은 금지다.",
 ]
 
 
@@ -1391,8 +1318,6 @@ def run_scan(
     axes: set[str],
     top: int = 20,
     max_files: int = MAX_FILES_DEFAULT,
-    git_drift: bool = False,
-    drift_days: int = 90,
 ) -> dict[str, Any]:
     """스캔 파이프라인 전체. main()과 테스트가 같은 경로를 공유한다."""
     state = ScanState(root=root, axes=axes)
@@ -1435,8 +1360,6 @@ def run_scan(
         scan_tests(path, src, state)
 
     scan_collisions(state)
-    if git_drift:
-        scan_git_drift(state, drift_days)
     return build_report(state, top)
 
 
@@ -1447,8 +1370,6 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--axes", default="naming,comments,structure,markup,tests",
                     help="스캔할 축 (쉼표 구분: naming,comments,structure,markup,tests). "
                          "사용자가 선택한 스코프 밖은 스캔하지 않는다.")
-    ap.add_argument("--git-drift", action="store_true", help="git blame 기반 주석 드리프트(heuristic·느림)")
-    ap.add_argument("--drift-days", type=int, default=90)
     ap.add_argument("--top", type=int, default=20, help="구조 진단 목록 길이")
     ap.add_argument("--max-files", type=int, default=MAX_FILES_DEFAULT)
     args = ap.parse_args(argv)
@@ -1464,10 +1385,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"error: 알 수 없는 축 {sorted(unknown)}", file=sys.stderr)
         return 2
 
-    report = run_scan(
-        root, axes, top=args.top, max_files=args.max_files,
-        git_drift=args.git_drift, drift_days=args.drift_days,
-    )
+    report = run_scan(root, axes, top=args.top, max_files=args.max_files)
     payload = json.dumps(report, ensure_ascii=False, indent=2)
 
     if args.out:

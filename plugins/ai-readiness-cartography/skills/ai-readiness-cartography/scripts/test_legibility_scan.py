@@ -409,17 +409,6 @@ class IndependenceTests(unittest.TestCase):
         report = json.loads(proc.stdout.decode())
         self.assertGreater(report["counts"]["total_findings"], 0)
 
-    def test_git_is_optional(self):
-        """git 이 없거나 대상이 워크트리가 아니어도 스캔은 성공한다."""
-        with tempfile.TemporaryDirectory() as td:
-            root = Path(td)
-            (root / "a.py").write_text("# TODO: x\ndef f():\n    return 1\n", encoding="utf-8")
-            state = ls.ScanState(root=root.resolve(), axes={"comments"})
-            ls.scan_git_drift(state, drift_days=90)  # 워크트리 아님 → 조용히 스킵
-        reasons = [s["reason"] for s in state.skipped]
-        self.assertTrue(any("git-drift" in r for r in reasons), reasons)
-
-
 class CommentGapTests(unittest.TestCase):
     """C7~C9 — 코드만으로 '왜'를 알기 어려운 지점(주석 *추가* 후보 · report-only)."""
 
@@ -546,11 +535,11 @@ class PortedAssetInvariantTests(unittest.TestCase):
         for f in markup_and_tests:
             self.assertIn(f["grade"], allowed)
 
-    def test_report_states_intervention_evidence_is_absent(self):
-        """markup·tests 신호를 '에이전트 성공률'로 귀속하지 못하게 하는 정직성 문구가 살아 있어야 한다."""
+    def test_report_states_markup_tests_are_census_only(self):
+        """markup·tests 축에 개입 클래스가 없다는 문구가 살아 있어야 한다(코드 수정 경로 부재)."""
         report = scan({"a.py": "x = 1\n"}, axes="comments")
         notes = " ".join(report["honesty_notes"])
-        self.assertIn("개입 근거가 없다", notes)
+        self.assertIn("census 전용", notes)
         self.assertIn("Goodhart", notes)
 
     def test_truncation_is_recorded_not_silent(self):

@@ -30,7 +30,7 @@
 - **결정적 공백**: **`<nav>/<main>/<article>` 랜드마크·h1–h6 계층·`<button>` vs `<div onclick>`·`label/for`를 treatment로 격리해 LLM 이해 델타를 잰 연구는 존재하지 않는다.** 실재하는 evidence gap이다.
 - **caveat**: 2604.01535와 2605.29397은 **동일 저자군의 한 research line·companion**이지 독립 삼각검증이 아니다(cross-source 교차확인으로 제시 금지). 또 fuller HTML은 토큰 비용을 올리고 약한 모델에서 element hallucination을 유발한다 — 구조 풍부함은 **monotonic 이득이 아니다**.
 - 🚫 **폐기된 수치**: "a11y tree ≈ DOM의 ~10× 축소"는 인용 논문이 명시하지 않는 folklore → 인용 금지. "role+name+state+hierarchy의 더 작은 canonical subset"만 유지.
-- **하네스에서의 귀결**: `MK1_NONSEMANTIC_CLICK`은 census + 개입 후보이되, 승격(C5b)의 이득은 **접근성·사람 사용성**으로만 말한다. "AI가 더 잘 읽는다"로 귀속하지 않는다.
+- **하네스에서의 귀결**: `MK1_NONSEMANTIC_CLICK`은 **census 전용**이다(개입 카드 없음). 승격의 이득은 접근성·사람 사용성이지 AI 이해가 아니고, 접근성은 이 하네스의 표적이 아니므로 후보만 보여준다.
 
 ---
 
@@ -39,7 +39,7 @@
 - **판정**: 규범 표준(ESTABLISHED) · AI 이득은 **ABSENT**
 - **핵심**: W3C/MDN 'First rule of ARIA' — native 시맨틱 요소가 존재하면 ARIA로 덧대지 말라. ARIA 사용 시 브라우저 동작을 script로 mimic할 책임이 생기고, 잘못된 ARIA는 "more harm than good"으로 native 시맨틱을 **덮어쓴다**. 무-alt `<img>`는 WCAG 위반이다.
 - **출처**: W3C WAI `Using ARIA` §Rule 1 · MDN `[ESTABLISHED · normative]`.
-- **하네스에서의 귀결**: `MK2_REDUNDANT_ROLE`(native로 대체 가능한 `role=`)·`MK3_IMG_MISSING_ALT`만 개입 후보다. **자동 ARIA/alt 생성은 금지** — 자동 remediation overlay가 conflicting ARIA 주입·focus order 파괴로 실제 harm을 낸 사례가 있고(NFB 2021·UIUC 2023 overlay study `[PLAUSIBLE-sourced · 2차]`), LLM alt/ARIA의 신뢰할 만한 정확도 수치는 확보되지 않았다(GPT-4V system card가 정성적으로 hallucination 인정).
+- **하네스에서의 귀결**: `MK2_REDUNDANT_ROLE`·`MK3_IMG_MISSING_ALT`도 **census 전용**이다. 어느 경로에서도 **자동 ARIA/alt 생성은 금지** — 자동 remediation overlay가 conflicting ARIA 주입·focus order 파괴로 실제 harm을 낸 사례가 있고(NFB 2021·UIUC 2023 overlay study `[PLAUSIBLE-sourced · 2차]`), LLM alt/ARIA의 신뢰할 만한 정확도 수치는 확보되지 않았다(GPT-4V system card가 정성적으로 hallucination 인정).
 
 ---
 
@@ -61,7 +61,7 @@
 - **caveat**: 단일 proxy task(HumanEval 164개 짧은 함수의 test-pass)라 **좁고 작다** — 대형 repo 이해로의 일반화는 보장되지 않는다.
 - **보강(이름↔본문 괴리)**: 서술적 테스트 이름은 unit-under-test/기대결과를 인코딩하지만 **컴파일러가 검증하지 않아** 본문과 어긋난 채 표류한다(McGill 2025 EMSE · Daka et al. ISSTA 2017 `[PLAUSIBLE-sourced]`). 이를 신뢰하는 LLM은 그 거짓을 상속한다.
 - **tests-as-oracle 위험**: LLM 패치는 제공된 테스트에 과적합해 버그를 초록으로 굳힌다(green-locks-bug; arXiv:2511.16858 *Investigating Test Overfitting on SWE-bench*, Ahmed et al. 2025 — **구체 %는 미검증, 방향성만**: refining against tests가 overfitting을 악화시키고 black-box 테스트 공개가 감소시킨다). LLM 오라클은 expected(명세)가 아니라 **actual(구현) 동작을 인코딩**한다(arXiv:2410.21136).
-- **하네스에서의 귀결**: `TL1_VAGUE_TEST_TITLE`의 개입은 **오도 교정·모호 리네임뿐**이고 "설명 늘리기"가 아니다. **자동 어서션·오라클 생성 금지.** 개선은 *사람 가독성* 개선으로만 말한다.
+- **하네스에서의 귀결**: `TL1_VAGUE_TEST_TITLE`은 **census 전용**이다. 올바른 설명의 이득이 미미하고 오도만 해로운 비대칭이라 '설명 늘리기' 개입은 애초에 만들지 않으며, **자동 어서션·오라클 생성은 금지**다.
 
 ---
 
@@ -71,7 +71,7 @@
 - **핵심**: Testing Library·Playwright 정규 문서가 `getByRole` > LabelText > Text > … > **TestId(최후)** 우선순위에 수렴한다 `[ESTABLISHED]`. self-healing 연구도 `get_by_role`를 10-tier 중 1순위로 둔다(arXiv:2603.20358 — 단 **healing robustness 측정이지 test-code 가독성이 아니고 N이 작다**).
 - **반증**: **getByRole 초록 ≠ a11y 온전.** `<div role="button">`은 getByRole를 통과하면서 키보드 활성화·tab order·focus·pressed 상태를 잃는다 — getByRole는 실제 `<button>`임을 강제하지 못하며 **axe 대체가 아니다**. 취약성도 양방향이다(accessible-name 계산 의존이라 ARIA/label 변경에 깨진다).
 - **결정적 공백**: 접근성 기반 테스트 *코드*가 LLM의 UI 의도 이해에 더 나은 context 신호인지 실증한 출처는 **없다**. 관련 agent 논문(2603.20358·2603.07024·2606.30697·2511.21398)은 전부 **앱의 런타임 a11y tree grounding**이지 test source가 아니다 — **다른 artifact이며 전이는 관용적 추론이다.**
-- **하네스에서의 귀결**: `TL2_NONSEMANTIC_QUERY`는 파일 단위 census이고, →getByRole 이관(C4b)은 **opt-in·행위 센서**다. 이관을 "AI 이해 향상"으로 말하지 않는다.
+- **하네스에서의 귀결**: `TL2_NONSEMANTIC_QUERY`는 파일 단위 **census 전용**이다. →getByRole 이관은 이 하네스가 제안하지 않는다(AI 이해 근거 ABSENT).
 
 ---
 
