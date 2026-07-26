@@ -1,0 +1,78 @@
+[
+  {
+    "query": "이 유저스토리랑 인수조건을 피그마 화면 구조로 번역해줘. AC별로 어떤 프레임·상태가 필요한지 뽑고 어노테이션까지",
+    "should_trigger": true
+  },
+  {
+    "query": "기획 문서의 AC를 상태 프레임으로 전수 매핑해서 디자인에 뭘 추가해야 하는지 반영 설계안 만들어줘",
+    "should_trigger": true
+  },
+  {
+    "query": "AC↔화면 매핑표 만들고 FE가 질문 없이 개발할 수 있게 핸드오프 패키지로 정리해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "유저스토리를 화면 설계로 옮겨줘. 프레임 이름이랑 프로토타입 연결, 레이어에 붙일 어노테이션 문안까지",
+    "should_trigger": true
+  },
+  {
+    "query": "기획을 디자이너용 디자인 반영 지시서로 바꿔줘. 빠진 상태 뭐 있는지도 같이 캐주고",
+    "should_trigger": true
+  },
+  {
+    "query": "이 스토리로 FE 자율개발이 가능한 피그마 스펙을 설계하고 마지막에 추측해야 하는 틈이 남았는지 적대적으로 검증해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "translate these user stories and acceptance criteria into a Figma structure — state frames, layer annotations, and a frontend handoff package",
+    "should_trigger": true
+  },
+  {
+    "query": "인수조건 기준으로 필요한 화면 상태 전부 도출하고 페이지·섹션·프레임 이름이랑 Ready for dev 계획까지 설계해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "기존 피그마 파일 있는데, 이 유저스토리·AC 기준으로 뭐가 있고 뭐가 없는지 대조해서 더 그려야 할 프레임이랑 어노테이션 뽑아줘",
+    "should_trigger": true
+  },
+  {
+    "query": "이 피그마 핸드오프에 에러·로딩·빈 상태 누락 없는지 사각지대 검수해서 디자인팀에 되돌릴 피드백 만들어줘",
+    "should_trigger": false
+  },
+  {
+    "query": "피그마 디자인 토큰 바인딩이랑 Code Connect 컴포넌트 매핑이 잘 됐는지 착수 게이트로 점검해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "Figma 링크 줄게. 디자인 컨텍스트 추출해서 화면별 spec 파일이랑 스크린샷으로 내려줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 기획안으로 PRD랑 사용자 스토리를 처음부터 작성해줘. 문제 정의랑 인수조건까지",
+    "should_trigger": false
+  },
+  {
+    "query": "이 유저스토리랑 인수조건이 개발 착수 준비됐는지 DoR 게이트로 검수만 해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "인수조건을 unit·통합·E2E 계층으로 나눠서 테스트 계획 세우고 하나씩 승인받으며 추가해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 사용자 스토리를 리스크 매핑 테스트 시나리오로 설계하고 실행해서 결함이랑 플래키 트리아지해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 화면 React 컴포넌트로 구현하고 접근성이랑 Lighthouse까지 돌려줘",
+    "should_trigger": false
+  },
+  {
+    "query": "우리 팀 조직을 목적조직으로 바꾸려는데 현행 진단하고 뭐부터 시작할지 정리해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 저장소가 AI 코딩 에이전트가 읽기 좋은 코드베이스인지 점수로 측정해줘",
+    "should_trigger": false
+  }
+]

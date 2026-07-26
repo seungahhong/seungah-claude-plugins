@@ -1,0 +1,130 @@
+{
+  "eval_metadata": {
+    "eval_id": "spec-to-figma-acceptance",
+    "eval_name": "spec-to-figma-harness 수용 평가 (design-conformance + 근거 정직성)",
+    "prompt": "스킬은 유저스토리·인수조건(AC)을 입력으로 받아, FE가 되묻지 않고 개발할 수 있도록 Figma에 무엇을 어떻게 반영해야 하는지를 설계한다. Phase 0 스펙 인테이크(한 번에 한 질문·스토리 없이 화면부터 설계 금지) → Phase 1 AC를 시나리오(→프레임)/규칙(→핀)으로 이분 분해하고 상태 카탈로그 6축을 역방향 호명해 누락을 도출 → Phase 2 페이지=에픽/섹션=스토리/프레임=상태 명명·프레임 목록·프로토타입 flow·Inspect 신뢰성 요구·Code Connect·Ready for dev 계획·기존 파일 델타(읽기 전용) → Phase 3 레이어별 어노테이션 6분류 복붙 문안·확정(어노테이션)/논의중(댓글) 분리·AC 역참조 → Phase 4 FE 1인칭 적대 검증·owner별 준비도 판정·남은 질문·정직성 감사. 매 Phase 승인 게이트. 본 평가는 shipped SKILL.md·agents/*.md·references/*가 하네스 불변식(INV-1 발명 금지·INV-2 커버리지≠품질/점수화 금지·INV-3 디자인 결정 대행 및 Figma 쓰기 금지·INV-4 플랜 제약 정직·INV-5 되물음은 1급 산출물·한 번에 한 질문·승인 게이트·근거 등급·인용 금지 목록·경계)을 강제·명세하는지 file:섹션 인용으로 채점한다.",
+    "method": "design-conformance — shipped 파일(SKILL.md·agents/*.md·references/*)의 해당 섹션 인용으로 각 불변식 강제 여부를 확인.",
+    "assertions": [
+      {
+        "text": "[INV-1/no-invention] 사용자 노출 문구 원문·API 필드·트래킹 이벤트명·수치 경계·권한 정의를 추론으로 채우지 않고 `[기획 확인 필요]` 플레이스홀더 + 되물음으로 남긴다.",
+        "passed": true,
+        "evidence": "SKILL.md '내재화 원칙' INV-1 + 'Common pitfalls' 첫 항목. ac-to-state-matrix.md '4. 되물음 규칙 (발명 금지)' 5개 금지 항목 열거. state-cartographer.md '핵심 원칙 — 발명 금지(INV-1)'. annotation-writer.md '핵심 원칙 — 발명 금지(INV-1, 이 에이전트의 최대 위험)' + '에러 문구는 원문 그대로'. evidence.md §7-3."
+      },
+      {
+        "text": "[INV-1/agent-output] 에이전트 출력 카드 템플릿 자체가 미확인 값을 `[기획 확인 필요]`로 표기한 예시를 포함해 빈칸 유지를 시연한다.",
+        "passed": true,
+        "evidence": "state-cartographer.md '출력 — 상태 지도 카드'의 R1 행 `[기획 확인 필요]`. annotation-writer.md '출력 — 어노테이션 스펙 카드'의 5필드 핀 블록 3개(`[본문]`에 `[기획 확인 필요: …]` 시연). figma-blueprinter.md '출력 — Figma 설계도 카드' 미확정 절."
+      },
+      {
+        "text": "[INV-2/coverage-not-quality] AC↔프레임 커버리지를 세되 '질문 0'·'재작업 N% 감소' 같은 효과를 약속하지 않으며, 해당 주장을 인용 금지 목록으로 명시한다.",
+        "passed": true,
+        "evidence": "SKILL.md '왜 …인가' 3번 + INV-2 + Common pitfalls. evidence.md '§4 인용 금지 목록' 1·2·3행(측정 연구 없음·1차 출처 없음·인용 체인 원문에 수치 없음) + '집행 규칙'. handoff-readiness.md '§6 정직성 — 이 체크리스트가 보장하지 않는 것'. annotation-templates.md §5 안티패턴 8행."
+      },
+      {
+        "text": "[INV-2/no-scoring] 준비도를 점수·백분율·등급으로 환산하지 않고 통과/미통과/해당없음 3값으로만 판정한다.",
+        "passed": true,
+        "evidence": "handoff-readiness.md '§0 판정 규약'(점수·백분율 금지, Goodhart 근거). handoff-critic.md '핵심 원칙 — 점수화하지 않는다(INV-2)' + 출력 카드 '집계: … ← 개수일 뿐 등급이 아니다' + '경계 — 점수·등급을 만들지 않는다'. SKILL.md Phase 4-3."
+      },
+      {
+        "text": "[INV-3/no-figma-write] Figma 파일을 생성·수정하지 않으며 쓰기 계열 MCP 도구를 호출하지 않고, 기존 파일은 델타 진단용 읽기 전용으로만 참조한다.",
+        "passed": true,
+        "evidence": "SKILL.md INV-3 + 경계 마지막 항목 + Common pitfalls '기존 Figma 파일을 수정한다'. figma-blueprinter.md '핵심 원칙 — Figma를 수정하지 않는다'(쓰기 도구 5종 명시) + '경계 — Figma 파일 생성·수정·자동 반영 금지'. figma-blueprint.md '§4 기존 Figma 파일 델타 진단 (읽기 전용)'. evidence.md §2 MCP 쓰기 도구 행 ⚠️."
+      },
+      {
+        "text": "[INV-3/no-design-decision] 무엇이 필요한가(상태·규칙·구조·이름)만 명세하고 레이아웃·비주얼·톤 등 디자인 결정을 대신하지 않는다.",
+        "passed": true,
+        "evidence": "SKILL.md INV-3 첫 문장. figma-blueprinter.md '핵심 원칙 — 디자인 결정을 대신하지 않는다(INV-3)'. annotation-writer.md '경계 — 디자인 값을 지시하지 않는다' + '구현 방법을 지시하지 않는다'."
+      },
+      {
+        "text": "[INV-4/plan-constraints] Code Connect(Org/Ent + Dev/Full seat)·어노테이션 생성(Full seat + can edit)·Ready for dev view·Completed(Org/Ent) 제약을 명시하고 못 쓰는 팀에 대체 경로를 병기하며, 해당 항목을 '미통과'가 아니라 '해당없음'으로 처리한다.",
+        "passed": true,
+        "evidence": "SKILL.md INV-4. evidence.md §2 표의 ⚠️ 주의 칸 4행 + §7-5. figma-blueprint.md '§7 Code Connect'·'§8 Ready for dev 마킹 계획'. annotation-templates.md '§4 Figma Annotations 기능 제약과 대체 경로'. handoff-critic.md '절차 3. 준비도 판정 — 해당없음 + 대체 경로' + 출력 카드 Code Connect 행."
+      },
+      {
+        "text": "[INV-5/questions-are-deliverable] 되물음(미확인 항목)을 숨기지 않고 1급 산출물로 남기며, 빈칸이 채워진 추측보다 낫다고 명시한다.",
+        "passed": true,
+        "evidence": "SKILL.md INV-5 + Common pitfalls 마지막에서 두 번째. state-cartographer.md 출력 카드 '되물음 목록 (1급 산출물)'. handoff-critic.md '핵심 원칙 — 되물음을 삭제하지 않는다' + '경계 — 빈칸을 채우지 않는다'. handoff-readiness.md '§4 남은 질문 목록 형식'."
+      },
+      {
+        "text": "[one-question-at-a-time] 인테이크·되물음을 한 번에 하나씩 묻고 질문을 목록으로 덤프하지 않으며, 직전 답이 다음 질문을 결정한다.",
+        "passed": true,
+        "evidence": "SKILL.md '내재화 원칙 — 한 번에 한 질문(짧게)' + Phase 0 9항목 순차(디자인시스템·코드 매핑·플랜을 각각 분리) + Phase 1 게이트 B '최대 5개까지 묻고 나머지는 목록으로' + Common pitfalls 마지막."
+      },
+      {
+        "text": "[first-action/story-first] 첫 행동이 유저스토리·AC 원문 확보이며, 사용자가 결과물만 지목해도 스토리 없이 화면부터 설계하지 않고 AC가 없으면 분기를 사용자가 고르게 한다.",
+        "passed": true,
+        "evidence": "SKILL.md description '첫 행동은 반드시 유저스토리·AC 원문을 확보하는 질문이다' + 'Phase 0 첫 행동 규약(불변식)'(ⓐ/ⓑ 분기). state-cartographer.md '경계 — 스토리·AC를 만들어내지 않는다'."
+      },
+      {
+        "text": "[approval-gate] 매 Phase 종료 시 핵심 산출물 + 1줄 보고를 제시하고 승인 후에만 다음으로 넘어가며, 파일 저장은 opt-in(미리보기 후 승인)이고 커밋하지 않는다.",
+        "passed": true,
+        "evidence": "SKILL.md '내재화 원칙 — 승인 게이트' + 게이트 A~E 각 보고 형식 + '마무리 1. 산출물 저장 (opt-in)'. CLAUDE.md 'Conventions — 승인 게이트'."
+      },
+      {
+        "text": "[reverse-enumeration] AC를 다 처리한 뒤 상태 카탈로그 6축을 역방향으로 호명해 AC에 없는 상태를 드러내고, 그것을 결함이 아니라 되물음으로 처리한다.",
+        "passed": true,
+        "evidence": "ac-to-state-matrix.md '§1 상태 유형 카탈로그 (전수 체크)' A~F 6축 + '§3 커버리지 매트릭스'의 역방향 항목. state-cartographer.md '핵심 원칙 — 역방향 호명(가장 중요한 일)' + '누락은 결함이 아니라 되물음' + 출력 카드 '역방향 호명 결과' 표. SKILL.md Phase 1-2."
+      },
+      {
+        "text": "[binary-classification] AC를 시나리오(→상태 프레임)와 규칙(→레이어 어노테이션)으로 이분 분류하고, 1 AC = 1 프레임 기계 매핑을 금지하며, 관찰 불가한 AC는 판정 불가로 되물음 처리한다.",
+        "passed": true,
+        "evidence": "SKILL.md 한 문장 원칙 + Phase 1-1 + Common pitfalls 2번째. ac-to-state-matrix.md '§0 이분 분류 규칙 (가장 먼저)' 4행 표 + '한 AC가 프레임 1개에 대응한다고 가정하지 않는다'. state-cartographer.md '핵심 원칙 — 이분 분류가 먼저'·'1 AC = 1 프레임을 가정하지 않는다'·'판정 불가는 판정 불가로'."
+      },
+      {
+        "text": "[no-inspect-duplication] 색·크기·간격 등 Inspect에서 이미 읽히는 값을 어노테이션에 반복 기재하지 않는다(드리프트 방지).",
+        "passed": true,
+        "evidence": "annotation-templates.md '§0 판별 기준 — 무엇을 쓰고 무엇을 쓰지 않는가' + §5 안티패턴. annotation-writer.md '핵심 원칙 — Inspect에 있는 것은 쓰지 않는다' + 절차 6 자체 점검. SKILL.md Phase 3-1 + Common pitfalls."
+      },
+      {
+        "text": "[evidence-grading] 사실 주장에 근거 등급(GOLD/SILVER/BRONZE/[관행])을 붙이고, 티켓 ID 명명·어노테이션 vs 댓글 분기는 공식 근거 없는 실무 관행으로만 서술하며 효과 수치를 붙이지 않는다.",
+        "passed": true,
+        "evidence": "evidence.md '§1 등급 정의' + '등급 없는 사실 주장은 이 하네스에서 결함이다' + '§6 관행으로만 서술할 것'(허용/금지 서술 대조표). figma-blueprint.md §1 명명 규칙의 `[관행]` 표기. annotation-templates.md '§3 확정 vs 논의중'. SKILL.md Phase 2-1·Phase 3-3."
+      },
+      {
+        "text": "[quotable-number-conditions] 인용 가능한 유일한 정량 수치(Telerik/Progress 2025)에 표본·자기선택·상관관계 조건을 모두 붙여야만 인용하도록 강제한다.",
+        "passed": true,
+        "evidence": "evidence.md '§5 유일하게 인용 가능한 근접 수치'의 인용 조건 4항목 + '4개 조건 중 하나라도 빠지면 인용하지 않는다'. handoff-readiness.md §6."
+      },
+      {
+        "text": "[self-audit] Phase 4가 산출물에 지어낸 값·근거 없는 효과 주장·미확인 표시 누락·못 쓰는 기능 전제가 섞였는지 자체 감사한다.",
+        "passed": true,
+        "evidence": "handoff-critic.md '절차 4. 자체 정직성 감사' 5문항(INV-3 문항 포함) + 출력 카드 '정직성 감사' 표. handoff-readiness.md '§5 자체 정직성 감사'. SKILL.md Phase 4-5."
+      },
+      {
+        "text": "[adversarial-verification] Phase 4는 칭찬형 총평을 금지하고 FE 1인칭으로 멈추는 지점을 캐며 상충 5쌍(AC↔AC·AC↔프레임·AC↔핀·프레임↔핀·핀↔핀)을 명시적으로 탐지하며, 준비도는 기획·디자이너·FE·하네스 자체 4그룹을 모두 보고한다.",
+        "passed": true,
+        "evidence": "handoff-critic.md '핵심 원칙 — 칭찬 금지'·'상충을 특히 노린다'·'막히는 범위로 정렬' + '절차 1 FE 1인칭 시뮬레이션' 7단계 표 + 출력 카드 '상충' 표. handoff-readiness.md '§2 FE 1인칭 시뮬레이션 절차'·'§3 틈(gap) 유형 분류'."
+      },
+      {
+        "text": "[boundary] 이미 있는 디자인의 읽기 전용 검수·게이트 판정, Figma 컨텍스트 추출·파일화, PRD·유저스토리 작성, AC의 테스트 계층·QA 시나리오 전개, 코드 구현·리뷰·커밋을 범위 밖으로 선언하고 모호 시 한 질문으로 확인한다.",
+        "passed": true,
+        "evidence": "SKILL.md '경계 (먼저 읽고 발동 여부를 판단하라)' 6항목 + 마지막 확인 질문. SKILL.md description '발동하지 않는다 — …'. 각 에이전트 '경계 (역방향 배제)' 절. trigger-eval.json false 케이스 10건."
+      },
+      {
+        "text": "[independence] 다른 마켓플레이스 플러그인을 이름으로 참조하거나 의존하지 않고, 경계를 범주로만 서술하며 references 5종이 내재화되어 단독 설치로 동작한다.",
+        "passed": true,
+        "evidence": "SKILL.md 경계 절이 플러그인명 없이 범주로만 서술. references/ 5종(ac-to-state-matrix·annotation-templates·figma-blueprint·handoff-readiness·evidence) 자족. plugin.json description 말미 '독립 플러그인' 선언. CLAUDE.md Conventions 경계 항목."
+      },
+      {
+        "text": "[deterministic-mcp-order] 기존 파일 델타 진단 시 get_metadata로 노드 맵을 먼저 받아 대상을 좁힌 뒤에만 상세 도구를 호출하고 페이지 통째 호출을 금지한다(토큰 폭주 방지), 도구 불가 시 추측으로 채우지 않는다.",
+        "passed": true,
+        "evidence": "figma-blueprint.md '§4.1 도구 로드와 호출 순서 (결정론적)'. figma-blueprinter.md '절차 3. 기존 파일 델타' 3-bullet + '도구가 없거나 접근이 안 되면 … 추측으로 채우지 않는다'. SKILL.md Phase 2-3."
+      },
+      {
+        "text": "[phase-handoff/coverage-matrix] Phase 1이 AC↔상태↔프레임(예정)↔규칙 커버리지 매트릭스를 실제로 산출하며, 프레임 이름은 Phase 2가·핀 번호는 Phase 3이 발급하도록 ID 소유권이 분리된다.",
+        "passed": true,
+        "evidence": "state-cartographer.md 출력 카드 '커버리지 매트릭스 (이 카드의 핵심 · 양방향)' 표 + 정방향/역방향 두 bullet. ac-to-state-matrix.md '§3 커버리지 매트릭스'의 `프레임(예정)`·`규칙(R#)` 열과 '프레임명 최종 형식은 Phase 2가 확정' 각주. annotation-writer.md 핀 블록 `[근거] AC-1 / R1`."
+      },
+      {
+        "text": "[phase-handoff/layer-designation] Phase 2가 핀을 붙일 레이어 경로를 지목해 Phase 3에 넘기고, Phase 3은 그 경로를 그대로 가져와 쓰며 새 레이어 이름을 지어내지 않는다(INV-1 연쇄 차단). 실물이 없는 신규 레이어는 `(제안)`으로 표기한다.",
+        "passed": true,
+        "evidence": "figma-blueprinter.md 출력 카드 '## 레이어 지목 (Phase 3 입력)' 표 + '이 표가 없으면 Phase 3이 레이어 이름을 지어내게 된다(INV-1 위반)' + 절차 5. annotation-writer.md 절차 1 '레이어 지목 표에서 경로를 그대로 가져온다 … 새로 만들어 쓰지 않는다' + 핀 블록의 `(제안)` 표기."
+      },
+      {
+        "text": "[open-catalog] 상태 카탈로그 6축은 닫힌 목록이 아니며, 축에 없는 상태가 필요하면 새 상태 코드를 발급하고 근거가 없으면 되물음으로 올린다. 카탈로그 표준 상태명 사용은 INV-1의 발명이 아니라는 예외가 명문화돼 있다.",
+        "passed": true,
+        "evidence": "ac-to-state-matrix.md '카탈로그는 닫힌 목록이 아니다' 인용블록 + '§4 되물음 규칙'의 '발명이 아닌 것(허용)' 문단. state-cartographer.md '핵심 원칙 — 카탈로그는 닫힌 목록이 아니다' + INV-1 항목의 예외 문장. SKILL.md INV-1 예외절."
+      }
+    ]
+  }
+}

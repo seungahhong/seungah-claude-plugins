@@ -501,4 +501,25 @@ plugins/
     evals/
       evals.json                                         # 수용 평가 (design-conformance + 근거 정직성 13 assertion)
       trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 8 / should_not 9, 인접 하네스 reciprocal 가드)
+  spec-to-figma-harness/                                 # [독립 플러그인] 유저스토리·인수조건(AC)을 입력으로 받아, FE가 되묻지 않고 개발할 수 있도록 "Figma에 무엇을 어떻게 반영해야 하는지"를 설계해 디자이너·FE 핸드오프 패키지로 내보내는 도메인 무관 4단계 4에이전트 하네스. 한 문장 원칙 = 기획서의 '시나리오'는 상태 프레임으로, '규칙'은 레이어 어노테이션으로. Phase 0 스펙 인테이크(한 번에 한 질문·스토리 없이 화면부터 설계 금지) → 1 AC 이분 분해 + 상태 카탈로그 6축 역방향 호명 → 2 명명·프레임 목록·flow·토큰 요구·Ready for dev·기존 파일 델타(읽기 전용) → 3 어노테이션 6분류 복붙 문안(확정=어노테이션/논의중=댓글) → 4 FE 1인칭 적대 검증·owner별 준비도·남은 질문. 정직성 5불변식: INV-1 발명 금지(문구·API 필드·이벤트명·수치 경계는 입력에 있는 것만·없으면 [기획 확인 필요]) · INV-2 커버리지≠품질(효과 약속·점수화 금지) · INV-3 디자인 결정 대행 금지(Figma 쓰기 MCP 도구 호출 금지·파일 생성/수정 안 함) · INV-4 플랜 제약 정직(Code Connect=Org/Ent+Dev/Full seat 등·대체 경로·'해당없음' 처리) · INV-5 되물음은 1급 산출물. 근거 GOLD=Figma 공식 문서(Annotations 선택형 속성·"CSS 자동 부착" 아님·Dev status 3종·Variables·MCP 읽기/쓰기 분리), [관행]=티켓 ID 명명·어노테이션 vs 댓글 분기(효과 수치 금지), 인용 금지=「AC 전수 매핑→질문 0」·「happy path가 재작업 유발」·「재작업 비용 68%」. 커밋 안 함·opt-in 저장·다른 플러그인 비참조·비의존
+    .claude-plugin/
+      plugin.json
+    CLAUDE.md                                            # 포인터 + 4 Phase 요약 + 5 불변식 + 변경 이력
+    README.md                                            # 사용자용 개요·사용법·산출물·정직성·경계
+    agents/                                              # 4 에이전트 (모두 opus)
+      state-cartographer.md                              # Phase 1 AC 이분 분해 + 상태 6축 역방향 호명 + 되물음(발명 금지)
+      figma-blueprinter.md                               # Phase 2 구조·명명·프레임 목록·flow·토큰 요구·델타(읽기 전용·쓰기 도구 금지)
+      annotation-writer.md                               # Phase 3 레이어별 6분류 핀 문안·확정/논의중 분리·Inspect 중복 금지
+      handoff-critic.md                                  # Phase 4 FE 1인칭 적대 검증·상충 탐지·owner별 준비도 3값·정직성 감사
+    skills/spec-to-figma/
+      SKILL.md                                           # 진입점 오케스트레이터 (Phase 0~4·첫 행동=스토리·AC 확보·매 Phase 승인 게이트)
+      references/
+        ac-to-state-matrix.md                            # 이분 분류 결정 규칙·상태 카탈로그 6축·커버리지 매트릭스·되물음 규칙
+        annotation-templates.md                          # 판별 기준·핀 표준 형식·6분류 템플릿·복붙 예시·기능 제약·안티패턴
+        figma-blueprint.md                               # 구조 계층·권장/지양·프레임 목록 스키마·델타 진단 순서·flow·Inspect 신뢰성·플랜 제약
+        handoff-readiness.md                             # 판정 규약(점수화 금지)·owner별 체크리스트·FE 1인칭 시뮬레이션·틈 유형·정직성 감사
+        evidence.md                                      # 근거 정본(등급·GOLD 사실표·인용 금지 목록·유일 인용 가능 수치 4조건·재검증)
+    evals/
+      evals.json                                         # 수용 평가 (design-conformance + 근거 정직성 24 assertion)
+      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 10, 인접 하네스 reciprocal 가드)
 ```
