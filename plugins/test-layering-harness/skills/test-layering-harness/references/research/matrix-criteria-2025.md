@@ -70,7 +70,7 @@
 **Sanity** (transient — 독립 근거 취약)
 - **ISTQB는 sanity를 smoke의 동의어**(smoke/confidence/intake와 상호 synonym, 동일 정의문)로 등재 → **독립 방법론 셀 근거 없음**. [official-standard, HIGH]
 - 셀로 남기려면 둘 중 하나로 재정의 필수: **(a) Smoke의 동의어**(=Smoke 행과 중복), 또는 **(b) 변경 국소 재확인 = confirmation testing(re-testing) + change-scoped RTS**. ISTQB는 confirmation을 regression과 별개 term으로 정의("실패했던 케이스가 이제 통과하는가")하나, "sanity=confirmation의 의도"라는 매핑은 ISTQB 진술이 아닌 **추론 다리(MED)**.
-- **"sanity가 smoke보다 깊다/좁고 깊다"는 시간축 구분은 folklore/vendor-practice** — official-standard로 포장 금지. 고정 CI 스테이지 주장도 표준 근거 없음. (이 하네스는 sanity를 (b) transient change-scope로 운영 — principles §3.5.3의 무-태그 가드와 정합.)
+- **"sanity가 smoke보다 깊다/좁고 깊다"는 시간축 구분은 folklore/vendor-practice** — official-standard로 포장 금지. 고정 CI 스테이지 주장도 표준 근거 없음. (이 하네스는 sanity를 (b) transient change-scope로 운영 — principles §3.5.3의 무-태그 가드와 정합. **v0.5.0부터 그 실행 위치를 'PR 전 change-scoped PR job'으로 고정하되, 이는 표준 근거가 아니라 사용자 운영 결정**임을 산출물에 병기한다 — 위 "고정 CI 스테이지 주장은 표준 근거 없음"과 충돌하지 않는다.)
 
 **Regression** (durable tag, 계층 직교)
 - 정의: 수정 이후, **변경 안 된 영역**에 결함이 유입·노출되지 않았는지 확인. "픽스 후 실패 테스트 재실행"은 regression이 아니라 **confirmation**(혼동 금지). [ISTQB, HIGH]
@@ -123,7 +123,7 @@
 
 ## 4. 정직성·모순·folklore 원장
 
-**smoke=sanity 동의어 caveat (KEEP-STRONG, HIGH)**: ISTQB Glossary는 smoke/sanity/confidence/intake를 동일 정의·상호 synonym으로 등재(5각도 교차). **Smoke·Sanity를 별개 방법론 셀로 쪼개는 것은 표준 근거 없음** — Sanity 3셀은 모두 DEGENERATE/WEAK로 강등. "smoke보다 깊은 sanity"·"고정 CI 스테이지"는 folklore/vendor-practice로 표기하고 official-standard로 포장 금지. 이 하네스는 sanity를 (b) transient change-scope로 운영한다.
+**smoke=sanity 동의어 caveat (KEEP-STRONG, HIGH)**: ISTQB Glossary는 smoke/sanity/confidence/intake를 동일 정의·상호 synonym으로 등재(5각도 교차). **Smoke·Sanity를 별개 방법론 셀로 쪼개는 것은 표준 근거 없음** — Sanity 3셀은 모두 DEGENERATE/WEAK로 강등. "smoke보다 깊은 sanity"·"고정 CI 스테이지"는 folklore/vendor-practice로 표기하고 official-standard로 포장 금지. 이 하네스는 sanity를 (b) transient change-scope로 운영한다. **주의(v0.5.0)**: Sanity 셀의 DEGENERATE 판정은 **"sanity 전용 테스트를 새로 만드는 조합"**에 대한 것이고, sanity를 **이미 있는 테스트를 변경 스코프로 골라 돌리는 선택 레인**으로 운영하는 것은 별개 축이다(matrix/_index §3-b). 후자의 PR job 배치·차단성 역시 표준이 아닌 **운영 결정**으로 표기한다.
 
 **비율 미하드코딩 (KEEP absence-of-claim, HIGH)**: ISTQB/ISO 29119/IEEE 어디에도 계층·방법론 간 목표 비율·효과크기 규정 **없음**. 셀 비율은 저장소 감지·리스크 근거로만.
 

@@ -7,6 +7,7 @@
 2. 계층(Unit/Integration/E2E) — 트레이드오프·비율 정직성
 3. 방법론 × 계층 매트릭스 (CI 단계 배치)
 3.5. 방법론 스위트 실체화(materialization) — 계획 라벨 → 실행 가능한 분리
+3.6. **API 경계 처리 축 (mock / live)** — 계층별 기본값·E2E 모드 태그·fixture 규약
 4. AC → tier 분해 규칙 (GWT→AAA)
 4.5. AC → 축 카드 조합 라우팅 (방법론 4 + 계층 3, 선택 스코프 내)
 5. 오라클 강도 — LLM 생성 최대 리스크와 가드
@@ -24,7 +25,7 @@
 | 방법론 | 스코프 | 트리거(도는 시점) | 목적 | 실패 시 |
 |---|---|---|---|---|
 | **Smoke (BVT)** | 넓고 얕게(broad-shallow) | 빌드/배포 직후·승격 전 go/no-go 게이트 | 후속 테스트 돌릴 가치 있는 빌드인지 판별 | 즉시 정지·차단(block)·fix-forward vs rollback |
-| **Sanity** | 좁고 깊게(narrow-deep) | **고정 스테이지 없음** — 표적 수정/핫픽스 직후 | 변경 영역만 집중 확인 | 해당 수정 반려·재작업 |
+| **Sanity** | 좁고 깊게(narrow-deep) | **표준상 고정 스테이지 없음** — 표적 수정/핫픽스 직후 · **이 하네스의 운영 배치 = PR 전 change-scoped PR job**(§3.5.3) | 변경이 건드린 페이지/컴포넌트만 집중 확인 | 해당 수정 반려·재작업(unit/int blocking·mock E2E는 리포트) |
 | **Regression** | 넓고 깊게(broad-deep) | 매 커밋(선택 실행)~main 머지(full) | 기존 기능 비회귀 | PR 내 관찰·수정 후 재푸시 |
 | **Nightly** | full(선택 없음) | 스케줄(cron) | 선택 실행의 커버리지 갭 헤지·안전망 | 티켓화·다음날 컨텍스트 복원 수리 |
 
@@ -67,7 +68,7 @@
 **배치 원칙**:
 1. **선택(selection)·배치(batching) > 우선순위(prioritization)** — 우선순위는 실행 순서만 바꿔 총 실행량을 못 줄인다. PR-gate는 TIA로 영향받은 테스트만 돌리되, **이해 못 하는 커밋엔 전체 실행 안전 폴백**.
 2. **배포를 막는 게이트는 빠르고 신뢰도 높아야** — 느린 E2E를 배포 게이트에 두면 우회당한다. 무거운 것은 nightly로.
-3. **sanity는 고정 스테이지가 아니다** — 표적 수정 직후 좁은 확인이라는 성격이므로 매트릭스에 고정 칸을 두지 않고 "변경 표적"에 붙인다.
+3. **sanity는 표준상 고정 스테이지가 아니다** — "변경 표적에 붙는 좁은 확인"이라는 성격이므로 표준 매트릭스에 고정 칸이 없다. 이 하네스는 그 성격을 **PR 전 change-scoped PR job**으로 운영하되(§3.5.3), 이것이 **표준이 아니라 운영 결정**임을 산출물에 병기한다.
 
 > **매트릭스 = 두 축의 조합(4번째 유형 아님)**: 각 (방법론 × tier) 조합에 대한 **AC 포함/제외 운영 기준**은 [`matrix/`](matrix/_index.md)의 **축 카드 7개**(방법론 4 + 계층 3)를 라우팅 시점에 **조합**해 얻는다(12개 셀로 미리 물질화하지 않음). 계층은 개별 테스트의 durable 속성이고 방법론은 그 위의 selection/tag(sanity는 transient)이므로 — ISO/IEC/IEEE 29119-1:2022 §4.4.6은 regression을 "test level이 아니라 design/execution choice"로 규정 — **한 테스트는 여러 조합에 속할 수 있다**(배타 버킷 아님). 조합 강도(STRONG/WEAK/DEGENERATE)와 라우팅 절차·**스코프 가드(선택 안에서만 추가)**는 [`matrix/_index.md`](matrix/_index.md). **⚠️ "nightly"는 방법론이 아니라 CI-stage/스케줄 지연 축**임을 함께 표기한다(ISTQB/ISO에 nightly test type 없음).
 
@@ -86,10 +87,11 @@
 | **Smoke** | **durable 태그** | 코드 물리 태그 `@smoke` + `test:smoke` 스크립트 | 있음 (post-deploy, PR-gate 소수) |
 | **Regression** | **durable 태그/기본체** | `@regression`(또는 durable 기본체 전량) + `test:regression` | 있음 (merge full·PR 선택) |
 | **Nightly** | **durable 태그** | `@nightly` + `test:nightly` | 있음 (cron) |
-| **Sanity** | **transient 선택** | 태그 아님 — 변경-스코프 선택 **레시피(command)** | **없음** (변경 표적에 부착) |
+| **Sanity** | **transient 선택** | 태그 아님 — 변경-스코프 선택 **레시피(command) + CI PR job 스니펫** | 표준 근거 **없음** / 운영 배치 = **change-scoped PR job**(하네스 결정) |
 
 - **Smoke/Regression/Nightly = durable 태그**로 실체화: 고정 tag 토큰 → 러너 네이티브 기법으로 코드에 물리 부여 → 전용 스크립트 → 고정 CI 스테이지.
-- **Sanity = transient 선택**으로 실체화: `@sanity` 태그를 코드에 **심지 않는다**(무-태그 가드). 대신 "지금 이 변경이 건드린 테스트만" 조립하는 선택 레시피(§3.5.3)를 산출한다.
+- **Sanity = transient 선택**으로 실체화: `@sanity` 태그를 코드에 **심지 않는다**(무-태그 가드). 대신 "이번 변경이 건드린 페이지/컴포넌트의 테스트만" 조립하는 선택 레시피(§3.5.3)를 산출하고, **PR 전에 도는 change-scoped PR job**으로 배치한다.
+  - ⚠️ **정직성**: ISTQB/ISO에 sanity의 고정 CI 스테이지 근거는 **없다**. PR job 배치는 표준이 아니라 **이 하네스의 운영 결정**이며, 산출물에 그렇게 표기한다(smoke=sanity 동의어 caveat와 함께).
 
 ### 3.5.2 durable 스위트 — 프레임워크별 정확 태깅·분리 실행 문법
 
@@ -113,14 +115,33 @@
 
 **파일명 컨벤션 대안(러너 무관)**: `foo.smoke.test.ts` / `*.regression.test.ts`로 물리 분리. Vitest 위치 인자 `vitest run smoke`(경로 substring), Jest `testMatch`/`testRegex`, Playwright `testMatch:/.*smoke\.spec\.ts/`. Vitest 기본 include는 `*.smoke.test.ts`도 이미 전체 스위트에 잡으므로, 분리하려면 project/필터를 별도 지정해야 함.
 
-### 3.5.3 sanity — 변경-스코프 선택(transient), 태그 아님
+### 3.5.3 sanity — 변경-스코프 선택(transient), 태그 아님 · **PR 전 실행**
 
-sanity는 "안정된 빌드 위, 표적 수정/핫픽스 직후, 그 변경이 건드린 것만"(§1). 태그·CI 스테이지를 갖지 않고 **호출 시점에만 리스트로 물질화**한다. 계획표에는 "레시피 command + 폴백"만 기록한다.
+sanity는 "**PR 올리기 전에**, 이번 변경이 건드린 **페이지/컴포넌트**만" 좁게 다시 도는 **선택 레인**이다. 태그를 갖지 않고 **호출 시점에만 리스트로 물질화**한다. 계획표에는 "대상 산정 레시피 + 실행 장치 + 폴백"을 기록한다.
 
-1. **1순위(러너 무관·확정): git-diff + 경로 매핑** — `git diff --name-only`로 변경 소스 → 테스트 경로 관습(`*.test.*`/`__tests__`/mirror 경로)으로 역매핑. 문법 근거 불필요(git·경로 규칙).
-2. **2순위(러너 네이티브 change-selection)**: 러너가 diff/임포트 그래프로 변경-스코프 집합을 계산하는 플래그가 있으면 사용. 예: Jest `--onlyChanged`/`--findRelatedTests <files>`, Vitest `--changed`/`--related <files>`, Playwright `--only-changed` — **정확 플래그·최소 버전은 사용 러너 문서에서 확인 필요**(근거 dossier 범위 밖).
-3. **폴백 원칙**: 이해 못 하는(매핑 실패) 변경엔 좁힘을 포기하고 **전체(또는 해당 durable 스위트) 폴백** — under-selection으로 회귀를 놓치지 않기 위함(§3 배치원칙1).
-4. **무-태그 가드**: 코드에 `@sanity`를 심는 것을 금지한다. sanity는 선택이지 태그가 아니다(§3.5.6 caveat의 코드 레벨 대응물).
+**대상 산정 3단계** — 각 단계는 실패 시 **넓히는 방향으로만** 폴백한다(under-selection 회피, §3 배치원칙1).
+
+1. **변경 파일 집합** — CI PR job은 `git diff --name-only origin/<base>...HEAD`(three-dot = PR 분기점 이후 변경), 로컬 실행은 `git diff --name-only`. 러너 무관·문법 근거 불필요(git·경로 규칙).
+   - **`<base>` 결정**: CI에서는 PR의 base 브랜치 변수(예: GitHub Actions `github.base_ref`)를 쓰고, 로컬/변수 부재 시 기본 브랜치를 감지한다(`git symbolic-ref refs/remotes/origin/HEAD`). **감지 실패하면 추측하지 말고 사용자에게 묻는다** — 잘못된 base는 조용한 under-selection을 만든다.
+2. **역참조 확장 = "관련 페이지/컴포넌트"** — 변경 파일 자신의 테스트에서 멈추지 않고, **그 파일을 import하는 상위 페이지/컴포넌트**의 테스트까지 넓힌다(컴포넌트를 고치면 그 컴포넌트를 쓰는 페이지가 깨질 수 있으므로).
+   - 1순위 **러너 네이티브 임포트 그래프**: Jest `--findRelatedTests <files>`/`--onlyChanged`, Vitest `--related <files>`/`--changed`, Playwright `--only-changed` — **정확 플래그·최소 버전은 사용 러너 문서에서 확인 필요**(근거 dossier 범위 밖).
+   - 2순위 **grep 기반 import 역참조**(1홉 이상 반복).
+   - ⚠️ **역참조는 원리상 불완전하다** — barrel re-export·동적 import·라우팅 규약·별칭 경로는 놓칠 수 있다. 불확실하면 좁히지 말고 전체(또는 해당 durable 스위트) 폴백.
+3. **관련 페이지의 E2E — `@e2e-mock`만**(§3.6.5). ⚠️ **이 단계는 E2E가 Phase 1 선택 스코프에 있을 때만 수행한다**(스코프 가드, matrix/_index §1) — E2E 미선택이면 이 단계를 **건너뛰고** sanity 레인을 unit/integration으로만 구성하며, 계획에 "E2E 스코프 밖 — sanity 대상에 포함 안 함"으로 표기하고 확장 여부를 묻는다(E2E 경로도 Phase 1에서 받지 않았으므로 매핑 자체가 성립하지 않는다). 페이지↔스펙 매핑:
+   - ① **경로 미러**(`src/pages/checkout/**` ↔ `e2e/checkout.spec.ts`)로 1차 매핑 →
+   - ② 모호하면 스펙에 **대상 페이지 태그 `@page:/checkout`** 부여를 게이트 B에서 제안(코드 변경이므로 승인 대상) →
+   - ③ 둘 다 실패하면 **`@e2e-mock` 전량 폴백**(좁힘 포기).
+   - **`@e2e-live`는 sanity 대상이 아니다** — 수동 on-demand 전용(§3.6.5).
+
+**실행 장치(Phase 3 산출물)**: `test:sanity:changed`(unit/integration) + `test:sanity:e2e`(**E2E가 선택 스코프에 있을 때만** — 매핑된 `@e2e-mock`) + **CI PR job 스니펫**. CI yaml은 **직접 편집하지 않고 스니펫만 제안**한다(§3.5.5·배포 민감).
+
+**차단성(운영 결정)**: unit/integration 실패 = **blocking**(머지 차단), 관련 페이지 mock E2E 실패 = **non-blocking 리포트**(E2E flaky가 PR을 잡는 것을 막기 위함). 표준 근거가 아니라 사용자 운영 결정임을 표기한다.
+
+**부족분 생성**: 변경 관련 페이지/컴포넌트에 **테스트가 아예 없으면** 그 자리에서 새 테스트를 만든다(게이트 B 승인). 단 —
+- 계층은 **Phase 1 선택 스코프 안**에서만(스코프 가드, matrix/_index §1),
+- durable 방법론 태그는 **선택된 방법론 중에서만** 부여하고, 선택된 durable 방법론이 없으면 **태그 없이 기본체**로 두고 계획표에 그렇게 적는다(sanity 자체는 태그가 아니므로 `@sanity`를 대신 붙이지 않는다).
+
+**무-태그 가드**: 코드에 `@sanity`를 심는 것을 금지한다. sanity는 선택이지 태그가 아니다(§3.5.6 caveat의 코드 레벨 대응물). — `@page:` 태그는 sanity 스위트 태그가 아니라 **대상 페이지 메타**이므로 이 가드 위반이 아니다.
 
 ### 3.5.4 분리 동작 검증 방법 (결정적 센서)
 
@@ -134,7 +155,7 @@ durable 스위트 S(태그 T)마다 셀렉터를 **실제 실행/열거**해 확
 3. **부분집합/containment**: `SELECT(T) ⊆ 전체 실행 집합`, 옵션 A면 `@smoke ⊆ @regression` 등.
 4. **양방향 대조**: 물리 태그된 테스트 각각이 계획 row에 추적, durable 계획 row 각각의 테스트가 태그를 지님(orphan 없음).
 
-**sanity(transient)**: 레시피를 현재(또는 probe) 변경에 실행 → 구체 리스트 반환 · 비퇴화(전체를 반환하면 매핑 고장) · 변경 파일에 추적 · 코드에 `@sanity` 태그 **없음** 단언.
+**sanity(transient)**: 레시피를 현재(또는 probe) 변경에 실행 → 구체 리스트 반환 · 비퇴화(전체를 반환하면 매핑 고장 — 단 §3.5.3의 **의도된 폴백**과 구분해 보고) · 변경 파일과 **그 파일을 import하는 페이지/컴포넌트**에 추적(역참조 확장이 실제로 걸리는지) · 매핑된 E2E가 `@e2e-mock`뿐이고 `@e2e-live`가 섞이지 않음 · 코드에 `@sanity` 태그 **없음** 단언.
 
 > 검증은 위 3.5.2의 **검증된 셀렉터**(`--grep`/`--tags-filter`/`-t`/`--selectProjects`)를 실제 실행해 어떤 테스트가 뽑히는지 관찰하는 것으로 성립한다. **자기보고("계획했으니 분리됨") 불신** — 셀렉터 실행 출력으로만 인정(§5-2 실행 그라운딩과 동형).
 
@@ -144,15 +165,16 @@ tier는 파이프라인 뒤로 갈수록 넓어짐(Google presubmit/postsubmit·
 
 | CI 스테이지 | 트리거 | durable 실행(selector 스크립트) | sanity(transient) | 시간예산(목표치·대략) | 근거·신뢰도 |
 |---|---|---|---|---|---|
-| Pre-commit/local | 로컬 저장 | (훅) 빠른 unit 일부 | **주 사용처**: `test:sanity:changed`(표적 수정 직후) | 초~수십초 | HIGH [Google 로컬·Fowler] |
-| PR-gate | PR push | `test:smoke`(@smoke) + TIA 선택 regression(@regression 부분집합) | 없음(push 전 로컬 sanity) | <5~15분 | HIGH [Google presubmit ~11분·TIA] |
+| Pre-commit/local | 로컬 저장 | (훅) 빠른 unit 일부 | 로컬 on-demand: `test:sanity:changed` | 초~수십초 | HIGH [Google 로컬·Fowler] |
+| PR-gate | PR push | `test:smoke`(@smoke) + TIA 선택 regression(@regression 부분집합) | **주 사용처 — change-scoped PR job**: `test:sanity:changed`(**blocking**) + `test:sanity:e2e`(@e2e-mock 매핑분, **non-blocking**) | <5~15분 | 배치=**하네스 운영 결정**(표준 근거 없음)·상위 스테이지 원리만 HIGH |
 | Merge to main | merge | `test:regression`(full 빠른 계층) + contract·security | — | ~10분 | MED [CircleCI] |
 | Post-deploy(staging/canary) | 배포 후 | `test:smoke`(@smoke, 넓고 얕게) + canary | — | 수분 | MED-HIGH [Harness] |
 | Nightly | cron | `test:nightly`(@nightly full E2E) + `test:regression`(full) | — | 20분~수시간 | HIGH [Google postsubmit/TAP] |
 | Pre-release(RC) | RC | 포괄 자동 스위트(=prod probers) | — | — | HIGH [Google Ch.23] |
 
 **표 정직성 주석(그대로 인쇄)**:
-- **sanity는 고정 스테이지가 없다** — 독립 행이 아니라 "표적 수정 직후 on-demand(주로 local/pre-push·hotfix)"(§3 배치원칙3).
+- **sanity의 고정 스테이지는 표준 근거가 없다** — ISTQB/ISO에 sanity 스테이지 규정은 없다. 위 표의 **PR job 배치·차단성(unit/int blocking, mock E2E non-blocking)은 이 하네스의 운영 결정**이며 표준으로 포장하지 않는다(§3.5.3).
+- **`@e2e-live`(실제 API 연동 E2E)는 이 표에 행이 없다** — 고정 CI 스테이지를 두지 않고 **수동·on-demand로만** 실행한다(§3.6.5). 계획에는 실행 레시피만 기록한다.
 - **시간예산은 목표치/예시**(다수 벤더 출처)이며 절대 표준 아님. smoke 3~7분 vs 15~30분은 소스마다 다르고 1차 근거 약함 → 대략치로만(§1).
 - **선택·배치 > 우선순위**(우선순위는 총 실행량 불변); unknown 커밋엔 전체 폴백.
 - **비율% 없음** — smoke 집합 크기는 "전체의 N%"가 아니라 AC 분해 + 프리셋 무게중심으로 결정. 70/20/10은 folklore(§2).
@@ -165,7 +187,75 @@ ISTQB 용어집은 **smoke=sanity 동의어**이고 "smoke=넓고 얕음/sanity=
 - smoke/sanity가 등장하는 모든 산출물에 "ISTQB는 동의어; broad-shallow/narrow-deep 구분은 컨벤션·표준 아님"을 병기한다.
 - **무-태그 가드**(§3.5.3-4)가 caveat의 코드 레벨 대응 — `@sanity`를 심지 않음으로써 folklore 구분을 표준 택소노미로 못 박는 것을 물리적으로 방지한다.
 
-**추가 anti-pattern(§8에 합류)**: phantom suite(라벨만) · sanity reification(`@sanity` 고정 태그/스테이지) · 태그 누수/미부여(selector≠membership) · fake separation(러너 기능 없이 분리된 척 → "advisory label only" 정직 강등) · over-narrowing sanity(매핑 실패 시 전체 폴백 포기).
+**추가 anti-pattern(§8에 합류)**: phantom suite(라벨만) · sanity reification(`@sanity` 고정 태그) · 태그 누수/미부여(selector≠membership) · fake separation(러너 기능 없이 분리된 척 → "advisory label only" 정직 강등) · over-narrowing sanity(매핑 실패 시 전체 폴백 포기).
+
+---
+
+## 3.6 API 경계 처리 축 (mock / live) — 계층·방법론과 직교하는 **테스트 속성**
+
+§3.5가 "이 테스트가 **어느 스위트로 뽑히는가**"라면, 이 절은 "이 테스트가 **외부 API 경계를 어떻게 다루는가**"다. 새로운 분류 유형(4번째 축 카드)을 만드는 게 아니라 **각 테스트의 속성**이며, 계층이 기본값을 강제하고 **E2E만 모드를 태그로 선언**한다.
+
+### 3.6.1 계층별 기본값 (불변식)
+
+| 계층 | API 경계 | 강제 수준 | 태그 |
+|---|---|---|---|
+| **Unit** | **항상 mock**(외부 의존 0) | **불변식·예외 없음** | 불필요 — 계층이 함의 |
+| **Integration** | **항상 mock**(narrow: 경계 코드 + 외부 서비스 double) | **불변식·예외 없음** | 불필요 — 계층이 함의 |
+| **E2E** | **모드 선언** | `@e2e-mock` 기본 / `@e2e-live`는 명시 요청 시만 | **필수**(§3.6.5) |
+
+- unit/integration이 실제 API로 나가면 **규약 이전에 정의상** 그 계층 자격을 잃는다 — small = 네트워크/디스크 없음, medium = localhost 경계(SWE@Google ch.11, MED). 그러므로 "live 호출 금지"는 선택지가 아니라 계층 정의의 귀결이다.
+- E2E 기본은 `@e2e-mock`(CI 결정론). `@e2e-live`는 **사용자가 명시적으로 요청한 시나리오에만** 병기한다(자동 부여 금지).
+
+### 3.6.2 mock을 거는 경계 — 2종·네트워크 우선
+
+| 순위 | 경계 | 기법(스택별 등가물) | 검증 범위 |
+|---|---|---|---|
+| ① **우선** | **네트워크 경계 인터셉터** | MSW·nock(JS), Playwright `page.route`(E2E), `responses`·`respx`·vcrpy(python), `httptest`(go), WireMock(java) | 실제 클라이언트 코드(요청 조립·직렬화·상태코드/에러 처리)가 **그대로 실행됨** |
+| ② 폴백 | **모듈 경계 double** | `vi.mock`/`jest.mock`, monkeypatch, DI 주입 | 클라이언트 코드가 **검증 범위 밖으로 빠짐** → 그 사실을 계획표에 표기 |
+
+- 인터셉터 도구가 저장소에 없으면 ②로 가되, "무엇이 검증되지 않는지"를 계획표 'API 경계' 열에 적는다. ① 도구 설치를 제안할 수도 있으나 **의존성 추가는 게이트 B 승인 대상**이다.
+- E2E `@e2e-mock`의 mock 주입은 러너의 네트워크 인터셉트(예: Playwright `page.route`)로 하며 **모드 스위치로만 켠다**(§3.6.5).
+
+### 3.6.3 fixture 확보 — 3단 폴백 + 출처 표기
+
+**하네스는 fixture를 만들려고 live API를 직접 호출하지 않는다.** 확보 순서:
+
+1. **저장소 기존 fixture·응답 샘플 재사용**(가장 먼저 찾는다).
+2. **사용자에게 실제 응답 샘플 요청**(붙여넣기·파일 경로).
+3. **타입/OpenAPI/스키마·기존 코드에서 유도** → 반드시 **`[스키마 유도 — 실측 캡처 아님]`** 표기.
+
+- **위치**: 저장소의 fixture 배치 관습을 감지해 따르고, 없으면 `<대상 파일 폴더>/__test__/fixtures/`에 둔다(파일명에 엔드포인트·상태코드를 담는다: `orders.get.200.json`).
+- **출처 기록**: ①/②/③ 중 무엇인지와(③이면 실측 아님 표기) 캡처 시점을 **계획표 'API 경계' 열 + 적용 요약**에 남긴다.
+- fixture는 커밋해 재현 가능하게 하고, 오라클은 fixture가 아니라 **기대(AC)** 에서 유도한다(§5-1 — fixture를 정답으로 굳히면 green-locks-bug와 같은 구조).
+
+### 3.6.4 live 호출 금지 — 정적 검사(게이트 B)
+
+작성 후 **정적 검사만** 수행한다:
+- 외부 URL 리터럴(`http(s)://` non-localhost)·환경변수 기반 실 엔드포인트 참조,
+- mock 되지 않은 `fetch`/`axios`/HTTP 클라이언트 호출 경로,
+- 실제 인증 토큰·시크릿 참조.
+
+발견 시 **보고 → 교정 후에만** 게이트 B를 통과시킨다. **런타임 네트워크 차단은 강제하지 않는다** — 그러므로 **정적 검사 통과는 "네트워크로 안 나간다"의 증명이 아니다**(우회 가능). 이 한계를 그대로 표기한다(자기보고 불신 원칙의 정직한 적용).
+
+**기존 테스트가 live를 호출하고 있으면**: 발견 사실·위치를 보고하고 **mock 전환 patch를 게이트 B로 제안**한다. 승인 시에만 수정한다(무단 개조 금지).
+
+### 3.6.5 E2E 모드 태그 실체화 (`@e2e-mock` / `@e2e-live`)
+
+- **스펙은 한 벌**이다. 시나리오를 mock용/live용으로 복제하지 않고, **모드 태그**로 "이 시나리오가 어느 모드에서 유효한가"를 선언한다. 둘 다 유효하면 두 태그를 병기한다.
+- **모드 전환은 명시 스위치로만** — env(`E2E_MODE=live`)·러너 project·fixture 라우팅 헬퍼. 태그 부여·셀렉터 문법은 §3.5.2 어댑터를 그대로 쓴다. **이 스위치 장치(헬퍼·project 설정·스크립트)는 그 자체가 새 코드/설정이므로 게이트 B 승인 대상**이며, 없는 것을 있는 척하지 않는다(스위치 없이 태그만 붙이면 `@e2e-live`는 실행 불가능한 라벨 = phantom).
+- **스크립트는 실체가 있을 때만 만든다** — `@e2e-live` 태그가 실제로 하나 이상 부여된 경우에만 `test:e2e:live` 레시피를 추가한다(0개인데 추가하면 phantom suite, §3.5.6).
+  - 예(Playwright): `test('결제', { tag: ['@e2e-mock','@e2e-live'] }, …)` → CI `playwright test --grep @e2e-mock` / 연동 `E2E_MODE=live playwright test --grep @e2e-live`.
+- **배치**: `@e2e-mock`은 선택 스코프에 따른 CI 스테이지(PR job·nightly 등). **`@e2e-live`는 고정 CI 스테이지를 두지 않고 수동·on-demand로만** 실행하며, 계획에는 실행 레시피만 기록한다.
+- **스테이지가 모드를 바꾸지 않는다** — 어느 스테이지에서 돌든 실행 모드는 **태그 + 명시 스위치**가 결정한다. nightly가 게이트 테스트를 임의로 재-mock 하거나 live로 승격시키지 않는다.
+- 분리 검증(§3.5.4)은 모드 태그에도 적용한다: `--grep @e2e-mock`이 계획 집합과 정확히 일치하고 `@e2e-live` 전용 시나리오를 끌어오지 않는지 **실행 출력**으로 확인한다.
+
+### 3.6.6 정직성 — **mock 통과 ≠ 연동 검증**
+
+- fixture는 **캡처 시점의 스냅샷**이다. 실제 API가 바뀌어도 mock 테스트는 초록으로 남는다(**정의상** — 계약 drift를 구조적으로 못 잡는다). 이는 §5 green-locks-bug와 **같은 형태의 리스크**가 API 경계에서 재현된 것이다.
+- 따라서 "mock E2E 전부 통과 = 연동 정상"이라고 **쓰지 않는다**. 산출물에는 "연동 확인 장치는 `@e2e-live` **수동 실행**뿐"을 병기한다.
+- **`[스키마 유도 — 실측 캡처 아님]` 표기는 절대 지우지 않는다**(§3.6.3-3).
+- **효과 수치 금지**: "mock 전환으로 flaky N% 감소", "mock E2E가 결함 X% 포착" 류는 근거가 없으므로 인용하지 않는다.
+- 정적 검사(§3.6.4)의 한계("우회 가능·네트워크 미접속 증명 아님")를 감춘 채 "live 호출 없음 확인"으로 보고하지 않는다.
 
 ---
 
@@ -184,8 +274,9 @@ ISTQB 용어집은 **smoke=sanity 동의어**이고 "smoke=넓고 얕음/sanity=
 
 **계획 산출물의 한 행(row) 형식** (Phase 2에서 사용):
 ```
-[AC-ID] · [계층(카드)] · [방법론(카드·태그+셀렉터)] · [조합 강도] · 오라클(결합·기대·불변식) · 테스트 파일 경로 · GWT 요약 · 근거
+[AC-ID] · [계층(카드)] · [방법론(카드·태그+셀렉터)] · [조합 강도] · [API 경계(mock/live·경계기법·fixture 소스)] · 오라클(결합·기대·불변식) · 테스트 파일 경로 · GWT 요약 · 근거
 ```
+> `API 경계` 열(§3.6): unit/integration은 항상 `mock`(+① 인터셉터/② 모듈 double, fixture 소스 ①재사용/②사용자제공/③스키마유도-실측아님), E2E는 모드 태그(`@e2e-mock` 기본 / 명시 요청 시 `@e2e-live` 병기).
 
 ---
 
@@ -209,8 +300,10 @@ ISTQB 용어집은 **smoke=sanity 동의어**이고 "smoke=넓고 얕음/sanity=
 | E2E | STRONG(조건부) | DEGEN | STRONG(대개 nightly) | **STRONG**(best) |
 
 - 실무 정합 최강: Smoke×Integration · Regression×{Unit,Integration} · Nightly×E2E.
-- Sanity 전 조합은 ISTQB상 smoke 동의어라 독립 근거 없음 → transient change-scope로만(§1·§3.5.3). Nightly×Unit은 빈 셀(unit은 게이트 소속).
+- **Sanity 열은 '생성 조합'에서만 DEGEN이다 — 실행 선택 레인으로는 1급이다.** 이 표는 "**새 테스트를 어떤 조합으로 만드는가**"의 강도이고, sanity는 이미 만들어진 테스트를 **골라 돌리는 선택 레인**(§3.5.3)이므로 이 표의 판정 대상이 아니다. 즉 Sanity×* = DEGEN(생성) **이면서 동시에** PR 전 change-scoped 실행 레인으로는 정상 운영된다 — 모순이 아니라 **다른 축**이다(ISTQB 동의어 근거와 실운영을 둘 다 유지).
+- Nightly×Unit은 빈 셀(unit은 게이트 소속).
 - 라우팅은 배타 분류가 아니라 **다중 멤버십**이며, **선택 스코프 안에서만** 추가한다. 비율%는 정하지 않는다.
+- 조합이 정해지면 **API 경계(§3.6)** 를 함께 확정한다 — unit/integration은 항상 mock, E2E는 `@e2e-mock` 기본.
 
 ---
 
@@ -224,6 +317,7 @@ ISTQB 용어집은 **smoke=sanity 동의어**이고 "smoke=넓고 얕음/sanity=
 3. **flaky baseline 선결**: LLM 생성 전, **기존 flaky를 먼저 확인·고친다**. flaky한 컨텍스트를 주입하면 42~78%로 flakiness가 **전이(shortcut learning)**된다. 정렬 안 된 결과 순서 의존(ORDER BY 누락류)을 특히 경계한다.
 4. **스모크/동어반복 어서션 금지**: `expect(true).toBe(true)`류, 방금 세팅한 값을 그대로 다시 읽는 어서션, 커버리지만 올리고 판정하지 않는 어서션은 "연기만 나고 경보는 안 울린다". 각 오라클은 **틀렸을 때 실제로 실패**해야 한다.
 5. **false-alarm 인지**: 생성 오라클이 정상 코드를 실패시킬 수 있다(false alarm). 신뢰 전 정상 경로에서도 통과하는지 확인한다.
+6. **fixture-as-oracle 금지**(§3.6): mock fixture는 **입력이지 정답이 아니다**. fixture 값을 그대로 기대값으로 복사하면 "캡처 시점 응답 = 명세"로 굳히는 것이라 §5-1과 같은 실패다. 기대는 AC에서 유도하고, fixture는 그 기대를 만들어내는 전제(Given)로만 쓴다. 스키마에서 유도한 fixture(§3.6.3-3)는 실측이 아니므로 특히 그렇다.
 
 **정직성**: 오라클 정확도·개선 수치를 인용할 때 절대값을 못 박지 않는다(근거 dossier D·G절: 자동요약이 지어낸 %를 폐기한 이력). 프롬프트 전략은 zero/few-shot이 CoT/ToT보다 나은 경향(반직관, MED)이나 이는 상황 의존이다.
 
@@ -291,6 +385,16 @@ ISTQB 용어집은 **smoke=sanity 동의어**이고 "smoke=넓고 얕음/sanity=
 - **nightly를 방법론으로 단정** — nightly는 CI-stage/스케줄 지연 축(ISTQB/ISO에 test type 없음). "어느 테스트를 게이트에서 빼 스케줄로 미루나"로 표기.
 - **prioritization으로 CI 비용 절감 기대** — TCP는 latency만 줄이고 볼륨/비용 불변(정의상 — 재정렬은 총 실행량 불변). 절감은 selection·batching(무손실, ESEC/FSE 2023 arXiv:2308.13129)·병렬화로.
 - **`small=unit/medium=integration/large=system` 1:1 매핑** — SWE@Google 반박. 근사일 뿐.
+- **unit/integration이 실제 API로 나감** — 계층 자격을 정의상 잃는다. 네트워크 인터셉터(우선)/모듈 double + 캡처 fixture로 처리(§3.6.1·§3.6.2).
+- **mock 통과를 연동 검증으로 보고** — fixture는 캡처 시점 스냅샷이라 계약 drift를 구조적으로 못 잡는다. 연동 확인은 `@e2e-live` 수동 실행뿐(§3.6.6).
+- **스테이지가 API 모드를 바꿈** — 같은 E2E를 게이트에선 mock, nightly에선 live로 임의 전환. 모드는 태그+명시 스위치가 결정한다(§3.6.5).
+- **스키마 유도 fixture를 실측처럼 표기** — `[스키마 유도 — 실측 캡처 아님]` 표기를 지우지 않는다(§3.6.3).
+- **정적 검사 통과를 '네트워크 미접속 증명'으로 보고** — 정적 검사는 우회 가능하다는 한계를 함께 적는다(§3.6.4).
+- **sanity 역참조를 조용히 좁힘** — barrel/동적 import로 매핑이 불확실한데 좁은 집합만 돌리고 넘어감. 불확실하면 전체 폴백(§3.5.3).
+- **`@e2e-live`를 sanity/PR 게이트에 넣음** — 외부 API 불안정이 PR을 막는다. live는 수동 on-demand 전용(§3.5.3·§3.6.5).
+- **E2E 미선택인데 sanity가 E2E를 끌어옴** — sanity 3단계는 E2E가 선택 스코프에 있을 때만. 미선택이면 건너뛰고 확장 문의(§3.5.3·matrix/_index §1).
+- **스위치 없이 모드 태그만 부여** — `@e2e-live` 태그는 있는데 mode 스위치(env/project/fixture 라우팅)가 없으면 실행 불가능한 라벨(phantom live). 태그 0개인데 `test:e2e:live` 스크립트만 만드는 것도 같은 실수(§3.6.5).
+- **base 브랜치 추측** — sanity diff의 `<base>`를 감지·문의 없이 가정하면 조용한 under-selection이 된다(§3.5.3-1).
 
 ---
 

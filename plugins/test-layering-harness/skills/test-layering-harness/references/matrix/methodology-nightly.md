@@ -16,8 +16,8 @@
 ## 3. 실체화 & CI 배치 (principles §3.5)
 - **durable 태그**: `@nightly` 토큰 + `test:nightly` 셀렉터 스크립트(§3.5.2). 안전망 재실행은 durable 기본체 full-suite를 cron 스테이지에서 전량(옵션 B). 게이트에서 명시적으로 뺀 테스트만 `@nightly`로 carve-out(옵션 B, §3.5.4).
 - **CI 배치**: cron/scheduled 스테이지 — full E2E/UI·perf·cross-browser의 귀착지(§3.5.5).
-- **mock 규약(full-suite 결정론)**: nightly는 전체 테스트를 돌리므로 **unit/integration**은 캡처된 API mock 데이터로 실행해 결정론을 확보한다(API 응답 캡처→fixture, live API 호출 금지 — layer-unit/integration §5 계승). **nightly-native E2E**(cross-browser·real-device 매트릭스)는 브라우저/디바이스는 실제로 돌리되 API는 캡처 mock으로 고정한다.
-- **한 테스트의 mock 여부는 스테이지가 아니라 테스트 속성이다** — 게이트에서 live-ish로 작성된 E2E(예 Smoke×E2E happy-path)는 nightly full-suite 재실행 때도 **그대로 돌린다(재-mock 아님)**. 순수 여정 E2E의 mock 방침은 [layer-e2e.md](layer-e2e.md) §5를 따른다(그 카드가 nightly 결정론이 필요할 때의 캡처 mock 선택을 안내). 진짜 flaky한 live 외부계 의존은 격리·non-blocking.
+- **mock 규약(full-suite 결정론 — principles §3.6)**: **unit/integration은 계층 정의상 항상 mock**이므로 nightly에서도 그대로 결정론 실행된다(live 호출 금지 — layer-unit/integration §5 계승). **nightly-native E2E**(cross-browser·real-device 매트릭스)는 **브라우저/디바이스만 실제**로 돌리고, **API 경계는 그 테스트의 모드 태그를 그대로 따른다** — 즉 nightly의 cross-browser 매트릭스는 `@e2e-mock` 스펙을 여러 브라우저에서 돌리는 것이다.
+- **API 모드는 스테이지가 아니라 태그가 결정한다**(§3.6.5) — nightly가 게이트 테스트를 임의로 재-mock 하거나 live로 승격시키지 않는다. **`@e2e-live`는 nightly에도 넣지 않는다** — 고정 스테이지 없이 **수동·on-demand 전용**이다([layer-e2e.md](layer-e2e.md) §5.2). 진짜 flaky한 live 외부계 의존은 격리·non-blocking.
 
 ## 4. 오라클 기대
 - 다양 — E2E 정확출력은 MR/얕은 상태, fuzz는 crash/invariant, perf는 임계 기반. **non-blocking이어도 오라클 강도는 낮추지 않는다**(느린 실행 ≠ 약한 판정). 스모크/동어반복 어서션 금지(§5-4).

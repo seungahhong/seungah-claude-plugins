@@ -8,7 +8,7 @@
 ## 2. 멤버십 기준 (어떤 테스트가 Smoke에 드는가) — AND/우세
 - [ ] **main functionality의 정상 경로(happy path)**만, **표면 수준**(깊은 검증·경계값·edge를 하면 smoke 아님).
 - [ ] **showstopper**: "이 기능이 깨지면 이후 테스트가 무의미해지는가" = 예. 화이트리스트 예: 인증/로그인, 핵심 내비게이션, DB read/write, 핵심 트랜잭션, 핵심 외부 통합.
-- [ ] commit/배포 게이트 smoke는 **결정론적·외부 의존 0**(느리거나 flaky면 nightly/full acceptance로).
+- [ ] commit/배포 게이트 smoke는 **결정론적·외부 의존 0**(느리거나 flaky면 nightly/full acceptance로). → E2E에 얹힐 때는 **`@e2e-mock`이 기본**이다(결정론 요구의 직접 귀결). `@e2e-live` smoke는 두지 않는다 — 실제 연동 확인은 수동 on-demand 레인(principles §3.6.5).
 
 ## 3. 실체화 & CI 배치 (principles §3.5)
 - **durable 태그**: `@smoke` 토큰 → 러너 네이티브 부여 + `test:smoke` 셀렉터 스크립트(Playwright `{tag}`·`--grep`, Vitest `{tags}`·`--tags-filter`, Jest 이름패턴/파일명·`--selectProjects` — §3.5.2). 셀렉터 실행으로 분리 검증(§3.5.4).

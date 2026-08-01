@@ -25,7 +25,12 @@
 
 ## 5. 테스트 배치 & mock 규약
 - **배치(불변식·무조건 강제)**: 테스트 대상(컴포넌트/유틸 함수) 파일이 있는 **바로 그 폴더**에 `__test__/` 디렉토리를 만들고(없으면 생성) 그 안에 테스트 파일을 둔다(대상 파일과 co-locate). 예: `src/utils/format.ts` → `src/utils/__test__/format.test.ts`. **파일명은 `*.test.*`/`*.spec.*` 접미사**로 둬 러너 기본 glob이 `__test__`(단수) 폴더라도 잡히게 한다(Jest `testMatch`·Vitest `include` 기본값은 폴더명 무관하게 `*.test.*` 매칭). **이 `__test__/` 규칙은 조건부가 아니다 — 저장소에 이미 다른 배치 관습(`__tests__` 복수·`test/`·소스 폴더 bare `*.test.ts`)이 감지돼도 그 관습으로 대체하지 않고 항상 `__test__/`를 만들어 그 안에 둔다**(무조건 강제). 러너 config가 특정 폴더로만 매칭을 제한해 `__test__/`가 안 잡히면 관습을 바꾸는 게 아니라 testMatch/include 조정을 게이트 B에서 제안한다('확인 필요' 표기). **작성 전(게이트 B): 테스트 파일 경로가 `.../__test__/…`인지 검사 — 아니면 거부·경로 교정**. 작성 후: 실제로 `__test__/` 아래 생성됐는지 확인.
-- **mock**: unit은 외부 의존 0이 원칙이므로 API 클라이언트 등 외부 경로는 **실제 API 응답을 캡처해 mock 데이터(fixture)로 저장**하고 그 mock으로 double한다(live API 호출 금지·결정론 확보). 캡처 응답은 fixture 파일로 커밋해 재현 가능하게 하고, 오라클은 구현이 아니라 기대(AC) 기준으로 세운다(§4·§7).
+- **mock(불변식·예외 없음 — principles §3.6)**: unit은 외부 의존 0이 **정의상** 원칙이므로 **실제 API를 호출하지 않는다**. 호출하는 순간 unit 자격을 잃는다(§1 size/hermeticity).
+  - **경계 2종·네트워크 우선**: ① **네트워크 경계 인터셉터**(MSW/nock, python `responses`·`respx`, go `httptest` 등) — 실제 클라이언트 코드가 그대로 실행돼 검증 범위가 넓다. ② 인터셉터가 없으면 **모듈 경계 double**(`vi.mock`/`jest.mock`/monkeypatch) — 요청 조립·에러 매핑이 검증 범위 밖으로 빠지므로 계획표에 그 사실을 적는다.
+  - **fixture 3단 폴백**: ① 저장소 기존 fixture 재사용 → ② 사용자에게 실제 응답 샘플 요청 → ③ 타입/OpenAPI/스키마 유도 + **`[스키마 유도 — 실측 캡처 아님]` 표기**. **하네스가 fixture 확보를 위해 live API를 호출하지 않는다.**
+  - **fixture 위치**: 저장소 관습 감지 우선, 없으면 `<대상 폴더>/__test__/fixtures/`(파일명에 엔드포인트·상태코드: `orders.get.200.json`). fixture는 커밋한다.
+  - **오라클**: fixture는 입력(Given)이지 정답이 아니다 — 기대는 AC에서 유도한다(fixture-as-oracle 금지, principles §5-6).
+  - **게이트 B 정적 검사**: 작성 후 외부 URL 리터럴·unmocked fetch/axios·실 토큰 참조가 남았는지 검사해 보고·교정한다. 단 **정적 검사 통과는 "네트워크로 안 나간다"의 증명이 아니다**(우회 가능 — 한계 표기). 기존 테스트가 live를 호출 중이면 **전환 patch를 게이트 B로 제안**(무단 개조 금지).
 
 ## 6. 이 계층 × 방법론 조합 (선택된 방법론 안에서만 — 강도 값 단일 출처 _index §3 lookup)
 - **Regression × Unit = STRONG(멤버십)·최고위험 오라클** — 경계/에러/edge 회귀의 정본. unit은 cheap → retest-all 종종 충분.

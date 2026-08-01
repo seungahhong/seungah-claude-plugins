@@ -423,7 +423,7 @@ plugins/
     evals/
       evals.json                                         # 수용 평가 (불변식 file:함수 인용 + test_efficiency 실행 채점)
       trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 6 / should_not 7, 인접 도메인 reciprocal 가드)
-  test-layering-harness/                                # [독립 플러그인] 인수조건(AC, Given-When-Then)을 방법론(Smoke/Sanity/Regression/nightly)×계층(Unit/Integration/E2E) 택소노미로 분해·CI 단계 배치해 계획하고, 계획→개별→최종 3단계 인간 승인 게이트로 테스트를 하나씩 순차 생성·적용·확정하는 도메인 무관 인터랙티브 단일 스킬. 초기 문의 AC·개발환경 각각 스킵 가능(환경 미입력 시 현재 경로), 적응형 3 프리셋 추천(비율% 미하드코딩), 오라클 강도 최대 리스크 가드(기대 기준 오검증·실행 그라운딩·flaky baseline). 경계: 자가치유 QA(qa-agent)·백엔드 test-generator(backend)·AC↔테스트 커버리지 읽기전용 검수(review/test-coverage-review)·FE TDD(frontend)·실행 명세(spec-driven)·커밋(git) 제외
+  test-layering-harness/                                # [독립 플러그인] 인수조건(AC, Given-When-Then)을 방법론(Smoke/Sanity/Regression/nightly)×계층(Unit/Integration/E2E) 택소노미로 분해·CI 단계 배치해 계획하고, 계획→개별→최종 3단계 인간 승인 게이트로 테스트를 하나씩 순차 생성·적용·확정하는 도메인 무관 인터랙티브 단일 스킬. 초기 문의 AC·개발환경 각각 스킵 가능(환경 미입력 시 현재 경로), 적응형 3 프리셋 추천(비율% 미하드코딩), 오라클 강도 최대 리스크 가드(기대 기준 오검증·실행 그라운딩·flaky baseline). **API 경계 축(mock/live)**: unit/integration=항상 mock(인터셉터 우선·fixture 3단 폴백·정적 live 검사), E2E=모드 태그(`@e2e-mock` 기본 / `@e2e-live` 수동 on-demand)·mock 통과≠연동 검증. **sanity=변경-스코프 선택 레인**(diff→역참조 페이지/컴포넌트→관련 `@e2e-mock`·PR job·unit/int blocking + E2E non-blocking). 경계: 자가치유 QA(qa-agent)·백엔드 test-generator(backend)·AC↔테스트 커버리지 읽기전용 검수(review/test-coverage-review)·FE TDD(frontend)·실행 명세(spec-driven)·커밋(git) 제외
     .claude-plugin/
       plugin.json
     CLAUDE.md                                            # 하네스 포인터 + 5-Phase·3-Gate 요약 + 변경 이력
@@ -432,9 +432,9 @@ plugins/
       test-layering-harness/                             # 진입점 오케스트레이터 (Phase 0 초기문의 → 1 적응형 구성+조합 강도 lookup → 2 축 카드 조합 라우팅 계획(스코프 가드)+게이트A → 3 개별 적용+게이트B → 4 반영+게이트C, 단일 스킬·에이전트 팀 없음)
         SKILL.md
         references/
-          test-layering-principles.md                    #   방법론×계층 매트릭스·AC 분해(§4)·축 카드 조합 라우팅(§4.5, 스코프 가드)·오라클 가드·실체화(§3.5)·3 프리셋·감지 신호·anti-pattern·경계
+          test-layering-principles.md                    #   방법론×계층 매트릭스·AC 분해(§4)·축 카드 조합 라우팅(§4.5, 스코프 가드)·오라클 가드(§5, fixture-as-oracle 금지 포함)·실체화(§3.5, sanity 선택 레인 §3.5.3)·**API 경계 축 mock/live(§3.6 단일 출처)**·3 프리셋·감지 신호·anti-pattern·경계
           matrix/                                        #   방법론·계층 축 카드 7개 (12개 셀로 미리 물질화하지 않고 라우팅 시 조합)
-            _index.md                                    #     축 직교성·스코프 가드(선택 안에서만 추가)·조합 라우팅 절차·조합 강도 lookup(STRONG/WEAK/DEGENERATE)·정직성 불변식
+            _index.md                                    #     축 직교성·스코프 가드(선택 안에서만 추가)·조합 라우팅 절차(Step4-b API 경계)·조합 강도 lookup(§3 STRONG/WEAK/DEGENERATE)·**sanity 선택 레인(§3-b)**·**API 경계 축 요약(§3-c)**·정직성 불변식
             methodology-{smoke,sanity,regression,nightly}.md  # 방법론 카드 4개 (suite 멤버십·실체화·CI배치·오라클 기대·조합 강도)
             layer-{unit,integration,e2e}.md              #     계층 카드 3개 (scope+size/hermeticity 판정·AC 포함/제외·오라클 프로필·조합 강도)
           research/

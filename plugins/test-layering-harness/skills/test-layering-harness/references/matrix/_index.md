@@ -42,11 +42,13 @@
 
 **Step 4 — 상황에 맞는 테스트를 선택(조합)한다.** (계층 × 방법론) 조합의 **강도 lookup**(§3)을 보고, **선택 스코프 안에서** 가장 적합한 조합으로 이 슬라이스의 테스트를 구체화한다. WEAK/DEGENERATE 조합은 억지로 만들지 않고 스코프 내 STRONG 조합으로 옮기되, 스코프 내 STRONG 조합이 아예 없으면(선택이 WEAK만 산출) 억지로 만들지 말고 §1 폴백('추가 안 함' 표기+확장 문의). 오라클 강도는 그 계층 카드 §4 + 방법론 카드의 오라클 기대를 결합한다.
 
-**Step 5 — 계획표 행으로 적는다.** `AC · 계층(카드) · 방법론(카드·태그+셀렉터) · 조합 강도 · 오라클 · 파일 · GWT · 근거`. 한 슬라이스가 여러 방법론 suite에 속하면 membership 대수(principles §3.5.4 옵션 A/B)로 표기.
+**Step 4-b — API 경계를 확정한다**(principles §3.6). 계층이 기본값을 강제한다: **Unit/Integration = 항상 mock**(① 네트워크 인터셉터 우선 / ② 모듈 double, fixture 3단 폴백·출처 표기, live 호출 금지 — 정의상 계층 자격 문제), **E2E = 모드 태그**(`@e2e-mock` 기본, 사용자가 명시 요청한 시나리오에만 `@e2e-live` 병기 — live는 고정 CI 스테이지 없이 수동 on-demand).
+
+**Step 5 — 계획표 행으로 적는다.** `AC · 계층(카드) · 방법론(카드·태그+셀렉터) · 조합 강도 · API 경계(mock/live·경계기법·fixture 소스) · 오라클 · 파일 · GWT · 근거`. 한 슬라이스가 여러 방법론 suite에 속하면 membership 대수(principles §3.5.4 옵션 A/B)로 표기.
 
 ## 3. 조합 강도 lookup (계층 × 방법론) — Step 4에서 참조
 
-정직성상 모든 조합이 실무에서 유용하지 않다. **선택 스코프 안에서** STRONG 조합에 집중하고, WEAK/DEGENERATE 조합은 비운다(근거: [`../research/matrix-criteria-2025.md`](../research/matrix-criteria-2025.md) §3·§5).
+**이 표는 "새 테스트를 어떤 조합으로 *만드는가*"의 강도다**(생성 축). "이미 있는 테스트를 *골라 돌리는*" 선택 레인(=sanity, §3-b)은 이 표의 판정 대상이 아니다. 정직성상 모든 조합이 실무에서 유용하지 않으므로, **선택 스코프 안에서** STRONG 조합에 집중하고 WEAK/DEGENERATE 조합은 비운다(근거: [`../research/matrix-criteria-2025.md`](../research/matrix-criteria-2025.md) §3·§5).
 
 | 계층 \ 방법론 | Smoke | Sanity | Regression | Nightly |
 |---|---|---|---|---|
@@ -57,6 +59,26 @@
 - **실무 정합 최강**: Smoke×Integration · Regression×{Unit,Integration} · Nightly×E2E.
 - **WEAK/DEGENERATE(억지 생성 금지)**: Sanity 전 조합(ISTQB상 smoke 동의어 → transient change-scope로만) · Nightly×Unit(unit은 게이트 전량 실행) · Smoke×Unit.
 - 이 표는 **조합의 강도 참고**이지 12개 셀 파일이 아니다 — 라우팅 시점에 축 카드를 조합해 상황에 맞는 것만 만든다.
+
+### 3-b. Sanity = 실행 선택 레인 (강도표와 다른 축 — 모순 아님)
+
+**Sanity 열이 전부 DEGEN인 것은 "sanity 전용 테스트를 새로 만들지 않는다"는 뜻이지, "sanity를 운영하지 않는다"는 뜻이 아니다.** sanity는 **이미 존재하는 테스트를 변경 스코프로 골라 PR 전에 돌리는 선택 레인**으로 1급이다([`methodology-sanity.md`](methodology-sanity.md) §2, principles §3.5.3):
+
+- 대상 = 변경 파일 → **역참조로 상위 페이지/컴포넌트까지** → 매핑된 **`@e2e-mock`** 스펙(불확실하면 넓히는 폴백). ⚠️ **3단계(E2E)는 E2E가 선택 스코프에 있을 때만** — 미선택이면 건너뛰고 unit/integration으로만 구성 후 확장 문의(§1 스코프 가드).
+- 배치 = **change-scoped PR job**(unit/integration **blocking** + mock E2E **non-blocking**). ⚠️ **표준 근거 아님 — 하네스 운영 결정**(ISTQB/ISO에 sanity 스테이지 규정 없음).
+- 코드에 `@sanity` 태그를 심지 않는다(무-태그 가드). 변경 관련 페이지/컴포넌트에 테스트가 **아예 없을 때만** 선택 스코프 안에서 새로 만든다(게이트 B).
+
+### 3-c. API 경계 축 (mock / live) — principles §3.6
+
+계층·방법론과 **직교하는 테스트 속성**이다(4번째 축 카드가 아니다):
+
+| 계층 | API 경계 | 태그 |
+|---|---|---|
+| Unit · Integration | **항상 mock**(예외 없음 — live로 나가면 정의상 계층 자격 상실) | 불필요 |
+| E2E | **모드 선언** — `@e2e-mock` 기본(CI 결정론) / `@e2e-live`는 명시 요청 시만·**수동 on-demand** | 필수 |
+
+- mock 경계: ① 네트워크 인터셉터 우선 → ② 모듈 double. fixture: ① 기존 재사용 → ② 사용자 제공 → ③ 스키마 유도(**`[실측 캡처 아님]` 표기**). 하네스는 fixture 확보용 live 호출을 하지 않는다.
+- **mock 통과 ≠ 연동 검증** — fixture는 캡처 시점 스냅샷이라 계약 drift를 정의상 못 잡는다. 연동 장치는 `@e2e-live` 수동 실행뿐(§3.6.6).
 
 ## 4. 축 카드 목록
 
@@ -76,3 +98,7 @@
 - **prioritization은 CI 비용을 못 줄인다**(latency만·정의상 — 재정렬은 총 실행량 불변). 절감은 selection·batching(무손실, ESEC/FSE 2023 arXiv:2308.13129)·병렬화로.
 - **근거 없는 효과 수치 금지**. 신뢰도(HIGH/MED/LOW)·SOURCE-TIER·folklore·모순 표기 계승.
 - **WEAK/DEGENERATE 조합은 정직히 비움** — 있는 척하지 않는다.
+- **unit/integration은 live API를 호출하지 않는다** — 규약 이전에 계층 정의의 귀결(§3-c).
+- **mock 통과 ≠ 연동 검증** — fixture는 캡처 시점 스냅샷. "mock 전부 초록 = 연동 정상"으로 쓰지 않고, 연동 장치는 `@e2e-live` 수동 실행뿐임을 병기(§3-c).
+- **스키마 유도 fixture는 `[실측 캡처 아님]` 표기 유지**, 정적 live-호출 검사는 **우회 가능**하다는 한계를 함께 표기(통과=네트워크 미접속 증명 아님).
+- **sanity 배치·차단성은 운영 결정**(표준 근거 아님)임을 병기하고, 역참조 매핑이 불확실하면 **좁히지 말고 폴백**(§3-b).

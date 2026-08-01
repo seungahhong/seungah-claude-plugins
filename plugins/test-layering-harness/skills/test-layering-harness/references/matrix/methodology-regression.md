@@ -8,7 +8,7 @@
 
 ## 2. 멤버십 기준 (어떤 테스트가 Regression에 드는가) — AND/우세
 - [ ] **미변경 영역의 행위 보존**(비회귀)을 검증하거나, 이 테스트가 **변경을 traverse/커버**한다(per-commit change-relevance 재계산).
-- [ ] **완전 행위 보존 오라클**을 요구한다(값·상태를 명세에서 유도).
+- [ ] **완전 행위 보존 오라클**을 요구한다(값·상태를 명세에서 유도). → E2E에 얹힐 때 API 경계는 **`@e2e-mock`이 기본**(회귀 판정은 결정론이 전제). ⚠️ 단 **mock 회귀 통과가 연동 보존을 뜻하지 않는다** — fixture는 캡처 시점 스냅샷이라 계약 drift를 못 잡는다(principles §3.6.6).
 - [ ] **safe-RTS**: 변경을 traverse하는 것을 선택하되 **매핑 불가/미지 파일타입이면 full-suite fallback 강제**(under-selection이 주 실패모드).
 
 ## 3. 실체화 & CI 배치 (principles §3.5)
