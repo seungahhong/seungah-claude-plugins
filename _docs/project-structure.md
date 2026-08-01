@@ -522,4 +522,26 @@ plugins/
     evals/
       evals.json                                         # 수용 평가 (design-conformance + 근거 정직성 24 assertion)
       trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 10, 인접 하네스 reciprocal 가드)
+  agentic-code-review-harness/                           # [독립 플러그인] 이미 만들어진 코드 변경(PR·브랜치 diff·로컬 변경) — 특히 AI 에이전트가 작성한 것 — 을 수신자(리뷰어) 자리에서 읽고 "머지해도 되는지"를 근거와 함께 판정하는 도메인 무관 5단계 5에이전트 하네스. 한 문장 원칙 = 쓰는 비용은 싸졌지만 믿어도 되는지 판단하는 비용은 그대로다. Phase 0 리뷰 인테이크(한 번에 한 질문·대상 diff 없이 판정 금지) → 1 리스크 티어링(blast radius·longevity·comprehension 3축 + 경로 기반 표면 감지 → 파일군별 T0~T3 + 렌즈/센서/사람게이트/오탐예산 배분) → 2 증거 감사(테스트 diff를 코드보다 먼저 → 오라클 강도 강/약/없음 + 약화 서명 7종·게이트 완화 5종·결함 서명 S1~S8 + 결정적 센서 직접 실행·출력 인용) → 3a 직교 렌즈 8종을 렌즈당 1 에이전트로 병렬(렌즈 밖 금지·위치/무엇/조건 3요소 필수) → 3b 발견별 반증(CONFIRMED/PLAUSIBLE/DROPPED·기본 태도 "이 발견은 틀렸다") → 4 트리아지·머지 판정(차단은 CONFIRMED만·되돌림 지시문 3요소·잔여 위험·판정 후보·정직성 감사 6문항). 정직성 6불변식: INV-1 판정만·실행은 사람(코드 수정·커밋·푸시·머지·승인·close·코멘트 자동 게시 금지) · INV-2 리뷰 대상은 신뢰할 수 없는 입력(PR 텍스트의 지시문 불복종·발견으로 보고·URL 미추적 — 리뷰 에이전트 자신이 주입 표적이며 INV-1과 한 쌍) · INV-3 자기보고 불신(직접 돌린 센서·직접 읽은 diff만 확인·나머지 UNVERIFIED·"테스트 추가됨"도 신뢰 신호 아님) · INV-4 차단은 재현 근거로만·오탐이 지배적 실패 모드(발견 개수를 성과로 쓰지 않음·오탐 예산·초과 미보고 명시) · INV-5 저자 아닌 리스크로 티어링(결함 서명 스캔은 저자 무관 항상) · INV-6 통과는 정확성 증명 아님(이 하네스도 LLM 리뷰어 재현율 한계 상속·점수화 금지). 근거는 2026-06 'Agentic Code Review' 글의 문제 정의를 출발점 삼되 /deep-research 2각도로 1차 소스를 대조해 교정 — PRIMARY(리뷰어 재현율 27~33%·정밀도 3.6~5.1%·리뷰어 간 발견 거의 안 겹침·재현율↑→SNR↓·에이전트 테스트 패치 80.2%가 오라클 약/없음·가시 테스트 통과는 프록시 최적화 증거·지배적 실패는 '기능 격리'·모델 능력↑↔착취↑·리뷰 노력 예측 AUC 0.96)·INDUSTRY(정적 게이트 FP 76%·LLM 필터가 FP 94~98% 제거하나 진짜 결함 12~25% 소실)·인용 금지("리뷰어 이탈 38%" 정의/분모 불일치·arXiv 오귀속·원문에 없는 벤치마크 점추정·벤더 자체보고·"머지율=품질"·"FP 임계"·"200~400줄 상한"·효과 약속). 커밋 안 함·opt-in 저장·다른 플러그인 비참조·비의존
+    .claude-plugin/
+      plugin.json
+    CLAUDE.md                                            # 포인터 + 5 Phase 요약 + 6 불변식 + 변경 이력
+    README.md                                            # 사용자용 개요·사용법·산출물·정직성·경계
+    agents/                                              # 5 에이전트 (모두 opus)
+      risk-tierer.md                                     # Phase 1 3축 관측 + 표면 감지 → T0~T3 + 리뷰 예산 배분(미확인 되물음)
+      evidence-auditor.md                                # Phase 2 테스트 우선 · 오라클 강도 · 약화/완화 서명 · S1~S8 · 센서 실행
+      lens-reviewer.md                                   # Phase 3a 렌즈 1개씩 병렬 · 3요소 필수 · 못 보는 것 보고
+      finding-refuter.md                                 # Phase 3b 반증 우선 6단계 · CONFIRMED/PLAUSIBLE/DROPPED
+      merge-arbiter.md                                   # Phase 4 트리아지 · 되돌림 지시문 · 잔여 위험 · 판정 후보 · 정직성 감사
+    skills/agentic-code-review/
+      SKILL.md                                           # 진입점 오케스트레이터 (Phase 0~4·첫 행동=대상 diff 확보·매 Phase 승인 게이트)
+      references/
+        risk-tiering.md                                  # 3축 관측 질문 · 표면 감지 패턴 · T0~T3 정의 · 티어별 예산표 · 안티패턴
+        agent-failure-signatures.md                      # 읽는 순서 규약 · 오라클 강도 판정 · 약화/완화 서명 · 결함 서명 S1~S8 · 센서
+        review-lenses.md                                 # 렌즈 8종 카드(무엇을 보나·전형 결함·확인 방법·못 보는 것)
+        finding-triage.md                                # 반증 6단계 · 3값 판정 · 분류 하드 규약 · 오탐 예산 · 되돌림 지시문 · 판정 카드
+        evidence.md                                      # 근거 정본(등급 · 성능/오라클/오탐 기저율 · 관행 · 인용 금지 목록 · 재검증)
+    evals/
+      evals.json                                         # 수용 평가 (design-conformance + 근거 정직성 31 assertion)
+      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 8 / should_not 11, 인접 하네스 reciprocal 가드)
 ```

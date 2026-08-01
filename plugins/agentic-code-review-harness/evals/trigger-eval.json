@@ -1,0 +1,78 @@
+[
+  {
+    "query": "이 PR 머지해도 되는지 판단해줘. 에이전트가 만든 변경인데 어디가 위험한지랑 되돌릴 피드백까지",
+    "should_trigger": true
+  },
+  {
+    "query": "브랜치 diff 리스크 티어 나눠서 어디에 리뷰 집중할지 배분하고 차단해야 할 것만 골라줘",
+    "should_trigger": true
+  },
+  {
+    "query": "이 변경에 붙은 테스트가 진짜 뭘 검증하는지 봐줘. 통과한다고 믿어도 되는지",
+    "should_trigger": true
+  },
+  {
+    "query": "코드 리뷰 결과가 너무 많은데 오탐 걸러내고 진짜 차단해야 할 것만 남겨줘",
+    "should_trigger": true
+  },
+  {
+    "query": "AI가 쓴 PR인데 테스트 지우거나 린트 끄거나 커버리지 임계 낮춘 거 없는지 스캔해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "review this agent-authored pull request and tell me whether it is safe to merge, with blocking findings and a verdict",
+    "should_trigger": true
+  },
+  {
+    "query": "여러 관점으로 나눠서 이 diff 병렬 리뷰하고 각 발견을 반증해서 확인된 것만 보고해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "이 변경 머지 판정하고 확인 못 한 게 뭔지, 리뷰 안 한 영역이 어딘지도 같이 정리해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "지금 작업한 변경 리뷰해서 수정 적용하고 커밋 메시지 써서 PR까지 올려줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 기획·디자인·API 계약이 개발 착수 준비됐는지 핸드오프 게이트로 검수해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "인수조건을 unit·통합·E2E 계층으로 나눠서 테스트 계획 세우고 하나씩 승인받으며 추가해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 저장소가 AI 코딩 에이전트가 읽기 좋은 코드베이스인지 점수로 측정하고 대시보드 만들어줘",
+    "should_trigger": false
+  },
+  {
+    "query": "지금 프로덕션 장애 났는데 로그랑 트레이스 보고 원인 국소화하고 완화해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 스킬이 왜 이렇게 동작했는지 진단하고 SKILL.md 지침을 고도화해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 화면 React 컴포넌트로 구현하고 접근성이랑 Lighthouse까지 돌려줘",
+    "should_trigger": false
+  },
+  {
+    "query": "LLM 앱에 프롬프트 주입 막는 런타임 가드레일을 설계하고 red-team 해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "AI가 만든 산출물 채점할 평가 루브릭이랑 LLM judge 구성해서 오프라인 평가 돌려줘",
+    "should_trigger": false
+  },
+  {
+    "query": "리스크 기반으로 QA 테스트 시나리오 설계하고 실행해서 결함이랑 플래키 트리아지해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "우리 팀에 맞는 개발 방법론 뭔지 문진하고 추천해줘",
+    "should_trigger": false
+  }
+]
