@@ -1,0 +1,184 @@
+{
+  "eval_metadata": {
+    "eval_id": "comprehension-loop-acceptance",
+    "eval_name": "comprehension-harness 수용 평가 (design-conformance + 근거 정직성)",
+    "prompt": "스킬은 에이전트가 쓴 코드 변경을 사람이 실제로 이해하고 있는지 실측하고 그 이해를 자산으로 남긴다. Phase 0 이해 인테이크(한 번에 한 질문·대상 변경과 참여 목적 없이 시작 금지) → Phase 1 이해 부채 지도(6표면 관측 + 참여 목적 스코프 + 설명서 공개 전 예측 문항 + 확신 평정) → Phase 2 설명서 공개(배경·직관·검증 훅·[확인]/[추론] 분리·변경 순서 안내 + 예측 채점 동시 공개) → Phase 3 이해 검증 게이트(자유서술 회상 + 교정 피드백 + 실측 성공률 + 지각–실제 격차 + 묻지 않은 범위 열거) → Phase 4 마이크로월드(조건부·값싼 대안 먼저·조건 검사·시청 전용/스크러빙/구조 시각화 금지) → Phase 5 공유 이해(조건부·복원 불가능한 것만 펌프). 매 Phase 승인 게이트. 본 평가는 shipped SKILL.md·agents/*.md·references/*가 하네스 불변식(INV-1 검증 아닌 참여·판정 금지 / INV-2 자기보고는 센서가 아님 / INV-3 설명은 예측 뒤에 공개 / INV-4 퀴즈 통과는 증명이 아님·점수화 금지 / INV-5 마이크로월드는 기본값 아닌 가설 / INV-6 게이트는 거부권이 아님 / INV-7 효과 약속 금지)과 근거 등급·인용 금지 목록·경계를 강제·명세하는지 file:섹션 인용으로 채점한다.",
+    "method": "design-conformance — shipped 파일(SKILL.md·agents/*.md·references/*)에 실재하는 앵커 인용으로 각 불변식 강제 여부를 확인한다. 인용 형식은 `파일 :: 파일에 그대로 존재하는 문자열`이며, `passed`는 저자가 선언하지 않고 `evals/check_evidence.py` 실행 결과로 채운다 — 이 하네스의 논지가 자기보고를 확인으로 옮기지 않는 것이므로 자기 평가도 실행된 검사여야 한다.",
+    "assertions": [
+      {
+        "text": "[INV-1/no-verdict] 결함·리스크·머지 가능 여부를 판정하지 않고, 이상한 점은 '열린 질문'으로 적고 넘긴다.",
+        "evidence": "SKILL.md :: INV-1 · 검증이 아니라 참여를 위한 이해다; SKILL.md :: 결함을 찾기 시작한다; debt-cartographer.md :: 판정하지 않는다** — 결함·리스크·머지 가능 여부를 말하지 않는다; explainer-architect.md :: 판정하지 않는다** — 결함·안전 보증·머지 가능 여부를 쓰지 않는다 // 이상한 점은 열린 질문으로 넘긴다",
+        "passed": true,
+        "checked_anchors": 4
+      },
+      {
+        "text": "[INV-1/no-write] 코드를 수정하지 않고 커밋·푸시·PR 생성·승인·머지를 실행하지 않는다.",
+        "evidence": "SKILL.md :: 커밋하지 않는다** — 파일 저장은 opt-in; debt-cartographer.md :: 코드를 수정하지 않는다** — 읽기 전용; microworld-builder.md :: 제품 코드를 수정하지 않고 커밋하지 않는다; shared-context-curator.md :: 팀 채널·이슈에 자동 게시하지 않는다",
+        "passed": true,
+        "checked_anchors": 4
+      },
+      {
+        "text": "[INV-2/no-self-report] '이해했습니까 y/n' 류 자가평가를 게이트 조건으로도 지표로도 쓰지 않고, 확신 평정은 지각–실제 격차 계산에만 쓴다.",
+        "evidence": "SKILL.md :: INV-2 · 자기보고는 센서가 아니다; comprehension-debt.md :: 현재 상태는 게이트 조건이 아니다; comprehension-debt.md :: ### 4.4 확신 평정 — 필수 (두 가지 일을 한다); evidence.md :: **F21 ·",
+        "passed": true,
+        "checked_anchors": 4
+      },
+      {
+        "text": "[INV-3/prediction-first] 설명서는 사람의 예측이 제출된 뒤에만 공개되며, 예측 없이 Phase 2를 시작하지 않는다.",
+        "evidence": "SKILL.md :: 예측이 제출되기 전에는 이 Phase를 시작하지 않는다; explainer-structure.md :: Phase 1의 예측이 제출되기 전에는 이 문서를 보여주지 않는다; explainer-architect.md :: 예측이 제출된 뒤에만, 그리고 직후에 공개한다; debt-cartographer.md :: 순서가 규약이다",
+        "passed": true,
+        "checked_anchors": 4
+      },
+      {
+        "text": "[INV-3/verifiability] 설명서는 diff나 실행 가능한 검사로 대조할 수 없는 것을 단언하지 않으며 [확인]/[추론]을 문장마다 분리하고 [추론] 비율을 문서 상단에 적는다.",
+        "evidence": "explainer-structure.md :: ### B3. 검증 훅 — 이 문서의 핵심 블록; explainer-structure.md :: 대조 불가능한 것은 단언하지 않는다; explainer-architect.md :: 검증 훅이 없는 주장은 지운다; SKILL.md :: `[확인]`/`[추론]` 분리",
+        "passed": true,
+        "checked_anchors": 4
+      },
+      {
+        "text": "[INV-3/grading-together] 예측 채점을 설명서와 함께 공개한다(시험을 치는 것만으로는 과확신이 꺼지지 않고 채점 결과 열람이 꺼뜨린다).",
+        "evidence": "SKILL.md :: 채점 결과를 함께** 공개한다; explainer-structure.md :: 공개 후 **정답 채점 결과를 함께 보여준다; explainer-architect.md :: 채점을 함께 공개하고 불일치를 앞에 놓는다; evidence.md :: **F8 ·",
+        "passed": true,
+        "checked_anchors": 4
+      },
+      {
+        "text": "[INV-4/no-score] 점수·백분율·성숙도 등급·레벨을 만들지 않고, 통과는 '물어본 것에 답했다'로만 서술한다.",
+        "evidence": "SKILL.md :: INV-4 · 퀴즈 통과는 이해의 증명이 아니다; quiz-design.md :: 점수·백분율·성숙도 등급·레벨; comprehension-examiner.md :: **금지 출력**; SKILL.md :: 점수·백분율·레벨을 만든다",
+        "passed": true,
+        "checked_anchors": 4
+      },
+      {
+        "text": "[INV-4/unasked-scope] 묻지 않은 범위를 명시적으로 열거한다(퀴즈하지 않은 재료로의 전이는 신뢰할 수 없다).",
+        "evidence": "SKILL.md :: 묻지 않은 범위를 반드시 열거; quiz-design.md :: **Q7** | **묻지 않은 범위를 명시적으로 열거한다**; comprehension-examiner.md :: ### 묻지 않은 범위 (이 게이트가 아무 말도 하지 않는 영역); evidence.md :: **F22 ·",
+        "passed": true,
+        "checked_anchors": 4
+      },
+      {
+        "text": "[quiz/format] 자유서술 회상을 강제하고 객관식을 금지하며, 문항은 에이전트가 만들고 사용자가 만들지 않는다.",
+        "evidence": "quiz-design.md :: **Q1** | **자유서술 회상.** 객관식 금지; quiz-design.md :: **Q3** | **문항은 에이전트가 만들고 사람은 답한다**; comprehension-examiner.md :: 사용자가 문항을 만들게 하지 않는다; evidence.md :: **F20 ·",
+        "passed": true,
+        "checked_anchors": 4
+      },
+      {
+        "text": "[quiz/feedback] 모든 오답에 diff 좌표가 붙은 교정 피드백을 강제하고, 통과/실패만 알려주는 게이트를 금지한다.",
+        "evidence": "SKILL.md :: diff 좌표가 붙은 교정 피드백; quiz-design.md :: 통과/실패만 알려주는 게이트 금지; comprehension-examiner.md :: 피드백 없는 게이트는 금지; evidence.md :: **F18 ·",
+        "passed": true,
+        "checked_anchors": 4
+      },
+      {
+        "text": "[quiz/difficulty] 난이도를 '중간'이 아니라 실측 초기 성공률(목표대 70~80%)로 관리하고, 개수 규정을 근거로 제시하지 않는다.",
+        "evidence": "quiz-design.md :: ## 2. 난이도는 실측 초기 성공률로 관리한다; quiz-design.md :: ## 3. 개수 — 근거는 개수를 정하지 않는다; comprehension-examiner.md :: 목표대 **70~80%**; evidence.md :: 숫자 5는 발명이다",
+        "passed": true,
+        "checked_anchors": 4
+      },
+      {
+        "text": "[INV-5/microworld-recommendation] 마이크로월드는 opt-in이며 값싼 대안을 먼저 제안하고 조건을 관측해 고지하되, 조건은 게이트가 아니라 권고이므로 사용자의 명시 요청을 기각하지 않는다(기본값은 만들지 않는 쪽).",
+        "evidence": "SKILL.md :: 단 조건은 게이트가 아니라 권고다(INV-6와 같은 규칙); microworld-patterns.md :: ## 2-bis. 조건은 관문이 아니다 — 명시 요청을 기각하지 않는다; microworld-patterns.md :: 조건은 관측이고 권고이지 관문이 아니다; microworld-builder.md :: 조건은 게이트가 아니라 권고다(INV-5·INV-6) // 값싼 대안 우선과 시청 전용 비권장은 유지하되, 거부권으로 승격시키지 않는다",
+        "passed": true,
+        "checked_anchors": 4
+      },
+      {
+        "text": "[INV-5/evidence-disclosure] 마이크로월드가 인접한 네 하위군 전부에서 메타분석 추정치가 0 또는 음수이고 우리 도메인은 측정된 적이 없다는 근거 상태를 사용자에게 고지한다.",
+        "evidence": "microworld-patterns.md :: 인접한 모든 하위군에서 신호가 0 부근이고, 정작 우리 도메인은 측정된 적이 없다; microworld-builder.md :: 근거 상태를 먼저 말한다; evidence.md :: **F57 ·; evidence.md :: **F58 ·",
+        "passed": true,
+        "checked_anchors": 4
+      },
+      {
+        "text": "[INV-6/no-veto] 예측이 틀리거나 게이트를 통과하지 못해도 사용자가 진행을 선택하면 따르고, 무엇을 모르는 채로 가는지 한 줄로 알린다.",
+        "evidence": "SKILL.md :: INV-6 · 게이트는 경고이지 거부권이 아니다; quiz-design.md :: ## 6. 게이트는 거부권이 아니다; comprehension-examiner.md :: 거부권이 없다** — 못 맞혀도 사용자가 진행을 선택하면 따르고; SKILL.md :: 게이트를 거부권으로 쓴다",
+        "passed": true,
+        "checked_anchors": 4
+      },
+      {
+        "text": "[INV-7/no-promise] '이해를 보장한다'·'다음 아이디어를 빠르게 한다'·'결함 N% 감소'·'이해도 N% 향상'을 주장하지 않고, 정직하게 주장 가능한 두 가지만 서술한다.",
+        "evidence": "SKILL.md :: INV-7 · 효과를 약속하지 않는다; evidence.md :: ## 9. 하네스가 정직하게 주장할 수 있는 것; evidence.md :: **하네스 자체 산출물에 효과크기를 부착하는 것**; README.md :: ## 정직성",
+        "passed": true,
+        "checked_anchors": 4
+      },
+      {
+        "text": "[evidence/domain-honesty] 인용 정량치가 학부생·레지던트·크라우드워커의 비-코드 과제에서 나왔고 전문 엔지니어의 diff 이해로는 측정된 적이 없다는 사실을 본문에 적는다.",
+        "evidence": "evidence.md :: **도메인 경고(모든 항목에 적용)**; evidence.md :: ## 11. 남은 미지 (하네스가 스스로 표기한다); evidence.md :: **F3 ·; README.md :: 전문 소프트웨어 엔지니어가 diff를 읽고 이해했는지를 측정한 연구는 이 조사에서 0건이었다",
+        "passed": true,
+        "checked_anchors": 4
+      },
+      {
+        "text": "[evidence/do-not-cite] 인용 금지 목록을 정본에 명세하고 어떤 산출물에서도 사실로 말하지 않는다(5문항 규정·'퀴즈=속도 조절기'·EEG cognitive debt 수치·철회 메타분석·200~400 LOC 결함 수율·벤더 자체보고 포함).",
+        "evidence": "evidence.md :: ## 10. 인용 금지 목록 (DO-NOT-CITE); evidence.md :: \"퀴즈 = 속도 조절기\"를 근거 있는 메커니즘으로 제시; quiz-design.md :: **\"퀴즈 = 속도 조절기\"는 인용 금지 항목이다**; SKILL.md :: 인용 금지 목록",
+        "passed": true,
+        "checked_anchors": 4
+      },
+      {
+        "text": "[design/role-separation] 설명을 쓰는 에이전트와 이해를 캐묻는 에이전트를 분리하고, 캐묻는 쪽의 문항 근거가 설명서가 아니라 diff임을 명시한다.",
+        "evidence": "SKILL.md :: 에이전트가 5개인 이유; CLAUDE.md :: 쓰는 역할과 캐묻는 역할을 분리한다; comprehension-examiner.md :: 설명서를 쓴 에이전트와 다른 에이전트다; comprehension-examiner.md :: 문항의 근거는 설명서가 아니라 diff다",
+        "passed": true,
+        "checked_anchors": 4
+      },
+      {
+        "text": "[design/scope-by-purpose] 이해 범위를 '다음에 이 영역에서 무엇을 할 것인가'(참여 목적)로 정하고, 스코프 밖은 '안 봤다'로 명시한다(조용한 절단 금지).",
+        "evidence": "SKILL.md :: 참여 목적 — 다음에 이 영역에서 무엇을 할 것인가; comprehension-debt.md :: ## 1. 이해 범위는 \"다음에 무엇을 할 것인가\"가 정한다; comprehension-debt.md :: **스코프 밖은 \"안 봤다\"고 명시한다.**; debt-cartographer.md :: ### 스코프 밖 — 이번에 보지 않은 것",
+        "passed": true,
+        "checked_anchors": 4
+      },
+      {
+        "text": "[design/gate-weight] 게이트 무게를 diff 크기나 저자(사람/에이전트)가 아니라 자동화 경계(분석만 vs 변경 선택·적용)로 배분한다.",
+        "evidence": "SKILL.md :: 에이전트의 역할 | 커밋 메시지·PR 본문·저자 필드의 에이전트 서명; comprehension-debt.md :: ## 5. 게이트 무게 — diff 크기가 아니라 자동화 경계로; debt-cartographer.md :: ## 게이트 무게; evidence.md :: **F51 ·",
+        "passed": true,
+        "checked_anchors": 4
+      },
+      {
+        "text": "[design/concurrency] 동시에 감독 대기 중인 에이전트 산출물이 여럿이면 한 번에 하나씩 돌리자고 제안하고, 훈계로 대체하지 않는다.",
+        "evidence": "SKILL.md :: 사용자가 여럿이라고 하면 **한 번에 하나씩** 제안한다; comprehension-debt.md :: ## 6. 동시 처리 한도; evidence.md :: **F52 ·",
+        "passed": true,
+        "checked_anchors": 3
+      },
+      {
+        "text": "[design/shared-pump] Phase 5는 요약 문서를 더 만들지 않고 산출물에서 복원되지 않는 것만 뽑아내며, 공유 문서가 팀 이해를 개선한다고 주장하지 않는다.",
+        "evidence": "SKILL.md :: 나만 아는 것을 뽑아내는 펌프; shared-understanding.md :: ## 1. 펌프 질문 — 이 Phase의 전부; shared-understanding.md :: 요약 문서를 하나 더 만든다** — 이미 공유된 것의 현저성만 올린다; shared-context-curator.md :: 공유 문서를 더 만들지 않는다",
+        "passed": true,
+        "checked_anchors": 4
+      },
+      {
+        "text": "[design/timing-honesty] 1회 게이트가 이 문헌의 가장 약한 구성임을 산출물에 적고, 되돌리기 어려운 표면에는 지연 재발화를 제안하되 강제하지 않는다.",
+        "evidence": "quiz-design.md :: ## 4. 타이밍 — 이 하네스가 가장 약한 지점; quiz-design.md :: 두 지연 구간을 혼동하지 않는다; comprehension-examiner.md :: ### 타이밍; evidence.md :: **F63 ·",
+        "passed": true,
+        "checked_anchors": 4
+      },
+      {
+        "text": "[boundary/adjacent] 결함 판정·머지 결정, 착수 전 상류 산출물 게이트, 명세 기반 구현·검증, 테스트 신규 생성, 저장소 전체 정적 측정, 사람↔에이전트 분업·감독 설계, 장애 대응, 하네스 자체 진단을 범주로만 배제하고 다른 플러그인을 이름으로 참조하지 않는다.",
+        "evidence": "SKILL.md :: ## 경계 (먼저 읽고 발동 여부를 판단하라); SKILL.md :: 후자면 범위 밖임을 한 줄로 알리고 종료한다; README.md :: ## 범위 밖; CLAUDE.md :: 경계는 **범주로만** 서술하고 다른 플러그인을 이름으로 참조하지 않는다",
+        "passed": true,
+        "checked_anchors": 4
+      },
+      {
+        "text": "[convention/opus] 5개 에이전트가 협업하므로 agents/{name}.md를 두고 SKILL.md의 모든 Agent 호출에 model: \"opus\"를 명시한다.",
+        "evidence": "SKILL.md :: 모든 Agent 호출은 `model: \"opus\"`를 명시한다; SKILL.md :: `debt-cartographer`를 `model: \"opus\"`로 호출한다; CLAUDE.md :: 모든 Agent 호출에 `model: \"opus\"`를 명시**한다",
+        "passed": true,
+        "checked_anchors": 3
+      },
+      {
+        "text": "[convention/one-question] 인테이크·확인 질문을 한 번에 하나씩 하고 목록으로 쏟아붓지 않으며, 매 Phase 승인 게이트를 둔다.",
+        "evidence": "SKILL.md :: **한 번에 한 질문(짧게), 그리고 적게**; SKILL.md :: **게이트 A**; SKILL.md :: 질문을 한꺼번에 쏟아붓는다",
+        "passed": true,
+        "checked_anchors": 3
+      },
+      {
+        "text": "[convention/opt-in-save] 파일 저장은 opt-in이며 미리보기 후 승인하고 커밋하지 않는다.",
+        "evidence": "SKILL.md :: ## 산출물 배치; SKILL.md :: 미리보기 → 승인 → 기록; explainer-structure.md :: **저장 위치는 사용자에게 묻는다.**; microworld-patterns.md :: 저장 위치를 사용자에게 묻는다",
+        "passed": true,
+        "checked_anchors": 4
+      },
+      {
+        "text": "[design/intake-frugality] 인테이크에서 최대 두 번만 묻고(대상·참여 목적), 나머지는 관측해 잠정값으로 카드에 적어 게이트 A에서 한 번에 정정받는다.",
+        "passed": true,
+        "evidence": "SKILL.md :: ### 묻는 것은 둘뿐이다; SKILL.md :: ### 나머지는 관측하고 잠정값으로 적는다 (묻지 않는다); comprehension-debt.md :: ## 6-bis. 인테이크 마찰 예산 — 두 번만 묻는다; SKILL.md :: **한 번에 한 질문(짧게), 그리고 적게** // 마찰 예산은 예측 커밋에 쓴다 — 인테이크에서 소진하면 형식적 통과를 부른다(F70·F13)",
+        "checked_anchors": 4
+      },
+      {
+        "text": "[design/shortcut-path] 사용자가 한 산출물을 지목해 들어오면 전체 루프를 말없이 시작하지 않고 단축 경로를 제시하되, 어느 경로에서도 예측 커밋은 유지하고 축약 시 '이해를 실측하지 않았다'를 적는다.",
+        "passed": true,
+        "evidence": "SKILL.md :: ### 사용자가 특정 산출물만 요청했다면 — 단축 경로를 제시한다; SKILL.md :: **어느 경로를 골라도 예측 커밋(Phase 1)은 유지한다.**; SKILL.md :: **요청한 산출물에 빨리 닿게 한다**; comprehension-debt.md :: 예측 커밋만은 어느 경로에서도 유지한다",
+        "checked_anchors": 4
+      }
+    ]
+  }
+}

@@ -1,0 +1,90 @@
+[
+  {
+    "query": "에이전트가 쓴 이 PR 내가 이해 못 하고 있는 것 같아. 뭘 모르는지 정리하고 진짜 이해했는지 확인시켜줘",
+    "should_trigger": true
+  },
+  {
+    "query": "이 변경 설명서 만들어줘. 배경부터 짚고 왜 이렇게 됐는지 감 잡게",
+    "should_trigger": true
+  },
+  {
+    "query": "내가 이 diff 진짜 이해했는지 퀴즈 내줘. 틀리면 어디 보면 되는지도 알려주고",
+    "should_trigger": true
+  },
+  {
+    "query": "vibe coding 하다 보니 뭐가 뭔지 모르겠어. 이해 부채 정리해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "이 PR 팀에 넘기기 전에 내가 이해했는지 스스로 점검하고 싶어",
+    "should_trigger": true
+  },
+  {
+    "query": "이 상태 전이 로직 감 잡게 직접 만져볼 수 있는 일회용 시뮬레이터 만들어줘",
+    "should_trigger": true
+  },
+  {
+    "query": "이 변경에서 나만 알고 있는 것, 에이전트가 지시 없이 정한 것 뽑아서 팀에 남길 열린 질문으로 정리해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "설명 보기 전에 내가 먼저 예측해보고 얼마나 맞는지 대조하고 싶어",
+    "should_trigger": true
+  },
+  {
+    "query": "help me actually understand this agent-written change before I hand it off — quiz me and tell me what I still do not know",
+    "should_trigger": true
+  },
+  {
+    "query": "이 PR 머지해도 되는지 판단해줘. 차단해야 할 결함이랑 되돌릴 피드백까지",
+    "should_trigger": false
+  },
+  {
+    "query": "브랜치 diff 리스크 티어 나눠서 리뷰 강도 배분하고 오탐 걸러줘",
+    "should_trigger": false
+  },
+  {
+    "query": "실행 가능한 명세를 source of truth로 작성하고 그 명세대로 코드 생성한 뒤 조항별로 검증해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "인수조건을 unit/integration/E2E 계층으로 전개해서 테스트 계획하고 하나씩 생성해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 저장소가 AI 에이전트가 읽기 좋은 코드베이스인지 점수 매기고 대시보드 만들어줘",
+    "should_trigger": false
+  },
+  {
+    "query": "코드 착수 전에 기획 DoR이랑 디자인 핸드오프, API 계약이 준비됐는지 게이트 검수해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "사람과 AI 에이전트 분업이랑 자율 수준, 승인 지점을 어떻게 설계할지 팀 운영 체계를 잡아줘",
+    "should_trigger": false
+  },
+  {
+    "query": "프로덕션 장애 났어. 탐지하고 국소화해서 근본원인 찾고 완화해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 스킬이 왜 이렇게 동작했는지 진단하고 SKILL.md를 고도화해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "LLM이 만든 산출물을 루브릭으로 채점하는 평가 파이프라인 만들어줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 작업을 여러 에이전트로 병렬화할지 판단하고 협업 토폴로지 정해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "기획 유저스토리랑 인수조건으로 PRD 써줘",
+    "should_trigger": false
+  },
+  {
+    "query": "커밋 메시지 한국어로 써주고 PR 올려줘",
+    "should_trigger": false
+  }
+]
