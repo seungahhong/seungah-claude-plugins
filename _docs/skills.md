@@ -28,8 +28,9 @@
 
 | Skill | Command | Description |
 |-------|---------|-------------|
-| Commit | `/commit` | 한국어 커밋 메시지 작성 (`이슈번호 type: 제목` 형식, 명령형 제목, 필요 시 요약/영향/테스트 시나리오 본문 포함) |
-| Review to PR | `/review-to-pr` | 리뷰 → 커밋 → PR 생성 올인원 워크플로우. Commit/PR 각 단계에서 `/simplify` + `/review`를 자동 수행하고 수정 적용 후 커밋 또는 PR 생성 |
+| Commit-PR | `/commit-pr` | 커밋·push·PR 생성·PR 리뷰 단일 파이프라인. §0.1 상태 파악(조용히) → §0.2 진입점 질문(commit/push/pr에 상태 근거 (추천) 표시, pr은 기존 PR 지정/새 PR 생성으로 분기) → §0.3 모드별 전제 조건 검사(보호 브랜치·대상 존재·secret·gh 인증, **기존 PR 리뷰엔 보호 브랜치 검사 미적용**) → §9 커밋 전 리뷰 레인(9.1 /simplify 문의 → 9.2 `code-simplifier` 서브에이전트+재스테이징(폴백 2단) → 9.3 코드리뷰 문의 → 9.4 코드리뷰 서브에이전트(correctness·security·performance·readability, verdict CONFIRMED/PLAUSIBLE)) → **커밋 게이트**(치명=correctness&CONFIRMED, 중요=correctness&PLAUSIBLE 또는 그 외&CONFIRMED → 차단 / 경미=그 외&PLAUSIBLE → 통과. 요약: correctness이거나 CONFIRMED면 차단, 수정→재스테이징→재리뷰) → §1~§4 커밋 메시지(`이슈번호 type: 제목`·한국어 명령형·본문 기본 생략·`Co-Authored-By` 금지) → §5 프리뷰 승인 후 `git commit --cleanup=whitespace -F -`(stdin, 고정 경로 금지) → §6 push(통보만) → §7 PR 생성(타겟 추천·프리뷰는 "이 제목·본문으로 맞나요?") → §8 PR 리뷰 여부 문의(진입점 승인의 명시적 예외, 내장 `/review` Skill 명시 호출) → 종료 요약. **진입점 선택 = 이후 단계 승인**(예외 ① 되돌리기 어려운 행위 직전 *내용* 확인 ② §8) |
+
+> **(2026-08-02 v0.3.0)** 기존 `commit`·`review-to-pr` 두 스킬을 `commit-pr` 하나로 통합했다. 커밋~PR은 원래 한 줄기 작업인데 스킬이 쪼개져 있어 사용자가 매번 다음 스킬을 다시 불러야 했다. 핵심 변경 — ① **상태 기반 진입점 추천**(질문 전에 `git status`/`branch`/`log`/`log @{u}..HEAD`/`gh pr view`를 조용히 실행하고 **명령 실패도 판단 근거**로 읽어 각 항목에 (추천)+이유 한 줄) ② **진입점 선택 = 이후 단계 승인**(중간에 "push할까요?"·"PR 만들까요?"를 되묻지 않음 — 흐름만 끊고 정보를 더하지 않으므로. 예외는 되돌리기 어려운 행위 직전의 *내용* 확인과 §8 PR 리뷰 실행 여부뿐) ③ **커밋 차단 게이트**(리뷰어에겐 흔들리는 5단계 severity 대신 답할 수 있는 2값 verdict만 요구하고, severity 환산은 결정론 표가 맡는다. correctness이거나 CONFIRMED면 차단 → 수정·재스테이징 후 **재리뷰**로만 통과 판정, 자기보고 불신) ④ **게이트는 경고이지 거부권이 아님**(사용자가 의도된 것이라며 진행을 택하면 무엇을 안고 가는지 남기고 따른다) ⑤ 모드별 전제 조건만 검사(기존 PR 리뷰엔 보호 브랜치 검사 미적용 — 쓰기가 아니므로) ⑥ 커밋은 `--cleanup=whitespace -F -`(본문 `# 요약` 헤딩이 주석으로 삭제되는 것과 고정 경로 임시파일의 병렬 세션 충돌 방지). 스킬 본문은 흐름·게이트만 담고 상세는 references 3종(`commit-message.md`·`review-lane.md`·`pr-creation.md`)에 둔다. **경계** — 저장소 상태를 바꾸지 않는 상류 산출물 검수(`review-harness`)·완성 코드 정적 리뷰(`frontend-harness` `/review`)·하네스 자체 진단(`meta-harness`)은 범위가 아니다.
 
 ### Plugin: `meta-harness`
 

@@ -46,12 +46,17 @@ plugins/
     skills/
       harness-generator/                                 # 하네스(에이전트팀+스킬+오케스트레이터) 수동 생성 제너레이터 스킬 (+ references/)
     evals/                                               # 트리거 경계 평가 (자동 탐색·Pareto 도메인·meta-harness와 cross-plugin reciprocal 가드)
-  git-harness/                                           # [독립 플러그인] Git 워크플로우 멀티 에이전트 스킬 모음
+  git-harness/                                           # [독립 플러그인] 커밋·push·PR 생성·PR 리뷰 단일 파이프라인 (진입점 선택 = 이후 단계 승인)
     .claude-plugin/
       plugin.json
+    CLAUDE.md                                            # 구조·규약 + 변경 이력
+    README.md                                            # 사용자용 개요
     skills/
-      commit/                                            # 한국어 커밋 메시지 작성 스킬 (`이슈번호 type: 제목` 형식)
-      review-to-pr/                                      # 리뷰 → 커밋 → PR 생성 올인원 워크플로우 스킬 (/simplify + /review 내장)
+      commit-pr/                                         # §0 상태 파악·진입점(commit/push/pr)·모드별 전제조건 → §9 리뷰 레인+커밋 차단 게이트 → §1~§5 커밋 → §6 push → §7 PR 생성 → §8 PR 리뷰
+        references/
+          commit-message.md                              # §1~§4 커밋 메시지 사양 (`이슈번호 type: 제목`, 본문 판단 프로세스, Validation)
+          review-lane.md                                 # §9 code-simplifier·코드리뷰 서브에이전트 + severity 3등급 환산표
+          pr-creation.md                                 # §7 타겟 추천·검증, 변경 분석, PR 제목·본문 포맷
   meta-harness/                                          # [독립 플러그인] Meta-Harness 논문(arXiv 2603.28052v1) 기반 메타 하네스 엔지니어링 — full-trace experience store + causal reasoning + Pareto 비후퇴, 사용자 승인 게이트 (R1 현세션 redirect/보강 · R2 plugin 개선 · R3 외부 .md 역추적). self-heal 캡처 훅(UserPromptSubmit)이 '수정/보강' 발화를 signals 레인에 원형 적재 → 추후 healer가 소비(적용은 승인 게이트 후)
     .claude-plugin/
       plugin.json

@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "분석 → 설계 → 개발 → 리뷰 → 검증까지, 소프트웨어 개발 전 과정을 지원하는 멀티 에이전트 스킬·커맨드·훅 모음. 정적 분석 5개 관점(간소화·코드 리뷰·보안·성능·정합성) 중 사용자 선택 항목 병렬 + 재리뷰 루프와 E2E·타입/빌드 검증, 그리고 코드 착수 *전* 상류 산출물(기획·디자인·API 계약·QA 인수조건) 핸드오프 게이트 검수를 포함합니다.",
-    "version": "1.43.0",
+    "version": "1.44.0",
     "homepage": "https://github.com/seungahhong/seungah-claude-plugins"
   },
   "plugins": [
@@ -60,9 +60,9 @@
     },
     {
       "name": "git-harness",
-      "description": "Git 워크플로우 멀티 에이전트 스킬 모음. 한국어 커밋 메시지 작성(`이슈번호 type: 제목` 형식)과 다각도 PR 리뷰(코드 품질, 버그, 보안, 테스트, 코드 간소화)를 지원합니다.",
+      "description": "Git 워크플로우 단일 파이프라인 스킬(`/commit-pr`). 저장소 상태(변경·미push 커밋·열린 PR)를 먼저 읽어 진입점(commit / push / pr)을 추천·선택받고, 고른 지점부터 끝까지 이어서 진행합니다. 커밋 전 리뷰(code-simplifier + correctness·security·performance·readability 코드리뷰 서브에이전트)와 차단 게이트(correctness이거나 CONFIRMED면 커밋 보류), 한국어 커밋 메시지(`이슈번호 type: 제목`), push, PR 생성, PR 리뷰를 포함합니다. 진입점 선택 = 이후 단계 승인(예외: 커밋 메시지·PR 본문 프리뷰, PR 리뷰 실행 여부).",
       "source": "./plugins/git-harness",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "author": {
         "name": "seungah.hong"
       },
@@ -71,6 +71,8 @@
         "plugin",
         "git",
         "commit",
+        "push",
+        "pull-request",
         "pr-review",
         "code-review",
         "multi-agent",

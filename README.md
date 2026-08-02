@@ -92,14 +92,15 @@
 
 ## Plugin: `git-harness`
 
-Git 워크플로우를 지원하는 스킬 모음입니다. 한국어 커밋 메시지 작성과 다각도 PR 리뷰를 지원합니다.
+커밋·push·PR 생성·PR 리뷰를 **하나의 파이프라인**으로 처리합니다. 저장소 상태를 먼저 읽어 어디서부터 시작할지 추천하고, 고른 지점부터 끝까지 이어서 진행합니다.
 
 ### Skills
 
 | Skill | Command | Description |
 |-------|---------|-------------|
-| **Commit** | `/commit` | `이슈번호 type: 제목` 형식의 한국어 커밋 메시지를 작성합니다. 명령형 제목과 함께, 필요 시 요약/배경/설계/영향/테스트 시나리오 본문을 자동 구성합니다. Secrets 검사와 보호 브랜치 경고를 포함합니다 |
-| **Review to PR** | `/review-to-pr` | 변경 파일 기반 **리뷰 → 커밋 → PR 생성** 올인원 워크플로우. Commit/PR 각 단계에서 `/simplify` + `/review`를 자동 수행하고 수정을 적용한 뒤 커밋 또는 PR을 생성합니다 |
+| **Commit-PR** | `/commit-pr` | 상태 기반 진입점(**commit / push / pr**) 추천·선택 → 커밋 전 리뷰(`code-simplifier` + correctness·security·performance·readability 코드리뷰) → **커밋 차단 게이트**(correctness이거나 CONFIRMED면 보류, 수정·재스테이징 후 재리뷰) → 한국어 커밋 메시지(`이슈번호 type: 제목`) 프리뷰 승인 → push → PR 생성 → PR 리뷰까지 한 흐름. `pr` 진입점은 **기존 PR 지정**(리뷰만) / **새 PR 생성**으로 분기 |
+
+**진입점 선택 = 이후 단계 승인** — 중간에 "push할까요?", "PR 만들까요?"를 다시 묻지 않습니다(흐름만 끊고 정보를 더해주지 않는 질문이라서). 예외는 ① 되돌리기 어려운 행위 직전의 *내용* 확인(커밋 메시지·PR 제목/본문 프리뷰) ② PR 리뷰 실행 여부(팀원이 보는 인라인 코멘트가 남으므로) 둘뿐이고, 멈추고 싶으면 언제든 그 지점에서 멈춥니다.
 
 ---
 
@@ -241,12 +242,11 @@ plugins/
       plugin.json
     skills/
       harness-generator/                                 # 하네스(에이전트팀+스킬+오케스트레이터) 수동 생성 제너레이터 스킬 (+ references/)
-  git-harness/                                           # [독립 플러그인] Git 워크플로우 멀티 에이전트 스킬 모음
+  git-harness/                                           # [독립 플러그인] 커밋·push·PR 생성·PR 리뷰 단일 파이프라인
     .claude-plugin/
       plugin.json
     skills/
-      commit/                                            # 한국어 커밋 메시지 작성 스킬
-      review-to-pr/                                      # 리뷰 → 커밋 → PR 생성 올인원 워크플로우 스킬
+      commit-pr/                                         # 상태 기반 진입점 → 커밋 전 리뷰+차단 게이트 → 커밋 → push → PR 생성 → PR 리뷰 (+ references/)
   meta-harness/                                          # [독립 플러그인] Meta-Harness 논문(arXiv 2603.28052v1) 기반 메타 하네스 엔지니어링 (full-trace experience store + causal reasoning + Pareto 비후퇴, 사용자 승인 게이트)
     .claude-plugin/
       plugin.json
