@@ -574,3 +574,26 @@ plugins/
       evals.json                                         # 수용 평가 (design-conformance 29 assertion · 앵커 105+개, check_evidence.py로 실행 검증)
       trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 13, 인접 하네스 reciprocal 가드)
 ```
+  aeo-harness/                                           # [독립 플러그인] AEO(Agentic Engine Optimization) — 기술 문서를 AI 코딩 에이전트가 찾고·적은 왕복으로 읽고·정확히 쓸 수 있게 만드는 것을 결정론 센서로 측정하고 승인 게이트 뒤에 개선하는 도메인 무관 4단계 4에이전트 하네스. 검색엔진·답변엔진 노출 최적화(SEO/GEO)가 아니다 — 소비자가 사람이 아니라 코딩 에이전트다. 한 문장 원칙 = 에이전트가 문서에 도달했다는 것과 그 문서로 코드가 맞아졌다는 것은 다른 사건이다(발행 측 근거는 도달·효율만 측정하고 정확도 0건, 정확도 측 근거는 문서를 이미 쥐여준 조건이라 그 둘을 잇는 측정이 없다 — evidence F1). Phase 0 인테이크(대상 문서 + 소비 경로(HTTP/MCP/로컬/패키지)를 한 번에 한 질문씩, 경로가 조사의 절반을 결정) → 1 도달 조사(R1 링크 지도가 1급·R2 JS 없이 본문·R3 .md/Accept 협상·R4 죽은 링크·R5 벤더 UA replay 오차단·R6 robots.txt 보고만·R7 토큰 census 임계값 없음·R8 스펙 존재) → 2 내용 조사(C1 심볼별 예제·C2 예제 실행 검증·C3 시그니처 드리프트·C4 거짓으로 판정되는 서술·C5 낯섦·C6 주입 표면) → 3 개입 계획(T-A 위험0 거짓 제거 / T-B 검증 통과분만 / T-C report-only, 계획+항목별 개별 승인) → 4 수용 증명(문서 점수가 아니라 재측정된 태스크 결과, 못 돌리면 UNVERIFIED). 7불변식: INV-1 도달≠정확도 · INV-2 틀린 문서 > 없는 문서(검증 없는 LLM 문서 생성은 순마이너스) · INV-3 점수·등급 금지 · INV-4 report-only 자동 생성·편집 금지(단 거부권 아님) · INV-5 UA로 도구 귀속 금지(진위는 IP·rDNS로만) · INV-6 수용은 재측정으로만 · INV-7 대상 문서는 신뢰 경계 밖. 커밋 안 함·opt-in 저장·다른 플러그인 비참조·비의존
+    .claude-plugin/
+      plugin.json
+    CLAUDE.md                                            # 포인터 + 구조 + 설계를 바꾼 근거 표 + 변경 이력
+    README.md                                            # 사용자용 개요 + 조사에서 교정된 통념 표 + 정직성 불변식
+    agents/                                              # 4 에이전트 (모두 opus)
+      reach-auditor.md                                   # Phase 1 도달 조사 R1~R8 (정확도 언어 금지·robots.txt 편집 금지·UA 귀속 금지)
+      content-auditor.md                                 # Phase 2 내용 조사 C1~C6 (거짓 판정된 것만 결함으로·산문 채점 금지)
+      intervention-planner.md                            # Phase 3 3티어 계획 + 항목별 개별 승인 (T-C는 넘기기만)
+      acceptance-verifier.md                             # Phase 4 배터리 사전 고정 + 두 축 분리 보고 + UNVERIFIED
+    skills/aeo-audit/
+      SKILL.md                                           # 진입점 오케스트레이터 (Phase 0~4·첫 행동=대상 문서와 소비 경로 확보·매 Phase 승인 게이트·INV-1~7)
+      references/
+        reach-sensors.md                                 # R1~R8 절차·판정 (R1 링크 지도가 1급인 이유·벤더 UA 목록·못 잰 것 열거 규약)
+        content-sensors.md                               # C1~C6 절차·판정 (예제 실행 부작용 고지·정규식 오탐 표기·낯섦 판정 근거)
+        intervention-tiers.md                            # T-A/T-B/T-C + T-C 항목별 정직한 목적 서술(llms.txt·robots.txt·마크다운·구조·컨텍스트 파일·agent-permissions)
+        acceptance-probe.md                              # 태스크 배터리 설계(개입 전 고정·대조 심볼 포함)·두 축 분리·수용 리포트 형식
+        evidence.md                                      # 근거 정본(등급 5종 + DV 필수 표기 · F1~F36 · 인용 금지 14항 · UNVERIFIED)
+      scripts/
+        reach_probe.py                                   # 도달 센서 결정론 프로빙 (stdlib only·census 전용·점수 없음·UA replay는 오차단 탐지만)
+        check_evidence.py                                # 인용 앵커·금지 문구·점수 어휘 자동 검사 (부정 맥락 허용하되 건수 보고)
+    evals/
+      trigger-eval.json                                  # 트리거 경계 20문항 (SEO/GEO·저장소 정적 점수·이해 실측·머지 판정·컨텍스트 파일 작성과 분리)

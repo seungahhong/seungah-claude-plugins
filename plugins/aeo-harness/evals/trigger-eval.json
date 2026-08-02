@@ -1,0 +1,82 @@
+[
+  {
+    "query": "우리 SDK 문서를 Claude Code 같은 코딩 에이전트가 제대로 읽을 수 있는지 감사해줘. docs.acme.dev 인데 Docusaurus로 만들었어",
+    "should_trigger": true
+  },
+  {
+    "query": "에이전트가 우리 API 문서 보고 코드를 짜는데 자꾸 없는 파라미터를 쓴다. 문서에 거짓말이 있는지 찾아서 고쳐줘",
+    "should_trigger": true
+  },
+  {
+    "query": "llms.txt 만들어야 하나? 팀에서 계속 얘기가 나오는데 실제로 효과가 있는지 근거 좀 정리해주고 우리 docs에 필요한지 봐줘",
+    "should_trigger": true
+  },
+  {
+    "query": "AEO 관점에서 우리 개발자 문서 점검 좀 해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "Cursor로 우리 라이브러리 쓰는 사람들이 문서를 못 찾는대. 문서 사이트가 JS로 렌더링돼서 그런 건지 확인하고 뭘 고쳐야 하는지 알려줘",
+    "should_trigger": true
+  },
+  {
+    "query": "GPTBot이랑 ClaudeBot이 우리 docs.example.com 에서 403 맞고 있는지 확인해줄 수 있어? WAF 설정 바꾸고 나서 뭔가 이상해",
+    "should_trigger": true
+  },
+  {
+    "query": "우리 문서를 마크다운으로도 서빙하는 게 좋을까? Cloudflare 뒤에 있고 Pro 플랜이야",
+    "should_trigger": true
+  },
+  {
+    "query": "사내 파이썬 라이브러리인데 에이전트가 쓸 때마다 틀리게 쓴다. 문서에 예제가 부족해서인지 보고 예제 추가하는 게 도움이 될지 판단해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "우리 블로그가 ChatGPT나 Perplexity 답변에 더 자주 인용되게 하고 싶어. 뭘 해야 해?",
+    "should_trigger": false
+  },
+  {
+    "query": "구글 검색 순위 올리려면 어떻게 해야 해? 메타 태그랑 구조화 데이터부터 봐줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 레포가 AI 에이전트가 기여하기 좋은 코드베이스인지 점수 매기고 대시보드 만들어줘",
+    "should_trigger": false
+  },
+  {
+    "query": "에이전트가 방금 쓴 이 PR을 내가 진짜 이해했는지 확인하는 퀴즈 내줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 브랜치 diff 읽어보고 머지해도 되는지 판정해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "우리 CLAUDE.md가 부실한 것 같은데 저장소 구조 보고 다시 써줘",
+    "should_trigger": false
+  },
+  {
+    "query": "README에 오타 있는지 봐주고 문장 다듬어줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 인수조건들 보고 테스트 계층 나눠서 테스트 코드 생성해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "세션 로그 분석해서 토큰 얼마나 낭비하고 있는지 알려줘",
+    "should_trigger": false
+  },
+  {
+    "query": "우리 문서 사이트 페이지 로딩이 느린데 Lighthouse 성능 점수 올려줘",
+    "should_trigger": false
+  },
+  {
+    "query": "API 문서를 OpenAPI 스펙에서 자동 생성하는 파이프라인 구축해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "커밋하고 PR 올려줘",
+    "should_trigger": false
+  }
+]
