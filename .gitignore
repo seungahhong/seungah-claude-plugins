@@ -12,3 +12,6 @@
 # python bytecode (플러그인 스크립트 실행 시 생성)
 __pycache__/
 *.pyc
+
+# skill-creator 트리거 eval이 만드는 임시 커맨드 파일 (실행 중에만 존재)
+.claude/commands/*-skill-*.md
