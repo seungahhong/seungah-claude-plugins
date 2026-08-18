@@ -9,6 +9,7 @@
 ## 2. 멤버십 기준 (어떤 테스트가 Regression에 드는가) — AND/우세
 - [ ] **미변경 영역의 행위 보존**(비회귀)을 검증하거나, 이 테스트가 **변경을 traverse/커버**한다(per-commit change-relevance 재계산).
 - [ ] **완전 행위 보존 오라클**을 요구한다(값·상태를 명세에서 유도). → E2E에 얹힐 때 API 경계는 **`@e2e-mock`이 기본**(회귀 판정은 결정론이 전제). ⚠️ 단 **mock 회귀 통과가 연동 보존을 뜻하지 않는다** — fixture는 캡처 시점 스냅샷이라 계약 drift를 못 잡는다(principles §3.6.6).
+  - ⚠️ **같은 E2E 스펙에 `@smoke`와 `@regression`을 겹치지 않는다** — E2E smoke는 **live 전용**이라 그 스펙이 `test:regression` 실행에서 빠지는 **phantom membership**이 된다(principles §3.6.5-a 귀결 4). 같은 여정을 회귀로도 보존 검증하려면 **`@e2e-mock` 회귀 스펙을 따로 두고** 계획표에 두 행으로 적는다.
 - [ ] **safe-RTS**: 변경을 traverse하는 것을 선택하되 **매핑 불가/미지 파일타입이면 full-suite fallback 강제**(under-selection이 주 실패모드).
 
 ## 3. 실체화 & CI 배치 (principles §3.5)

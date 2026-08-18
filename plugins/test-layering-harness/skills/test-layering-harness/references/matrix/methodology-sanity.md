@@ -17,6 +17,7 @@
    - ⚠️ 역참조는 **원리상 불완전**(barrel re-export·동적 import·별칭 경로·라우팅 규약) → 불확실하면 좁히지 말고 **전체(또는 durable 스위트) 폴백**.
 3. **관련 페이지의 E2E — `@e2e-mock`만** — ⚠️ **E2E가 Phase 1 선택 스코프에 있을 때만 수행**한다(스코프 가드 [`_index.md`](_index.md) §1; 미선택이면 이 단계를 건너뛰고 "E2E 스코프 밖 — sanity 대상 아님" 표기 후 확장 문의 — E2E 경로도 받지 않았으므로 매핑이 성립하지 않는다). 매핑: ① 경로 미러(`src/pages/checkout/**` ↔ `e2e/checkout.spec.ts`) → ② 모호하면 스펙에 `@page:/checkout` 태그 부여를 **게이트 B로 제안** → ③ 둘 다 실패하면 `@e2e-mock` **전량 폴백**.
    - **`@e2e-live`는 sanity 대상이 아니다**(수동 on-demand 전용 — 외부 API 불안정이 PR을 막지 않게, [`layer-e2e.md`](layer-e2e.md) §5.2).
+   - ⚠️ 따라서 **E2E smoke 스펙(`@smoke`+`@e2e-live`)은 이 레인에서 정의상 빠진다**(E2E smoke는 live 전용이라 `@e2e-mock`이 없다 — principles §3.6.5-a). **누락이 아니라 규칙의 결과**이므로, 변경된 페이지에 E2E smoke만 있고 mock E2E가 없다면 "이 페이지의 E2E는 smoke(live)뿐 — sanity 레인 대상 없음"으로 **표기**하고 억지로 끌어오지 않는다.
 
 **성격 기준**:
 - [ ] 직전 변경이 건드린 영역을 재확인한다(= confirmation/re-testing).

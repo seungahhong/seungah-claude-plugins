@@ -18,6 +18,7 @@
 - **CI 배치**: cron/scheduled 스테이지 — full E2E/UI·perf·cross-browser의 귀착지(§3.5.5).
 - **mock 규약(full-suite 결정론 — principles §3.6)**: **unit/integration은 계층 정의상 항상 mock**이므로 nightly에서도 그대로 결정론 실행된다(live 호출 금지 — layer-unit/integration §5 계승). **nightly-native E2E**(cross-browser·real-device 매트릭스)는 **브라우저/디바이스만 실제**로 돌리고, **API 경계는 그 테스트의 모드 태그를 그대로 따른다** — 즉 nightly의 cross-browser 매트릭스는 `@e2e-mock` 스펙을 여러 브라우저에서 돌리는 것이다.
 - **API 모드는 스테이지가 아니라 태그가 결정한다**(§3.6.5) — nightly가 게이트 테스트를 임의로 재-mock 하거나 live로 승격시키지 않는다. **`@e2e-live`는 nightly에도 넣지 않는다** — 고정 스테이지 없이 **수동·on-demand 전용**이다([layer-e2e.md](layer-e2e.md) §5.2). 진짜 flaky한 live 외부계 의존은 격리·non-blocking.
+- **⚠️ E2E smoke를 nightly로 끌어오지 않는다**(principles §3.6.5-a): `@smoke` E2E는 **live 전용**이므로 nightly 스테이지 대상이 아니다. 같은 E2E 스펙에 `@smoke`와 `@nightly`를 **동시 부여하지 않는다** — 모드가 live로 고정돼 `test:nightly` 실행에서 빠지는 **phantom membership**이 된다. 그 여정을 야간 full로도 돌려야 하면 **별도 `@e2e-mock` 스펙으로 분리**한다([layer-e2e.md](layer-e2e.md) §5.2-a). `test:nightly` 셀렉터 목록에 `@e2e-live`가 섞이지 않는지 분리 검증에서 단언한다(§3.5.4-5ⓐ 동형).
 
 ## 4. 오라클 기대
 - 다양 — E2E 정확출력은 MR/얕은 상태, fuzz는 crash/invariant, perf는 임계 기반. **non-blocking이어도 오라클 강도는 낮추지 않는다**(느린 실행 ≠ 약한 판정). 스모크/동어반복 어서션 금지(§5-4).
