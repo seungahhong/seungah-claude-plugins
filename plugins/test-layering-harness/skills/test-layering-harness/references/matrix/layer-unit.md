@@ -23,7 +23,7 @@
 - ⚠️ **Regression과 조합 시 최고위험 오라클**: LLM이 명세가 아니라 현재 구현을 굳혀 버그를 초록으로 은폐(green-locks-bug) — [`methodology-regression.md`](methodology-regression.md)의 완화(AC 기준 오검증·실행 그라운딩)를 반드시 적용.
 - 스모크·동어반복 어서션 금지(§5-4): 틀렸을 때 실제로 실패해야 한다.
 
-## 5. 테스트 배치 & mock 규약
+## 5. 테스트 배치 & mock & 셀렉터 규약
 - **배치(불변식·무조건 강제)**: 테스트 대상(컴포넌트/유틸 함수) 파일이 있는 **바로 그 폴더**에 `__test__/` 디렉토리를 만들고(없으면 생성) 그 안에 테스트 파일을 둔다(대상 파일과 co-locate). 예: `src/utils/format.ts` → `src/utils/__test__/format.test.ts`. **파일명은 `*.test.*`/`*.spec.*` 접미사**로 둬 러너 기본 glob이 `__test__`(단수) 폴더라도 잡히게 한다(Jest `testMatch`·Vitest `include` 기본값은 폴더명 무관하게 `*.test.*` 매칭). **이 `__test__/` 규칙은 조건부가 아니다 — 저장소에 이미 다른 배치 관습(`__tests__` 복수·`test/`·소스 폴더 bare `*.test.ts`)이 감지돼도 그 관습으로 대체하지 않고 항상 `__test__/`를 만들어 그 안에 둔다**(무조건 강제). 러너 config가 특정 폴더로만 매칭을 제한해 `__test__/`가 안 잡히면 관습을 바꾸는 게 아니라 testMatch/include 조정을 게이트 B에서 제안한다('확인 필요' 표기). **작성 전(게이트 B): 테스트 파일 경로가 `.../__test__/…`인지 검사 — 아니면 거부·경로 교정**. 작성 후: 실제로 `__test__/` 아래 생성됐는지 확인.
 - **mock(불변식·예외 없음 — principles §3.6)**: unit은 외부 의존 0이 **정의상** 원칙이므로 **실제 API를 호출하지 않는다**. 호출하는 순간 unit 자격을 잃는다(§1 size/hermeticity).
   - **경계 2종·네트워크 우선**: ① **네트워크 경계 인터셉터**(MSW/nock, python `responses`·`respx`, go `httptest` 등) — 실제 클라이언트 코드가 그대로 실행돼 검증 범위가 넓다. ② 인터셉터가 없으면 **모듈 경계 double**(`vi.mock`/`jest.mock`/monkeypatch) — 요청 조립·에러 매핑이 검증 범위 밖으로 빠지므로 계획표에 그 사실을 적는다.
@@ -31,6 +31,8 @@
   - **fixture 위치**: 저장소 관습 감지 우선, 없으면 `<대상 폴더>/__test__/fixtures/`(파일명에 엔드포인트·상태코드: `orders.get.200.json`). fixture는 커밋한다.
   - **오라클**: fixture는 입력(Given)이지 정답이 아니다 — 기대는 AC에서 유도한다(fixture-as-oracle 금지, principles §5-6).
   - **게이트 B 정적 검사**: 작성 후 외부 URL 리터럴·unmocked fetch/axios·실 토큰 참조가 남았는지 검사해 보고·교정한다. 단 **정적 검사 통과는 "네트워크로 안 나간다"의 증명이 아니다**(우회 가능 — 한계 표기). 기존 테스트가 live를 호출 중이면 **전환 patch를 게이트 B로 제안**(무단 개조 금지).
+- **셀렉터(DOM을 조회할 때만 — principles §3.7)**: unit이라도 컴포넌트를 렌더해 조회하면 **우선순위 사다리**를 따른다 — `getByRole` > `getByLabelText` > `getByPlaceholderText` > `getByText` > `getByDisplayValue`(시각/인터랙션) · `getByAltText` > `getByTitle`(HTML5·ARIA 속성) · **`getByTestId`는 위로 불가능할 때만** · 그래도 불가능하면 **최후 수단 `locator`**(사유·결합 비용 표기). 러너 API 이름은 §3.7.3 어댑터(Playwright는 `getByLabel`/`getByPlaceholder`, **`getByDisplayValue` 없음**). testid **속성명은 팀 합의**라 감지 → 없으면 문의하고, **제품 코드에 testid 추가는 게이트 B 별도 승인**.
+  - ⚠️ **순수 함수·계산/판정 로직 unit은 DOM이 없다** → `셀렉터: 해당 없음(비-DOM)`으로 적고 억지로 채우지 않는다.
 
 ## 6. 이 계층 × 방법론 조합 (선택된 방법론 안에서만 — 강도 값 단일 출처 _index §3 lookup)
 - **Regression × Unit = STRONG(멤버십)·최고위험 오라클** — 경계/에러/edge 회귀의 정본. unit은 cheap → retest-all 종종 충분.

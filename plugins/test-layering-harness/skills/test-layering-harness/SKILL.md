@@ -8,6 +8,7 @@ description: >-
   다중 멤버십이고 WEAK/DEGENERATE 조합은 정직히 비운다. **테스트는 사용자가 Phase 1에서 선택한 방법론·계층 안에서만 추가한다**(스코프 가드 — 밖은 임의 추가 금지·확장 문의).
   **API 경계는 계층이 강제한다** — unit/integration은 실제 API를 호출하지 않고 네트워크 경계 인터셉터(우선)/모듈 double + fixture(3단 폴백: 기존 재사용→사용자 제공→스키마 유도는 '실측 캡처 아님' 표기)로 mock하며, E2E는 스펙 한 벌에 **모드 태그**(`@e2e-mock` 기본=CI 결정론 / 명시 요청 시 `@e2e-live` 병기=실제 API 연동 검증·고정 CI 스테이지 없이 수동 on-demand)로 분기한다(**mock 통과 ≠ 연동 검증** — fixture는 캡처 시점 스냅샷).
   **⚠️ E2E smoke만은 실제 API 연동이 필수다** — `@smoke` 멤버십을 가진 E2E 스펙은 요청 없이도 **`@e2e-live`가 강제**되고 **`@e2e-mock`을 부여하지 않으며**(mock·fixture 없음), CI 고정 스테이지 없이 **수동 레시피**(`test:e2e:smoke:live`)로만 돈다. 하네스는 **대상 환경·테스트 계정·그 자리 승인이 모두 있을 때만** 실제로 실행하고(하네스 live 호출의 유일한 예외) 아니면 UNVERIFIED로 남긴다. 대가는 **자동 배포 게이트가 아니라 수동 체크포인트**라는 것이고, 이는 게이트 결정론 권고와 **상충하는 운영 결정**임을 병기한다.
+  **DOM을 조회하는 테스트는 셀렉터 우선순위 사다리를 지킨다** — `getByRole` > `getByLabelText` > `getByPlaceholderText` > `getByText` > `getByDisplayValue`(시각 요소·사용자 인터랙션) · `getByAltText` > `getByTitle`(HTML5·ARIA 속성) · **`getByTestId`는 위로 불가능한 값을 찾을 때만** · 그래도 안 되면 **최후 수단 `locator`**(사유·결합 비용 표기). 러너 API 이름은 어댑터로 옮기고(Playwright는 `getByLabel`/`getByPlaceholder`·**`getByDisplayValue` 없음**), **testid 속성명은 팀 합의**라 감지 후 없으면 묻고, **제품 코드에 testid 추가는 게이트 B 별도 승인**이다. 비-DOM 테스트는 '해당 없음'으로 적는다(셀렉터는 오라클이 아니며 준수율을 점수화하지 않는다).
   **sanity는 태그가 아니라 변경-스코프 선택 레인**으로, 변경 파일 → 역참조로 관련 상위 페이지/컴포넌트 → 매핑된 `@e2e-mock`까지 골라 **PR 전 change-scoped PR job**에서 돌린다(unit/integration blocking·mock E2E non-blocking, 표준 아닌 운영 결정). 사용자가 "인수조건으로 테스트 짜줘", "이 AC를 unit/통합/E2E로 나눠서", "스모크/회귀 테스트 계획
   세워줘", "테스트 피라미드(트로피)로 계층 잡아줘", "테스트를 하나씩 승인받으며 추가", "AC 기반 계층별 테스트 스위트", "CI 단계별로
   어떤 테스트를 어디에 둘지" 같은 요청을 하거나 테스트 계층 전략·CI 배치를 논할 때 반드시 사용한다. 대상 저장소를 감지해 3개 프리셋
@@ -31,6 +32,8 @@ allowed-tools: Read, Write, Edit, Bash, Grep, Glob
 **방법론·계층 축 카드(7개)**: 방법론×계층을 12개 셀로 미리 물질화하지 않고, **방법론 카드 4개**([`methodology-smoke.md`](references/matrix/methodology-smoke.md)·[`methodology-sanity.md`](references/matrix/methodology-sanity.md)·[`methodology-regression.md`](references/matrix/methodology-regression.md)·[`methodology-nightly.md`](references/matrix/methodology-nightly.md))와 **계층 카드 3개**([`layer-unit.md`](references/matrix/layer-unit.md)·[`layer-integration.md`](references/matrix/layer-integration.md)·[`layer-e2e.md`](references/matrix/layer-e2e.md))를 두고, **필요한 시점에 두 축을 조합**해 상황에 맞는 테스트를 고른다. 라우팅 절차·조합 강도 lookup·**스코프 가드**는 [`references/matrix/_index.md`](references/matrix/_index.md), 2025+ 근거 원장은 [`references/research/matrix-criteria-2025.md`](references/research/matrix-criteria-2025.md). **셀은 조합(다중 멤버십)이지 독립된 4번째 유형이 아니다.** **⚠️ 스코프 가드**: 테스트는 **사용자가 Phase 1에서 선택한 방법론·계층 안에서만** 추가한다 — 밖으로는 임의 추가 금지(스코프 확장은 사용자에게 문의).
 
 **API 경계 축(mock/live)**: 계층·방법론과 직교하는 **테스트 속성**이며 새 축 카드가 아니다([`references/test-layering-principles.md`](references/test-layering-principles.md) §3.6 = 단일 출처, 요약은 [`references/matrix/_index.md`](references/matrix/_index.md) §3-c·§3-d). **Unit/Integration = 항상 mock**(예외 없음 — live로 나가면 정의상 계층 자격 상실), **E2E = 모드 태그**(`@e2e-mock` 기본 / `@e2e-live`는 명시 요청 시만·수동 on-demand). **⚠️ 유일한 규칙 기반 예외 — E2E smoke(`@smoke` × E2E)는 `@e2e-live` 전용**(요청 없이도 강제·`@e2e-mock` 금지·CI 스테이지 없음·수동 레시피·게이트 B는 조건 충족 시에만 실제 실행): principles **§3.6.5-a**(규칙)·**§3.6.5-b**(실행 규약)·[`_index.md`](references/matrix/_index.md) §3-d. **sanity는 실행 선택 레인**이라 조합 강도표의 판정 대상이 아니다(§3-b).
+
+**셀렉터 우선순위 축(DOM 조회)**: 역시 계층·방법론과 직교하는 **테스트 속성**이다([`references/test-layering-principles.md`](references/test-layering-principles.md) **§3.7 = 단일 출처**, 요약은 [`references/matrix/_index.md`](references/matrix/_index.md) §3-e). **DOM을 조회하는 테스트에만** 적용하고 비-DOM은 `해당 없음`이다. 사다리: **`getByRole` > `getByLabelText` > `getByPlaceholderText` > `getByText` > `getByDisplayValue`**(시각 요소·사용자 인터랙션) · **`getByAltText` > `getByTitle`**(HTML5·ARIA 속성) · **`getByTestId`**(위로 불가능할 때만) · **`locator`**(최후 수단·사유 표기).
 
 ---
 
@@ -62,6 +65,7 @@ allowed-tools: Read, Write, Edit, Bash, Grep, Glob
 - 경로를 주면 그 경로를, **미입력(스킵) 시 현재 프로젝트 경로**를 기준으로 삼는다(어느 쪽인지 명시 보고).
 - 대상 경로에서 테스트 러너·실행 명령·테스트 디렉토리 관습을 감지한다(`package.json` scripts, jest/vitest/mocha/playwright/cypress/pytest/go test/junit, `__tests__`·`*.test.*`·`*.spec.*`·`e2e/`). **감지 결과와 부재한 러너(예: "unit 러너 없음, Playwright E2E만")를 한 줄로 보고**한다 — 이는 Phase 1 프리셋·tier 선택에 직접 영향을 준다. 실패·모호 시 사용자에게 확인.
 - **mock 인프라도 함께 감지한다**(§3.6 배선용): 네트워크 경계 인터셉터(msw/nock/WireMock·python `responses`·`respx`·go `httptest`) 유무, 기존 **fixture 배치 관습**(`fixtures/`·`__mocks__/`·`*.fixture.*`), 기존 테스트의 **live 호출 흔적**(외부 URL 리터럴). 인터셉터가 없으면 "모듈 double 폴백 또는 도구 추가(게이트 B 승인)"를 Phase 1에 알린다. **live 호출 흔적이 있으면 위치를 보고**하되 이 단계에서 고치지 않는다(전환 patch는 Phase 3 게이트 B 제안).
+- **DOM 조회 인프라·testid 관습도 감지한다**(§3.7 배선용): DOM을 렌더해 조회하는 러너·라이브러리(`@testing-library/*`·`@playwright/test`·`cypress`) 유무와, **기존 test id 속성명**(`data-testid`·`data-test`·`data-qa`·`data-cy` 사용 흔적, Playwright config의 `testIdAttribute`, 관련 린트 규칙). **여러 개가 섞여 있거나 하나도 없으면 추측하지 말고 Phase 1에서 묻는다**(속성명은 팀 합의 사항). 기존 테스트에 **최후 수단 셀렉터**(`[class*="…"]` 같은 클래스 부분일치·애널리틱스 속성 조회)가 이미 쓰이고 있으면 **위치만 보고**하고 이 단계에서 고치지 않는다(전환은 Phase 3 게이트 B 제안).
 - **E2E live 대상 환경 후보도 함께 감지한다**(E2E smoke가 선택되면 Phase 1에서 바로 확인용): E2E 러너 config의 `baseURL`/`use.baseURL`, `.env.example`·`.env.test`의 API 호스트 키 이름, CI에 이미 있는 스테이징 URL/secret 키 **이름**. **값은 읽어서 출력하지 않는다**(키 이름·파일 경로만 보고).
 
 > Phase 0은 진행을 **차단하지 않되**, AC 3지선다 제시는 생략하지 않는다 — (c)를 고르면 채굴로, 환경 미입력이면 현재 경로로 이어가되 **그 선택이 사용자에게서 나오게** 한다.
@@ -91,6 +95,10 @@ allowed-tools: Read, Write, Edit, Bash, Grep, Glob
      - **문의(대상 환경 — 여기서 못 받으면 나중에 실행 불가)**: ① **base URL/엔드포인트**(스테이징 권장 — **프로덕션이면 그렇게 말씀해 주세요**, 별도 확인 절차를 둡니다) ② **테스트 계정·시드 데이터** 필요 여부와 제공 방법(**값은 대화에 붙여넣지 말고 env·`.env`·CI secret 경로로**) ③ **부작용이 있는 여정**(결제·발송·삭제·외부 과금·알림)을 smoke에 넣을지.
      - 미제공이면 **계획은 그대로 세우되** 게이트 B에서 실행하지 않고 **UNVERIFIED 레시피**로 남긴다고 알린다(계획을 막지 않는다).
      - **E2E에서 `@smoke`와 `@regression`/`@nightly`를 같은 스펙에 겹치지 않는다**는 것도 함께 알린다 — 같은 여정을 회귀/야간으로도 돌리려면 **`@e2e-mock` 스펙을 따로** 만들며 계획표에 두 행이 된다.
+   - **DOM을 조회하는 계층을 선택했으면(컴포넌트 렌더 unit/integration 또는 E2E) 셀렉터 규약을 한 줄로 알린다**([`references/test-layering-principles.md`](references/test-layering-principles.md) §3.7): "화면 요소는 **`getByRole` > `getByLabelText` > `getByPlaceholderText` > `getByText` > `getByDisplayValue`** 순으로 찾고, 속성은 **`getByAltText` > `getByTitle`**, **`getByTestId`는 위로 불가능할 때만**, 그래도 안 되면 **`locator`**(사유 표기)를 씁니다."
+     - **testid 속성명이 Phase 0에서 확정되지 않았으면 여기서 묻는다** — "팀에서 쓰는 test id 속성이 무엇인가요?(`data-testid` / `data-test` / `data-qa` / `data-cy` / 기타 / 아직 없음)". **하네스가 임의로 정하지 않는다**(팀 합의 사항). "아직 없음"이면 무엇으로 할지 함께 정하고, 정해지지 않으면 **사다리 9번(`locator`)으로 내려간다는 사실**을 알린다.
+     - **제품 코드에 testid를 새로 넣어야 할 수 있음**을 미리 알린다 — 그건 테스트 파일 밖의 변경이라 **게이트 B에서 파일·요소를 지목해 별도 승인**을 받는다(승인 없이 제품 코드를 고치지 않는다).
+     - 비-DOM만 선택했으면(순수 로직 unit·서버 API integration 등) 이 안내를 생략하고 계획에 `셀렉터: 해당 없음(비-DOM)`으로 적는다.
 
 5. 선택된 **(방법론 집합) × (계층 집합)**을 Phase 2/3의 **구속 스코프로 고정**한다(확정 문의). **이것이 스코프 가드의 기준선이다** — Phase 2/3는 이 선택 밖으로 어떤 테스트도 추가하지 않는다([`references/matrix/_index.md`](references/matrix/_index.md) §1). 선택 안 된 방법론/계층은 계획에서 제외하고, 비율은 하드코딩하지 않는다.
    - **조합 강도 lookup**([`references/matrix/_index.md`](references/matrix/_index.md) §3)을 한 줄로 제시해 — 실무 정합 최강(Smoke×Integration·Regression×{Unit,Integration}·Nightly×E2E)과 **WEAK/DEGENERATE 조합**(Sanity 전 조합·Nightly×Unit·Smoke×Unit)을 미리 알린다. 사용자가 WEAK/DEGENERATE만 나올 선택을 해도 강제로 채우지 않고 "보통 비움 + 스코프 내 STRONG 조합으로 라우팅"을 안내한다.
@@ -112,15 +120,18 @@ allowed-tools: Read, Write, Edit, Bash, Grep, Glob
    - **Step 4-b API 경계 확정**(principles §3.6·[`_index.md`](references/matrix/_index.md) §3-c·§3-d) — **Unit/Integration은 항상 mock**: 경계 기법(① 네트워크 인터셉터 우선 / ② 모듈 double·검증 범위 밖 항목 명시)과 **fixture 소스**(① 기존 재사용 / ② 사용자 제공 요청 / ③ 스키마 유도=**`[실측 캡처 아님]`**)를 이 단계에서 정해 계획표 열에 적는다. **E2E는 모드 태그**: 기본 `@e2e-mock`, Phase 1에서 사용자가 지목한 시나리오에만 `@e2e-live` 병기(수동 레시피). ②·③이면 무엇이 검증되지 않는지를 함께 적는다.
      - **⚠️ 이 행이 (E2E × Smoke)면 모드가 고정된다**(principles §3.6.5-a): `@e2e-live` **필수**·`@e2e-mock` **금지**·mock/fixture 없음·**CI 스테이지 없음**. API 경계 열에는 fixture 소스 대신 **`live · 대상 {base URL 또는 미제공} · 계정/시드 {제공/불필요/미제공} · 수동 레시피 test:e2e:smoke:live`** 를 적고, 대상 환경이 미제공이면 **`[UNVERIFIED 예정 — 실행 불가]`** 를 함께 적는다.
      - 같은 여정을 회귀·야간으로도 돌려야 하면 **`@e2e-mock` 스펙을 별도 행으로 분리**한다(한 스펙에 `@smoke`+`@regression`/`@nightly` 금지 — phantom membership).
+   - **Step 4-c DOM 셀렉터 확정**(principles §3.7·[`_index.md`](references/matrix/_index.md) §3-e) — 이 테스트가 DOM을 조회하면 **사다리에서 쓸 최상위 순위**를 정해 계획표 열에 적는다(예 `1 getByRole('button', {name:'찜하기'})`). **8(`getByTestId`)·9(`locator`)를 쓸 수밖에 없으면 왜 상위 쿼리가 불가능한지**를 함께 적고, 9번이면 **결합 비용**(애널리틱스 속성=다른 목적의 계약 / 클래스 부분일치=구현 세부)도 적는다. 러너 API 이름은 §3.7.3 어댑터로 옮긴다(**Playwright에 `getByDisplayValue`가 없으므로** 값 특정은 상위 순위 조회 + `toHaveValue` 어서션으로 재설계). DOM이 없으면 `해당 없음(비-DOM)`.
    - **Step 5** 한 슬라이스가 여러 방법론 suite에 속하면 membership 대수(principles §3.5.4 옵션 A/B)로 표기.
    - 근거는 각 축 카드가 인용하는 [`references/research/matrix-criteria-2025.md`](references/research/matrix-criteria-2025.md)에 있다.
 2. 각 계획 행에 **명시적 오라클**(기대 상태·불변식)을 부착한다. **오라클 강도는 (계층 카드 §4 + 방법론 카드 오라클 기대)의 결합 = 더 얕은 쪽이 상한(min)**을 따른다(단 Regression×Unit처럼 강한 쪽이 리스크면 그 리스크 가드는 유지) — 예: Regression×Unit=강한 값-동등·최고위험, Smoke×*=얕은 reachability. 스모크·동어반복 어서션은 계획 단계에서 배제한다.
 3. 계획표를 이 형식으로 제시한다:
 
-   | # | AC-ID | 계층(카드) | 방법론(카드·태그+셀렉터) | 조합 강도 | **API 경계(mock/live·경계기법·fixture 소스)** | 오라클(결합 프로필·기대·불변식) | 테스트 파일(예정) | GWT 요약 | 근거(축 카드) |
-   |---|-------|-----------|--------------------------|-----------|--------------------------------------------|--------------------------------|-------------------|----------|---------------|
+   | # | AC-ID | 계층(카드) | 방법론(카드·태그+셀렉터) | 조합 강도 | **API 경계(mock/live·경계기법·fixture 소스)** | **DOM 셀렉터(순위·8·9면 사유)** | 오라클(결합 프로필·기대·불변식) | 테스트 파일(예정) | GWT 요약 | 근거(축 카드) |
+   |---|-------|-----------|--------------------------|-----------|--------------------------------------------|--------------------------------|--------------------------------|-------------------|----------|---------------|
 
    > `API 경계` 열 표기 예 — unit/integration: `mock · ① MSW 인터셉트 · fixture ② 사용자 제공`, `mock · ② 모듈 double(요청 조립·에러 매핑 미검증) · fixture ③ 스키마 유도[실측 캡처 아님]`. E2E: `@e2e-mock`(기본) / `@e2e-mock + @e2e-live(수동)`. **E2E smoke: `@e2e-live 전용 · 대상 https://staging… · 계정 env E2E_USER · 수동 test:e2e:smoke:live`** (대상 미제공이면 `[UNVERIFIED 예정 — 실행 불가]`).
+
+   > `DOM 셀렉터` 열 표기 예 — `1 getByRole('button', {name:'찜하기'})` / `2 getByLabelText('이메일')` / `8 getByTestId('recent-keyword-list') — role·label·text 없음(아이콘 전용)` / `9 locator('[class*="SimpleRecentKeywordList_container"]') — 사다리 전부 불가·⚠️CSS Module 해시=구현 세부 결합` / `해당 없음(비-DOM)`. **'방법론' 열의 셀렉터(`--grep @smoke`)와 다른 열**임에 주의한다.
 
    그리고 CI 단계 배치(어느 계층이 PR-gate/post-deploy/nightly에 가는지)를 principles §3 매트릭스로 요약한다. **조합은 다중 멤버십**이므로 한 슬라이스가 여러 방법론 열에 겹칠 수 있다(예 Regression×Unit이면서 `@smoke`) — **단 E2E에서는 `@smoke`와 `@regression`/`@nightly`를 겹치지 않는다**(§3.6.5-a). **스코프 밖 슬라이스는 "추가 안 함"으로 표기**하고 별도로 확장 문의한다.
 
@@ -167,6 +178,14 @@ allowed-tools: Read, Write, Edit, Bash, Grep, Glob
 2. **테스트 코드 draft 제시**: 감지된 프레임워크·디렉토리 관습에 맞춰 작성. 오라클을 명시하고 스모크·동어반복 어서션을 넣지 않는다. GWT→AAA 구조를 따른다.
    - **배치 규약**(계층 카드 §5): **unit/integration**은 테스트 대상(컴포넌트/유틸) 파일이 있는 **바로 그 폴더에 `__test__/` 디렉토리를 만들어**(없으면 생성) 그 안에 `*.test.*`로 둔다. **⚠️ `__test__/`는 무조건 강제(스코프 가드·3게이트와 동급 불변식) — 저장소에 이미 다른 배치 관습(`__tests__` 복수·`test/`·소스 폴더 bare `*.test.ts`)이 감지돼도 그 관습으로 대체하지 않고 항상 `__test__/`를 만들어 그 안에 둔다.** 러너 config가 특정 폴더로만 매칭을 제한해 `__test__/`가 안 잡히면 관습을 바꾸는 게 아니라 testMatch/include 조정을 이 게이트 B에서 제안한다('확인 필요'). **E2E**는 Phase 1에서 입력받은 경로에 여정 스펙을 둔다(E2E는 `__test__/` 강제 대상 아님 — 별도 러너·디렉토리 관습).
    - **API 경계 규약(계층 카드 §5 + principles §3.6 — 계획표 'API 경계' 열대로 구현)**: **unit/integration은 실제 API를 호출하지 않는다**(예외 없음 — live로 나가면 정의상 계층 자격 상실). ① **네트워크 경계 인터셉터**(MSW/nock/`responses`/`httptest`)를 우선 쓰고, 없으면 ② **모듈 double**(`vi.mock`/`jest.mock`)로 폴백하되 무엇이 검증 범위 밖인지 draft에 주석/보고로 남긴다. **fixture는 3단 폴백**(① 저장소 기존 재사용 → ② 사용자에게 실제 응답 샘플 요청 → ③ 스키마/타입 유도 + **`[스키마 유도 — 실측 캡처 아님]` 표기**)으로 확보하고 — **하네스가 fixture를 만들려고 live API를 호출하지 않는다** —, 위치는 **저장소 fixture 관습 감지 우선·없으면 `<대상 폴더>/__test__/fixtures/`**(`orders.get.200.json`처럼 엔드포인트·상태코드 명명), fixture는 커밋한다. **fixture 값을 그대로 기대값으로 복사하지 않는다**(fixture-as-oracle 금지, principles §5-6). **nightly** full-suite도 같은 mock 규약으로 결정론 실행하며 cross-browser/real-device는 브라우저/디바이스만 실제다.
+   - **셀렉터 규약(계층 카드 §5 + principles §3.7 — 계획표 'DOM 셀렉터' 열대로 구현)**: DOM을 조회하는 draft는 **사다리를 위에서부터** 쓴다 — **`getByRole` > `getByLabelText` > `getByPlaceholderText` > `getByText` > `getByDisplayValue`**(시각 요소·사용자 인터랙션) → **`getByAltText` > `getByTitle`**(HTML5·ARIA 속성) → **`getByTestId`**(위로 불가능한 값을 찾을 때만) → **`locator`**(최후 수단).
+     - **내려갈 때는 사유를 draft 옆에 적는다** — 상위 쿼리가 **왜 불가능한지**(해당 role/label/text 없음, 중복이라 특정 불가 등). "쓰기 편해서"·"덜 깨져서"는 사유가 아니다.
+     - **러너 API 이름을 어댑터로 옮긴다**(§3.7.3) — Playwright는 **`getByLabel`·`getByPlaceholder`** 이고 **`getByDisplayValue`가 없다**. 없는 API를 부르지 말고, 값 특정이 필요하면 **상위 순위로 찾고 값은 어서션으로**(`expect(locator).toHaveValue(...)`) 검증한다.
+     - **testid 속성명은 감지·합의된 것만 쓴다**(§3.7.4·Phase 0/1). 확정 안 됐으면 임의로 만들지 말고 묻거나 사다리 9번으로 내려간다.
+     - ⚠️ **제품 코드에 testid를 새로 추가해야 하면 게이트 B에서 별도 승인**을 받는다 — 어느 파일의 어느 요소에 무엇을 넣을지 제시한다. **테스트 파일 밖의 변경이므로 승인 없이 쓰지 않는다.** 거절되면 9번으로 내려가고 그 사실을 적는다.
+     - **최후 수단 `locator`를 쓰면 결합 비용을 draft 주석·보고에 남긴다** — 애널리틱스 속성(`[data-ga-action="…"]`)은 **다른 목적의 계약**에, 클래스 부분일치(`[class*="…"]`)는 **구현 세부**에 결합돼 그 소유자가 바꾸면 깨진다. 위험은 알리되 **사용자가 수용하면 따른다**.
+     - **기존 테스트의 셀렉터는 무단 개조하지 않는다** — 사다리에 어긋난 것을 발견하면 위치와 함께 보고하고 **전환 patch를 게이트 B로 제안**한다(승인 시에만 수정).
+     - **DOM이 없는 테스트**(순수 함수 unit·서버 API integration 등)에는 이 규약을 적용하지 않는다 — `해당 없음(비-DOM)`.
    - **배치 강제 검사(이 편차가 이 스킬의 흔한 실수)**: (a) **작성 전** — draft의 테스트 파일 경로가 `<대상 파일 폴더>/__test__/…`(unit/integration)인지 확인하고, 아니면 draft를 거부·경로를 `__test__/` 아래로 교정한 뒤에만 게이트 B로 넘긴다. (b) **작성 시** — `__test__/` 디렉토리가 없으면 파일 쓰기와 함께 생성한다(Write는 상위 폴더를 만들지만, mkdir이 필요한 러너 셋업이면 명시적으로 만든다). (c) **작성 후** — 실제 생성 경로가 `__test__/` 아래인지 확인(`Glob`/`ls`)하고 진행 보고에 경로를 남긴다.
 2-b. **스위트 태그를 코드에 물리적으로 부여**(`references/test-layering-principles.md` §3.5.2):
    - durable 스위트(Smoke/Regression/nightly)에 배치된 테스트는 draft를 쓸 때 **러너 네이티브 기법으로 태그를 코드에 물리적으로 붙인다** — Playwright `{ tag: '@smoke' }`(1.42+), Vitest `{ tags: ['smoke'] }`(4.1.0+, config 선언 필요), Jest는 네이티브 태그가 없으므로 제목 `@smoke`+`-t` 또는 파일명 `*.smoke.test.ts`+projects. 계획 라벨만 있고 코드 태그가 없는 durable 테스트는 **실체화 실패로 거부/수정**한다(phantom suite 방지).
@@ -184,7 +203,10 @@ allowed-tools: Read, Write, Edit, Bash, Grep, Glob
    - **검사 대상**: unit/integration 전부 + `@e2e-mock` 스펙. **`@e2e-live` 스펙(E2E smoke 포함)은 정의상 실제 API를 호출하므로 대상이 아니다** — 대상에서 뺐다는 사실을 보고에 한 줄로 남긴다(조용한 면제 금지). 모드 스위치 헬퍼는 **live 분기 밖**(mock 경로·공용 셋업)에 외부 호출이 새지 않았는지만 본다.
    - **한계를 반드시 병기한다** — 정적 검사는 우회 가능하므로 **"통과 = 네트워크로 안 나감"의 증명이 아니다**. 런타임 네트워크 차단은 강제하지 않는다.
    - **기존 테스트가 live를 호출 중이면**(Phase 0 감지분 포함) 위치와 함께 보고하고 **mock 전환 patch를 게이트 B로 제안**한다 — 승인 시에만 수정하고, 승인 없이는 건드리지 않는다.
-3. **게이트 B — 개별 적용 승인**: "이 테스트를 적용할까요? (적용 / 수정 후 적용 / 이 테스트만 건너뜀 / 여기서 중단)". **승인 시에만** 파일을 쓴다(Write/Edit).
+2-d. **셀렉터 사다리 검사**(principles §3.7): 게이트 B로 넘기기 전 draft에서 확인한다 — ⓐ **더 상위 순위로 찾을 수 있는데 아래로 내려간 조회가 없는가**(있으면 상위로 교정) ⓑ **8·9번 사용처마다 사유가 적혀 있는가**(없으면 거부·보완) ⓒ **러너에 없는 API를 부르지 않았는가**(예: Playwright `getByDisplayValue`·`getByLabelText`) ⓓ **합의되지 않은 testid 속성명을 임의로 쓰지 않았는가** ⓔ **제품 코드 testid 추가가 필요하면 별도 승인 항목으로 분리됐는가**. 비-DOM 테스트는 이 검사를 건너뛰고 `해당 없음`으로 보고한다.
+   - ⚠️ 이 검사는 **오라클 가드(§5)와 직교**다 — 셀렉터를 고쳤다고 오라클이 강해지지 않으며, 둘 다 게이트 B를 통과해야 한다.
+
+3. **게이트 B — 개별 적용 승인**: "이 테스트를 적용할까요? (적용 / 수정 후 적용 / 이 테스트만 건너뜀 / 여기서 중단)". **승인 시에만** 파일을 쓴다(Write/Edit). **제품 코드 testid 추가가 있으면 테스트 파일과 분리해 따로 묻는다**(§3.7.4).
 4. **실행 그라운딩**: 적용한 테스트를 실제로 실행한다(Bash로 러너 호출). 결과(PASS/FAIL)를 자기보고가 아니라 실행 출력으로 보고한다.
    - ⚠️ **이 항목의 실행 대상에서 `@e2e-live` 스펙을 제외한다** — 실제 API를 치기 때문이다. **비-smoke live**는 실행하지 않고 레시피를 UNVERIFIED로 남기고, **E2E smoke live**는 이 항목을 건너뛰어 **4-b의 조건부 실행 절차**로 보낸다(동의 없이 여기서 먼저 돌리지 않는다). 셀렉터에 `@e2e-live` 제외 필터를 걸고, 아래 분리 검증은 **열거(dry-run/`--list`)** 로 수행해 실제 호출이 일어나지 않게 한다.
    - 통과: 다음 행으로. 실패: 원인이 (a) 테스트 결함인지 (b) 실제 코드 결함(=AC 위반 발견)인지 구분해 보고하고, 사용자에게 다음 조치(테스트 수정 / 코드 결함으로 기록 / 건너뜀)를 문의한다.
@@ -220,6 +242,7 @@ allowed-tools: Read, Write, Edit, Bash, Grep, Glob
 1. 적용 요약을 제시한다: 적용/건너뜀/실패 테스트 목록, 각 tier·스위트 분포, 발견된 코드 결함 의심 목록, 남은 UNVERIFIED 항목.
    - **API 경계 요약**: fixture 소스별 목록(①재사용/②사용자제공/**③스키마 유도=실측 캡처 아님**), 모듈 double로 폴백해 **검증 범위 밖으로 남은 부분**, 정적 검사에서 발견된 live 호출과 그 처리(전환/보류).
    - **미실행 `@e2e-live` 레시피**를 UNVERIFIED로 명시하고, **"mock E2E 통과는 연동 검증이 아니다 — 연동 확인은 `@e2e-live` 수동 실행뿐"**을 병기한다(principles §3.6.6).
+   - **셀렉터 요약**(DOM 조회 테스트가 있으면): 사다리 순위별 사용처 목록과 **8(`getByTestId`)·9(`locator`) 사용처의 사유**, **제품 코드에 추가한 testid**(승인분)와 **거절돼 9번으로 내려간 항목**, 기존 테스트에서 발견했지만 **전환하지 않은 셀렉터**(보고만). ⚠️ **준수율·점수를 만들지 않는다** — 목록과 사유로만 적는다.
    - **E2E smoke(live) 상태**(있으면): 스펙 목록 · 대상 환경·실행 시각 · **실행됨(PASS/FAIL) 또는 UNVERIFIED(사유: 대상 미제공/미승인)** · 실패 시 3분류 판정 · 남은 테스트 데이터 · 격리 단언 4종 결과. 그리고 **그대로 인쇄**: "**E2E smoke는 CI 스테이지에 없다 — 자동 배포 게이트가 아니라 승격 전 수동 체크포인트다.** 이는 게이트 결정론 권고와 **상충하는 운영 결정**이며, live 통과는 **실행 시각·대상 환경에 한정된 관측**이다."
    - **sanity 레인 상태**: 장치 3종 적용 여부, 레시피 실행이 실제로 뽑은 대상 수, 매핑 폴백 발생 여부, 부족분으로 새로 만든 테스트, **E2E smoke가 레인에서 제외된 페이지 목록**(정의상 제외 — 누락 아님).
 2. 전체 스위트를 한 번 실행해 현재 상태를 보고한다(가능하면). ⚠️ **이 전체 실행에 `@e2e-live`(E2E smoke 포함)를 포함하지 않는다** — 실제 API 호출은 §3.6.5-b 전제(대상 환경·계정·그 자리 승인)를 만족한 개별 실행에서만 하며, 여기서 재실행하려면 다시 묻는다.
@@ -249,6 +272,7 @@ allowed-tools: Read, Write, Edit, Bash, Grep, Glob
 - [ ] 모든 오라클을 기대(AC) 기준으로 오검증했는가(구현 스냅샷 거부)?
 - [ ] **배치 강제** — unit/integration 테스트를 **모두** 대상 파일 폴더의 `__test__/` 안에 두었는가? 저장소에 다른 관습이 있어도 예외 없이 `__test__/`를 만들었고, 작성 전 경로 검사·작성 후 경로 확인을 했는가(E2E는 Phase 1 경로 별개)?
 - [ ] **API 경계 강제** — unit/integration에 **실제 API 호출이 하나도 없는가**(네트워크 인터셉터 우선·모듈 double 폴백)? fixture를 3단 폴백으로 확보하고 **스키마 유도분에 `[실측 캡처 아님]`을 표기**했는가? fixture를 기대값으로 그대로 복사하지 않았는가? 정적 검사를 수행하고 **그 한계(우회 가능·네트워크 미접속 증명 아님)** 를 함께 적었는가?
+- [ ] **셀렉터 우선순위**(principles §3.7) — DOM 조회를 **`getByRole` > `getByLabelText` > `getByPlaceholderText` > `getByText` > `getByDisplayValue`** / **`getByAltText` > `getByTitle`** 순으로 시도하고, **`getByTestId`는 위로 불가능할 때만**, `locator`는 **최후 수단**으로만 썼는가? **8·9번 사용처마다 사유**(상위가 왜 불가능했는지)를 적었고, 9번엔 **결합 비용**(애널리틱스 속성=다른 목적의 계약 / 클래스 부분일치=구현 세부)도 적었는가? **러너에 없는 API를 부르지 않았는가**(Playwright `getByLabel`/`getByPlaceholder`·`getByDisplayValue` 부재 → 상위 조회 + `toHaveValue`)? **testid 속성명을 임의로 정하지 않고** 감지·합의된 것만 썼는가? **제품 코드 testid 추가를 게이트 B에서 별도로 승인**받았는가(거절 시 9번으로 하향·표기)? 기존 테스트 셀렉터를 **무단 개조하지 않고** 보고·patch 제안했는가? **준수율을 점수화하지 않고** 효과 수치·접근성 성과를 주장하지 않았는가? 비-DOM은 `해당 없음`으로 적었는가?
 - [ ] **E2E 모드 태그** — 스펙 **한 벌**에 `@e2e-mock`(기본)을 부여하고, `@e2e-live`는 **사용자가 지목한 시나리오에만** 병기했는가? 모드 전환을 명시 스위치로만 했고(스테이지가 모드를 바꾸지 않음), `@e2e-live`를 CI 스테이지·sanity에 넣지 않고 **수동 레시피(UNVERIFIED)** 로 남겼는가? **"mock 통과 ≠ 연동 검증"** 을 산출물에 병기했는가?
 - [ ] **E2E smoke = live 전용**(principles §3.6.5-a) — `@smoke` E2E에 **`@e2e-live`를 필수 부여하고 `@e2e-mock`을 안 붙였는가**(mock 주입·fixture 없음)? 같은 스펙에 **`@regression`/`@nightly`를 겹치지 않았는가**(필요하면 mock 스펙으로 분리)? **CI 스테이지(PR-gate·post-deploy·nightly)에 넣지 않고** 수동 `test:e2e:smoke:live`만 만들었는가? **격리 단언 4종**(ⓐ`test:smoke`에 live 없음 ⓑsmoke E2E에 mock 태그 없음 ⓒsmoke E2E에 regression/nightly 없음 ⓓlive 레시피가 비-E2E 안 끌어옴)을 **실행 출력**으로 확인했는가? sanity 레인 제외를 **누락이 아니라 규칙의 결과로 표기**했는가?
 - [ ] **live 실행 규약**(principles §3.6.5-b) — 실제 API 실행 전에 **대상 환경 + 계정/시드 + 그 자리 승인** 세 전제를 모두 확인했는가(계획 승인으로 갈음하지 않음)? **프로덕션 재확인·부작용 개별 확인·비밀 미노출**을 지켰는가? 결과를 **실행 시각·대상 환경과 함께** 적고 "연동 정상"이 아니라 "언제·어디서 통과"로 기술했는가? 실패를 **3분류**(테스트/코드/**환경·외부계**)로 구분했는가? 못 돌렸으면 **UNVERIFIED**로 남기고 "레시피를 만들었다"를 검증으로 옮기지 않았는가?

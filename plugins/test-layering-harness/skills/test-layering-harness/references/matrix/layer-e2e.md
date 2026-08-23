@@ -22,7 +22,21 @@
 - 정확 pinning 대신 **메타모픽 관계(MR)를 옵션**으로(강제 아님·부분 판정).
 - green-locks-bug 리스크는 상대적으로 낮으나(주장 자체가 얕음) "초록=검증" 오독 리스크. 스모크/동어반복 어서션 금지(§5-4).
 
-## 5. 테스트 배치 & API 모드 태그 규약
+## 5. 테스트 배치 & API 모드 태그 & 셀렉터 규약
+
+### 5.0 셀렉터 우선순위 (principles §3.7)
+
+E2E는 **정의상 항상 DOM을 조회**하므로 사다리가 예외 없이 적용된다:
+
+`getByRole` > `getByLabelText` > `getByPlaceholderText` > `getByText` > `getByDisplayValue` (시각 요소/사용자 인터랙션)
+→ `getByAltText` > `getByTitle` (HTML5·ARIA 속성)
+→ `getByTestId` (**위로 불가능한 값을 찾을 때만**)
+→ **최후 수단 `locator`** (사유·결합 비용 표기)
+
+- **러너 이름 어댑터(§3.7.3)**: Playwright는 **`getByLabel`·`getByPlaceholder`** 이고 **`getByDisplayValue`가 없다** — 값으로 특정해야 하면 상위 순위로 찾고 **값은 어서션으로**(`toHaveValue`) 검증한다.
+- **testid 속성명은 팀 합의**(§3.7.4) — Playwright `testIdAttribute` 설정·저장소 관습을 감지하고, 없으면 문의한다. **제품 코드에 testid를 새로 추가하는 것은 게이트 B 별도 승인** 대상이다.
+- **최후 수단 예**(§3.7.5): `await container.locator('[data-ga-action="찜하기_추가"]')`(애널리틱스 속성 = **다른 목적의 계약**에 결합) · `page.locator('[class*="SimpleRecentKeywordList_container"]')`(CSS Module 해시 클래스 = **구현 세부**에 결합). 쓰려면 **사유와 깨지는 시점**을 함께 적는다.
+- ⚠️ 셀렉터는 **오라클이 아니다** — 상위 순위를 썼다는 사실이 §4의 오라클 강도를 올려주지 않는다.
 
 ### 5.1 배치
 - **E2E 테스트 경로는 사용자에게 초기에 입력받는다** — E2E는 별도 러너(Playwright/Cypress 등)·별도 디렉토리(`e2e/`, `tests/e2e/`, `cypress/e2e/` 등)를 쓰는 것이 일반적이므로, **Phase 1에서 E2E 계층이 선택되면 그 자리에서 테스트 경로를 문의**한다(SKILL Phase 1). 입력된 경로 아래에 여정별 스펙 파일을 둔다.

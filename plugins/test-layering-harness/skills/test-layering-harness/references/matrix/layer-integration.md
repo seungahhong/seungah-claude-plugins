@@ -23,7 +23,7 @@
 - implementation-bias 금지: 현재 구현이 내는 값을 그대로 굳힌 오라클 거부(§5-1).
 - flaky baseline 선결(§5-3)·false-alarm 인지(§5-5)·실행 그라운딩(§5-2). 스모크/동어반복 어서션 금지(§5-4).
 
-## 5. 테스트 배치 & mock 규약
+## 5. 테스트 배치 & mock & 셀렉터 규약
 - **배치(불변식·무조건 강제)**: 테스트 대상(컴포넌트/유틸/모듈) 파일이 있는 **바로 그 폴더**에 `__test__/` 디렉토리를 만들고(없으면 생성) 그 안에 테스트 파일을 둔다(co-locate). **파일명은 `*.test.*`/`*.spec.*` 접미사**(폴더명 무관하게 러너 기본 glob이 매칭 — Jest `testMatch`·Vitest `include`). **이 `__test__/` 규칙은 조건부가 아니다 — 저장소에 이미 다른 배치 관습(`__tests__` 복수·`test/`·bare `*.test.ts`)이 있어도 그것으로 대체하지 않고 항상 `__test__/`를 만들어 그 안에 둔다**(무조건 강제). 러너 config가 특정 폴더로만 매칭을 제한하면 testMatch/include 조정을 게이트 B에서 제안('확인 필요'). **작성 전(게이트 B): 경로가 `.../__test__/…`인지 검사 — 아니면 거부·교정**. 작성 후: `__test__/` 아래 생성 확인.
 - **mock(불변식·예외 없음 — principles §3.6)**: narrow integration이므로 경계의 외부 서비스는 **mock 데이터(fixture)로 주입**한다. **live API/외부 머신 호출 금지** — live로 나가면 medium 경계를 넘어 **정의상** 계층 자격을 잃는다(§1).
   - **경계 2종·네트워크 우선**: ① **네트워크 경계 인터셉터**(MSW/nock/WireMock, python `responses`·`respx`, go `httptest`) — 실제 HTTP 클라이언트·직렬화·상태코드 처리까지 통합 경계에서 검증된다(narrow integration의 취지에 가장 부합). ② 없으면 **모듈 경계 double**(`vi.mock`/DI 주입) — 이때 요청 조립·에러 매핑은 검증 범위 밖임을 계획표에 적는다.
@@ -32,6 +32,8 @@
   - **오라클**: 계약·상태 오라클은 fixture 복사가 아니라 기대(AC) 기준으로(fixture-as-oracle 금지, principles §5-6).
   - **게이트 B 정적 검사**: 외부 URL·unmocked 클라이언트 호출·실 토큰 참조 검사 후 보고·교정(정적 검사의 한계 병기). 기존 테스트가 live 호출 중이면 전환 patch를 게이트 B로 제안.
   - ⚠️ **정직성**: mock 통과는 **연동 검증이 아니다** — fixture는 캡처 시점 스냅샷이라 계약 drift를 구조적으로 못 잡는다(principles §3.6.6). 연동 확인 장치는 `@e2e-live` 수동 실행뿐이다.
+- **셀렉터(DOM을 조회할 때만 — principles §3.7)**: 컴포넌트·페이지를 렌더해 협업을 검증하는 integration은 **우선순위 사다리**를 따른다 — `getByRole` > `getByLabelText` > `getByPlaceholderText` > `getByText` > `getByDisplayValue`(시각/인터랙션) · `getByAltText` > `getByTitle`(HTML5·ARIA 속성) · **`getByTestId`는 위로 불가능할 때만** · 그래도 불가능하면 **최후 수단 `locator`**(사유·결합 비용 표기). 러너 API 이름은 §3.7.3 어댑터. testid **속성명은 팀 합의**(감지 → 없으면 문의), **제품 코드에 testid 추가는 게이트 B 별도 승인**.
+  - ⚠️ **서버 API·모듈 간 integration은 DOM이 없다** → `셀렉터: 해당 없음(비-DOM)`으로 적는다.
 
 ## 6. 이 계층 × 방법론 조합 (선택된 방법론 안에서만 — 강도 값 단일 출처 _index §3 lookup)
 - **Smoke × Integration = STRONG** — commit-stage smoke의 정본(Fowler CD "소수의 중요한 integration·acceptance 테스트로 이뤄진 작은 smoke suite"). 핵심 통합 지점 정상 경로·결정론·showstopper.
