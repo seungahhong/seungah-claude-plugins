@@ -60,7 +60,7 @@
     "should_trigger": false
   },
   {
-    "query": "planner로 PRD 만들고 architecture 설계까지 가서 코드 짜줘",
+    "query": "PRD 만들고 기술 아키텍처 설계까지 가서 코드 짜줘",
     "should_trigger": false
   },
   {
@@ -117,6 +117,34 @@
   },
   {
     "query": "우리 팀 현행 프로세스 진단하고 스크럼·칸반 중 뭐가 맞을지 개발 방법론을 순위로 추천해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 기획안으로 PRD 만들되, 계획·설계·비평 돌려서 지적 반영한 다음에 확정해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "PRD 초안 만들고 확정 전에 약점·리스크 비평까지 받아서 반영해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "이 서비스 기술 아키텍처 설계서 써줘. API 엔드포인트랑 데이터 모델·테이블 스키마까지",
+    "should_trigger": false
+  },
+  {
+    "query": "컴포넌트 구조랑 상태관리 설계해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 기획안으로 PRD·유저스토리 만들고 인수조건까지 Given-When-Then으로 뽑아줘",
+    "should_trigger": true
+  },
+  {
+    "query": "스토리별 인수조건을 정상·예외 흐름까지 덮어서 acceptance-criteria 문서로 만들어줘",
+    "should_trigger": true
+  },
+  {
+    "query": "이 인수조건대로 E2E 테스트 코드 짜고 실행해줘",
     "should_trigger": false
   }
 ]

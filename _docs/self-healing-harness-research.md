@@ -99,7 +99,7 @@ harness: product-spec-harness
 phase: 2
 event: failure | redirect | feedback | progress   # F6 event
 when: 2026-06-18T...                               # F6 temporal
-where: SKILL.md:Phase2 / agent prd-writer          # F6 where (file:line)
+where: SKILL.md:Phase2 / agent prd-planner         # F6 where (file:line)
 why: "사용자가 'success_metrics 관찰형 아님' 지적"    # F6 why-binding
 input_excerpt / output_excerpt: ...                # 원본 보존(F7, 요약 금지)
 target: <file:line>                                # 진단이 grep할 표적

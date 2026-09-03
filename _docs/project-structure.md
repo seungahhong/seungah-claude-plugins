@@ -76,26 +76,32 @@ plugins/
       hooks.json                                         # UserPromptSubmit 훅 설정
       self-heal-capture.sh                               # '수정/보강/방향전환' 발화 → signals 레인 원형 적재 (캡처 전용·비차단, cross-session)
     evals/                                               # acceptance assertion + 트리거 평가 + dry-run 리포트
-  product-spec-harness/                                  # [독립 플러그인] 기획자(PM)용 기획문서(PRD)+사용자 스토리 5단계 인터랙티브 하네스 + 기획 완성도 점검(DoR)(내재화·외부 의존 없음, 단독 동작) — 개발 착수 전, 도메인 무관 (산출물은 .claude/_docs/<기획서 슬러그>/에 저장) (입력 모드 A 기획안/B 인터뷰; 경계: 프론트엔드 화면 구현·기술 설계·코드/하네스/커밋·완성 산출물 핸드오프 게이트 검수 제외)
+  product-spec-harness/                                  # [독립 플러그인] 기획자(PM)용 기획문서(PRD)+사용자 스토리+인수조건 7단계 인터랙티브 하네스 + 기획 완성도 점검(DoR)·PRD 확정 루프(계획→설계→비평)(모두 내재화·외부 의존 없음, 단독 동작) — 개발 착수 전, 도메인 무관 (산출물은 .claude/_docs/<기획서 슬러그>/에 저장) (입력 모드 A 기획안/B 인터뷰; 경계: 프론트엔드 화면 구현·기술 설계·코드/하네스/커밋·완성 산출물 핸드오프 게이트 검수 제외)
     .claude-plugin/
       plugin.json
-    CLAUDE.md                                            # 하네스 포인터 + 5단계 요약 + 변경 이력
+    CLAUDE.md                                            # 하네스 포인터 + 7단계 요약 + 변경 이력
     README.md                                            # 사용자용 개요·사용법·도구 경계·입력 모드
     agents/                                              # 모두 model: "opus" (Phase 순차)
       requirements-analyst.md                            # Phase 0 요구/문제/사용자 정의 (Discovery) — 기획안 있으면 카드 추출, 없으면 인터뷰
       dor-evaluator.md                                   # Phase 1 원본 기획안의 기획 완성도 점검(DoR) (모드 A 진입질문 필수·생성 전 선행) — # 기획 완성도 점검 결과(DoR Review) + 보완할 점 점검표(보강 체크리스트) 채팅 제시, 보강점을 PRD·스토리에 반영 (저장은 마무리 opt-in)
-      prd-writer.md                                      # Phase 2 기획문서(PRD) 작성 — 배경·목표·범위·요구사항·리스크·마일스톤 (Phase 1 보강점 반영)
-      story-writer.md                                    # Phase 3 사용자 스토리 + 수용기준(조건·행동·결과(Given/When/Then)) + 좋은 스토리 6가지 기준(INVEST) 자가점검 (Phase 1 보강점 반영)
-      spec-reviewer.md                                   # Phase 4 적대적 검증 — 요구↔스토리 추적·INVEST·관찰성·일관성·모호 색출 (채팅 제시 + 동의 시 adversarial-review.md 저장)
+      prd-planner.md                                     # Phase 2.1 계획 — PRD §1 배경·문제 / §2 목표·성공지표(관찰형) / §3 범위(In·Out) 소유. 범위 Out 강제·발명 금지·질문은 [확인필요]로 반환 (Phase 1 보강점 반영)
+      prd-designer.md                                    # Phase 2.2 설계 — PRD §4 핵심 요구사항(FR·NFR) / §5 가정·리스크 / §6 마일스톤 소유. 기획 설계 D1~D12(기술 아키텍처·스토리 문장 산출 금지), §1~§3은 [계획 변경 요청]으로 반환
+      prd-critic.md                                      # Phase 2.3 비평 — 확정 전 PRD 초안(§1~§6) 읽기 전용 비평. 렌즈 C-1~C-7·원문 인용 필수·차단 닫힌 4종·처리분류 A/B/C·쓰기 권한 0·확정 거부권 없음
+      story-writer.md                                    # Phase 3 사용자 스토리 + INVEST 자가점검 + 요구 커버 표 ([인수조건 인계] 메모만, 조건·행동·결과 문장은 쓰지 않음 — 단일 원본)
+      acceptance-writer.md                               # Phase 5 인수조건 작성 — 조건·행동·결과(Given-When-Then)·단일 관심사·흐름 커버리지 6종·AC↔US 추적 → acceptance-criteria.md (최종 산출물, 정책·수치 발명 금지)
+      spec-reviewer.md                                   # Phase 4 1차(PRD↔스토리: 추적·INVEST·일관성·모호) / Phase 6 2차(스토리↔인수조건: 빠짐·고아·관찰성·단일 관심사·흐름 커버리지·누락 마이닝) 적대적 검증 (두 회차 모두 채팅 제시만 — 리포트 파일 없음)
     skills/
-      product-spec/                                      # 진입점 오케스트레이터 (Phase 0~4 인터랙티브, 승인 게이트, 입력 모드 A/B, 산출물은 .claude/_docs/<슬러그>/에 저장·각 파일 opt-in)
+      product-spec/                                      # 진입점 오케스트레이터 (Phase 0~6 인터랙티브, 승인 게이트, 입력 모드 A/B, Phase 2는 계획→설계→비평 확정 루프(회차당 게이트 1개), Phase 5 인수조건·Phase 6 2차 검증. 산출 파일은 정확히 4개(PRD/user-stories/acceptance-criteria/product-spec-review) — 검증 리포트는 채팅 제시만)
         SKILL.md                                         #   오케스트레이터 본문
         references/
           prd-template.md                                #   PRD 표준 구조 + 작성기준
-          user-story-guide.md                            #   As a/I want/so that + 조건·행동·결과(Gherkin) + 좋은 스토리 6가지 기준(INVEST)
+          user-story-guide.md                            #   As a/I want/so that + 좋은 스토리 6가지 기준(INVEST) (인수조건 문장은 범위 밖)
           dor-review-rubric.md                           #   기획 완성도 점검(DoR) 루브릭 내재화 (# 기획 완성도 점검 결과(DoR Review)·보완할 점 점검표·Honesty Guardrail·2025+ 근거)
+          prd-design-checklist.md                        #   기획 설계 점검표 D1~D12 + 기술 설계 금지 어휘 + 섹션 소유 경계 (Phase 2.2 설계 내재화)
+          prd-critique-lenses.md                         #   PRD 비평 렌즈 C-1~C-7 + 차단 닫힌 4종 + 처리분류 A/B/C + 정체 가드 G1~G3 + 정직성 가드레일 (Phase 2.3 비평 내재화)
+          acceptance-criteria-guide.md                   #   인수조건 작성 가이드 내재화 — 조건·행동·결과 형식·단일 관심사·흐름 커버리지 6종·판정 체크·스토리↔인수조건 추적·누락 마이닝 (Phase 5·6)
     evals/
-      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 13 / should_not 16, 자매 하네스(review-harness) reciprocal 가드 포함)
+      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 17 / should_not 20, 자매 하네스(review-harness) reciprocal 가드 + 기술 아키텍처 설계·테스트 코드 작성 오발동 가드 포함)
   loop-engineering/                                      # [독립 플러그인] 검증 가능한 목표를 향한 자율 반복 루프 + 지속학습 메모리 멀티 에이전트 하네스 (실행 루프 Goal→Execute→Verify→Diagnose→Improve + 학습 루프 Fail→Investigate→Verify→Distill→Consult). 경계: 하네스 진단·개선(meta-harness)·하네스 생성(harness-generator)·PRD(product-spec/frontend)·커밋(git-harness)·native /loop 제외
     .claude-plugin/
       plugin.json
