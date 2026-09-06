@@ -146,5 +146,29 @@
   {
     "query": "이 인수조건대로 E2E 테스트 코드 짜고 실행해줘",
     "should_trigger": false
+  },
+  {
+    "query": "기획안 보완했는데 PRD랑 사용자 스토리, 인수조건 다시 맞춰줘",
+    "should_trigger": true
+  },
+  {
+    "query": "점검표에서 건너뛴 항목 이제 정했어. 만들어둔 문서들에 반영해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "PRD 만들기 전에 기획안부터 보완할래. 뭐가 빠졌는지 하나씩 물어봐줘",
+    "should_trigger": true
+  },
+  {
+    "query": "이 기획안 완성도 점검하고, 부족한 항목 하나씩 물어본 다음에 PRD·스토리·인수조건까지 만들어줘",
+    "should_trigger": true
+  },
+  {
+    "query": "이미 배포된 서비스 장애 원인 분석하고 롤백해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 컴포넌트 리팩터링하고 커밋 메시지 써줘",
+    "should_trigger": false
   }
 ]
