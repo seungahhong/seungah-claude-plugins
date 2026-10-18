@@ -10,6 +10,6 @@
 - 스킬/커맨드 설명은 한국어로 작성
 - 스킬 간 교차 참조 시 파일 기준 상대 경로 사용 (예: `../a11y/SKILL.md`). 단 **커맨드 파일**은 플러그인 루트 기준 `./skills/...`·`./commands/...` 표기를 공인 스타일로 사용한다(frontend-harness·review-harness 커맨드 전반의 기존 일관 표기)
 - 메타/도메인 무관 스킬은 `frontend-harness`에 두지 않고 별도 플러그인으로 분리 (예: `harness-generator`, `git-harness`, `meta-harness`)
-- 4개 이상의 에이전트가 협업하는 하네스(예: `meta-harness`)는 `agents/{name}.md` 정의 파일을 두고 모든 Agent 호출에 `model: "opus"` 명시. 예외: 커맨드가 *스킬*을 서브에이전트로 spawn하는 legacy 패턴(`frontend-harness` commands)은 `agents/` 정의 없이 허용하되, spawn 지시에 `model: "opus"`를 명시한다
+- 4개 이상의 에이전트가 협업하는 하네스(예: `meta-harness`)는 `agents/{name}.md` 정의 파일을 두고 모든 Agent 호출에 `model: "opus"` 명시. 예외: 커맨드가 *스킬*을 서브에이전트로 spawn하는 legacy 패턴(`frontend-harness` commands)은 `agents/` 정의 없이 허용하되, spawn 지시에 `model: "opus"`를 명시한다. 예외 2: 하네스 규칙이 결과에 새어 들면 안 되는 **의도적 무정의 호출**(예: `ux-ai-workflow-harness` Phase 3 경로 (b) — 사용자 채팅 AI 조건을 흉내 내 프롬프트 본문만 주는 초안 생성)은 `general-purpose`로 spawn하되 `model: "opus"`를 명시하고, 정의 파일을 두지 않는 이유를 SKILL.md에 적는다
 - 루트 `CLAUDE.md`는 100줄 이내로 유지하고, 세부 내용은 `_docs/` 하위 특징별 .md 파일로 분리해 참조
 - 새 하네스(플러그인) 도입·트리거 표현 변경 시, 트리거가 인접한 자매 플러그인들의 `evals/trigger-eval.json`에도 상호(reciprocal) should-not 경계 케이스를 함께 갱신한다(양방향 오발동 가드). 예: `loop-engineering` ↔ `meta-harness`/`harness-generator`/`product-spec-harness`. 알려진 예외: `frontend-harness`·`git-harness`는 `evals/`가 아직 없어 역방향 가드가 없다(추가 시 이 규칙 적용) — 대신 해당 플러그인 스킬 본문의 "인접 하네스 역방향 배제 문구"로 보완한다

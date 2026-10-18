@@ -1,0 +1,114 @@
+[
+  {
+    "query": "다음 달에 온보딩 개선하려고 사용자 인터뷰 8건 하는데, 계획부터 분석까지 AI한테 뭘 맡기고 뭘 우리가 직접 해야 하는지 정리해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "인터뷰 녹취 20개를 ChatGPT에 넣어서 테마 뽑으려고 하는데 이거 괜찮은 방법이야? 어디까지 맡겨도 돼?",
+    "should_trigger": true
+  },
+  {
+    "query": "리서치 예산이 없어서 합성 사용자(synthetic users)로 신규 기능 컨셉 검증하려고 해. 이렇게 해도 될까?",
+    "should_trigger": true
+  },
+  {
+    "query": "AI로 만든 설문 문항인데 검토 좀 해줘. 10분 안에 끝난다고 했는데 문항이 좀 많은 것 같아",
+    "should_trigger": true
+  },
+  {
+    "query": "리서치 플랫폼 AI가 사용성 테스트 과제를 만들어 줬는데 유도적인지 봐주고 어떻게 고칠지 알려줘",
+    "should_trigger": true
+  },
+  {
+    "query": "Figma Make로 대시보드 프로토타입 만드는데 매번 이상한 레이아웃이 나와. 프롬프트를 어떻게 줘야 해?",
+    "should_trigger": true
+  },
+  {
+    "query": "사용성 테스트용 프로토타입에 넣을 주문 내역 표 데이터를 AI로 만들고 싶어. 과제가 특정 값에 의존하거든",
+    "should_trigger": true
+  },
+  {
+    "query": "다음 주에 팀 아이디에이션 워크숍을 하는데 AI를 같이 쓰고 싶어. 준비랑 진행을 어떻게 하면 좋을까",
+    "should_trigger": true
+  },
+  {
+    "query": "AI 인터뷰어 툴(Marvin 같은 거) 도입하자는 얘기가 나왔는데 우리 리서치팀 관점에서 검토해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "UX 업무에서 생성형 AI한테 뭘 맡기고 뭘 내가 직접 해야 하는지 내 작업 기준으로 정리하고 싶어",
+    "should_trigger": true
+  },
+  {
+    "query": "AI로 휴리스틱 평가랑 UX 감사를 돌려 봤는데 지적 사항을 그대로 믿고 고쳐도 되는지 판단해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "UX 문구를 ChatGPT로 뽑는데 톤이 너무 과장돼. AI한테 어떻게 시켜야 하고 결과를 뭘 보고 골라야 해?",
+    "should_trigger": true
+  },
+  {
+    "query": "이 기획안으로 PRD랑 사용자 스토리 만들어줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 유저스토리랑 인수조건을 보고 피그마에 어떤 프레임이랑 상태를 그려야 하는지 설계해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "Midjourney에 넣을 프롬프트를 메타 프롬프팅으로 깎아줘",
+    "should_trigger": false
+  },
+  {
+    "query": "우리 개발팀에서 코딩 에이전트에게 어디까지 자율권을 주고 어디서 사람이 승인할지 감독 체계를 설계해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "LLM 출력 채점을 judge 한 번으로 하는데 못 믿겠어. 다중 표본으로 신뢰도까지 평가 체계 만들어줘",
+    "should_trigger": false
+  },
+  {
+    "query": "우리 앱에 들어갈 AI 챗봇 기능의 대화 UX를 설계해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "사용자 인터뷰랑 사용성 테스트 차이가 뭐야?",
+    "should_trigger": false
+  },
+  {
+    "query": "이미 나온 피그마 디자인이 핸드오프해도 되는 상태인지 누락 검수해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 React 컴포넌트 접근성 이슈 고쳐줘",
+    "should_trigger": false
+  },
+  {
+    "query": "에이전트가 쓴 이 PR을 내가 제대로 이해했는지 퀴즈 내줘",
+    "should_trigger": false
+  },
+  {
+    "query": "우리 팀이 쓸 개발 방법론을 스크럼이랑 칸반 중에 골라줘",
+    "should_trigger": false
+  },
+  {
+    "query": "변경사항 커밋하고 PR 올려줘",
+    "should_trigger": false
+  },
+  {
+    "query": "멀티 에이전트 시스템에 넣을 컨텍스트 페이로드를 조립하고 압축해서 per-agent로 격리해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "온보딩 개선용 사용자 인터뷰 가이드 10문항 써줘",
+    "should_trigger": false
+  },
+  {
+    "query": "결제 오류 메시지 문구 대안 5개 줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 인터뷰 노트들 테마별로 묶어줘",
+    "should_trigger": false
+  }
+]

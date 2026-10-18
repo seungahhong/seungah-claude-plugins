@@ -62,5 +62,13 @@
   {
     "query": "우리 회사/팀 현행 조직을 인터뷰로 진단하고 목적조직·AI native 목표 대비 간극이랑 뭐부터 시작할지 할 일을 정리해줘",
     "should_trigger": false
+  },
+  {
+    "query": "인터뷰 녹취를 ChatGPT로 분석하려는데 UX 리서치에서 어느 단계까지 AI한테 맡기고 어디부터 우리가 직접 해야 하는지 정해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "Figma Make로 사용성 테스트용 프로토타입을 만들려는데, UX 방법론 기준으로 프롬프트에 뭘 넣고 결과를 어떤 실패 패턴으로 점검해야 하는지 알려줘",
+    "should_trigger": false
   }
 ]

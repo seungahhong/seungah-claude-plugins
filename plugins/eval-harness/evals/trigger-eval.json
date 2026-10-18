@@ -122,5 +122,9 @@
   {
     "query": "내 Claude Code 세션들 토큰 효율 점수 매기고 등급 히스토그램·비용 리포트 만들어줘",
     "should_trigger": false
+  },
+  {
+    "query": "AI가 만들어 준 설문 문항이랑 사용성 테스트 과제가 유도적이거나 응답 부담이 큰지 UX 방법론 기준으로 검토해줘",
+    "should_trigger": false
   }
 ]

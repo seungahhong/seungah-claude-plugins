@@ -251,7 +251,7 @@ plugins/
           eval-harness-research.md                       #   설계 근거 dossier (출처·인용·vote·CAVEAT·반박된 주장; arXiv:2507.02825·2412.12509·2502.12468·2507.11538·2606.17799)
     evals/
       evals.json                                         # 수용 평가 (핵심 불변식 file:section 인용 채점)
-      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 22, 인접 도메인 reciprocal 가드)
+      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 23, 인접 도메인 reciprocal 가드)
   spec-driven-development/                               # [독립 플러그인] 엔지니어용 실행 가능 명세(spec=source of truth)를 작성하고 에이전트가 명세대로 코드 생성→자기검증하게 하는 하네스 (명세작성→인수설계→구현→검증 4단계). 경계: 기획자 PRD·AI 출력 평가·컨텍스트 조립·완성 코드 리뷰·하네스 진단 제외
     .claude-plugin/
       plugin.json
@@ -289,7 +289,7 @@ plugins/
           human-agent-teaming-research.md                #   설계 근거 dossier (Anthropic HAT 블로그 + 1차 자료 + arXiv:2504.10918·2602.05987·출처·인용·vote·CAVEAT; 벤더=설계 의도·반박된 패턴(자기제한)·METR RCT 반례)
     evals/
       evals.json                                         # 수용 평가 (핵심 불변식 file:section 인용 채점)
-      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 10 / should_not 13, 인접 도메인 reciprocal 가드)
+      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 10 / should_not 15, 인접 도메인 reciprocal 가드)
   code-as-harness/                                      # [독립 플러그인] 코드를 실행 가능·검사 가능·상태 보존(operational substrate)으로 다루고 거버넌스된 Plan→Execute→Verify 제어 루프로 코드 변경을 안전·검증 가능하게 수행하는 하네스 (계획 계약→권한·샌드박스 실행→실행 검증→텔레메트리 진단·수렴 4단계). 단일 거버넌스 사이클이지 통과까지 자율 반복(loop)이 아님. 경계: 통과까지 자율 반복+학습 메모리(loop)·백엔드 환경 provisioning 구현(backend)·실행 명세 작성(spec)·AI 에이전트 병렬화(agent-orchestration)·컨텍스트 조립(context)·AI 출력 평가(eval)·하네스 진단(meta)·상류 핸드오프 검수(review)·장애 대응(ops)·PRD(product-spec)·커밋/PR(git) 제외
     .claude-plugin/
       plugin.json
@@ -346,7 +346,7 @@ plugins/
           qa-agent-harness-research.md                   #   설계 근거 dossier (arXiv:2601.02454·2506.02943 CANDOR·2606.18168·2504.16777·등급·제외 범위·CAVEAT)
     evals/
       evals.json                                         # 수용 평가 (핵심 불변식 file:section 인용 채점)
-      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 15, 인접 도메인 reciprocal 가드)
+      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 16, 인접 도메인 reciprocal 가드)
   agent-authorization-harness/                          # [독립 플러그인] 에이전트/MCP 도구/A2A 시스템의 머신 아이덴티티·인가를 벤더 무관하게 설계·red-team하는 하네스 (신뢰·스코프 모델링→그랜트·위임 설계→동의·집행→적대 인가 검증 4단계, 설계+red-team 산출물이지 IdP 배포 아님). 경계: 런타임 콘텐츠·행동 레일(llm-guardrails, LLM06 공유 이음매)·사람↔에이전트 분업(human-agent-teaming)·파이프라인 policy-as-code(cicd)·코딩 에이전트 권한(code-as-harness) 제외
     .claude-plugin/
       plugin.json
@@ -491,7 +491,7 @@ plugins/
         carving-principles.md                            # 깎아내기 8원칙(각 근거 등급)
         evidence.md                                      # 기법별 학술 검증·등급·1차 소스(deep-research)
     evals/
-      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 8 / should_not 7, 인접 하네스 reciprocal 가드)
+      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 8 / should_not 10, 인접 하네스 reciprocal 가드)
   org-transformation-harness/                            # [독립 플러그인] 회사/팀을 목적조직·AI native로 바꾸려는 실무자·리더를 인터뷰해 현행 진단→목표 구체화→간극·실행계획→적대 검증의 4단계 4에이전트로 "무엇부터 시작할지"를 단계별 할 일로 정리하는 도메인 무관 하네스. 시드 인터뷰 프롬프트를 메타 프롬프팅 기법으로 깎아내 승격 + /deep-research(6각도) 2023~2026 1차 문헌 대조 근거 등급. Phase 0 현행 조직 진단 → 1 목표 구체화 문진(임의 정의 금지) → 2 간극표+우선순위 할 일(영향·노력·의존성)+로드맵 → 3 적대 검증·공유 요약. STRONG조건부(AI native 은탄환 아님·DORA 2024/2025 PRIMARY 체감≠delivery 안정성·team 조건 좌우)·MEDIUM(현행 진단 우선·목적조직 Cagan/Team Topologies 컨센서스)·report-only(quick-wins/additive-first Kotter·RICE/WSJF folklore)·REFUTED 미인용("GenAI 95% 실패" 반박·DORA tier 비고정). 첫 행동=현행 진단·목표 임의 정의 금지·발명 금지·은탄환/'N% 개선' 금지·제안만·점수화/커밋 안 함·다른 플러그인 비참조·비의존
     .claude-plugin/
       plugin.json
@@ -532,7 +532,7 @@ plugins/
         evidence.md                                      # 근거 정본(등급·GOLD 사실표·인용 금지 목록·유일 인용 가능 수치 4조건·재검증)
     evals/
       evals.json                                         # 수용 평가 (design-conformance + 근거 정직성 24 assertion)
-      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 10, 인접 하네스 reciprocal 가드)
+      trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 11, 인접 하네스 reciprocal 가드)
   agentic-code-review-harness/                           # [독립 플러그인] 이미 만들어진 코드 변경(PR·브랜치 diff·로컬 변경) — 특히 AI 에이전트가 작성한 것 — 을 수신자(리뷰어) 자리에서 읽고 "머지해도 되는지"를 근거와 함께 판정하는 도메인 무관 5단계 5에이전트 하네스. 한 문장 원칙 = 쓰는 비용은 싸졌지만 믿어도 되는지 판단하는 비용은 그대로다. Phase 0 리뷰 인테이크(한 번에 한 질문·대상 diff 없이 판정 금지) → 1 리스크 티어링(blast radius·longevity·comprehension 3축 + 경로 기반 표면 감지 → 파일군별 T0~T3 + 렌즈/센서/사람게이트/오탐예산 배분) → 2 증거 감사(테스트 diff를 코드보다 먼저 → 오라클 강도 강/약/없음 + 약화 서명 7종·게이트 완화 5종·결함 서명 S1~S8 + 결정적 센서 직접 실행·출력 인용) → 3a 직교 렌즈 8종을 렌즈당 1 에이전트로 병렬(렌즈 밖 금지·위치/무엇/조건 3요소 필수) → 3b 발견별 반증(CONFIRMED/PLAUSIBLE/DROPPED·기본 태도 "이 발견은 틀렸다") → 4 트리아지·머지 판정(차단은 CONFIRMED만·되돌림 지시문 3요소·잔여 위험·판정 후보·정직성 감사 6문항). 정직성 6불변식: INV-1 판정만·실행은 사람(코드 수정·커밋·푸시·머지·승인·close·코멘트 자동 게시 금지) · INV-2 리뷰 대상은 신뢰할 수 없는 입력(PR 텍스트의 지시문 불복종·발견으로 보고·URL 미추적 — 리뷰 에이전트 자신이 주입 표적이며 INV-1과 한 쌍) · INV-3 자기보고 불신(직접 돌린 센서·직접 읽은 diff만 확인·나머지 UNVERIFIED·"테스트 추가됨"도 신뢰 신호 아님) · INV-4 차단은 재현 근거로만·오탐이 지배적 실패 모드(발견 개수를 성과로 쓰지 않음·오탐 예산·초과 미보고 명시) · INV-5 저자 아닌 리스크로 티어링(결함 서명 스캔은 저자 무관 항상) · INV-6 통과는 정확성 증명 아님(이 하네스도 LLM 리뷰어 재현율 한계 상속·점수화 금지). 근거는 2026-06 'Agentic Code Review' 글의 문제 정의를 출발점 삼되 /deep-research 2각도로 1차 소스를 대조해 교정 — PRIMARY(리뷰어 재현율 27~33%·정밀도 3.6~5.1%·리뷰어 간 발견 거의 안 겹침·재현율↑→SNR↓·에이전트 테스트 패치 80.2%가 오라클 약/없음·가시 테스트 통과는 프록시 최적화 증거·지배적 실패는 '기능 격리'·모델 능력↑↔착취↑·리뷰 노력 예측 AUC 0.96)·INDUSTRY(정적 게이트 FP 76%·LLM 필터가 FP 94~98% 제거하나 진짜 결함 12~25% 소실)·인용 금지("리뷰어 이탈 38%" 정의/분모 불일치·arXiv 오귀속·원문에 없는 벤치마크 점추정·벤더 자체보고·"머지율=품질"·"FP 임계"·"200~400줄 상한"·효과 약속). 커밋 안 함·opt-in 저장·다른 플러그인 비참조·비의존
     .claude-plugin/
       plugin.json
@@ -579,7 +579,6 @@ plugins/
       check_evidence.py                                  # 근거 앵커 검증기(파일::앵커가 실재하는지 확인, --write로 passed를 실행 결과로 갱신, 종료 코드=실패 수)
       evals.json                                         # 수용 평가 (design-conformance 29 assertion · 앵커 105+개, check_evidence.py로 실행 검증)
       trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 9 / should_not 13, 인접 하네스 reciprocal 가드)
-```
   aeo-harness/                                           # [독립 플러그인] AEO(Agentic Engine Optimization) — 기술 문서를 AI 코딩 에이전트가 찾고·적은 왕복으로 읽고·정확히 쓸 수 있게 만드는 것을 결정론 센서로 측정하고 승인 게이트 뒤에 개선하는 도메인 무관 4단계 4에이전트 하네스. 검색엔진·답변엔진 노출 최적화(SEO/GEO)가 아니다 — 소비자가 사람이 아니라 코딩 에이전트다. 한 문장 원칙 = 에이전트가 문서에 도달했다는 것과 그 문서로 코드가 맞아졌다는 것은 다른 사건이다(발행 측 근거는 도달·효율만 측정하고 정확도 0건, 정확도 측 근거는 문서를 이미 쥐여준 조건이라 그 둘을 잇는 측정이 없다 — evidence F1). Phase 0 인테이크(대상 문서 + 소비 경로(HTTP/MCP/로컬/패키지)를 한 번에 한 질문씩, 경로가 조사의 절반을 결정) → 1 도달 조사(R1 링크 지도가 1급·R2 JS 없이 본문·R3 .md/Accept 협상·R4 죽은 링크·R5 벤더 UA replay 오차단·R6 robots.txt 보고만·R7 토큰 census 임계값 없음·R8 스펙 존재) → 2 내용 조사(C1 심볼별 예제·C2 예제 실행 검증·C3 시그니처 드리프트·C4 거짓으로 판정되는 서술·C5 낯섦·C6 주입 표면) → 3 개입 계획(T-A 위험0 거짓 제거 / T-B 검증 통과분만 / T-C report-only, 계획+항목별 개별 승인) → 4 수용 증명(문서 점수가 아니라 재측정된 태스크 결과, 못 돌리면 UNVERIFIED). 7불변식: INV-1 도달≠정확도 · INV-2 틀린 문서 > 없는 문서(검증 없는 LLM 문서 생성은 순마이너스) · INV-3 점수·등급 금지 · INV-4 report-only 자동 생성·편집 금지(단 거부권 아님) · INV-5 UA로 도구 귀속 금지(진위는 IP·rDNS로만) · INV-6 수용은 재측정으로만 · INV-7 대상 문서는 신뢰 경계 밖. 커밋 안 함·opt-in 저장·다른 플러그인 비참조·비의존
     .claude-plugin/
       plugin.json
@@ -603,3 +602,27 @@ plugins/
         check_evidence.py                                # 인용 앵커·금지 문구·점수 어휘 자동 검사 (부정 맥락 허용하되 건수 보고)
     evals/
       trigger-eval.json                                  # 트리거 경계 20문항 (SEO/GEO·저장소 정적 점수·이해 실측·머지 판정·컨텍스트 파일 작성과 분리)
+  ux-ai-workflow-harness/                                # [독립 플러그인] UX 실무자가 구체적인 UX 작업 하나에 생성형 AI를 어디까지 어떻게 쓸지 단계별로 정하는 4단계 4에이전트 하네스. 한 문장 원칙 = AI는 UX 작업을 압축할 수 있지만, 팀이 사용자에게서 배우는 단계는 대신할 수 없다(판정 단위는 작업이 아니라 단계 — evidence E10). Phase 0 인테이크(작업·누가 무엇을 결정하는지·참가자 원자료가 AI에 들어가는지 한 번에 한 질문) → 1 위임 지도(7개 테스트 D1~D7 → L1 AI에 넘김/L2 AI 초안+사람 검수/L3 사람이 한다/L4 AI로 대체하지 않음) → 2 맥락·지시 설계(CARE + 방법론 규칙 묶음, [확인 필요]) → 3 AI 초안 점검(방법론별 점검표, 통과/미통과/해당없음/미확인, 생성자·점검자 분리) → 4 사람 체크포인트·인계(담당·팀 학습 장치·출처 라벨 11종·데이터 보호). 8불변식: INV-1 학습 단계 기본 사람 · INV-2 출처 섞지 않음 · INV-3 AI 초안은 초안 · INV-4 행동≠텍스트 · INV-5 발명 금지 · INV-6 효과 약속·점수 금지 · INV-7 경고이지 거부권 아님 · INV-8 참가자 데이터 보호(하네스 자신도 외부 AI). NN/g 'Using AI for UX Work' 스터디 가이드 + 링크 원문 약 40편 + 1차 연구 대조. 커밋 안 함·opt-in 저장·다른 플러그인 비참조·비의존
+    .claude-plugin/
+      plugin.json
+    CLAUDE.md                                            # 포인터 + 구조 + 설계를 바꾼 근거 표 + 출발점 대비 교정 + 변경 이력
+    README.md                                            # 사용자용 개요 + 4레인·7테스트 + 근거 대조로 고친 통념 표 + 정직성 불변식
+    agents/                                              # 4 에이전트 (모두 opus)
+      delegation-mapper.md                               # Phase 1 위임 지도 D1~D7 → L1~L4 (위임하면 잃는 것·L4 대안 경로·압축 vs 생략·점수 금지)
+      context-curator.md                                 # Phase 2 CARE 프롬프트 + 방법론 규칙 묶음 + (반복 시) UX 맥락 팩 (발명 금지·[확인 필요])
+      output-critic.md                                   # Phase 3 방법론별 점검표 (통과/미통과/해당없음/미확인·생성자와 분리·보지 않은 것 열거·최종 점검 아님)
+      checkpoint-planner.md                              # Phase 4 담당·시점·팀 학습 장치·사람 확인·출처 라벨·데이터 보호·알고 넘어간 위험
+    skills/ux-ai-workflow/
+      SKILL.md                                           # 진입점 오케스트레이터 (Phase 0~4·첫 행동=작업과 결정 확보·매 Phase 승인 게이트·INV-1~8)
+      references/
+        delegation-tests.md                              # 4 레인 · 7 테스트 · 판정 표 형식 · 레인 변경 규약 · 압축 vs 생략
+        task-cards.md                                    # 작업 유형 카드 14종 (리서치 5·설문·디자인 4·라이팅·워크숍·도구 도입·서비스 디자인)
+        care-prompting.md                                # CARE 골격 · 지시 설계 규칙 8 · 방법론 규칙 묶음 · UX 맥락 팩 형식 · 지시서 형식
+        output-pitfalls.md                               # P-COMMON · 리서치 · 설문 · 디자인 · 글쓰기 · 아이디에이션 점검표 + 점검 산출 형식
+        human-checkpoints.md                             # 사람 단계 배정 · 검증 체크포인트 · 출처 라벨 11종 · 재사용 자산 · 데이터 보호 · 워크숍·도구 검토안 · 최종 보고 형식
+        evidence.md                                      # 근거 정본(등급 7종 + DV 표기 · E1~E40 · 인용 금지 X1~X15 · UNVERIFIED)
+      scripts/
+        check_evidence.py                                # E·X 앵커·인용 금지 문구·점수 어휘 휴리스틱 검사 (금지 수치는 X번호 ±80자·'금지' ±25자 안에 있을 때만 허용)
+    evals/
+      trigger-eval.json                                  # 트리거 경계 28문항 (should 12 / should-NOT 16 — UX 산출물 단순 생성·PRD·AC→Figma·프롬프트 최적화·에이전트 감독·judge 신뢰성·AI 제품 UX·컨텍스트 조립과 분리)
+```

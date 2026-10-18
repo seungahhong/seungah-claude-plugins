@@ -74,5 +74,9 @@
   {
     "query": "이 저장소가 AI 코딩 에이전트가 읽기 좋은 코드베이스인지 점수로 측정해줘",
     "should_trigger": false
+  },
+  {
+    "query": "Figma Make로 대시보드 프로토타입을 AI 생성하는데 레이아웃이 엉망이야. 프롬프트를 어떻게 쓰고 결과를 뭘 기준으로 점검해야 해?",
+    "should_trigger": false
   }
 ]

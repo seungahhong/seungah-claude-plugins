@@ -18,7 +18,7 @@ spec-to-figma-harness/
 │   └── handoff-critic.md            # Phase 4 — FE 1인칭 적대 검증·owner별 준비도·정직성 감사
 ├── evals/
 │   ├── evals.json                   # 수용 평가(불변식 file:section 인용 채점)
-│   └── trigger-eval.json            # 트리거 경계 평가(true 9 / false 10, 인접 도메인 역방향 가드)
+│   └── trigger-eval.json            # 트리거 경계 평가(true 9 / false 11, 인접 도메인 역방향 가드)
 └── skills/spec-to-figma/
     ├── SKILL.md                     # 오케스트레이터(Phase 0 인테이크 + 1~4, 매 Phase 승인 게이트)
     └── references/

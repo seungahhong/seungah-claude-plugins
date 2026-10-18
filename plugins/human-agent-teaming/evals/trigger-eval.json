@@ -94,5 +94,9 @@
   {
     "query": "우리 사람 개발팀에 맞는 개발 방법론(스크럼/칸반/Shape Up)을 현행 진단부터 해서 골라줘",
     "should_trigger": false
+  },
+  {
+    "query": "UX 리서처인데 사용성 테스트 계획부터 분석까지 생성형 AI를 어디에 써도 되고 어디는 내가 해야 하는지 단계별로 정리해줘",
+    "should_trigger": false
   }
 ]

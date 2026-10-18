@@ -31,7 +31,7 @@ qa-agent-harness/
 │           └── qa-agent-harness-research.md      # 설계 근거 deep-research dossier(출처·등급·인용·CAVEAT·제외 범위·방법론)
 └── evals/
     ├── evals.json                     # 수용 평가(design-conformance dry-run — 핵심 불변식 file:section 인용 채점)
-    └── trigger-eval.json              # 트리거 경계 평가(should_trigger 9 / should_not 14, 인접 도메인 reciprocal 가드)
+    └── trigger-eval.json              # 트리거 경계 평가(should_trigger 9 / should_not 16, 인접 도메인 reciprocal 가드)
 ```
 
 ## Phase 요약
