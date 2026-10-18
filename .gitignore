@@ -7,7 +7,11 @@
 .claude/_workspace_prev/
 .claude/plugin-store/
 
+# OS 시스템 파일 (플러그인 디렉터리 검증에서 Blocking)
 .DS_Store
+Thumbs.db
+desktop.ini
+__MACOSX/
 
 # python bytecode (플러그인 스크립트 실행 시 생성)
 __pycache__/
