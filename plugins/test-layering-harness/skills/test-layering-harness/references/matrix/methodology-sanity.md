@@ -12,7 +12,7 @@
 
 **대상 산정 3단계**(principles §3.5.3, 실패 시 **넓히는 방향으로만** 폴백):
 
-1. **변경 파일** — PR job은 `git diff --name-only origin/<base>...HEAD`(three-dot), 로컬은 `git diff --name-only`. **`<base>`는 CI의 PR base 변수 → 기본 브랜치 감지(`git symbolic-ref refs/remotes/origin/HEAD`) 순으로 정하고, 실패하면 추측 말고 문의**(잘못된 base = 조용한 under-selection).
+1. **변경 파일** — PR job은 `git diff --name-only origin/<base>...HEAD`(three-dot), 로컬은 `git diff --name-only HEAD` + `git ls-files --others --exclude-standard`(staged·unstaged·새 파일). **`<base>`는 CI의 PR base 변수 → 기본 브랜치 감지(`git symbolic-ref refs/remotes/origin/HEAD`) 순으로 정하고, 실패하면 추측 말고 문의**(잘못된 base = 조용한 under-selection).
 2. **역참조 확장 = 관련 페이지/컴포넌트** — 변경 파일을 **import하는 상위 페이지/컴포넌트**의 테스트까지 포함한다(컴포넌트를 고치면 그것을 쓰는 페이지가 깨지므로). 1순위 러너 네이티브 임포트 그래프(Jest `--findRelatedTests`, Vitest `--related`, Playwright `--only-changed` — 정확 플래그·버전 **확인 필요**), 2순위 grep 기반 import 역참조(1홉 이상).
    - ⚠️ 역참조는 **원리상 불완전**(barrel re-export·동적 import·별칭 경로·라우팅 규약) → 불확실하면 좁히지 말고 **전체(또는 durable 스위트) 폴백**.
 3. **관련 페이지의 E2E — `@e2e-mock`만** — ⚠️ **E2E가 Phase 1 선택 스코프에 있을 때만 수행**한다(스코프 가드 [`_index.md`](_index.md) §1; 미선택이면 이 단계를 건너뛰고 "E2E 스코프 밖 — sanity 대상 아님" 표기 후 확장 문의 — E2E 경로도 받지 않았으므로 매핑이 성립하지 않는다). 매핑: ① 경로 미러(`src/pages/checkout/**` ↔ `e2e/checkout.spec.ts`) → ② 모호하면 스펙에 `@page:/checkout` 태그 부여를 **게이트 B로 제안** → ③ 둘 다 실패하면 `@e2e-mock` **전량 폴백**.
@@ -30,6 +30,7 @@
   2. `test:sanity:e2e` — 매핑된 `@e2e-mock` 스펙 선택 실행(**E2E가 선택 스코프에 있을 때만 만든다** — 없으면 이 장치를 만들지 않는다).
   3. **CI PR job 스니펫** — **제안만**(CI yaml 직접 편집 금지). blocking step(1) + non-blocking step(2, `continue-on-error` 등가물).
 - **부족분 생성**: 변경 관련 페이지/컴포넌트에 **테스트가 아예 없으면** 그 자리에서 새 테스트를 만든다(게이트 B). 단 **계층은 Phase 1 선택 스코프 안**에서만(스코프 가드 [`_index.md`](_index.md) §1), durable 방법론 태그는 **선택된 방법론 중에서만** 부여하고 없으면 **무-태그 기본체**로 두고 계획표에 그렇게 적는다(`@sanity`를 대신 붙이지 않는다).
+- **부족분 생성의 AC-ID**(principles §4.6): 새로 만드는 테스트는 인수조건 기반이면 제목에 `[AC-1.2]`를 붙이고, 인수조건에 없는데 필요한 테스트는 **ID 없이** 만든다(계획표 AC-ID 열에 **사유만** 적고 게이트 A·B에서 승인). 단 `@smoke`·`@regression` 태그를 붙일 테스트는 AC-ID가 필수다. **부족분은 E2E로 만들지 않는다**(E2E는 smoke·regression만, principles §3.6.5-c).
 - **차단성**: unit/integration 실패 = blocking, 매핑된 mock E2E 실패 = non-blocking 리포트(운영 결정 — 표준 아님).
 - 스크립트·job 스니펫 추가도 코드/설정 변경이므로 **게이트 B 대상**이다. sanity는 durable 태그가 없어 "첫 테스트" 트리거가 성립하지 않으므로, 이 장치는 **게이트 A 승인 후 1회** 추가한다.
 

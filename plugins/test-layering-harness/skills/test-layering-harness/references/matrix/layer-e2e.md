@@ -47,7 +47,7 @@ E2E만 **API 경계를 태그로 선언**한다(unit/integration은 항상 mock�
 
 | 태그 | 목적 | 실행 | 배치 |
 |---|---|---|---|
-| **`@e2e-mock`** (**비-smoke 기본**) | CI에서 **결정론적**으로 여정을 검증 | 러너 네트워크 인터셉트(`page.route` 등)로 캡처 fixture 주입 | CI 스테이지(선택 스코프에 따라 PR job·nightly 등) |
+| **`@e2e-mock`** (**비-smoke 기본**) | CI에서 **결정론적**으로 여정을 검증 | 러너 네트워크 인터셉트(`page.route` 등)로 캡처 fixture 주입 | CI 스테이지(`test:regression`의 mock 패스 — merge·nightly 스테이지, sanity PR job) |
 | **`@e2e-live`** (**Smoke 멤버십이면 필수** / 그 밖은 명시 요청 시만) | **실제 API 연동이 되는지** 검증 | 실제 백엔드 대상, mock 주입 없음 | **고정 CI 스테이지 없음 — 수동·on-demand만** |
 
 - **스펙은 한 벌**이다. mock용/live용으로 시나리오를 복제하지 않고, 한 스펙에 **유효한 모드 태그를 병기**한다(둘 다 되면 `['@e2e-mock','@e2e-live']`).
@@ -58,7 +58,7 @@ E2E만 **API 경계를 태그로 선언**한다(unit/integration은 항상 mock�
 
 | 항목 | 규칙 |
 |---|---|
-| 태그 | `['@smoke','@e2e-live']` — **`@e2e-mock` 금지**, `@regression`/`@nightly` **동시 부여 금지**(live 고정이라 그 스위트 CI에서 빠지는 phantom membership) |
+| 태그 | `['@smoke','@regression','@e2e-live']` — **`@e2e-mock` 금지**(mock 데이터로는 smoke 검증 불가). `@regression`은 포함 관계 태그 사다리라 **반드시 함께** 붙인다(principles §3.6.5-c). regression에서는 수동 live 패스로만 돈다 |
 | mock | **없음** — `page.route` 등 인터셉트를 걸지 않고 fixture도 만들지 않는다 |
 | CI 배치 | **없음** — PR-gate·post-deploy·nightly 어디에도 넣지 않는다. `test:smoke`가 이걸 끌어오면 분리 검증 실패 |
 | 실행 | 수동 on-demand `test:e2e:smoke:live` — 예 `E2E_MODE=live BASE_URL=… playwright test --grep "(?=.*@smoke)(?=.*@e2e-live)"` |
@@ -67,8 +67,10 @@ E2E만 **API 경계를 태그로 선언**한다(unit/integration은 항상 mock�
 | sanity | **선택 대상 아님**(레인은 `@e2e-mock`만 고른다) — 누락이 아니라 규칙의 결과이며 그렇게 표기 |
 
 **대가(반드시 병기)**: 고정 CI 스테이지가 없으므로 **E2E smoke는 자동 배포 게이트가 아니라 승격 전 수동 체크포인트**다. 또한 이 결정은 "배포 게이트는 결정론·외부 의존 0"이라는 권고(MinimumCD·Fowler, MED)와 **상충하는 사용자 운영 결정**이다 — 근거로 정당화하지 않고 상충 사실을 적는다.
-- **모드 전환은 명시 스위치로만** — env(`E2E_MODE=live`)·러너 project·fixture 라우팅 헬퍼. 예: CI `playwright test --grep @e2e-mock` / 연동 `E2E_MODE=live playwright test --grep @e2e-live`. 태그 문법은 principles §3.5.2 어댑터. **스위치 장치(헬퍼·project 설정·스크립트)는 새 코드/설정이므로 게이트 B 승인 대상**이고, 스위치 없이 태그만 붙이면 `@e2e-live`는 실행 불가능한 라벨(phantom)이 된다. `test:e2e:live` 레시피는 **`@e2e-live`가 실제로 1개 이상 있을 때만** 추가한다.
-- **스테이지가 모드를 바꾸지 않는다** — nightly가 게이트 테스트를 임의로 재-mock 하거나 live로 승격시키지 않는다. cross-browser·real-device 매트릭스는 **브라우저/디바이스만 실제**이고 API 경계는 그 테스트의 모드 태그를 그대로 따른다([methodology-nightly.md](methodology-nightly.md) §3).
+- **E2E는 smoke·regression만 — 포함 관계 smoke ⊆ regression**(principles §3.6.5-c): smoke `@smoke @regression` / regression `@regression`. E2E에 `@nightly`를 붙이지 않고 sanity 부족분도 E2E로 만들지 않는다. regression은 mock·live 혼합 가능하고, 실행은 **mock 패스(CI, `@e2e-mock` 필터 필수) + live 패스(수동)** 두 갈래다. 모든 E2E 테스트는 제목에 AC-ID(`[AC-1.2] …`)를 붙인다(principles §4.6).
+- **모드는 기존 스펙의 태그로만** — mock/live 전용 파일·디렉터리를 만들지 않는다. 이미 있는 E2E 테스트에 모드를 적용할 때는 그 스펙에 태그를 추가하고, 모드별로 복제된 파일이 있으면 합치는 patch를 게이트 B로 제안한다.
+- **모드 전환은 명시 스위치로만** — env(`E2E_MODE=live`)·러너 project·fixture 라우팅 헬퍼. 예: CI `playwright test --grep @e2e-mock` / 연동 `E2E_MODE=live playwright test --grep @e2e-live`. 태그 문법은 principles §3.5.2 어댑터. **스위치 장치(헬퍼·project 설정·스크립트)는 새 코드/설정이므로 게이트 B 승인 대상**이고, 스위치 없이 태그만 붙이면 `@e2e-live`는 실행 불가능한 라벨(phantom)이 된다. live 레시피(`test:e2e:smoke:live`·`test:e2e:regression:live`)는 셀렉터가 뽑는 **`@e2e-live`가 실제로 1개 이상이고 바로 아래 레시피와 결과가 다를 때만** 추가한다(principles §3.6.5-c).
+- **스테이지가 모드를 바꾸지 않는다** — nightly가 게이트 테스트를 임의로 재-mock 하거나 live로 승격시키지 않는다. (이 하네스는 E2E nightly를 만들지 않으므로 nightly cross-browser·real-device E2E 매트릭스도 없다 — principles §3.6.5-c.)
 - **`@page:/route` 태그(선택)**: sanity가 "변경된 페이지의 E2E"를 고를 때 경로 미러 매핑이 모호하면 대상 페이지 태그를 부여한다([methodology-sanity.md](methodology-sanity.md) §2). 이는 **대상 메타**이지 스위트 태그가 아니다.
 - **fixture**: `@e2e-mock`의 응답 fixture도 3단 폴백(기존 재사용 → 사용자 제공 → 스키마 유도+`[실측 캡처 아님]` 표기)과 출처 기록을 따른다(principles §3.6.3). 위치는 E2E 경로 아래 공용(`fixtures/`) 관습을 감지해 따른다. **E2E smoke(live 전용)는 fixture 대상이 아니다**(§5.2-a).
 
@@ -83,9 +85,9 @@ E2E만 **API 경계를 태그로 선언**한다(unit/integration은 항상 mock�
 - "live smoke로 장애 N% 조기 포착" 류 효과 수치는 근거가 없다 — 인용 금지.
 
 ## 6. 이 계층 × 방법론 조합 (선택된 방법론 안에서만 — 강도 값 단일 출처 _index §3 lookup)
-- **Nightly × E2E = STRONG(best-evidenced nightly)** — 대규모/exhaustive E2E·cross-browser·real-device·perf/visual/a11y·대규모 fuzzing의 자연스러운 귀착지(non-blocking 리포트).
-- **Smoke × E2E = STRONG(조건부) · 단 모드는 `@e2e-live` 고정** — 크리티컬 여정 happy-path acceptance smoke. ⚠️ 원래 "조건부"의 조건은 *결정론·fast 게이트 적격*이었으나 **live 전용 결정이 그 조건을 깨뜨렸다**(§5.2-a) — 이 조합은 CI 게이트가 아니라 **수동 체크포인트**로 산출되며, flaky real-world E2E를 게이트에서 빼는 취지는 "CI 스테이지에 넣지 않음"으로 이미 충족된다. ⚠️ 다만 **"flaky하면 nightly로"라는 탈출구는 쓸 수 없다**(nightly는 `@e2e-mock` 스테이지) — 여정을 좁히거나 대상 환경을 안정화하고, 그래도 안 되면 `@e2e-mock` 스펙으로 **분리**한다.
-- **Regression × E2E = STRONG(멤버십)·대개 nightly 이연** — 전량 E2E 회귀는 비쌈 → nightly; 크리티컬 여정 subset만 per-commit. **`@e2e-mock` 유지**(회귀 판정은 결정론 전제). 같은 여정을 smoke로도 돌린다면 **스펙을 분리**한다(한 스펙에 `@smoke`+`@regression` 금지, §5.2-a).
+- **Nightly × E2E = STRONG(best-evidenced nightly)** — 대규모/exhaustive E2E·cross-browser·real-device·perf/visual/a11y·대규모 fuzzing의 자연스러운 귀착지(non-blocking 리포트). ⚠️ **이 하네스는 사용자 운영 결정으로 만들지 않는다**(E2E는 smoke·regression만, principles §3.6.5-c) — 근거 등급은 남기되 생성하지 않으며, 이 귀착지가 없다는 대가를 계획에 적는다.
+- **Smoke × E2E = STRONG(조건부) · 단 모드는 `@e2e-live` 고정** — 크리티컬 여정 happy-path acceptance smoke. ⚠️ 원래 "조건부"의 조건은 *결정론·fast 게이트 적격*이었으나 **live 전용 결정이 그 조건을 깨뜨렸다**(§5.2-a) — 이 조합은 CI 게이트가 아니라 **수동 체크포인트**로 산출되며, flaky real-world E2E를 게이트에서 빼는 취지는 "CI 스테이지에 넣지 않음"으로 이미 충족된다. ⚠️ 다만 **"flaky하면 nightly로"라는 탈출구는 쓸 수 없다**(E2E nightly 없음, principles §3.6.5-c) — 여정을 좁히거나 대상 환경을 안정화하고, 그래도 안 되면 **그 여정을 smoke 멤버십에서 빼는 것을 사용자에게 제안**한다(mock 데이터로는 smoke를 검증할 수 없으므로 `@e2e-mock` smoke 복제는 만들지 않는다).
+- **Regression × E2E = STRONG(멤버십)** — 전량 E2E 회귀는 비싸지만 **nightly로 이연할 수 없다**(E2E nightly 없음) → 크리티컬 여정 subset으로 좁힌다. **`@e2e-mock`이 기본**(회귀 판정은 결정론 전제)이고 mock·live 혼합이 가능하다. 같은 여정이 smoke이면 **스펙을 나누지 않는다** — smoke 스펙이 `@regression`을 함께 지녀 포함된다(§5.2-a, principles §3.6.5-c).
 - **Sanity × E2E = DEGEN(생성 조합) / 선택 레인으로는 정상** — "sanity 전용 E2E를 새로 만드는 것"은 근거가 없어 하지 않는다(DEGEN). 다만 sanity **선택 레인**은 변경된 페이지에 매핑된 **기존 `@e2e-mock` 스펙을 골라 돌린다**(non-blocking, [methodology-sanity.md](methodology-sanity.md) §2). 두 축이 다르므로 모순이 아니다([`_index.md`](_index.md) §3). **E2E smoke 스펙은 `@e2e-mock`이 없어 이 레인에서 정의상 제외**된다(§5.2-a).
 - 선택 스코프에 없는 방법론과는 조합하지 않는다(_index §1).
 

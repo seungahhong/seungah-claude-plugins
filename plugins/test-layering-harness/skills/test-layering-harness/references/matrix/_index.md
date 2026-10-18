@@ -37,13 +37,14 @@
 - 가드: `small=unit / medium=integration / large=system` 1:1 매핑 금지. "acceptance" 의도가 E2E를 강제하지 않는다(level≠type).
 
 **Step 3 — 각 (슬라이스, 계층)에 방법론 멤버십을 부여한다** — **선택된 방법론 중에서만**(비배타·다중). 방법론 카드([`methodology-regression.md`](methodology-regression.md) 등)의 멤버십 기준으로:
-- Regression?(변경 traverse/보존 — 대부분) · Smoke?(happy·표면·결정론·showstopper) · Nightly로 이연?(느림/비쌈/flaky/cross-browser/exhaustive/fuzz) · Sanity?(durable 아님 — transient change-scope, `@sanity` 안 심음).
+- Regression?(변경 traverse/보존 — 대부분) · Smoke?(happy·표면·결정론·showstopper) · Nightly로 이연?(느림/비쌈/flaky/cross-browser/exhaustive/fuzz — **E2E는 이연하지 않는다**, principles §3.6.5-c) · Sanity?(durable 아님 — transient change-scope, `@sanity` 안 심음).
 - 미선택 방법론에는 배정하지 않는다(§1).
 
 **Step 4 — 상황에 맞는 테스트를 선택(조합)한다.** (계층 × 방법론) 조합의 **강도 lookup**(§3)을 보고, **선택 스코프 안에서** 가장 적합한 조합으로 이 슬라이스의 테스트를 구체화한다. WEAK/DEGENERATE 조합은 억지로 만들지 않고 스코프 내 STRONG 조합으로 옮기되, 스코프 내 STRONG 조합이 아예 없으면(선택이 WEAK만 산출) 억지로 만들지 말고 §1 폴백('추가 안 함' 표기+확장 문의). 오라클 강도는 그 계층 카드 §4 + 방법론 카드의 오라클 기대를 결합한다.
 
 **Step 4-b — API 경계를 확정한다**(principles §3.6). 계층이 기본값을 강제한다: **Unit/Integration = 항상 mock**(① 네트워크 인터셉터 우선 / ② 모듈 double, fixture 3단 폴백·출처 표기, live 호출 금지 — 정의상 계층 자격 문제), **E2E = 모드 태그**(`@e2e-mock` 기본, 사용자가 명시 요청한 시나리오에만 `@e2e-live` 병기 — live는 고정 CI 스테이지 없이 수동 on-demand).
-- **⚠️ 이 슬라이스가 (E2E × Smoke)면 모드가 고정된다** — `@e2e-live` 필수·`@e2e-mock` 금지·CI 스테이지 없음·수동 레시피(§3-d). 이 행에는 fixture 소스 대신 **대상 환경·테스트 계정 확보 여부**를 적고, `@regression`/`@nightly`를 같은 스펙에 겹치지 않는다(필요하면 `@e2e-mock` 스펙으로 분리해 두 행).
+- **⚠️ 이 슬라이스가 (E2E × Smoke)면 모드가 고정된다** — `@e2e-live` 필수·`@e2e-mock` 금지·CI 스테이지 없음·수동 레시피(§3-d). 이 행에는 fixture 소스 대신 **대상 환경·테스트 계정 확보 여부**를 적고, 포함 관계에 따라 `@regression`을 같은 스펙에 함께 붙인다(principles §3.6.5-c — `@e2e-mock` 복제 행·파일 금지).
+- **AC-ID 열**(principles §4.6): smoke·regression 행은 AC-ID 필수. 인수조건 밖 테스트는 nightly·sanity 행에서만 허용하고 AC-ID 열에 **사유만** 적는다. **E2E는 Smoke·Regression에만 배정**한다(principles §3.6.5-c).
 
 **Step 4-c — DOM 셀렉터를 확정한다**(principles §3.7·§3-e). 이 테스트가 DOM을 조회하면 **사다리에서 쓸 최상위 순위**를 정하고, `getByTestId`(8)·`locator`(9)를 쓸 수밖에 없으면 **왜 상위 쿼리가 불가능한지**를 함께 적는다. DOM이 없으면 `해당 없음(비-DOM)`. 러너 API 이름은 §3.7.3 어댑터로 옮긴다.
 
@@ -57,9 +58,9 @@
 |---|---|---|---|---|
 | **Unit** | WEAK | DEGEN/WEAK | **STRONG**·최고위험오라클 | DEGEN(빈셀) |
 | **Integration** | **STRONG** | DEGEN/WEAK | **STRONG** | STRONG-ish |
-| **E2E** | STRONG(조건부) | DEGEN | STRONG·대개nightly이연 | **STRONG**(best) |
+| **E2E** | STRONG(조건부)·live 전용 | DEGEN·생성 안 함 | STRONG(nightly 이연 불가) | STRONG(best) → **생성 안 함**(사용자 결정) |
 
-- **실무 정합 최강**: Smoke×Integration · Regression×{Unit,Integration} · Nightly×E2E.
+- **실무 정합 최강**: Smoke×Integration · Regression×{Unit,Integration} · Nightly×E2E — 단 **Nightly×E2E는 사용자 운영 결정으로 생성하지 않는다**(E2E는 smoke·regression만, principles §3.6.5-c).
 - **WEAK/DEGENERATE(억지 생성 금지)**: Sanity 전 조합(ISTQB상 smoke 동의어 → transient change-scope로만) · Nightly×Unit(unit은 게이트 전량 실행) · Smoke×Unit.
 - 이 표는 **조합의 강도 참고**이지 12개 셀 파일이 아니다 — 라우팅 시점에 축 카드를 조합해 상황에 맞는 것만 만든다.
 
@@ -90,10 +91,10 @@
 
 **`@smoke` 멤버십을 가진 E2E 스펙은 요청 없이도 `@e2e-live`가 강제되고 `@e2e-mock`을 갖지 않는다.** 사용자 운영 결정이며 §3-c 기본값의 유일한 예외다. 라우팅 시 반드시 함께 적는 귀결:
 
-1. **CI 스테이지 없음** — `test:smoke`(비-E2E만)·`test:regression`·`test:nightly` 어디에도 안 들어간다. 수동 레시피 `test:e2e:smoke:live`만.
+1. **CI 스테이지 없음** — `test:smoke`(비-E2E만)와 regression의 CI mock 패스 어디에도 안 들어간다. 수동 레시피 `test:e2e:smoke:live`(그리고 포함 관계에 따라 `test:e2e:regression:live`)로만.
 2. **자동 배포 게이트가 아니다** — 승격 전 **사람이 돌리는 수동 체크포인트**. "게이트가 지켜준다"고 쓰지 않는다.
 3. **sanity 레인 제외** — 레인은 `@e2e-mock`만 고르므로 정의상 빠진다(누락 아님 — 표기, §3-b).
-4. **다중 멤버십 금지** — 한 E2E 스펙에 `@smoke` + `@regression`/`@nightly`를 겹치지 않는다(phantom membership). 필요하면 `@e2e-mock` 스펙으로 **분리**해 두 행으로.
+4. **포함 관계 태그 사다리** — E2E는 smoke·regression만이고 smoke ⊆ regression이므로 smoke 스펙은 `@smoke @regression @e2e-live`를 지닌다(principles §3.6.5-c). `@e2e-mock` 복제 스펙·별도 파일을 만들지 않는다.
 5. **결정론 권고와 상충** — "배포 게이트는 결정론·외부 의존 0"(MinimumCD·Fowler, MED)과 충돌한다. 근거로 정당화하지 않고 상충·대가를 병기한다.
 6. **하네스 실행은 조건부** — 게이트 B에서 **대상 환경 + 테스트 계정/데이터 + 그 자리 승인**이 모두 있을 때만 실제로 돌린다(하네스 live 호출의 유일한 예외). 없으면 **UNVERIFIED**. 실패는 **테스트 결함 / 코드 결함 / 환경·외부계** 3분류로 구분한다.
 

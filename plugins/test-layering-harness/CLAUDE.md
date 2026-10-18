@@ -4,42 +4,22 @@
 
 사용자용 개요·사용법은 [README.md](README.md), 원리는 [principles](skills/test-layering-harness/references/test-layering-principles.md), 근거는 [research dossier](skills/test-layering-harness/references/research/test-strategy-research.md) 참조.
 
-## 5-Phase · 3-Gate 요약
-
-> ⚠️ **E2E smoke만은 실제 API 연동이 필수**다(`@e2e-live` 전용·`@e2e-mock` 금지·CI 스테이지 없이 수동 레시피·조건 충족 시에만 하네스가 실행). 규칙은 principles §3.6.5-a, 실행 규약은 §3.6.5-b가 단일 출처.
-
-| Phase | 내용 | 게이트 |
-|-------|------|--------|
-| 0 초기 문의 | AC **3지선다 명시 프롬프트**((a)붙여넣기 (b)파일·링크 경로 (c)없음→저장소 후보 채굴; 채굴은 사용자 명시 선택·곧장 건너뛰기 금지) · 개발 환경(스킵 가능·미입력 시 현재 경로·부재 러너 보고) · **mock 인프라 감지**(인터셉터 유무·fixture 관습·기존 live 호출 흔적) · **DOM 조회 인프라·testid 관습 감지**(testing-library/playwright/cypress 유무·`data-testid`류 속성명·`testIdAttribute`·기존 최후수단 셀렉터 위치는 보고만) | — |
-| 1 적응형 구성 | 저장소 감지 → 3 프리셋 중 근거와 함께 추천 → **방법론 스위트(Smoke/Sanity/Regression/nightly)·계층(Unit/Integration/E2E) 체크박스 다중선택**(프리셋 기본체크·러너 부재 계층 '추가 필요' 명시) + **조합 강도 lookup**(STRONG/WEAK/DEGENERATE) 안내 → 스코프 고정. **E2E 선택 시 경로 문의 + 모드 태그 안내**(기본 `@e2e-mock`·live 검증 시나리오만 지목받아 `@e2e-live`), **Smoke+E2E 동시 선택 시 live 전용 규칙 고지 + 대상 환경 문의**(base URL·계정/시드·프로덕션 여부·부작용 여정·미제공이면 UNVERIFIED 예고), **DOM 계층 선택 시 셀렉터 사다리 안내 + testid 속성명 문의**(미확정이면 임의 결정 금지·제품 코드 testid 추가는 게이트 B 별도 승인 예고), **Sanity 선택 시 선택 레인 성격 명시**(PR job·역참조·산출물 3종) | (스코프 확정) |
-| 2 AC→축 카드 조합 계획 | 각 AC를 **7개 축 카드 조합**으로 라우팅(Step0 스코프 확정→슬라이스→**선택된 계층만**→**선택된 방법론만**→조합 강도 lookup으로 상황 선택→**Step4-b API 경계 확정**(E2E×Smoke는 live 고정)→**Step4-c DOM 셀렉터 확정**(사다리 순위·8·9면 사유)→계획행)·결합 오라클 프로필·계획표(계층·방법론·조합강도·**API 경계(mock/live·경계기법·fixture 소스 / live는 대상 환경·계정)**·**DOM 셀렉터(순위·사유)** 열)·**스코프 밖은 '추가 안 함' 표기** + **sanity 선택 레인 블록**(레시피 3단계·장치 3종·부족분 목록) + **live smoke 블록(3-d)**(대상 환경·수동 레시피·**배치 없음**·실행 계획·상충 병기) | **게이트 A: 계획 승인**(≠ live 실행 승인) |
-| 3 개별 적용 | 오라클 오검증·draft 제시·적용·실행 그라운딩 (순차) **+ durable 스위트 태그·E2E 모드 태그 물리 부여·분리 스크립트 추가·셀렉터 실행 분리 검증(E2E smoke 격리 단언 4종) + 셀렉터 규약 적용·사다리 검사(2-d: 상위 가능한데 하향 금지·8·9 사유·러너 없는 API 금지·임의 testid 금지·제품코드 testid 분리 승인) + live 호출 정적 검사(2-c, `@e2e-live`는 대상 아님·면제 사실 보고) + E2E smoke live 실행 그라운딩(4-b, 3전제 충족 시에만·실패 3분류) + sanity 레인 장치 적용·레시피 실행 그라운딩·부족분 생성**(sanity는 무-태그 변경-스코프 선택·**비-smoke** `@e2e-live`는 실행하지 않고 UNVERIFIED 기록) | **게이트 B: 개별 적용 승인 + (live는) 별도 실행 승인** |
-| 4 반영 | 적용 요약(**API 경계·fixture 소스·셀렉터 요약(순위별 사용처·8·9 사유·추가/거절된 testid·미전환 기존 셀렉터·점수화 금지)·미실행 live 레시피·E2E smoke live 상태(실행/UNVERIFIED·시각·환경·3분류·격리 단언)·sanity 레인 상태 포함**)·전체 실행(**`@e2e-live` 제외**)·확정 | **게이트 C: 최종 반영 재확인** |
+Phase 0~4 흐름과 게이트(A 계획 승인·B 개별 적용 승인·C 최종 반영 재확인)는 [SKILL.md](skills/test-layering-harness/SKILL.md)가 정본이다.
 
 ## Conventions (핵심 불변식)
 
+규칙 본문의 단일 출처는 [principles](skills/test-layering-harness/references/test-layering-principles.md)와 [`matrix/`](skills/test-layering-harness/references/matrix/_index.md) 축 카드다. 여기에는 수정할 때 깨뜨리면 안 되는 불변식과 그 위치만 적는다. **규칙을 바꾸면 principles(정본) → SKILL.md·축 카드 → evals → README 순으로 맞춘다.**
+
 - **3개 게이트를 건너뛰지 않는다** — 계획 승인 없이 개별 적용 없음, 개별 승인 없이 파일 쓰기 없음, 최종 승인 없이 반영 없음.
-- **비율% 하드코딩 금지** — 70/20/10은 folklore(Fowler 본인 상대화). 무게중심은 프리셋으로 제안, 비율은 안 박음.
-- **오라클 강도가 최대 리스크** — LLM은 구현(실제 동작)을 굳혀 버그를 초록으로 은폐. 기대(AC) 기준 오검증 + 실행 그라운딩 + flaky baseline 선결 + 스모크/동어반복 어서션 금지.
-- **AC ≠ E2E** — AC 한 건은 여러 tier로 분해. E2E는 핵심 여정 소수로 절제(ice-cream-cone 방지).
-- **축 카드 = 두 축(12셀 미리 물질화 안 함)** — `matrix/`에 방법론 카드 4개 + 계층 카드 3개(7개)를 두고 **라우팅 시점에 조합**한다. 조합은 **다중 멤버십**(한 테스트가 여러 방법론 suite 소속 가능). 계층=durable 속성, 방법론=selection/tag(sanity=transient). AC는 `matrix/_index.md` §2 절차로 조합 라우팅한다.
-- **스코프 가드(핵심 불변식)** — 테스트는 **사용자가 Phase 1에서 선택한 방법론·계층 안에서만** 추가한다. 스코프 밖은 임의 추가 금지 — "추가 안 함" 표기 후 확장 문의(3게이트와 동급 불변식).
-- **배치 규약(계층 카드 §5)** — unit/integration은 테스트 대상(컴포넌트/유틸) 파일이 있는 **바로 그 폴더에 `__test__/`를 무조건 만들어**(없으면 생성) `*.test.*`로 둔다. **⚠️ `__test__/` 강제는 조건부가 아니다(3게이트·스코프 가드와 동급 불변식) — 저장소에 이미 다른 배치 관습(`__tests__` 복수·`test/`·bare `*.test.ts`)이 있어도 대체하지 않고 항상 `__test__/`에 둔다.** 작성 전 경로가 `.../__test__/…`인지 검사(아니면 거부·교정)·작성 후 경로 확인을 게이트 B에서 강제한다. E2E는 Phase 1에서 **테스트 경로를 초기에 문의**해 그 경로에 여정 스펙을 둔다(E2E는 `__test__/` 강제 대상 아님).
-- **API 경계 축(mock/live·principles §3.6 = 단일 출처)** — 계층·방법론과 **직교하는 테스트 속성**이지 4번째 축 카드가 아니다. **Unit/Integration = 항상 mock(예외 없음)** — 실제 API로 나가면 규약 이전에 **정의상** 계층 자격을 잃는다. mock 경계는 ① **네트워크 인터셉터 우선**(MSW/nock/`responses`/`httptest`) → ② 모듈 double(`vi.mock`, 검증 범위 밖 항목 명시). **fixture 3단 폴백**(① 저장소 기존 재사용 → ② 사용자 제공 샘플 → ③ 스키마/타입 유도 + **`[스키마 유도 — 실측 캡처 아님]` 표기**), **하네스는 fixture 확보용 live 호출을 하지 않는다**. 위치는 저장소 관습 감지 우선·없으면 `<대상 폴더>/__test__/fixtures/`. **fixture-as-oracle 금지**(기대는 AC에서 유도). 게이트 B에서 **정적 live-호출 검사**(외부 URL·unmocked fetch/axios·실 토큰)를 하되 **통과가 네트워크 미접속 증명이 아님**을 병기(런타임 차단 강제 안 함). 기존 테스트의 live 호출은 **전환 patch 제안**(무단 개조 금지). nightly도 같은 규약(cross-browser/real-device는 브라우저/디바이스만 실제).
-- **E2E 모드 태그(`@e2e-mock`/`@e2e-live`)** — 스펙은 **한 벌**, 모드 태그로 분기한다. **기본은 `@e2e-mock`**(CI 결정론·캡처 fixture 주입), **(비-smoke) `@e2e-live`는 사용자가 명시 요청한 시나리오에만 병기**하고 **고정 CI 스테이지 없이 수동·on-demand**로만 실행한다(계획엔 레시피만·**비-smoke live는** 게이트 B에서 실행하지 않고 UNVERIFIED 기록 — **E2E smoke live는 아래 예외 규약을 따른다**). 모드 전환은 **명시 스위치**(env `E2E_MODE`·러너 project·fixture 라우팅)로만 — **스테이지가 모드를 바꾸지 않는다**(nightly 재-mock·live 승격 금지). ⚠️ **mock 통과 ≠ 연동 검증** — fixture는 캡처 시점 스냅샷이라 계약 drift를 정의상 못 잡는다(연동 장치는 `@e2e-live` 수동 실행뿐, 산출물에 병기).
-- **E2E smoke = 실제 API 연동 필수(live 전용·principles §3.6.5-a·§3.6.5-b = 단일 출처)** — 위 기본값의 **유일한 규칙 기반 예외**다. `@smoke` 멤버십을 가진 E2E 스펙은 **요청 없이도 `@e2e-live`가 강제**되고 **`@e2e-mock`을 부여하지 않는다**(mock 주입·fixture 없음). **CI 고정 스테이지를 두지 않고**(PR-gate·post-deploy·nightly 전부 제외) **수동 레시피 `test:e2e:smoke:live`** 로만 돈다 — `test:smoke`는 **비-E2E smoke만** 뽑는다. **다중 멤버십 금지**: 같은 E2E 스펙에 `@smoke`+`@regression`/`@nightly`를 겹치지 않는다(live 고정이라 그 스위트 CI 실행에서 빠지는 **phantom membership**) — 필요하면 `@e2e-mock` 스펙으로 **분리**해 계획표 두 행. **sanity 레인 제외**(레인은 `@e2e-mock`만 고름 — 누락 아니라 규칙의 결과로 표기). 오라클은 정확 출력 pinning 대신 **여정 도달·상태 전이·계약 형태**. **격리 단언 4종**을 실행 출력으로 검증(ⓐ`test:smoke`에 `@e2e-live` 0개 ⓑsmoke E2E에 mock 태그 없음 ⓒsmoke E2E에 regression/nightly 없음 ⓓlive 레시피가 비-E2E 안 끌어옴).
-- **live 실행은 하네스 live 호출의 유일한 예외(§3.6.5-b)** — 게이트 B에서 **① 대상 환경(base URL) ② 테스트 계정·시드(또는 '불필요' 확인) ③ 그 자리 실행 승인**이 **모두** 있을 때만 실제로 돌린다(**계획 승인이 실행 승인을 대신하지 않는다**). 안전 규약: **프로덕션이면 재확인**·**부작용 여정(결제·발송·삭제·과금·알림) 개별 확인**·**비밀 값 미노출**(env/secret 키 이름만)·**생성 데이터 임의 삭제 금지**(남으면 보고). 결과는 **실행 시각·대상 환경과 함께** 적고, 실패는 **3분류**(테스트 결함 / 코드 결함 / **환경·외부계**)로 구분한다. Phase 4 전체 실행에도 `@e2e-live`를 포함하지 않는다.
-- **E2E smoke 정직성** — **자동 배포 게이트가 아니라 승격 전 수동 체크포인트**다("게이트가 지켜준다" 금지). 이 결정은 **"배포 게이트는 결정론·외부 의존 0"(MinimumCD·Fowler, MED)과 상충하는 사용자 운영 결정**이며 근거로 정당화하지 않는다(완화 요인은 CI 게이트가 아니라는 점, 대가는 자동 차단 상실). **live 통과는 실행 시각·대상 환경에 한정된 관측**(항구적 연동 보증 아님), **미실행은 UNVERIFIED**("레시피를 만들었다"는 검증 아님), **"live smoke로 장애 N% 조기 포착" 류 효과 수치 인용 금지**.
-- **셀렉터 우선순위 축(DOM 조회·principles §3.7 = 단일 출처)** — 계층·방법론·API 경계와 **직교하는 테스트 속성**이며 축 카드가 아니다. **DOM을 조회하는 테스트에만** 적용하고 비-DOM(순수 로직 unit·서버 API integration·CLI)은 `해당 없음(비-DOM)`. 사다리 = **시각 요소·사용자 인터랙션** `getByRole` > `getByLabelText` > `getByPlaceholderText` > `getByText` > `getByDisplayValue` / **HTML5·ARIA 속성** `getByAltText` > `getByTitle` / **테스트 ID** `getByTestId`(**위 쿼리로 불가능한 값을 찾을 때만**) / **최후 수단** `locator`. **한 단계씩 내려가고 8·9번은 사유를 적는다**("편해서"는 사유 아님). **러너 이름 어댑터**(§3.7.3): Playwright는 `getByLabel`·`getByPlaceholder`이고 **`getByDisplayValue`가 없다** → 값 특정은 **상위 순위 조회 + `toHaveValue` 어서션**으로 재설계(없는 API 호출 금지). **testid 속성명은 팀 합의 사항**이라 하네스가 임의로 정하지 않고 Phase 0 감지(`data-testid`/`data-test`/`data-qa`/`data-cy`·Playwright `testIdAttribute`) → 없으면 Phase 1에서 문의. ⚠️ **제품 코드에 testid 추가는 테스트 파일 밖의 변경이라 게이트 B 별도 승인**(거절 시 9번으로 하향·표기). **최후 수단 `locator`는 허용하되 결합 비용 표기**(`[data-ga-action="…"]`=애널리틱스 등 **다른 목적의 계약**에 결합 / `[class*="Foo_container"]`=CSS Module 해시 = **구현 세부**에 결합) — 위험은 경고하되 **수용은 사용자 결정**. **기존 테스트 셀렉터는 무단 개조 금지**(보고 + 전환 patch 제안). **정직성**: 근거는 Testing Library 공식 Priority 가이드(vendor-doc, MED)의 **설계 의도**이지 측정된 우월성이 아니다 — **효과 수치·준수율 점수화 금지**, **접근성 개선을 성과로 주장 금지**, **셀렉터는 오라클이 아니다**(§5와 직교). ⚠️ 계획표의 '방법론' 열 *셀렉터*(`--grep @smoke`)와 'DOM 셀렉터' 열은 **다른 것**이다.
-- **sanity = 변경-스코프 선택 레인(PR 전 실행)** — 새 테스트를 만드는 생성 축이 아니라 **이미 있는 테스트를 골라 돌리는 레인**이다(조합 강도표의 Sanity 열 DEGEN은 '생성'에 대한 판정이라 모순 아님). 대상 산정 3단계: ① `git diff --name-only origin/<base>...HEAD`(**`<base>`는 CI PR base 변수 → 기본 브랜치 감지 순·실패 시 추측 말고 문의**) → ② **역참조 확장**(변경 파일을 import하는 상위 페이지/컴포넌트 — 러너 네이티브 `--findRelatedTests`/`--related` 우선, grep 폴백; **불완전하므로 불확실하면 전체 폴백**) → ③ **관련 페이지의 `@e2e-mock`**(경로 미러 → `@page:/route` 태그 제안 → 전량 폴백) — ⚠️ **E2E가 선택 스코프에 있을 때만 수행**(미선택이면 건너뛰고 unit/integration으로만 구성 후 확장 문의 — 스코프 가드). **`@e2e-live`는 대상 아님**. 산출물 = `test:sanity:changed`·`test:sanity:e2e`·**CI PR job 스니펫(제안만·yaml 직접 편집 금지)**, 차단성은 **unit/integration blocking + mock E2E non-blocking**. **`@sanity` 무-태그 가드 유지**(`@page:`는 대상 메타라 위반 아님). 변경 관련 대상에 테스트가 **아예 없을 때만** 선택 스코프 안에서 새로 만든다(게이트 B). ⚠️ **PR job 배치·차단성은 표준(ISTQB/ISO) 근거가 아니라 이 하네스의 운영 결정**임을 병기한다.
-- **조합 강도 정직성** — Sanity 전 조합·Nightly×Unit·Smoke×Unit은 WEAK/DEGENERATE(ISTQB상 sanity=smoke 동의어, unit은 게이트 전량 실행)이므로 있는 척 채우지 않고 스코프 내 STRONG 조합으로 라우팅한다.
-- **nightly는 방법론 아님** — CI-stage/스케줄 지연 축(ISTQB/ISO에 nightly test type 없음). **prioritization은 CI 비용을 못 줄임**(latency만, 정의상(재정렬=총실행량 불변)).
-- **정직성** — smoke=sanity ISTQB 동의어 caveat 병기, 근거 없는 효과 수치 인용 금지, 신뢰도(HIGH/MED/LOW)·모순·folklore 표기 계승.
-- **적응형 추천** — 저장소 감지로 프리셋 추천 후 사용자 확정(고정 강제 아님).
-- **CI 배치 원리** — tier는 파이프라인 뒤로 갈수록 넓어짐(Google presubmit/postsubmit·Fowler DeploymentPipeline). 선택·배치 > 우선순위. unknown 커밋엔 전체 폴백.
-- **커밋 직접 안 함** — 최종 반영은 유지·정리까지, 커밋/PR은 git-harness로 핸드오프 제안만.
+- **스코프 가드** — 테스트는 사용자가 Phase 1에서 선택한 방법론·계층 안에서만 추가한다. 밖은 "추가 안 함" 표기 후 확장 문의(§4.5).
+- **unit/integration은 실제 API를 호출하지 않는다**(예외 없음 — 정의상 계층 자격 상실, §3.6). fixture는 3단 폴백, 하네스는 fixture 확보용 live 호출을 하지 않는다.
+- **unit/integration 배치는 대상 파일 폴더의 `__test__/`가 무조건이다** — 저장소에 다른 관습이 있어도 대체하지 않는다(계층 카드 §5).
+- **E2E는 smoke·regression만**, E2E smoke는 live 전용(`@e2e-mock` 금지·CI 스테이지 없음), 태그 사다리 smoke ⊆ regression, 모드는 기존 테스트의 태그로만(§3.6.5-a·§3.6.5-c).
+- **live 실행은 하네스 live 호출의 유일한 예외** — 대상 환경·계정/시드·그 자리 승인이 모두 있을 때만, 아니면 UNVERIFIED(§3.6.5-b).
+- **AC-ID 표기** — 테스트 제목 `[AC-1.2] …`, smoke·regression은 인수조건 기반만, nightly·sanity만 ID 없는 추가 허용(계획표엔 사유만, §4.6).
+- **셀렉터 사다리**(§3.7)·**sanity = 변경-스코프 선택 레인**(§3.5.3)·**오라클 강도 가드**(§5)는 각 절이 정본이다.
+- **정직성** — 비율%·효과 수치·준수율 점수화 금지, 신뢰도·folklore·모순 표기 계승, E2E smoke는 자동 배포 게이트가 아니라 수동 체크포인트로 적는다.
 - 단일 스킬 플러그인이므로 에이전트 팀(agents/)을 두지 않는다 — 인터랙티브 오케스트레이터 본성에 충실.
-- **경계**: 리스크 기반 오라클·자가치유·트리아지 QA(qa-agent-harness), 백엔드 실행기반 test-generator(backend-harness), AC↔테스트 커버리지 읽기전용 검수(review-harness/test-coverage-review), FE 흐름 내 TDD(frontend-harness), 실행 명세 작성(spec-driven-development), 커밋/PR(git-harness)은 범위 밖.
 
 ## Change History
 

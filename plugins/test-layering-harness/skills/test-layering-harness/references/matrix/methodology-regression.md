@@ -9,20 +9,22 @@
 ## 2. 멤버십 기준 (어떤 테스트가 Regression에 드는가) — AND/우세
 - [ ] **미변경 영역의 행위 보존**(비회귀)을 검증하거나, 이 테스트가 **변경을 traverse/커버**한다(per-commit change-relevance 재계산).
 - [ ] **완전 행위 보존 오라클**을 요구한다(값·상태를 명세에서 유도). → E2E에 얹힐 때 API 경계는 **`@e2e-mock`이 기본**(회귀 판정은 결정론이 전제). ⚠️ 단 **mock 회귀 통과가 연동 보존을 뜻하지 않는다** — fixture는 캡처 시점 스냅샷이라 계약 drift를 못 잡는다(principles §3.6.6).
-  - ⚠️ **같은 E2E 스펙에 `@smoke`와 `@regression`을 겹치지 않는다** — E2E smoke는 **live 전용**이라 그 스펙이 `test:regression` 실행에서 빠지는 **phantom membership**이 된다(principles §3.6.5-a 귀결 4). 같은 여정을 회귀로도 보존 검증하려면 **`@e2e-mock` 회귀 스펙을 따로 두고** 계획표에 두 행으로 적는다.
+  - **E2E regression은 E2E smoke를 모두 포함한다**(smoke ⊆ regression, principles §3.6.5-c) — smoke 스펙은 `@regression`을 함께 지닌다. 스위트 안에서 **mock·live 혼합 가능**하며 실행은 **CI mock 패스(`@regression ∧ @e2e-mock` — 필터 없으면 live smoke가 끌려온다) + 수동 live 패스(`test:e2e:regression:live`)**. smoke를 회귀용 `@e2e-mock` 스펙으로 복제하지 않는다. E2E regression은 nightly로 이연하지 않는다(E2E nightly 없음).
+  - ⚠️ 포함 관계로 `@regression`을 지니는 **E2E smoke는 위 "완전 행위 보존 오라클" 기준의 예외**다 — smoke 오라클(여정 도달·상태 전이·계약 형태)을 유지하고 얕은 회귀 판정이라는 대가를 계획에 적는다(principles §3.6.5-c).
+- [ ] **AC-ID 필수**(principles §4.6): regression 테스트는 인수조건 ID 기반으로만 만들고 제목에 `[AC-1.2]`를 붙인다. 인수조건에 없는 테스트는 regression에 넣지 않는다(필요하면 AC 추가 여부를 묻거나 nightly·sanity에 ID 없이 둔다).
 - [ ] **safe-RTS**: 변경을 traverse하는 것을 선택하되 **매핑 불가/미지 파일타입이면 full-suite fallback 강제**(under-selection이 주 실패모드).
 
 ## 3. 실체화 & CI 배치 (principles §3.5)
 - **durable 태그**: `@regression`(옵션 A 멀티태그) 또는 durable 기본체 전량(옵션 B carve-out) — Phase 2 계획(게이트 A) 택1(§3.5.4). 러너별 문법 §3.5.2. 셀렉터 실행 분리 검증(§3.5.4).
 - **세 레버(비-호환)**: **Selection**(TCS/TIA — 볼륨 감축·lossy unless safe) / **Prioritization**(TCP — 재정렬·**볼륨/비용 불변·latency만**) / **Batching**(무손실 볼륨 감축).
-- **CI 배치**: PR-gate는 TIA로 선택된 `@regression` 부분집합, Merge to main은 full 빠른 계층, 예산 초과분은 Nightly(§3.5.5).
+- **CI 배치**: PR-gate는 TIA로 선택된 `@regression` 부분집합, Merge to main은 full 빠른 계층, 예산 초과분은 Nightly(§3.5.5) — 단 E2E는 nightly로 보내지 않고 크리티컬 여정 subset으로 좁힌다(principles §3.6.5-c).
 
 ## 4. 오라클 기대
 - **강함(완전 행위 보존)**. 현재 구현=정답 가정 금지(implementation-bias).
 - ⚠️ **Unit과 조합 시 최고위험 오라클 셀**: LLM이 명세가 아니라 현재 구현을 regression oracle로 굳혀 버그를 초록으로 은폐(green-locks-bug). 완화: AC 기준 오검증(§5-1)·실행 그라운딩(§5-2)·통과 assertion을 기대 기준으로 역전. 게이트는 테스트 개수가 아니라 **오라클 신호 강도**로(correct≠strong).
 
 ## 5. 이 방법론 × 계층 조합 (선택된 계층 안에서만 — 강도 값 단일 출처 _index §3 lookup)
-- **Regression × Unit = STRONG(멤버십)·최고위험 오라클**(경계/에러/edge 회귀), **Regression × Integration = STRONG**(통합 비회귀·safe-RTS), **Regression × E2E = STRONG(멤버십)·대개 nightly 이연**(전량은 비쌈).
+- **Regression × Unit = STRONG(멤버십)·최고위험 오라클**(경계/에러/edge 회귀), **Regression × Integration = STRONG**(통합 비회귀·safe-RTS), **Regression × E2E = STRONG(멤버십)·nightly 이연 불가**(전량은 비싸므로 크리티컬 여정 subset).
 - 선택 스코프에 없는 계층과는 조합하지 않는다(_index §1).
 
 ## 6. 근거 & 정직성

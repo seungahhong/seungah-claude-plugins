@@ -38,7 +38,7 @@
 ## 6. 이 계층 × 방법론 조합 (선택된 방법론 안에서만 — 강도 값 단일 출처 _index §3 lookup)
 - **Smoke × Integration = STRONG** — commit-stage smoke의 정본(Fowler CD "소수의 중요한 integration·acceptance 테스트로 이뤄진 작은 smoke suite"). 핵심 통합 지점 정상 경로·결정론·showstopper.
 - **Regression × Integration = STRONG** — 미변경 통합 영역 비회귀. safe-RTS(변경 traverse·매핑 불가 시 full fallback).
-- **Nightly × Integration = STRONG-ish** — 느린/외부의존 integration + 게이트 selection의 miss를 재검출하는 야간 안전망.
+- **Nightly × Integration = STRONG-ish** — 느린(대용량·다프로세스) integration + 게이트 selection의 miss를 재검출하는 야간 안전망.
 - **Sanity × Integration = DEGEN/WEAK** — smoke 동의어 or 변경 국소 confirmation(transient·무-태그).
 - 선택 스코프에 없는 방법론과는 조합하지 않는다(_index §1).
 

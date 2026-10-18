@@ -21,6 +21,10 @@
 
 위 기본값의 **유일한 예외**다. **`@smoke`가 붙은 E2E 스펙은 요청 없이도 `@e2e-live`만 갖는다** — `@e2e-mock`을 붙이지 않고 mock 주입·fixture도 만들지 않는다. 대신 **CI 고정 스테이지에 넣지 않고**(PR-gate·post-deploy·nightly 전부 제외) 수동 레시피 `test:e2e:smoke:live`로만 돌린다. `test:smoke`는 비-E2E smoke(주로 integration)만 뽑는다.
 
+**E2E는 smoke·regression으로만 만든다 — smoke ⊆ regression.** smoke 테스트는 `@smoke @regression @e2e-live`, regression 테스트는 `@regression`을 지닌다. E2E nightly·sanity는 만들지 않는다(대가: cross-browser·대규모 E2E를 nightly로 미룰 수 없다). unit/integration은 smoke·regression·nightly 모두 mock이고, E2E regression은 mock·live를 섞을 수 있다. CI의 regression은 `@e2e-mock` 테스트만 돌리고(smoke 포함 live 테스트는 수동 live 실행), 모드는 **기존 테스트에 태그로만** 붙인다 — mock/live 전용 파일을 따로 만들지 않는다.
+
+**테스트 제목에는 인수조건 ID를 붙인다** — `test('[AC-1.2] 비로그인 사용자는 결제 버튼이 비활성이다', …)`. smoke·regression은 인수조건 기반 테스트만 만들고, nightly·sanity는 인수조건 밖에서 필요한 테스트(성능·fuzz 등)를 ID 없이 추가할 수 있다. ID 없는 테스트는 계획표 AC-ID 열에 사유만 적어 따로 승인받는다.
+
 **하네스가 실제로 돌리는 조건**: 게이트 B에서 ① 대상 환경(base URL) ② 테스트 계정·시드 데이터(또는 "불필요") ③ **그 자리 실행 승인** 이 셋이 모두 있을 때만 — 계획을 승인했다고 실행까지 승인된 것이 아니다. 프로덕션이면 한 번 더 확인하고, 부작용이 있는 여정(결제·발송·삭제·과금)은 개별로 묻고, 비밀 값은 대화에 받지 않는다(env·secret 키 이름만). 못 돌리면 레시피를 **UNVERIFIED**로 남긴다.
 
 ⚠️ **대가를 감추지 않는다**: 고정 스테이지가 없으므로 **E2E smoke는 자동 배포 게이트가 아니라 승격 전 사람이 돌리는 수동 체크포인트**다. 그리고 이 규칙은 "배포 게이트는 결정론적이고 외부 의존이 0이어야 한다"는 통상 권고(MinimumCD·Fowler)와 **상충하는 운영 결정**이다 — 근거로 정당화하지 않고 상충 사실을 산출물에 적는다. live 통과도 **실행 시각·그 환경에 한정된 관측**이지 항구적 연동 보증이 아니다.
@@ -55,7 +59,7 @@ AI가 테스트를 자동 생성할수록 위험은 "작성 속도"가 아니라
 
 스킬을 부르고(예: "이 인수조건으로 계층별 테스트 계획 세우고 하나씩 승인받으며 추가해줘"), 초기 문의에 답한다:
 
-- **인수조건(AC)** — 붙여넣기·파일 경로. **스킵 가능** — 스킵 시 저장소에서 후보(스토리·PRD·기존 테스트 제목)를 찾아 제안한다.
+- **인수조건(AC)** — 세 가지 중 하나를 직접 고른다: (a) 붙여넣기 (b) 파일·링크 경로 (c) 없음 → 저장소에서 후보(스토리·PRD·기존 테스트 제목)를 찾아 제안.
 - **개발 환경(경로)** — **스킵 가능** — 미입력 시 **현재 프로젝트 경로**를 기준으로 테스트 러너·디렉토리 관습을 감지한다.
 
 이후 스킬이 프리셋을 추천하면 확정/변경하고, 계획을 승인하고, 테스트를 하나씩 승인하면 된다.
@@ -73,23 +77,10 @@ AI가 테스트를 자동 생성할수록 위험은 "작성 속도"가 아니라
 - **미실행을 통과로 옮기지 않는다** — live 레시피를 만들었다는 것은 검증이 아니라 `UNVERIFIED`다. live 실패도 테스트 결함 / 코드 결함 / **환경·외부계** 3분류로 구분한다.
 - 모든 결론에 신뢰도(HIGH/MED/LOW)와 출처, 모순·folklore 표기를 계승한다.
 
-## 도구 경계 (다른 플러그인과의 구분)
-
-이 플러그인의 축은 **"AC → 방법론×계층 택소노미 계획 → 3게이트 순차 적용"**이다. 다음은 범위 밖:
-
-| 이건 저기서 | 플러그인 |
-|---|---|
-| 리스크 기반 오라클·자가치유 실행·flaky 트리아지 end-to-end 에이전틱 QA | `qa-agent-harness` |
-| 백엔드 코드의 generate→compile→execute→repair 수리 루프 | `backend-harness` / test-generator |
-| AC↔테스트 커버리지 **읽기전용** 핸드오프 게이트 검수 | `review-harness` / test-coverage-review |
-| FE 개발 워크플로우 내부의 TDD | `frontend-harness` |
-| 에이전트가 코드 생성할 실행 가능 명세(spec) 작성 | `spec-driven-development` |
-| 커밋 메시지·PR | `git-harness` |
-
 ## 구성
 
 - `skills/test-layering-harness/SKILL.md` — 오케스트레이터(5 Phase · 3 게이트, Phase 2에서 축 카드 조합 라우팅)
-- `skills/test-layering-harness/references/test-layering-principles.md` — 방법론×계층 매트릭스·AC 분해(§4)·축 카드 조합 라우팅(§4.5)·오라클 가드(§5)·실체화(§3.5, sanity 선택 레인 §3.5.3)·**API 경계 축 mock/live(§3.6)**·3 프리셋·anti-pattern·경계
+- `skills/test-layering-harness/references/test-layering-principles.md` — 방법론×계층 매트릭스·AC 분해(§4)·축 카드 조합 라우팅(§4.5)·오라클 가드(§5)·실체화(§3.5, sanity 선택 레인 §3.5.3)·**API 경계 축 mock/live(§3.6)**·3 프리셋·anti-pattern
 - `skills/test-layering-harness/references/matrix/` — **방법론·계층 축 카드 7개**(방법론 카드 4 + 계층 카드 3; `_index.md`에 스코프 가드·조합 라우팅 절차·조합 강도 lookup). 12개 셀로 미리 물질화하지 않고 라우팅 시 조합.
 - `skills/test-layering-harness/references/research/test-strategy-research.md` — 2025+ 상위 근거 dossier
 - `skills/test-layering-harness/references/research/matrix-criteria-2025.md` — 조합 라우팅 기준 근거 dossier(직교성·계층/방법론 판정·조합 강도 lookup·소스 인덱스)
