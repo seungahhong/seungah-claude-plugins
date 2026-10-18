@@ -79,7 +79,8 @@ plugins/
   product-spec-harness/                                  # [독립 플러그인] 기획자(PM)용 기획문서(PRD)+사용자 스토리+인수조건 7단계 인터랙티브 하네스 + 기획 완성도 점검(DoR)·PRD 확정 루프(계획→설계→비평)(모두 내재화·외부 의존 없음, 단독 동작) — 개발 착수 전, 도메인 무관 (산출물은 .claude/_docs/<기획서 슬러그>/에 저장) (입력 모드 R 재갱신 재진입/A 기획안/B 인터뷰 — R을 A·B보다 먼저 판별; 생성 전 기획안 보완 문답(하나씩·건너뛰기)과 생성 후 재갱신 경로 포함; 경계: 프론트엔드 화면 구현·기술 설계·코드/하네스/커밋·완성 산출물 핸드오프 게이트 검수 제외)
     .claude-plugin/
       plugin.json
-    CLAUDE.md                                            # 하네스 포인터 + 7단계 요약 + 변경 이력
+    CLAUDE.md                                            # 핵심 불변식 + 위치 포인터
+    CHANGELOG.md                                         # 변경 이력
     README.md                                            # 사용자용 개요·사용법·도구 경계·입력 모드
     agents/                                              # 모두 model: "opus" (Phase 순차)
       requirements-analyst.md                            # Phase 0 요구/문제/사용자 정의 (Discovery) — 기획안 있으면 카드 추출, 없으면 인터뷰
@@ -100,6 +101,7 @@ plugins/
           prd-design-checklist.md                        #   기획 설계 점검표 D1~D12 + 기술 설계 금지 어휘 + 섹션 소유 경계 (Phase 2.2 설계 내재화)
           prd-critique-lenses.md                         #   PRD 비평 렌즈 C-1~C-7 + 차단 닫힌 4종 + 처리분류 A/B/C + 정체 가드 G1~G3 + 정직성 가드레일 (Phase 2.3 비평 내재화)
           acceptance-criteria-guide.md                   #   인수조건 작성 가이드 내재화 — 조건·행동·결과 형식·단일 관심사·흐름 커버리지 6종·판정 체크·스토리↔인수조건 추적·누락 마이닝 (Phase 5·6)
+          regeneration-path.md                           #   마무리 §1 재갱신 경로 R0~R7 (입력 모드 R·건너뜀 잔존·갱신 요청일 때만 읽음)
     evals/
       trigger-eval.json                                  # 트리거 경계 평가 (should_trigger 21 / should_not 22, 자매 하네스(review-harness) reciprocal 가드 + 기술 아키텍처 설계·테스트 코드 작성 오발동 가드 포함)
   loop-engineering/                                      # [독립 플러그인] 검증 가능한 목표를 향한 자율 반복 루프 + 지속학습 메모리 멀티 에이전트 하네스 (실행 루프 Goal→Execute→Verify→Diagnose→Improve + 학습 루프 Fail→Investigate→Verify→Distill→Consult). 경계: 하네스 진단·개선(meta-harness)·하네스 생성(harness-generator)·PRD(product-spec/frontend)·커밋(git-harness)·native /loop 제외
