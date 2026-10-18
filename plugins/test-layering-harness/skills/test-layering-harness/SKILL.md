@@ -1,24 +1,13 @@
 ---
 name: test-layering-harness
 description: >-
-  인수조건(AC, Given-When-Then)에서 테스트를 방법론(Smoke/Sanity/Regression/nightly)×계층(Unit/Integration/E2E)
-  택소노미로 분해·CI 단계에 배치해 계획하고, 계획→개별→최종 3단계 인간 승인 게이트로 테스트를 하나씩 순차 생성·적용·확정하는
-  도메인 무관 인터랙티브 스킬. 방법론×계층을 12개 셀로 미리 물질화하지 않고 references/matrix/에 방법론 카드 4개+계층 카드 3개(7개 축 카드)를
-  두어, 각 AC를 필요한 시점에 두 축을 조합해 상황에 맞는 테스트로 라우팅한다(기준은 2025+ 공식표준·논문에 연결하되 1차 근거 없으면 정직 표기). 조합은
-  다중 멤버십이고 WEAK/DEGENERATE 조합은 정직히 비운다. **테스트는 사용자가 Phase 1에서 선택한 방법론·계층 안에서만 추가한다**(스코프 가드 — 밖은 임의 추가 금지·확장 문의).
-  **API 경계는 계층이 강제한다** — unit/integration은 실제 API를 호출하지 않고 네트워크 경계 인터셉터(우선)/모듈 double + fixture(3단 폴백: 기존 재사용→사용자 제공→스키마 유도는 '실측 캡처 아님' 표기)로 mock하며, E2E는 스펙 한 벌에 **모드 태그**(`@e2e-mock` 기본=CI 결정론 / 명시 요청 시 `@e2e-live` 병기=실제 API 연동 검증·고정 CI 스테이지 없이 수동 on-demand)로 분기한다(**mock 통과 ≠ 연동 검증** — fixture는 캡처 시점 스냅샷).
-  **⚠️ E2E smoke만은 실제 API 연동이 필수다** — `@smoke` 멤버십을 가진 E2E 스펙은 요청 없이도 **`@e2e-live`가 강제**되고 **`@e2e-mock`을 부여하지 않으며**(mock·fixture 없음), CI 고정 스테이지 없이 **수동 레시피**(`test:e2e:smoke:live`)로만 돈다. 하네스는 **대상 환경·테스트 계정·그 자리 승인이 모두 있을 때만** 실제로 실행하고(하네스 live 호출의 유일한 예외) 아니면 UNVERIFIED로 남긴다. 대가는 **자동 배포 게이트가 아니라 수동 체크포인트**라는 것이고, 이는 게이트 결정론 권고와 **상충하는 운영 결정**임을 병기한다.
-  **DOM을 조회하는 테스트는 셀렉터 우선순위 사다리를 지킨다** — `getByRole` > `getByLabelText` > `getByPlaceholderText` > `getByText` > `getByDisplayValue`(시각 요소·사용자 인터랙션) · `getByAltText` > `getByTitle`(HTML5·ARIA 속성) · **`getByTestId`는 위로 불가능한 값을 찾을 때만** · 그래도 안 되면 **최후 수단 `locator`**(사유·결합 비용 표기). 러너 API 이름은 어댑터로 옮기고(Playwright는 `getByLabel`/`getByPlaceholder`·**`getByDisplayValue` 없음**), **testid 속성명은 팀 합의**라 감지 후 없으면 묻고, **제품 코드에 testid 추가는 게이트 B 별도 승인**이다. 비-DOM 테스트는 '해당 없음'으로 적는다(셀렉터는 오라클이 아니며 준수율을 점수화하지 않는다).
-  **sanity는 태그가 아니라 변경-스코프 선택 레인**으로, 변경 파일 → 역참조로 관련 상위 페이지/컴포넌트 → 매핑된 `@e2e-mock`까지 골라 **PR 전 change-scoped PR job**에서 돌린다(unit/integration blocking·mock E2E non-blocking, 표준 아닌 운영 결정). 사용자가 "인수조건으로 테스트 짜줘", "이 AC를 unit/통합/E2E로 나눠서", "스모크/회귀 테스트 계획
-  세워줘", "테스트 피라미드(트로피)로 계층 잡아줘", "테스트를 하나씩 승인받으며 추가", "AC 기반 계층별 테스트 스위트", "CI 단계별로
-  어떤 테스트를 어디에 둘지" 같은 요청을 하거나 테스트 계층 전략·CI 배치를 논할 때 반드시 사용한다. 대상 저장소를 감지해 3개 프리셋
-  (Trophy-lean/Google-pipeline/Contract-honeycomb) 중 근거와 함께 적응형으로 추천하고 비율%(70/20/10)는 folklore이므로
-  하드코딩하지 않는다. LLM 생성 테스트의 최대 리스크인 오라클 강도(구현이 아니라 기대·명세를 검증하는가)를 오라클 오검증·실행
-  그라운딩·flaky baseline 선결로 가드한다. 초기 문의에서 AC 입력과 개발 환경을 각각 스킵(pass) 가능하며 개발 환경 미입력 시
-  현재 프로젝트 경로를 기준으로 삼는다. 경계: 리스크 기반 오라클·자가치유 실행·flaky 트리아지 end-to-end QA(qa-agent-harness),
-  백엔드 실행기반 test-generator(backend-harness), AC↔테스트 커버리지 읽기전용 검수(review-harness/test-coverage-review),
-  FE 개발 흐름 내 TDD(frontend-harness), 실행 가능 명세 작성(spec-driven-development), 커밋/PR(git-harness)은 범위 밖이다.
-allowed-tools: Read, Write, Edit, Bash, Grep, Glob
+  인수조건(AC, Given-When-Then)을 방법론(Smoke/Sanity/Regression/nightly)×계층(Unit/Integration/E2E) 축 카드로 조합해 CI 단계별 테스트
+  계획을 세우고, 계획→개별→최종 3단계 승인 게이트로 테스트를 하나씩 생성·적용·확정하는 도메인 무관 인터랙티브 스킬. 사용자가 "인수조건으로 테스트 짜줘", "이 AC를 unit/통합/E2E로
+  나눠서", "스모크/회귀 테스트 계획 세워줘", "테스트 피라미드(트로피)로 계층 잡아줘", "테스트를 하나씩 승인받으며 추가", "AC 기반 계층별 테스트 스위트", "CI 단계별로 어떤 테스트를
+  어디에 둘지" 같은 요청을 하거나 테스트 계층 전략·CI 배치를 논할 때 반드시 사용한다. 범위 밖: 리스크 기반 자가치유·flaky 트리아지 QA(qa-agent-harness), 백엔드 실행기반
+  test-generator(backend-harness), AC↔테스트 커버리지 읽기전용 검수(review-harness), FE 개발 흐름 내 TDD(frontend-harness), 실행 가능
+  명세 작성(spec-driven-development), 커밋/PR(git-harness).
+allowed-tools: Read, Grep, Glob
 ---
 
 # test-layering-harness
