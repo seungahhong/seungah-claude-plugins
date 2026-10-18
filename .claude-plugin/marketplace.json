@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "분석 → 설계 → 개발 → 리뷰 → 검증까지, 소프트웨어 개발 전 과정을 지원하는 멀티 에이전트 스킬·커맨드·훅 모음. 정적 분석 5개 관점(간소화·코드 리뷰·보안·성능·정합성) 중 사용자 선택 항목 병렬 + 재리뷰 루프와 E2E·타입/빌드 검증, 그리고 코드 착수 *전* 상류 산출물(기획·디자인·API 계약·QA 인수조건) 핸드오프 게이트 검수를 포함합니다.",
-    "version": "1.51.0",
+    "version": "1.51.1",
     "homepage": "https://github.com/seungahhong/seungah-claude-plugins"
   },
   "plugins": [
@@ -14,7 +14,7 @@
       "name": "frontend-harness",
       "description": "프론트엔드 개발 전 과정을 지원하는 멀티 에이전트 스킬 모음. Research → PRD → Develop(가이드라인 기반 개발) → Review(/simplify + /review + security-audit + lighthouse + qa-inspector 5개 관점 중 사용자 선택 항목 병렬 + 재리뷰 루프) → Verify(E2E + 타입/빌드) 6단계 오케스트레이터를 제공합니다. 웹접근성·시맨틱 HTML·SEO/GEO·TDD·E2E·Lighthouse·QA 정합성·OWASP 보안 감사를 포함합니다.",
       "source": "./plugins/frontend-harness",
-      "version": "1.3.2",
+      "version": "1.3.3",
       "author": {
         "name": "seungah.hong"
       },

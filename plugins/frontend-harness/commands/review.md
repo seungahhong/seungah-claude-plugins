@@ -1,7 +1,7 @@
 ---
 name: review
 description: "코드 리뷰 및 배포 준비 단계를 실행하는 커맨드. /simplify(코드 간소화), /review(PR 리뷰), security-audit(보안 감사), lighthouse-performance(성능), qa-inspector(통합 정합성) 5개 관점을 사용자에게 보여주고 선택받은 항목만 병렬로 실행한 뒤 결과를 통합 보고한다. 선택 항목 수에 관계없이 항상 단일 메시지에서 동시 spawn되며, 수정이 필요한 항목은 수정 후 자동으로 리뷰를 재실행하여 모든 이슈가 해소될 때까지(최대 3회) 루프를 돈다. 'review', '리뷰', '배포 준비', '머지 준비', '코드 검토', 'PR 준비', '보안 감사', '품질 검토', '성능 검사', 'QA' 등의 키워드에 반응한다. 독립 실행 또는 오케스트레이터의 Review Phase(Phase 4)로 호출된다. 커밋은 이 커맨드 범위 밖이며, 필요하면 별도 커밋 워크플로를 사용한다."
-allowed-tools: Bash, Read, Grep, Glob, Edit, Write, Agent
+allowed-tools: Bash(git status:*), Bash(git diff:*), Bash(npm audit:*), Read, Grep, Glob, Edit, Agent
 ---
 
 # Review — 통합 리뷰 및 배포 준비 커맨드

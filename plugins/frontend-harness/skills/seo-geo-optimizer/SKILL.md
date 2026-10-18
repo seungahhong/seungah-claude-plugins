@@ -24,14 +24,16 @@ description: 웹사이트의 SEO 및 GEO(생성형 검색 엔진 최적화)를 �
 
 **점검 항목:**
 ```bash
-# 메타태그 확인
-curl -sL "https://example.com" | grep -E "<title>|<meta name=\"description\"|application/ld\+json" | head -20
+# 메타태그 확인 (HTML을 파일로 받은 뒤 검사)
+curl -sL "https://example.com" -o "${TMPDIR:-/tmp}/seo-page.html"
+grep -E "<title>|<meta name=\"description\"|application/ld\+json" "${TMPDIR:-/tmp}/seo-page.html" | head -20
 
 # robots.txt 확인 (AI 봇 접근 허용 여부)
 curl -s "https://example.com/robots.txt"
 
 # 사이트맵 확인
-curl -s "https://example.com/sitemap.xml" | head -50
+curl -s "https://example.com/sitemap.xml" -o "${TMPDIR:-/tmp}/seo-sitemap.xml"
+head -50 "${TMPDIR:-/tmp}/seo-sitemap.xml"
 ```
 
 **AI 봇 접근 확인 — robots.txt에서 다음 봇이 허용되어야 한다:**

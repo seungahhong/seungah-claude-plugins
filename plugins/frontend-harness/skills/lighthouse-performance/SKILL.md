@@ -1,7 +1,7 @@
 ---
 name: lighthouse-performance
 description: "Lighthouse 기반 웹 성능 검사 스킬. Core Web Vitals(LCP, CLS, INP, TTFB, FCP)와 성능 점수를 측정하고 개선 방안을 제시한다. 사용자가 '성능 검사', 'lighthouse', 'performance', 'Core Web Vitals', 'LCP', 'CLS', '페이지 속도', '로딩 속도', '성능 최적화', '웹 성능' 등을 언급할 때 사용한다. 개발 완료 후 오케스트레이터의 Review 단계(`/review`)에서 다른 정적 분석 스킬과 병렬로 실행되거나, 독립적으로 호출할 수 있다."
-allowed-tools: Bash, Read, Grep, Glob, WebFetch
+allowed-tools: Bash(npx lighthouse:*), Read, Grep, Glob
 ---
 
 # Lighthouse Performance — 웹 성능 검사

@@ -7,7 +7,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/guard.sh",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/guard.sh\"",
             "timeout": 10
           }
         ]
@@ -17,12 +17,12 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/write-guard.sh",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/write-guard.sh\"",
             "timeout": 10
           },
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/skill-dedup.sh",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/skill-dedup.sh\"",
             "timeout": 10
           }
         ]
@@ -34,12 +34,12 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/incremental-lint.sh",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/incremental-lint.sh\"",
             "timeout": 30
           },
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/package-changed.sh",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/package-changed.sh\"",
             "timeout": 10
           }
         ]
@@ -51,7 +51,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/stop-lint.sh",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/stop-lint.sh\"",
             "timeout": 60
           }
         ]
