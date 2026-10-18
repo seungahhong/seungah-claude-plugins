@@ -1,22 +1,10 @@
 {
   "name": "git-harness",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Git 워크플로우 단일 파이프라인 스킬. 저장소 상태를 먼저 읽어 진입점(commit / push / pr)을 추천·선택받고, 커밋 전 리뷰(code-simplifier + 코드리뷰 서브에이전트, correctness·CONFIRMED 차단 게이트) → 한국어 커밋 메시지(`이슈번호 type: 제목`) → push → PR 생성 → PR 리뷰까지 한 흐름으로 진행합니다.",
   "author": {
     "name": "seungah.hong",
     "email": "ssingah1030@gmail.com"
   },
-  "license": "MIT",
-  "tags": [
-    "claude-code",
-    "plugin",
-    "git",
-    "commit",
-    "push",
-    "pull-request",
-    "pr-review",
-    "code-review",
-    "multi-agent",
-    "automation"
-  ]
+  "license": "MIT"
 }

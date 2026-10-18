@@ -1,7 +1,7 @@
 ---
 name: handoff-review
 description: "개발 착수 *전* 상류 산출물의 핸드오프 게이트를 통합 실행하는 오케스트레이터 커맨드. dor-review(기획 DoR)·design-handoff-review(디자인 사각지대)·contract-review(API 계약 완결성/breaking change)·test-coverage-review(인수조건↔테스트 커버리지) 4개 게이트 중, 넘어온 산출물에 해당하는 항목을 사용자에게 선택받아 병렬로 실행하고, '착수 준비도(Readiness)' 통합 리포트와 기획·디자인·BE에 되돌릴 질문 목록을 산출한다. '핸드오프 리뷰', '착수 게이트', '착수 준비됐나', '상류 산출물 검수', 'DoR', '디자인 핸드오프', 'API 계약 검수', '인수조건 커버리지' 등에 반응한다. 완성된 코드 리뷰, PRD·스토리 *작성*, 커밋/PR 리뷰는 이 커맨드의 범위 밖이므로 중복하지 않는다."
-allowed-tools: Bash, Read, Grep, Glob, Agent
+allowed-tools: Bash(find:*), Bash(grep:*), Bash(git ls-files:*), Read, Grep, Glob, Agent
 ---
 
 # Handoff Review — 착수 전 상류 산출물 통합 게이트

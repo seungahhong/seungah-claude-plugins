@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/self-heal-capture.sh",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/self-heal-capture.sh\"",
             "timeout": 10
           }
         ]
@@ -17,7 +17,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/warm-start-nudge.sh",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/warm-start-nudge.sh\"",
             "timeout": 10
           }
         ]

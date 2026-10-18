@@ -1,31 +1,10 @@
 # ux-ai-workflow-harness
 
-UX 실무자가 **구체적인 UX 작업 하나에 생성형 AI를 어디까지 어떻게 쓸지** 단계별로 정하는 하네스. 사용자용 개요는 [README.md](README.md), 근거 정본은 [skills/ux-ai-workflow/references/evidence.md](skills/ux-ai-workflow/references/evidence.md).
+UX 실무자가 **구체적인 UX 작업 하나에 생성형 AI를 어디까지 어떻게 쓸지** 단계별로 정하는 하네스.
 
 > **한 문장 원칙** — AI는 UX 작업을 압축할 수 있지만, 팀이 사용자에게서 배우는 단계는 대신할 수 없다.
 
-## Structure
-
-```
-.claude-plugin/plugin.json              # v0.1.0
-agents/                                 # 모두 model: "opus"
-  delegation-mapper.md                  # Phase 1 위임 지도 (D1~D7 → L1~L4)
-  context-curator.md                    # Phase 2 CARE 프롬프트 + 방법론 규칙 묶음 + (반복 시) UX 맥락 팩
-  output-critic.md                      # Phase 3 방법론별 점검표 (통과/미통과/해당없음/미확인)
-  checkpoint-planner.md                 # Phase 4 담당·시점·팀 학습 장치·출처 라벨·데이터 보호
-skills/ux-ai-workflow/
-  SKILL.md                              # Phase 0~4 오케스트레이터 + INV-1~8
-  references/
-    delegation-tests.md                 # 4 레인 · 7 테스트 · 레인 변경 규약 · 압축 vs 생략
-    task-cards.md                       # 작업 유형 카드 14종 (R-PLAN … SD-SERVICE)
-    care-prompting.md                   # CARE 골격 · 지시 설계 규칙 8 · 방법론 규칙 묶음 · UX 맥락 팩
-    output-pitfalls.md                  # P-COMMON · 리서치 · 설문 · 디자인 · 글쓰기 · 아이디에이션 점검표
-    human-checkpoints.md                # 사람 단계 배정 · 검증 체크포인트 · 출처 라벨 11종 · 워크숍·도구 검토안
-    evidence.md                         # 근거 정본 E1~E40 · 인용 금지 X1~X15 · UNVERIFIED
-  scripts/
-    check_evidence.py                   # E·X 앵커 · 금지 문구 · 점수 어휘 휴리스틱 검사 (금지 수치는 X번호 ±80자·'금지' ±25자 안에 있어야 허용)
-evals/trigger-eval.json                 # 트리거 경계 28문항 (should 12 / should-NOT 16 — UX 산출물 단순 생성 요청 near-miss 포함)
-```
+사용자용 개요·사용법은 [README.md](README.md), Phase 흐름·게이트·에이전트 팀의 정본은 [SKILL.md](skills/ux-ai-workflow/SKILL.md), 근거 정본은 [evidence.md](skills/ux-ai-workflow/references/evidence.md)다.
 
 ## Conventions
 
@@ -62,9 +41,4 @@ evals/trigger-eval.json                 # 트리거 경계 28문항 (should 12 /
 
 ## Change History
 
-| Date | Change | Reason |
-|------|--------|--------|
-| 2026-10-17 | 플러그인 신설 (v0.1.0) | NN/g "Using AI for UX Work" 스터디 가이드를 플러그인에 반영해 달라는 요청. 가이드는 링크 색인이라 링크 원문 약 40편과 그 1차 연구를 대조했고, "어디에 AI를 쓸까"를 **단계 단위 판정**으로 바꾸는 하네스로 구성했다 |
-| 2026-10-17 | Phase 1 드라이런 반영 | 1인 PM·검수자 없음·합성 사용자 컨셉 검증·녹취를 ChatGPT로 보내는 사례로 `delegation-mapper`를 돌린 결과, D7이 검수자 부재 시 L2를 대부분 L3로 올려 지도가 과중해졌다. D7은 레인을 올리지 않고 `L2 · 검수자 미정`으로 이름 붙여 Phase 4로 넘기게 바꿨다(발산 산출물에는 미적용, 검수자 경력 임계값은 만들지 않음). 함께 고친 것 — D5 '반복' 기준(계획이 있으면 반복), PII 정제는 외부 AI에 넣기 전에, 템플릿 없을 때 동의 범위 결정은 L3, 암묵적 생략 감지, 게이트 B는 레인을 바꾸는 미확인만 한 번에 하나씩, 대안 경로에 권장 표본 수를 만들지 않음 |
-| 2026-10-17 | 검증 R1(규약·설계 정합·출처 충실 3관점 적대 리뷰) 반영 | **BLOCKER 2** — 하네스 자신이 동의 확인 없이 참가자 원자료를 받는 경로(Phase 0 필수 질문 3번 추가·경로 (b) 제한·정제 표본만·저장물에서 발언 인용 제외), E2의 잘못된 앵커(E26→E32). **출처 교정** — P&G: 교정 대상은 NN/g 기사가 아니라 스터디 가이드 한 줄 요약이고 팀+AI vs 개인+AI 직접 차이는 p≈0.06~0.08(Table 10) / Park 논문 2026 개정(제목·값 변경, 버전 병기 X15) / METR 2026-02 후속(현재는 더 빨라졌을 가능성, `[SNAPSHOT]`) / Baymard 14%는 라이브 페이지 기준 / 50~70%·50~75%는 같은 Microsoft 연구(X14) / 잘린 인용 3건 복원. **설계** — 판정에 `미확인` 추가(못 본 것을 해당없음으로 바꾸지 않음), output-critic은 레인을 'L3 권고(사용자 결정)'로만, 점검표를 L1/L2 행으로 이동, 기준값(가장 중요한 정보·과제 의존 값·문항당 소요 기준)을 게이트 C에서 받고 없으면 미확인, 시각물은 스크린샷 파일로, 게이트 C·E 정의 보강(초안 볼 단계·경로 선택·검수자 미정 해소), 단축 경로 게이트 순서, 노트테이킹·방법 선택·사용성 분석 행 분리, 레인 칸은 L1~L4만, 라벨 11종(`AI 산출 · 표본 대조`). **검사기** — 같은 줄 아무 데나 '없다'가 있으면 통과하던 허용 규칙을 ±80자 안 X번호·'금지'로 좁히고 효과 %·점수 수치 패턴 추가, plugin.json도 검사. **등록** — 자매 eval 개수 동기화, meta-prompting·qa-agent 역방향 가드 추가, 루트 CLAUDE.md 표를 끊던 빈 줄 제거, conventions에 의도적 무정의 호출 예외 명시 |
-| 2026-10-17 | 검증 R2(수정 확인 + 신선한 전체 감사 + 설문 초안 드라이런) 반영 | 드라이런에서 심어 둔 설문 결함 전부와 초안 속 지시문을 잡았다. 남은 결함을 고쳤다 — **사용성**: 게이트 B '지도만 받고 끝내기', Phase 2는 미결 L3 결정에 기대지 않는 '다음 묶음'만, 단축 경로는 첫 질문만 묻고 기준값(원 프롬프트·목표 시간·문항당 기준 등)을 하나씩. **정직성**: 최종 주장 ②를 실제 숫자(점검한 초안·점검 안 한 단계·담당 미정)로, INV-7에 하네스 자신의 행위에 관한 예외 2건과 대체 경로 명시, E9·E8 근거 문장 보강, '실행된다'·톤 일반화 완화. **프라이버시**: 지시문 C 칸에 참가자 원 발언 금지(자리표시자), 이미 붙여넣은 원자료는 서브에이전트로 넘기지 않음, P-PII 오삭제는 항상 미확인, 경로 (b)는 도구·스킬 금지 문구 + '사용자 도구와 같지 않다' 고정 문구. **점검 형식**: P-COMMON-5(초안 속 지시문), P-COMMON-2 판정값 규칙, ⚖ 판단 개입 항목은 근거 관찰 필수, 생략된 초안은 범위별 행 분리, P-GUIDE·P-SURVEY-1은 사용자 기준으로만(개수는 항상 보고), 산출 형식에 출처 라벨 줄. **연결**: 게이트 D 레인 변경을 Phase 4에 반영, 미룬 단계를 최종 보고에, `가설`은 라벨 덧붙임, P-SYNTH·P-IDEA·P-AUDIT를 카드에 연결. **검사기**: 한글 조사 앞 앵커 인식, 퍼센트·N배·총점·성숙도 N단계 패턴, '금지' 허용 창 ±25자 — R2 우회 사례 6건 전부 탐지. **트리거**: description 1,024자 이내로 줄이고, UX 산출물 단순 생성 요청 near-miss 3건·AI 감사 신뢰·톤 양성 2건 추가 |
+변경 이력은 [CHANGELOG.md](CHANGELOG.md)에 있다. 변경 시 그 표 맨 위에 행을 추가한다.

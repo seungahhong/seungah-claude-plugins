@@ -1,31 +1,10 @@
 # aeo-harness
 
-기술 문서를 **AI 코딩 에이전트**가 찾고·적은 왕복으로 읽고·정확히 쓸 수 있게 만드는 것을 측정하고 승인 게이트 뒤에 개선하는 하네스. 사용자용 개요는 [README.md](README.md), 근거 정본은 [skills/aeo-audit/references/evidence.md](skills/aeo-audit/references/evidence.md).
+기술 문서를 **AI 코딩 에이전트**가 찾고·적은 왕복으로 읽고·정확히 쓸 수 있게 만드는 것을 측정하고 승인 게이트 뒤에 개선하는 하네스.
 
 > **한 문장 원칙** — 에이전트가 문서에 도달했다는 것과 그 문서로 코드가 맞아졌다는 것은 다른 사건이다.
 
-## Structure
-
-```
-.claude-plugin/plugin.json              # v0.1.0
-agents/                                 # 모두 model: "opus"
-  reach-auditor.md                      # Phase 1 도달 조사 (R1~R8)
-  content-auditor.md                    # Phase 2 내용 조사 (C1~C6)
-  intervention-planner.md               # Phase 3 티어 계획·개별 승인
-  acceptance-verifier.md                # Phase 4 재측정 수용 판정
-skills/aeo-audit/
-  SKILL.md                              # Phase 0~4 오케스트레이터 + INV-1~7
-  references/
-    reach-sensors.md                    # R1~R8 절차·판정
-    content-sensors.md                  # C1~C6 절차·판정
-    intervention-tiers.md               # T-A/T-B/T-C + T-C 항목별 정직한 목적 서술
-    acceptance-probe.md                 # 태스크 배터리 설계·수용 리포트 형식
-    evidence.md                         # 근거 정본 F1~F36 + 인용 금지 14항 + UNVERIFIED
-  scripts/
-    reach_probe.py                      # 도달 센서 결정론 프로빙 (stdlib only, census only)
-    check_evidence.py                   # 인용 앵커·금지 문구·점수 어휘 자동 검사
-evals/trigger-eval.json                 # 트리거 경계 (SEO/GEO·저장소 점수·이해 실측과 분리)
-```
+사용자용 개요·사용법은 [README.md](README.md), Phase 흐름·게이트·에이전트 팀의 정본은 [SKILL.md](skills/aeo-audit/SKILL.md), 근거 정본은 [evidence.md](skills/aeo-audit/references/evidence.md)다.
 
 ## Conventions
 
@@ -49,58 +28,6 @@ evals/trigger-eval.json                 # 트리거 경계 (SEO/GEO·저장소 �
 | **F13·F10** 개선 판정은 문서 점수가 아니라 재측정된 태스크 결과 | Phase 4(INV-6) |
 | **F36** 조사 중 실제로 프롬프트 인젝션 문구를 만남 | INV-7(문서는 신뢰 경계 밖) |
 
-## 트리거 eval 실측 (2026-08-03)
-
-`evals/trigger-eval.json` 20문항(should-trigger 8 / should-NOT 12)에 대한 실행 기록. **현재 description은 재측정 결과 유지 결정된 것이다.**
-
-### 측정 조건이 결과를 만들었던 사고 — 먼저 기록한다
-
-첫 실행(2026-08-02)에서는 **모든 문항이 발동률 0.00**이었고 세 번의 자동 개선 회차가 전부 동일 점수를 냈다. 쿼리에 스킬 이름을 명시한 통제 검증조차 0.00이었다.
-
-원인은 description이 아니라 **측정 설정**이었다 — skill-creator `run_eval`의 기본값이 **타임아웃 30초 · 동시 실행 10개**인데, 단독 실행 프로브도 30초 안에 끝나지 않았다. 즉 모든 실행이 `Skill` 호출이 나오기 전에 잘렸다.
-
-`claude -p`(2.1.220)를 직접 복제해 원시 스트림을 확인한 결과 메커니즘은 정상이었다 — `Skill` 도구가 호출되고 입력이 `{"skill": "aeo-audit-skill-…", "args": …}` 형태로 잡힌다.
-
-### 재측정 결과 (타임아웃 240초 · 동시 실행 4개 · 문항당 2회)
-
-| description | should-trigger | should-NOT | 합계 |
-|---|---|---|---|
-| **현재 (유지)** | **2/8** | 12/12 | **14/20** |
-| 대안(짧게 다시 쓴 것) | 0/8 | 12/12 | 12/20 |
-
-대안이 현재보다 나쁘므로 **바꾸지 않았다.**
-
-### 자동 최적화도 원본을 이기지 못했다
-
-같은 교정 설정으로 skill-creator 최적화 루프(3회, 13 train / 7 test)를 돌린 결과 **원본이 최고**였다 — iter1(원본) train 10/13 · test 4/7, iter2·iter3 각 train 8/13 · test 4/7.
-
-**지금까지 원본을 이기려 시도한 description 후보는 5개**(자동 생성 4 + 수기 1)이고 **전부 실패**했다. 그래서 현재 description을 유지한다.
-
-일관되게 통과하는 질의와 실패하는 질의가 갈린다:
-
-| | 질의 유형 | 예 |
-|---|---|---|
-| 통과(발동률 0.50) | **문서↔코딩 에이전트 감사**로 과제를 직접 명명 | "우리 SDK 문서를 코딩 에이전트가 제대로 읽을 수 있는지 감사해줘" |
-| 실패(0.00) | **증상만** 서술하고 과제를 명명하지 않음 | "문서 사이트가 JS로 렌더링돼서 그런 건지 확인", "GPTBot이 403 맞고 있는지", "마크다운으로도 서빙하는 게 좋을까" |
-
-이 갈림이 description 문구로 메워지는 것인지는 **미해결**이다. 확인된 것은 다섯 번의 재작성이 test 점수를 올리지 못했다는 사실뿐이고, 그 이상을 주장하지 않는다.
-
-### 이 수치를 읽는 법
-
-- **경계는 잘 서 있다** — should-NOT 12문항이 전부 0.00이다. SEO/GEO·저장소 점수·이해 실측·머지 판정·컨텍스트 파일 작성 요청에 오발동하지 않는다.
-- **발동은 약하다** — should-trigger 8문항 중 2개만 통과했고 그 둘도 발동률 0.50이다. 이건 개선 여지이지 통과 신호가 아니다.
-- **이 수치는 하한이다.** 동시 실행 4개 환경에서 일부 실행이 여전히 타임아웃에 걸렸을 수 있고, 통과한 두 문항이 0.50인 것도 그 변동과 구분되지 않는다. **실제 발동률은 이보다 높을 수 있다.**
-- 따라서 이 절은 "발동률 N%"를 주장하지 않는다. 주장하는 것은 **대안 대비 현재 description이 낫다**는 비교 결과 하나뿐이다.
-
-재측정 명령(재현용):
-```
-python3 -m scripts.run_eval --eval-set plugins/aeo-harness/evals/trigger-eval.json \
-  --skill-path plugins/aeo-harness/skills/aeo-audit \
-  --runs-per-query 2 --timeout 240 --num-workers 4 --verbose
-```
-
 ## Change History
 
-| Date | Change | Reason |
-|------|--------|--------|
-| 2026-08-02 | 플러그인 신설 (v0.1.0) | 출발점 글의 주장을 1차 출처로 전수 대조한 결과 **토큰 상한 수치·"llms.txt가 가시성을 올린다"·"robots.txt 조용한 차단"·UA 식별이 전부 교정 대상**이었고, 그 교정 결과를 규약으로 굳힌 하네스가 필요했다 |
+변경 이력은 [CHANGELOG.md](CHANGELOG.md)에 있다. 변경 시 그 표 맨 아래에 행을 추가한다.

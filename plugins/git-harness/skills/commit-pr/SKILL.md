@@ -1,7 +1,7 @@
 ---
 name: commit-pr
 description: "커밋·push·PR 생성·PR 리뷰를 하나의 파이프라인으로 처리하는 Git 워크플로우 스킬. 현재 저장소 상태(변경/미push 커밋/열린 PR)를 먼저 읽고 진입점(commit / push / pr)을 추천·선택받은 뒤, 선택한 지점부터 끝까지 이어서 진행한다. 커밋 전에는 /simplify(code-simplifier)와 코드리뷰 서브에이전트를 선택적으로 돌리고 correctness·CONFIRMED 발견은 커밋을 차단한다. 커밋 메시지는 `이슈번호 type: 제목` 한국어 명령형. 사용자가 '커밋', 'commit', '커밋해줘', 'push', '푸시', 'PR 만들어줘', 'PR 올려줘', 'PR 생성', '머지 준비', '리뷰하고 커밋하고 PR', 'PR 리뷰해줘', '커밋부터 PR까지' 등 커밋·push·PR 중 무엇이든 언급하면 반드시 이 스킬을 사용한다. 중간 단계(예: push만, PR만, 이미 열린 PR 리뷰만)도 이 스킬의 진입점으로 처리한다."
-allowed-tools: Bash, Read, Grep, Glob, Edit, Write, Agent, Skill
+allowed-tools: Bash(git status:*), Bash(git branch:*), Bash(git log:*), Bash(git add:*), Bash(git commit:*), Bash(git push:*), Bash(gh pr:*), Bash(gh auth:*), Bash(which:*), Read, Grep, Glob, Agent, Skill
 ---
 
 # commit-pr — 커밋 · push · PR 생성 · PR 리뷰 파이프라인

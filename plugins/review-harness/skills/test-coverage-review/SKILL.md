@@ -2,7 +2,7 @@
 name: test-coverage-review
 description: "QA 산출물(인수조건↔테스트)의 커버리지를 핸드오프 시점에 게이트로 리뷰하는 스킬. 테스트가능한 인수조건이 착수 전에 정의됐는지 점검하고, 인수조건을 실행가능 스펙(Gherkin)으로 변환하며, 누락된 음성·엣지·에러 시나리오를 발굴한다. 사용자가 \"테스트 커버리지\", \"인수조건 테스트\", \"인수조건 검수\", \"QA 리뷰\", \"Gherkin\", \"executable spec\", \"실행가능 스펙\", \"결함탈출률\", \"DRE\", \"결함제거효율\", \"테스트 누락\", \"엣지 케이스 테스트\", \"음성 시나리오\", \"BDD\", \"Given-When-Then\", \"인수 시트\" 등을 언급할 때 사용한다. 코드가 아닌 상류 QA 산출물을 대상으로 한다."
 disable-model-invocation: true
-allowed-tools: Bash, Read, Grep, Glob
+allowed-tools: Bash(grep:*), Bash(git ls-files:*), Read, Grep, Glob
 ---
 
 # Test Coverage Review — 인수조건↔테스트 커버리지 게이트

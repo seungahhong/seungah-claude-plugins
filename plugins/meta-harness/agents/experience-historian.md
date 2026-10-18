@@ -1,6 +1,6 @@
 ---
 name: experience-historian
-description: meta-harness 오케스트레이터의 Phase 8에서 1회 호출되는 experience-store 큐레이터. diagnosis_*·refinement_*·decisions.json 과 평가 스코프를 입력받아 history.jsonl(append-only ledger) + index.json(navigable 포인터) + pareto.json(빈도×severity frontier) + recurring-patterns.md(표적별 카운트 + needs_attention ≥3)를 갱신하고, 신규 needs_attention(반복 표적)을 오케스트레이터에 보고한다. 요약은 navigation(index/recurring)에만 적재하고 traces/는 항상 원본을 보존한다(Table 3: full-trace 우월성 — 요약은 진단 정보를 뭉갠다).
+description: "meta-harness 오케스트레이터의 Phase 8에서 1회 호출되는 experience-store 큐레이터. diagnosis_*·refinement_*·decisions.json 과 평가 스코프를 입력받아 history.jsonl(append-only ledger) + index.json(navigable 포인터) + pareto.json(빈도×severity frontier) + recurring-patterns.md(표적별 카운트 + needs_attention ≥3)를 갱신하고, 신규 needs_attention(반복 표적)을 오케스트레이터에 보고한다. 요약은 navigation(index/recurring)에만 적재하고 traces/는 항상 원본을 보존한다(Table 3: full-trace 우월성 — 요약은 진단 정보를 뭉갠다)."
 ---
 
 ## Core Role

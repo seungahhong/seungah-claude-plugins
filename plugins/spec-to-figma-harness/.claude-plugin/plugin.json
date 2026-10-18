@@ -1,29 +1,10 @@
 {
   "name": "spec-to-figma-harness",
-  "version": "0.1.0",
-  "description": "유저스토리·인수조건(AC)을 입력으로 받아, 프론트엔드가 되묻지 않고 개발할 수 있도록 'Figma에 무엇을 어떻게 반영해야 하는지'를 설계해 디자이너·FE 핸드오프 패키지로 내보내는 도메인 무관 인터랙티브 멀티 에이전트 하네스. 한 문장 원칙은 '기획서의 시나리오는 상태 프레임으로, 기획서의 규칙은 레이어 어노테이션으로'이며, 4단계(Phase 0 스펙 인테이크(한 번에 한 질문·스토리 없이 화면부터 설계 금지) → Phase 1 AC를 시나리오/규칙으로 이분 분해하고 상태 카탈로그 6축(데이터·진행/전이·입력/검증·권한/세션·콘텐츠 경계·반응형)을 역방향 호명해 누락 상태를 도출 → Phase 2 페이지=에픽/섹션=스토리/프레임=상태 명명·프레임 목록·프로토타입 flow·Variables/컴포넌트/Auto Layout 요구·Code Connect·Ready for dev 계획·기존 파일 델타(읽기 전용) → Phase 3 레이어별 어노테이션 6분류(인터랙션·데이터 바인딩·검증 규칙·모션·트래킹·참조/예외)를 복붙 가능한 문안으로 작성하고 확정(어노테이션)/논의중(댓글) 분리 → Phase 4 FE 1인칭 적대 검증·준비도 owner별 판정·남은 질문 목록)로 진행하며 매 Phase 승인 게이트를 둔다. 정직성 가드레일 5종: INV-1 발명 금지(사용자 노출 문구 원문·API 필드·트래킹 이벤트명·수치 경계·권한 정의는 입력에 있는 것만 쓰고 없으면 '[기획 확인 필요]' + 되물음 — 지어낸 마이크로카피는 디자이너가 그리고 FE가 구현해 틀린 값이 스펙이 된다), INV-2 커버리지 ≠ 품질('AC 전수 매핑하면 FE 질문 0'·'재작업 N% 감소' 류는 측정 근거가 없어 인용 금지, 점수화·백분율 금지), INV-3 디자인 결정 대행 금지(무엇이 필요한가만 명세하고 레이아웃·비주얼·톤은 디자이너 몫이며 Figma 파일을 생성·수정하지 않고 기존 파일은 읽기 전용 참조만), INV-4 도구 제약 정직(Code Connect = Dev/Full seat + Organization/Enterprise, 어노테이션 생성 = Full seat + 편집 권한, Ready for dev view·Completed = Org/Enterprise — 팀이 못 쓰는 기능을 전제하지 않고 대체 경로 병기), INV-5 되물음은 1급 산출물(빈칸이 있는 정직한 문서가 채워진 추측보다 낫다). 근거는 Figma 공식 문서(Annotations·Dev status·Code Connect·Variables·MCP 도구)를 GOLD로 검증하고, 티켓 ID 명명·어노테이션 vs 댓글 분기는 공식 근거가 없는 실무 관행으로만 표기하며, 핸드오프 품질↔재작업의 피어리뷰 근거는 확인 실패임을 밝힌다(인용 가능한 유일한 근접 수치는 Telerik/Progress 2025 자기선택 표본 n=225의 상관관계뿐). 4개 에이전트(state-cartographer/figma-blueprinter/annotation-writer/handoff-critic, 모두 model opus). 경계: 이미 존재하는 디자인의 누락·사각지대를 읽기 전용으로 검수해 게이트 판정하기, Figma 링크에서 디자인 컨텍스트를 추출해 코드 작업용 파일로 내리기, 기획안에서 PRD·유저스토리를 처음부터 작성하기, 인수조건을 테스트 계층·QA 시나리오로 전개하기, 화면을 코드로 구현·리뷰·커밋하기는 범위가 아니며, '요구는 있는데 디자인이 무엇이어야 하는가'를 생성하는 데 특화한다. 경계는 범주로만 서술하고 다른 마켓플레이스 플러그인을 이름으로 참조하거나 의존하지 않는 독립 플러그인이다(references 5종 전부 내재화·단독 설치로 동작).",
+  "version": "0.1.1",
+  "description": "유저스토리·인수조건(AC)을 입력으로 받아, 프론트엔드가 되묻지 않고 개발할 수 있도록 Figma에 무엇을 어떻게 반영해야 하는지를 설계해 디자이너·FE 핸드오프 패키지로 내보내는 인터랙티브 멀티 에이전트 하네스. 기획서의 시나리오는 상태 프레임으로, 규칙은 레이어 어노테이션으로 옮긴다 — AC 분해·상태 카탈로그 역방향 호명 → 반영 설계도 → 어노테이션 스펙 → FE 1인칭 적대 검증의 4단계를 승인 게이트로 진행한다. 입력에 없는 문구·수치·필드를 발명하지 않고 되물음을 1급 산출물로 두며, Figma 파일을 만들거나 고치지 않는다.",
   "author": {
     "name": "seungah.hong",
     "email": "ssingah1030@gmail.com"
   },
-  "license": "MIT",
-  "tags": [
-    "claude-code",
-    "plugin",
-    "spec-to-figma-harness",
-    "design-handoff",
-    "user-story",
-    "acceptance-criteria",
-    "figma",
-    "dev-mode",
-    "annotations",
-    "state-coverage",
-    "prototype-flow",
-    "design-tokens",
-    "code-connect",
-    "frontend-handoff",
-    "multi-agent",
-    "interactive",
-    "evidence-based"
-  ]
+  "license": "MIT"
 }

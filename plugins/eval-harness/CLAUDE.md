@@ -5,42 +5,7 @@ AI 생성물(코드·에이전트 출력·산출 텍스트)을 **엄밀하게 �
 다중 표본(≥3)으로 돌리고, ABC 체크리스트로 task/outcome validity·shortcut·harness≠model 귀인을 감사한 뒤,
 집계 결과를 confidence·CAVEAT와 함께 보고한다.
 
-사용자용 개요·사용법은 [README.md](README.md) 참조.
-
-## Structure
-
-```
-eval-harness/
-├── .claude-plugin/
-│   └── plugin.json
-├── CLAUDE.md                       # (이 문서) 하네스 포인터 + Phase 요약 + 변경 이력
-├── README.md                       # 사용자용 개요·사용법·도구 경계·근거 논문 목록
-├── agents/                         # 모두 model: "opus"
-│   ├── eval-designer.md            # Phase 0 — 평가 대상·관찰형 성공기준 + task/outcome validity 명세 + 귀인 단위
-│   ├── judge-builder.md            # Phase 1 — judge 구성(다중 표본 ≥3 + 다관점 분해 + 실행 grounding), single-shot 금지
-│   ├── validity-auditor.md         # Phase 2 — ABC 관점 감사(validity·shortcut·harness≠model 귀인·instruction density), BLOCK 게이트
-│   └── eval-runner.md              # Phase 3 — 다중 표본 실행·집계 + confidence + CAVEAT 보고
-├── skills/
-│   └── eval-harness/
-│       ├── SKILL.md                # 오케스트레이터(진입점, Define → Build Judge → Audit → Run & Report)
-│       └── references/
-│           ├── eval-harness-principles.md   # 네 신뢰 축·judge/validity 설계지침·anti-pattern·경계
-│           └── eval-harness-research.md      # 설계 근거 deep-research dossier (출처·인용·신뢰도·CAVEAT·반박된 주장)
-└── evals/
-    ├── evals.json                  # 수용 평가 (design-conformance dry-run — 핵심 불변식 file:section 인용 채점)
-    └── trigger-eval.json           # 트리거 경계 평가 (should_trigger 9 / should_not 23, 인접 도메인 경계 가드)
-```
-
-## Phase 요약
-
-| Phase | 이름 | 호출 에이전트 | 핵심 산출물 | 게이트 |
-|-------|------|---------------|-------------|--------|
-| 0 | 정의·validity (Define & Validity) | eval-designer | Eval Spec(평가 대상·관찰형 성공기준·task/outcome validity·귀인 단위·범위) | 승인 게이트 |
-| 1 | judge 구성 (Build Judge) | judge-builder | Judge 구성서(표본 ≥3·다관점 분해·실행 grounding·기준별 루브릭) | single-shot 금지 |
-| 2 | validity 감사 (Audit Validity) | validity-auditor | Validity 감사 보고(PASS/BLOCK + 위반·수정안 + 잔여 위험) | BLOCK 게이트(실행 전) |
-| 3 | 실행·집계·보고 (Run & Report) | eval-runner | Eval 결과(기준별 결과 + confidence + CAVEAT + baseline 대비 비교) | — |
-
-최종 보고: `[Eval 종료] 결과 {요약} — confidence {high|medium|low}(표본 {k}/{N} 일치), CAVEAT {n}건, validity 감사 {PASS}.`
+사용자용 개요·사용법은 [README.md](README.md), Phase 흐름·게이트·에이전트 팀의 정본은 [SKILL.md](skills/eval-harness/SKILL.md), 방법론·근거는 [references/](skills/eval-harness/references/)다.
 
 ## Conventions
 
@@ -57,6 +22,4 @@ eval-harness/
 
 ## Change History
 
-| 날짜 | 변경 | 내용 |
-|------|------|------|
-| 2026-06-25 | 플러그인 신설 | AI 생성물 엄밀 평가(LLM-as-a-Judge 다중 표본 + benchmark validity 감사 + harness≠model 귀인) 멀티 에이전트 하네스. deep-research 3표 적대검증으로 confirmed된 2024+ 1차 논문 출처(arXiv:2507.02825·2412.12509·2502.12468·2507.11538·2606.17799) 근거 |
+변경 이력은 [CHANGELOG.md](CHANGELOG.md)에 있다. 변경 시 그 표 맨 아래에 행을 추가한다.

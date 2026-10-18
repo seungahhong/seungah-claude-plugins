@@ -1,21 +1,10 @@
 {
   "name": "aeo-harness",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "AEO(Agentic Engine Optimization) 하네스. 기술 문서를 AI 코딩 에이전트가 찾고·적은 왕복으로 읽고·정확히 쓸 수 있게 만드는 것을 결정론 센서로 측정하고 승인 게이트 뒤에 개선합니다. 도달 조사(링크 지도·JS 없는 본문·마크다운 협상·오차단·죽은 링크·토큰 census)와 내용 조사(심볼별 예제·예제 실행 검증·시그니처 드리프트·거짓 서술·주입 표면)를 분리해 재고, 재측정된 태스크 결과로만 수용을 판정합니다. 검색엔진·답변엔진 노출 최적화(SEO/GEO)가 아닙니다.",
   "author": {
     "name": "seungah.hong",
     "email": "ssingah1030@gmail.com"
   },
-  "license": "MIT",
-  "tags": [
-    "claude-code",
-    "plugin",
-    "aeo",
-    "documentation",
-    "coding-agents",
-    "developer-experience",
-    "multi-agent",
-    "interactive",
-    "evidence-based"
-  ]
+  "license": "MIT"
 }

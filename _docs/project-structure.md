@@ -41,7 +41,8 @@ plugins/
   harness-generator/                                     # [독립 플러그인] 도메인 무관 하네스 수동·인터랙티브 생성 메타 플러그인
     .claude-plugin/
       plugin.json
-    CLAUDE.md                                            # 하네스 포인터 + Phase 0~7 요약 + 변경 이력
+    CLAUDE.md                                            # 핵심 불변식 + 위치 포인터
+    CHANGELOG.md                                         # 변경 이력
     README.md                                            # 사용자용 개요 (도구 선택 가이드 포함)
     skills/
       harness-generator/                                 # 하네스(에이전트팀+스킬+오케스트레이터) 수동 생성 제너레이터 스킬 (+ references/)
@@ -49,7 +50,8 @@ plugins/
   git-harness/                                           # [독립 플러그인] 커밋·push·PR 생성·PR 리뷰 단일 파이프라인 (진입점 선택 = 이후 단계 승인)
     .claude-plugin/
       plugin.json
-    CLAUDE.md                                            # 구조·규약 + 변경 이력
+    CLAUDE.md                                            # 핵심 불변식 + 위치 포인터
+    CHANGELOG.md                                         # 변경 이력
     README.md                                            # 사용자용 개요
     skills/
       commit-pr/                                         # §0 상태 파악·진입점(commit/push/pr)·모드별 전제조건 → §9 리뷰 레인+커밋 차단 게이트 → §1~§5 커밋 → §6 push → §7 PR 생성 → §8 PR 리뷰
@@ -60,7 +62,8 @@ plugins/
   meta-harness/                                          # [독립 플러그인] Meta-Harness 논문(arXiv 2603.28052v1) 기반 메타 하네스 엔지니어링 — full-trace experience store + causal reasoning + Pareto 비후퇴, 사용자 승인 게이트 (R1 현세션 redirect/보강 · R2 plugin 개선 · R3 외부 .md 역추적). self-heal 캡처 훅(UserPromptSubmit)이 '수정/보강' 발화를 signals 레인에 원형 적재 → 추후 healer가 소비(적용은 승인 게이트 후)
     .claude-plugin/
       plugin.json
-    CLAUDE.md                                            # 하네스 포인터 + 변경 이력
+    CLAUDE.md                                            # 핵심 불변식 + 위치 포인터
+    CHANGELOG.md                                         # 변경 이력
     README.md                                            # 사용자용 개요
     agents/                                              # 모두 model: "opus"
       trace-capturer.md                                  # 현세션 신호 + 외부 .md → 원형 trace 정규화 (요약 금지, R3 3단 폴백 출처 역추적)
@@ -107,7 +110,8 @@ plugins/
   loop-engineering/                                      # [독립 플러그인] 검증 가능한 목표를 향한 자율 반복 루프 + 지속학습 메모리 멀티 에이전트 하네스 (실행 루프 Goal→Execute→Verify→Diagnose→Improve + 학습 루프 Fail→Investigate→Verify→Distill→Consult). 경계: 하네스 진단·개선(meta-harness)·하네스 생성(harness-generator)·PRD(product-spec/frontend)·커밋(git-harness)·native /loop 제외
     .claude-plugin/
       plugin.json
-    CLAUDE.md                                            # 하네스 포인터 + 루프 요약 + 변경 이력
+    CLAUDE.md                                            # 핵심 불변식 + 위치 포인터
+    CHANGELOG.md                                         # 변경 이력
     README.md                                            # 사용자용 개요·사용법·도구 경계
     agents/                                              # 모두 model: "opus"
       goal-setter.md                                     # Goal — 모호한 요청 → 검증 가능한 목표(관찰형 성공기준 + 실행 가능한 검증 방법 + 중단조건)
@@ -128,7 +132,8 @@ plugins/
   review-harness/                                        # [독립 플러그인] 코드 착수 *전* 상류 산출물(기획·디자인·API 계약·QA 인수조건) 핸드오프 게이트 검수. 경계: 완성 코드 리뷰(frontend-harness)·PRD/스토리 작성(product-spec)·커밋/PR(git-harness)·하네스 진단(meta-harness) 제외
     .claude-plugin/
       plugin.json
-    CLAUDE.md                                            # 하네스 포인터 + 4개 게이트 요약 + 변경 이력
+    CLAUDE.md                                            # 핵심 불변식 + 위치 포인터
+    CHANGELOG.md                                         # 변경 이력
     README.md                                            # 사용자용 개요·사용법·도구 경계·정직성 가드레일
     commands/
       handoff-review.md                                  # 오케스트레이터(진입점) — 게이트 선택 → 병렬 실행 → 착수 준비도(Readiness) 통합 리포트
@@ -142,7 +147,8 @@ plugins/
   ops-harness/                                           # [독립 플러그인] 프로덕션 운영·인시던트 대응·관측성 하네스. AIOpsLab 4단계(탐지→국소화→RCA→완화). 경계: 하네스 진단(meta)·검증루프(loop)·코드리뷰(frontend/git)·상류 핸드오프(review)·PRD(product-spec) 제외
     .claude-plugin/
       plugin.json
-    CLAUDE.md                                            # 하네스 포인터 + 4단계(L1–L4) 요약 + 변경 이력
+    CLAUDE.md                                            # 핵심 불변식 + 위치 포인터
+    CHANGELOG.md                                         # 변경 이력
     README.md                                            # 사용자용 개요·사용법·도구 경계
     agents/                                              # 모두 model: "opus"
       incident-detector.md                               # L1 Detection — 이상 탐지·트리아지(RED/USE)
@@ -160,7 +166,8 @@ plugins/
   backend-harness/                                       # [독립 플러그인] 백엔드/API 실행 기반 검증 구현 하네스 + test-generator 스킬. 경계: 계약 검수(review-harness/contract-review)·FE(frontend)·PRD(product-spec)·커밋(git)·하네스 진단(meta)·자율 반복(loop) 제외
     .claude-plugin/
       plugin.json
-    CLAUDE.md                                            # 하네스 포인터 + 5단계 요약 + 변경 이력
+    CLAUDE.md                                            # 핵심 불변식 + 위치 포인터
+    CHANGELOG.md                                         # 변경 이력
     README.md                                            # 사용자용 개요·사용법·도구 경계
     agents/                                              # 모두 model: "opus"
       be-architect.md                                    # 설계 — 서비스 경계·API 계약·데이터 모델/마이그레이션 + 검증 후크·환경 요구사항
@@ -182,7 +189,8 @@ plugins/
   cicd-harness/                                          # [독립 플러그인] 코드 커밋→프로덕션 전달 파이프라인 CI/CD·DevOps·릴리스·IaC 하네스. 경계: 배포 이후 인시던트(ops)·BE 구현(backend)·빌드그린 반복(loop)·커밋/PR(git)·계약검수(review) 제외
     .claude-plugin/
       plugin.json
-    CLAUDE.md                                            # 하네스 포인터 + 4단계 요약 + 변경 이력
+    CLAUDE.md                                            # 핵심 불변식 + 위치 포인터
+    CHANGELOG.md                                         # 변경 이력
     README.md                                            # 사용자용 개요·사용법·도구 경계
     agents/                                              # 모두 model: "opus"
       pipeline-architect.md                              # Phase 1 — CI 파이프라인·릴리스 전략 설계/검수(제안만)
@@ -200,7 +208,8 @@ plugins/
   context-engineering/                                   # [독립 플러그인] LLM·에이전트에 넣을 컨텍스트 페이로드를 체계적으로 조립·최적화하는 하네스 (Scope→Retrieve→Process→Manage 4단계 + per-agent 격리). 경계: 에이전트 병렬화 판단·AI 산출물 평가·구현 명세 작성·PRD·하네스 진단 제외
     .claude-plugin/
       plugin.json
-    CLAUDE.md                                            # 하네스 포인터 + Phase 요약 + 변경 이력
+    CLAUDE.md                                            # 핵심 불변식 + 위치 포인터
+    CHANGELOG.md                                         # 변경 이력
     README.md                                            # 사용자용 개요·사용법·도구 경계·근거 논문
     agents/                                              # 모두 model: "opus"
       context-scoper.md                                  # Phase 0 Scope — 도달 정보·토큰 예산·retrieval need(must/nice/out) 명세
@@ -219,7 +228,8 @@ plugins/
   agent-orchestration/                                   # [독립 플러그인] 작업을 여러 에이전트로 병렬화할지·어떻게 협업시킬지 판단 규칙으로 결정하고 단일 baseline 능가를 적대 검증하는 하네스. 경계: 컨텍스트 조립·AI 출력 평가·구현 명세·단일 자율루프·하네스 생성·장애 대응 제외
     .claude-plugin/
       plugin.json
-    CLAUDE.md                                            # 하네스 포인터 + Phase 요약 + 변경 이력
+    CLAUDE.md                                            # 핵심 불변식 + 위치 포인터
+    CHANGELOG.md                                         # 변경 이력
     README.md                                            # 사용자용 개요·사용법·도구 경계·근거 논문
     agents/                                              # 모두 model: "opus"
       task-decomposer.md                                 # Phase 0 — 분해 가능성·도구 밀도·의존 구조 평가 + 단일 baseline 추정
@@ -238,7 +248,8 @@ plugins/
   eval-harness/                                          # [독립 플러그인] AI 생성물(코드·에이전트 출력)을 엄밀 평가하는 하네스 (정의·validity→judge 구성→validity 감사→실행·집계 4단계). 경계: 컨텍스트 조립·병렬화 판단·구현 명세·일반 실행 테스트 생성·커밋/PR 리뷰 제외
     .claude-plugin/
       plugin.json
-    CLAUDE.md                                            # 하네스 포인터 + Phase 요약 + 변경 이력
+    CLAUDE.md                                            # 핵심 불변식 + 위치 포인터
+    CHANGELOG.md                                         # 변경 이력
     README.md                                            # 사용자용 개요·사용법·도구 경계·근거 논문
     agents/                                              # 모두 model: "opus"
       eval-designer.md                                   # Phase 0 — 평가 대상·관찰형 성공기준 + task/outcome validity 명세 + 귀인 단위
@@ -257,7 +268,8 @@ plugins/
   spec-driven-development/                               # [독립 플러그인] 엔지니어용 실행 가능 명세(spec=source of truth)를 작성하고 에이전트가 명세대로 코드 생성→자기검증하게 하는 하네스 (명세작성→인수설계→구현→검증 4단계). 경계: 기획자 PRD·AI 출력 평가·컨텍스트 조립·완성 코드 리뷰·하네스 진단 제외
     .claude-plugin/
       plugin.json
-    CLAUDE.md                                            # 하네스 포인터 + Phase 요약 + 변경 이력
+    CLAUDE.md                                            # 핵심 불변식 + 위치 포인터
+    CHANGELOG.md                                         # 변경 이력
     README.md                                            # 사용자용 개요·사용법·도구 경계·근거 논문
     agents/                                              # 모두 model: "opus"
       spec-author.md                                     # Phase 0 — 실행 가능 명세 작성(source of truth; 구조화 contract)
@@ -276,7 +288,8 @@ plugins/
   human-agent-teaming/                                  # [독립 플러그인] 사람과 AI 에이전트가 한 팀으로 협업하도록 분업·공통기반·감독/신뢰·검증을 설계하는 하네스 (분업·위임→공통기반→모니터링 기반 감독·신뢰 보정→비례 검증·핸드오프·책임 4단계). 축은 AI↔AI 토폴로지가 아니라 사람↔에이전트 분업·감독. 경계: 여러 AI 에이전트 병렬화·토폴로지(agent-orchestration)·컨텍스트 페이로드 조립(context)·AI 출력 평가(eval)·단일 자율 반복(loop)·상류 핸드오프 검수(review)·하네스 진단(meta)·PRD(product-spec)·커밋/PR(git) 제외
     .claude-plugin/
       plugin.json
-    CLAUDE.md                                            # 하네스 포인터 + Phase 요약 + 변경 이력
+    CLAUDE.md                                            # 핵심 불변식 + 위치 포인터
+    CHANGELOG.md                                         # 변경 이력
     README.md                                            # 사용자용 개요·사용법·도구 경계·근거 자료
     agents/                                              # 모두 model: "opus"
       delegation-designer.md                             # Phase 0 Charter & Delegate — 분업(사람=전략·하드 트레이드오프·최종 검증·책임 / 에이전트=전문 실행)·위임(human/agent/co-delegation·trustworthy region)·자율 수준·운영 모드(HITL/HOTL)·고위험 결정점·역할 경계
@@ -295,7 +308,8 @@ plugins/
   code-as-harness/                                      # [독립 플러그인] 코드를 실행 가능·검사 가능·상태 보존(operational substrate)으로 다루고 거버넌스된 Plan→Execute→Verify 제어 루프로 코드 변경을 안전·검증 가능하게 수행하는 하네스 (계획 계약→권한·샌드박스 실행→실행 검증→텔레메트리 진단·수렴 4단계). 단일 거버넌스 사이클이지 통과까지 자율 반복(loop)이 아님. 경계: 통과까지 자율 반복+학습 메모리(loop)·백엔드 환경 provisioning 구현(backend)·실행 명세 작성(spec)·AI 에이전트 병렬화(agent-orchestration)·컨텍스트 조립(context)·AI 출력 평가(eval)·하네스 진단(meta)·상류 핸드오프 검수(review)·장애 대응(ops)·PRD(product-spec)·커밋/PR(git) 제외
     .claude-plugin/
       plugin.json
-    CLAUDE.md                                            # 하네스 포인터 + Phase 요약 + 변경 이력
+    CLAUDE.md                                            # 핵심 불변식 + 위치 포인터
+    CHANGELOG.md                                         # 변경 이력
     README.md                                            # 사용자용 개요·사용법·도구 경계·근거 논문
     agents/                                              # 모두 model: "opus"
       plan-contractor.md                                 # Phase 0 Plan Contract — 작업 → 변경 계약(의도한 변경·결정적 센서·행동 위험 분류)
@@ -314,7 +328,8 @@ plugins/
   llm-guardrails-harness/                               # [독립 플러그인] LLM/에이전트 앱에 런타임 외부 가드레일(input/output/retrieval/execution 레일)을 설계·강제하는 하네스 (위협모델·정책→입력 레일→출력·검색 레일→행동 강제·적대검증 4단계). 경계: 오프라인 출력 평가(eval)·장애 RCA(ops)·상류 핸드오프(review)·아이덴티티/인가 설계(agent-authorization) 제외
     .claude-plugin/
       plugin.json
-    CLAUDE.md                                            # 하네스 포인터 + Phase 요약 + 변경 이력
+    CLAUDE.md                                            # 핵심 불변식 + 위치 포인터
+    CHANGELOG.md                                         # 변경 이력
     README.md                                            # 사용자용 개요·사용법·도구 경계·근거 자료
     agents/                                              # 모두 model: "opus"
       threat-modeler.md                                  # Phase 0 — 앱→OWASP LLM Top 10 매핑·fail-closed 정책·레일 배치 결정
@@ -333,7 +348,8 @@ plugins/
   qa-agent-harness/                                     # [독립 플러그인] 리스크 기반 전략→오라클 명시 시나리오→오라클 우선 생성·게이트된 자가치유 실행→결함 vs 플래키 지능형 트리아지의 독립 end-to-end 에이전틱 QA 하네스 (4단계). 경계: FE 한정 QA(frontend)·단일 test-generator(backend)·오프라인 judge(eval)·장애 RCA(ops)·상류 핸드오프(review)·자율 반복(loop)·LLM 가드레일(llm-guardrails) 제외
     .claude-plugin/
       plugin.json
-    CLAUDE.md                                            # 하네스 포인터 + Phase 요약 + 변경 이력
+    CLAUDE.md                                            # 핵심 불변식 + 위치 포인터
+    CHANGELOG.md                                         # 변경 이력
     README.md                                            # 사용자용 개요·사용법·도구 경계·근거 자료
     agents/                                              # 모두 model: "opus"
       test-architect.md                                  # Phase 0 — 요구사항·변경·리스크 → 리스크 노출 등급·커버리지 우선순위 전략
@@ -352,7 +368,8 @@ plugins/
   agent-authorization-harness/                          # [독립 플러그인] 에이전트/MCP 도구/A2A 시스템의 머신 아이덴티티·인가를 벤더 무관하게 설계·red-team하는 하네스 (신뢰·스코프 모델링→그랜트·위임 설계→동의·집행→적대 인가 검증 4단계, 설계+red-team 산출물이지 IdP 배포 아님). 경계: 런타임 콘텐츠·행동 레일(llm-guardrails, LLM06 공유 이음매)·사람↔에이전트 분업(human-agent-teaming)·파이프라인 policy-as-code(cicd)·코딩 에이전트 권한(code-as-harness) 제외
     .claude-plugin/
       plugin.json
-    CLAUDE.md                                            # 하네스 포인터 + Phase 요약 + 변경 이력
+    CLAUDE.md                                            # 핵심 불변식 + 위치 포인터
+    CHANGELOG.md                                         # 변경 이력
     README.md                                            # 사용자용 개요·사용법·도구 경계·근거 자료
     agents/                                              # 모두 model: "opus"
       trust-scope-modeler.md                             # Phase 0 — 참여자·authN vs authZ authority·접촉면 인벤토리·최소 스코프·신뢰 경계
@@ -371,7 +388,8 @@ plugins/
   ai-readiness-cartography/                             # [독립 플러그인] git 저장소가 'AI 에이전트가 읽고 안전하게 기여할 수 있는 코드베이스'인지를 측정하고(결정론 스코어러) 승인 게이트 뒤에 개선을 적용하는(멀티 에이전트) 단일 스킬(3모드·자유 조합). ① 측정: score.py 100점·9카테고리 + 3 blocking gate(Gate-1/2 Auto·Gate-3 Heuristic·gating) → JSON+HTML 대시보드+ROI(코드 수정 없음). ② 진단·개선: score.py 센서 위 2축 진단→빌드 가드레일→standalone→계획·개별 승인 뒤 코드 적용(S/M/L·고위험 opt-in·AST/LSP·behavior 센서)→수용 증명·재측정 4에이전트. ③ 코드 본문: legibility_scan.py census→주석·명명·구조 진단→3게이트 승인 후 코드 수정 3에이전트 + 공용 behavior-guard(개입 C0~C3). 마크업 시맨틱·테스트 설명은 census 전용 축(개입 카드 없음 — 격리 근거 부재 O-6·접근성은 표적 아님·볼륨 가점 및 자동 ARIA/alt/어서션 생성 금지). 세 모드는 배타 아닌 자유 조합(여러 개면 ①→②→③ 순·score.py는 ①②가 1회 공유·②+③이면 구조 리팩터는 ②가 적용하고 ③의 C3는 끔). 등급 단일 5밴드(L1~L5 폐기, enforcement는 Gate-3로 흡수). 별도 ai-readable-codebase(v0.2.0)·code-legibility-harness(v0.3.0)·design-principle-harness 고유 자산(v0.5.0) 흡수 후 v0.6.0에서 군살 제거(C4/C5 개입 경로·markup-test-auditor·--git-drift 삭제·description 축약)
     .claude-plugin/
       plugin.json
-    CLAUDE.md                                            # 하네스 포인터 + 루브릭 요약(3 gate) + 변경 이력
+    CLAUDE.md                                            # 핵심 불변식 + 위치 포인터
+    CHANGELOG.md                                         # 변경 이력
     README.md                                            # 사용자용 개요·사용법·경계·근거(3모드·자유 조합)
     agents/                                              # 8 에이전트 (② 개선 4 + ③ 본문 3 + 공용 behavior-guard, 모두 model: "opus")
       accessibility-assessor.md                          # Phase 0 Assess — score.py seed 위 2축(Q/A) 진단 + 5밴드 등급 + Gate-3 예비판정
@@ -415,7 +433,8 @@ plugins/
   token-efficiency/                                    # [독립 플러그인] Claude Code 세션 JSONL 로그를 파싱해 레포 단위 토큰/컨텍스트 효율을 결정론적으로 측정·시각화하고 $ 절감안을 내는 단일 스킬 (4축 가중 점수 + 8개 비효율 탐지기 + 세션별 모델가 낭비 추정 → JSON 2종 + 오프라인/CSP 안전 HTML 대시보드). 에이전트 팀 없음. ai-readiness-cartography(정적 저장소 구조)와 상보(런타임 세션 로그 vs 정적 구조). 외부 스킬 improve-token-efficiency를 deep-research 5세션 적대 검증으로 개선
     .claude-plugin/
       plugin.json
-    CLAUDE.md                                            # 하네스 포인터 + 4축/8탐지기 요약 + 변경 이력
+    CLAUDE.md                                            # 핵심 불변식 + 위치 포인터
+    CHANGELOG.md                                         # 변경 이력
     README.md                                            # 사용자용 개요·사용법·개선표·경계
     skills/
       token-efficiency/                                  # 진입점 오케스트레이터 (analyze → detect → dashboard)
@@ -459,7 +478,8 @@ plugins/
   methodology-advisor/                                   # [독립 플러그인] 팀의 현행 개발·회사·사업 프로세스를 먼저 진단하고, frontend-harness grill-me를 개발 방법론 선택에 특화·확장한 다각도 문진(3축) 뒤, 내장 방법론 카탈로그(14) + 컨틴전시 프레임워크(Cynefin·Stacey·Boehm-Turner home ground)에 근거해 순위 shortlist + 1순위를 제안하는 인터랙티브 4에이전트 하네스. 첫 행동=현행 진단(발명 금지)·매 Phase 승인 게이트·우열 금지·은탄환/'N% 개선' 금지·제안만. deep-research 24소스·75주장 적대 검증(70 confirmed/5 refuted)
     .claude-plugin/
       plugin.json
-    CLAUDE.md                                            # 포인터 + 4 Phase 요약 + 원칙 + 변경 이력
+    CLAUDE.md                                            # 핵심 불변식 + 위치 포인터
+    CHANGELOG.md                                         # 변경 이력
     README.md                                            # 사용자용 개요·사용법·방법론 목록·경계
     agents/
       process-cartographer.md                            # Phase 0 현행 진단(개발/회사/사업 3축·관측만·발명 금지)
@@ -479,7 +499,8 @@ plugins/
   meta-prompting-harness/                                # [독립 플러그인] 메타 프롬프팅(AI에게 입력할 프롬프트를 AI가 최적화해 생성→새 컨텍스트에 주입해 실제 작업)을 4단계 인터랙티브 4에이전트로 수행하는 도메인 무관 하네스. 널리 쓰이는 메타 프롬프팅 실천 방법론 + /deep-research(6각도·25소스·23 confirmed/2 refuted) 1차 문헌 대조 근거 등급. Phase 0 인테이크(한 번에 한 질문씩·덤프는 선택) → 1 질문 유도(한 번에 하나씩) → 2 성공·검증 조건 → 3 환경 맞춤 깎아내기 → 4 적대 점검·fresh 주입. STRONG(메타프롬프팅>직접 2401.12954·2309.03409·2310.16427 조건부·명확화 질문 ClarifyGPT·Orchid·성공+검증 Anthropic 공식·fresh context 2307.03172·은탄환 아님)·report-only folklore(환경 맞춤 변환·큰그림→축소 1차 근거 없음)·REFUTED 미사용(지휘자-전문가 프레이밍·LLM 스스로 명확화 불가). 전부위임 금지·사용자 도메인 검증 필수·프롬프트 생성만·실행은 사용자·커밋/점수화 안 함·다른 플러그인 비참조·비의존
     .claude-plugin/
       plugin.json
-    CLAUDE.md                                            # 포인터 + 4 Phase 요약 + 근거 등급 + 변경 이력
+    CLAUDE.md                                            # 핵심 불변식 + 위치 포인터
+    CHANGELOG.md                                         # 변경 이력
     README.md                                            # 사용자용 개요·사용법·근거 등급·경계·예시
     agents/                                              # 4 에이전트 (모두 opus)
       context-elicitor.md                                # Phase 1 질문 유도(빠진 요소 한 번에 하나씩 되묻기·번호 선택지·답변 분기·전부위임 방지)
@@ -497,7 +518,8 @@ plugins/
   org-transformation-harness/                            # [독립 플러그인] 회사/팀을 목적조직·AI native로 바꾸려는 실무자·리더를 인터뷰해 현행 진단→목표 구체화→간극·실행계획→적대 검증의 4단계 4에이전트로 "무엇부터 시작할지"를 단계별 할 일로 정리하는 도메인 무관 하네스. 시드 인터뷰 프롬프트를 메타 프롬프팅 기법으로 깎아내 승격 + /deep-research(6각도) 2023~2026 1차 문헌 대조 근거 등급. Phase 0 현행 조직 진단 → 1 목표 구체화 문진(임의 정의 금지) → 2 간극표+우선순위 할 일(영향·노력·의존성)+로드맵 → 3 적대 검증·공유 요약. STRONG조건부(AI native 은탄환 아님·DORA 2024/2025 PRIMARY 체감≠delivery 안정성·team 조건 좌우)·MEDIUM(현행 진단 우선·목적조직 Cagan/Team Topologies 컨센서스)·report-only(quick-wins/additive-first Kotter·RICE/WSJF folklore)·REFUTED 미인용("GenAI 95% 실패" 반박·DORA tier 비고정). 첫 행동=현행 진단·목표 임의 정의 금지·발명 금지·은탄환/'N% 개선' 금지·제안만·점수화/커밋 안 함·다른 플러그인 비참조·비의존
     .claude-plugin/
       plugin.json
-    CLAUDE.md                                            # 포인터 + 4 Phase 요약 + 원칙 + 변경 이력
+    CLAUDE.md                                            # 핵심 불변식 + 위치 포인터
+    CHANGELOG.md                                         # 변경 이력
     README.md                                            # 사용자용 개요·사용법·산출물·정직성·경계
     agents/                                              # 4 에이전트 (모두 opus)
       org-cartographer.md                                # Phase 0 현행 조직 진단(관측·발명 금지·강점도 관측)
@@ -517,7 +539,8 @@ plugins/
   spec-to-figma-harness/                                 # [독립 플러그인] 유저스토리·인수조건(AC)을 입력으로 받아, FE가 되묻지 않고 개발할 수 있도록 "Figma에 무엇을 어떻게 반영해야 하는지"를 설계해 디자이너·FE 핸드오프 패키지로 내보내는 도메인 무관 4단계 4에이전트 하네스. 한 문장 원칙 = 기획서의 '시나리오'는 상태 프레임으로, '규칙'은 레이어 어노테이션으로. Phase 0 스펙 인테이크(한 번에 한 질문·스토리 없이 화면부터 설계 금지) → 1 AC 이분 분해 + 상태 카탈로그 6축 역방향 호명 → 2 명명·프레임 목록·flow·토큰 요구·Ready for dev·기존 파일 델타(읽기 전용) → 3 어노테이션 6분류 복붙 문안(확정=어노테이션/논의중=댓글) → 4 FE 1인칭 적대 검증·owner별 준비도·남은 질문. 정직성 5불변식: INV-1 발명 금지(문구·API 필드·이벤트명·수치 경계는 입력에 있는 것만·없으면 [기획 확인 필요]) · INV-2 커버리지≠품질(효과 약속·점수화 금지) · INV-3 디자인 결정 대행 금지(Figma 쓰기 MCP 도구 호출 금지·파일 생성/수정 안 함) · INV-4 플랜 제약 정직(Code Connect=Org/Ent+Dev/Full seat 등·대체 경로·'해당없음' 처리) · INV-5 되물음은 1급 산출물. 근거 GOLD=Figma 공식 문서(Annotations 선택형 속성·"CSS 자동 부착" 아님·Dev status 3종·Variables·MCP 읽기/쓰기 분리), [관행]=티켓 ID 명명·어노테이션 vs 댓글 분기(효과 수치 금지), 인용 금지=「AC 전수 매핑→질문 0」·「happy path가 재작업 유발」·「재작업 비용 68%」. 커밋 안 함·opt-in 저장·다른 플러그인 비참조·비의존
     .claude-plugin/
       plugin.json
-    CLAUDE.md                                            # 포인터 + 4 Phase 요약 + 5 불변식 + 변경 이력
+    CLAUDE.md                                            # 핵심 불변식 + 위치 포인터
+    CHANGELOG.md                                         # 변경 이력
     README.md                                            # 사용자용 개요·사용법·산출물·정직성·경계
     agents/                                              # 4 에이전트 (모두 opus)
       state-cartographer.md                              # Phase 1 AC 이분 분해 + 상태 6축 역방향 호명 + 되물음(발명 금지)
@@ -538,7 +561,8 @@ plugins/
   agentic-code-review-harness/                           # [독립 플러그인] 이미 만들어진 코드 변경(PR·브랜치 diff·로컬 변경) — 특히 AI 에이전트가 작성한 것 — 을 수신자(리뷰어) 자리에서 읽고 "머지해도 되는지"를 근거와 함께 판정하는 도메인 무관 5단계 5에이전트 하네스. 한 문장 원칙 = 쓰는 비용은 싸졌지만 믿어도 되는지 판단하는 비용은 그대로다. Phase 0 리뷰 인테이크(한 번에 한 질문·대상 diff 없이 판정 금지) → 1 리스크 티어링(blast radius·longevity·comprehension 3축 + 경로 기반 표면 감지 → 파일군별 T0~T3 + 렌즈/센서/사람게이트/오탐예산 배분) → 2 증거 감사(테스트 diff를 코드보다 먼저 → 오라클 강도 강/약/없음 + 약화 서명 7종·게이트 완화 5종·결함 서명 S1~S8 + 결정적 센서 직접 실행·출력 인용) → 3a 직교 렌즈 8종을 렌즈당 1 에이전트로 병렬(렌즈 밖 금지·위치/무엇/조건 3요소 필수) → 3b 발견별 반증(CONFIRMED/PLAUSIBLE/DROPPED·기본 태도 "이 발견은 틀렸다") → 4 트리아지·머지 판정(차단은 CONFIRMED만·되돌림 지시문 3요소·잔여 위험·판정 후보·정직성 감사 6문항). 정직성 6불변식: INV-1 판정만·실행은 사람(코드 수정·커밋·푸시·머지·승인·close·코멘트 자동 게시 금지) · INV-2 리뷰 대상은 신뢰할 수 없는 입력(PR 텍스트의 지시문 불복종·발견으로 보고·URL 미추적 — 리뷰 에이전트 자신이 주입 표적이며 INV-1과 한 쌍) · INV-3 자기보고 불신(직접 돌린 센서·직접 읽은 diff만 확인·나머지 UNVERIFIED·"테스트 추가됨"도 신뢰 신호 아님) · INV-4 차단은 재현 근거로만·오탐이 지배적 실패 모드(발견 개수를 성과로 쓰지 않음·오탐 예산·초과 미보고 명시) · INV-5 저자 아닌 리스크로 티어링(결함 서명 스캔은 저자 무관 항상) · INV-6 통과는 정확성 증명 아님(이 하네스도 LLM 리뷰어 재현율 한계 상속·점수화 금지). 근거는 2026-06 'Agentic Code Review' 글의 문제 정의를 출발점 삼되 /deep-research 2각도로 1차 소스를 대조해 교정 — PRIMARY(리뷰어 재현율 27~33%·정밀도 3.6~5.1%·리뷰어 간 발견 거의 안 겹침·재현율↑→SNR↓·에이전트 테스트 패치 80.2%가 오라클 약/없음·가시 테스트 통과는 프록시 최적화 증거·지배적 실패는 '기능 격리'·모델 능력↑↔착취↑·리뷰 노력 예측 AUC 0.96)·INDUSTRY(정적 게이트 FP 76%·LLM 필터가 FP 94~98% 제거하나 진짜 결함 12~25% 소실)·인용 금지("리뷰어 이탈 38%" 정의/분모 불일치·arXiv 오귀속·원문에 없는 벤치마크 점추정·벤더 자체보고·"머지율=품질"·"FP 임계"·"200~400줄 상한"·효과 약속). 커밋 안 함·opt-in 저장·다른 플러그인 비참조·비의존
     .claude-plugin/
       plugin.json
-    CLAUDE.md                                            # 포인터 + 5 Phase 요약 + 6 불변식 + 변경 이력
+    CLAUDE.md                                            # 핵심 불변식 + 위치 포인터
+    CHANGELOG.md                                         # 변경 이력
     README.md                                            # 사용자용 개요·사용법·산출물·정직성·경계
     agents/                                              # 5 에이전트 (모두 opus)
       risk-tierer.md                                     # Phase 1 3축 관측 + 표면 감지 → T0~T3 + 리뷰 예산 배분(미확인 되물음)
@@ -560,7 +584,8 @@ plugins/
   comprehension-harness/                                 # [독립 플러그인] 에이전트가 쓴 코드 변경을 사람이 실제로 이해하고 있는지 실측하고 그 이해를 자산으로 남기는 도메인 무관 6단계 5에이전트 하네스. 한 문장 원칙 = 이해했다는 느낌은 이해의 증거가 아니다. 강연 "Understanding is the new bottleneck"(2026)이 세운 구분 — 검증을 위한 이해 vs 참여를 위한 이해 — 중 후자를 만든다. Phase 0 이해 인테이크(최대 두 번만 묻는다 — 대상 변경·참여 목적. 나머지는 관측해 잠정값으로 카드에 적고 게이트 A에서 일괄 정정. 한 산출물 지목 시 단축 경로 제시) → 1 이해 부채 지도(6표면 S1~S6 + 참여 목적 스코프 + 설명서 공개 전 예측 문항 + 확신 평정) → 2 설명서 공개(배경·직관·검증 훅·[확인]/[추론] 분리·변경 순서 안내 + 예측 채점 동시 공개) → 3 이해 검증 게이트(자유서술 회상 + diff 좌표 교정 피드백 + 실측 성공률 70~80% + 지각-실제 격차 + 묻지 않은 범위 열거) → 4 마이크로월드(조건부·값싼 대안 먼저·조건 관측·고지 후 만들지 말지는 사용자 결정 — 조건은 게이트가 아니라 권고) → 5 공유 이해(조건부·산출물에서 복원되지 않는 것만 펌프). 정직성 7불변식: INV-1 검증 아닌 참여(결함·머지 판정 안 함·코드 수정/커밋 금지) · INV-2 자기보고는 센서가 아님(자가평가 판별력 54.5%·R²≈5.9%·확신은 격차 계산용) · INV-3 설명은 예측 뒤에 공개(AI 설명은 과확신 장치·대조 불가능한 것 단언 금지·그 자체로 게이트 통과 못 함 — 강연 원안과 가장 크게 갈라지는 지점) · INV-4 퀴즈 통과는 증명이 아님(점수화 금지·묻지 않은 범위 열거 필수) · INV-5 마이크로월드는 기본값 아닌 가설(인접 네 하위군 전부 0 또는 음수·우리 도메인은 미측정·조건은 게이트가 아니라 권고이며 명시 요청을 기각하지 않음) · INV-6 게이트는 경고이지 거부권이 아님 · INV-7 효과 약속 금지(주장 가능한 것은 리뷰되지 않던 변경을 읽고 답한 변경으로 / 과확신을 낮추고 빈틈을 드러냄 둘뿐). 근거는 강연 기법 4종을 승격하되 규정을 그대로 옮기지 않고 8각도 1차 문헌 + 적대 반증 2라운드로 대조·교정 — PRIMARY(단일 에이전트 설명이 체감 이해 최고·객관 학습 최저 / 채점 결과 열람만이 과확신을 꺼뜨림 / 설명은 검증 비용을 낮출 때만 과의존을 줄임 / 인출연습 g=0.50·수렴 0.499 / 피드백 0.73 vs 무피드백 0.39 / 성공률 ≤50%+무피드백 g=0.03 p=.79 / 재인 0.31 vs 단서회상 0.57 / 답 읽기 −0.095 vs 생성 +0.169 / 질문 생성 +0.042 n.s. / 미퀴즈 재료 전이 d=0.16 n.s. / 가장 유사 조건 BF01=7.52 null / 자가평가 R²≈5.9% / 시각화는 무엇을 보여주나가 아니라 학습자가 무엇을 하나 · 예측 빼면 효과 소멸 / 스크러빙 마이크로월드 선행 실증은 학습 null·사용률 null / 전문 환경 시각화 연구체 부재 / 커뮤니케이션 매체는 고유정보 풀링에 영향 없음 / 사람+AI 조합 g=−0.23 / 40년 95개 코드 이해 실험 중 "이해가 무엇을 낳는가" 0건) · 인용 금지("5문항·중간 난이도" 1차 출처 없음 → 실측 성공률로 대체 · "퀴즈=속도 조절기" 측정 0건 · EEG 기반 cognitive debt 수치 · 철회 메타분석 · 존재하지 않는 효과크기 · "200~400 LOC 결함 70~90%" · 벤더 자체보고 · "AI가 개발자 이해를 침식한다" · 하네스 산출물에 효과크기 부착). cognitive debt는 데이터 없는 입장 논문의 프레임으로만·Papert/Alan Kay/Naur는 계보·영감으로만. 커밋 안 함·opt-in 저장·다른 플러그인 비참조·비의존
     .claude-plugin/
       plugin.json
-    CLAUDE.md                                            # 포인터 + 6 Phase 요약 + 7 불변식 + 변경 이력
+    CLAUDE.md                                            # 핵심 불변식 + 위치 포인터
+    CHANGELOG.md                                         # 변경 이력
     README.md                                            # 사용자용 개요·사용법·강연과 갈라진 지점·산출물·정직성·경계
     agents/                                              # 5 에이전트 (모두 opus)
       debt-cartographer.md                               # Phase 1 6표면 관측 + 참여 목적 스코프 + 설명서 공개 전 예측 문항 + 확신 평정
@@ -584,7 +609,8 @@ plugins/
   aeo-harness/                                           # [독립 플러그인] AEO(Agentic Engine Optimization) — 기술 문서를 AI 코딩 에이전트가 찾고·적은 왕복으로 읽고·정확히 쓸 수 있게 만드는 것을 결정론 센서로 측정하고 승인 게이트 뒤에 개선하는 도메인 무관 4단계 4에이전트 하네스. 검색엔진·답변엔진 노출 최적화(SEO/GEO)가 아니다 — 소비자가 사람이 아니라 코딩 에이전트다. 한 문장 원칙 = 에이전트가 문서에 도달했다는 것과 그 문서로 코드가 맞아졌다는 것은 다른 사건이다(발행 측 근거는 도달·효율만 측정하고 정확도 0건, 정확도 측 근거는 문서를 이미 쥐여준 조건이라 그 둘을 잇는 측정이 없다 — evidence F1). Phase 0 인테이크(대상 문서 + 소비 경로(HTTP/MCP/로컬/패키지)를 한 번에 한 질문씩, 경로가 조사의 절반을 결정) → 1 도달 조사(R1 링크 지도가 1급·R2 JS 없이 본문·R3 .md/Accept 협상·R4 죽은 링크·R5 벤더 UA replay 오차단·R6 robots.txt 보고만·R7 토큰 census 임계값 없음·R8 스펙 존재) → 2 내용 조사(C1 심볼별 예제·C2 예제 실행 검증·C3 시그니처 드리프트·C4 거짓으로 판정되는 서술·C5 낯섦·C6 주입 표면) → 3 개입 계획(T-A 위험0 거짓 제거 / T-B 검증 통과분만 / T-C report-only, 계획+항목별 개별 승인) → 4 수용 증명(문서 점수가 아니라 재측정된 태스크 결과, 못 돌리면 UNVERIFIED). 7불변식: INV-1 도달≠정확도 · INV-2 틀린 문서 > 없는 문서(검증 없는 LLM 문서 생성은 순마이너스) · INV-3 점수·등급 금지 · INV-4 report-only 자동 생성·편집 금지(단 거부권 아님) · INV-5 UA로 도구 귀속 금지(진위는 IP·rDNS로만) · INV-6 수용은 재측정으로만 · INV-7 대상 문서는 신뢰 경계 밖. 커밋 안 함·opt-in 저장·다른 플러그인 비참조·비의존
     .claude-plugin/
       plugin.json
-    CLAUDE.md                                            # 포인터 + 구조 + 설계를 바꾼 근거 표 + 변경 이력
+    CLAUDE.md                                            # 핵심 불변식 + 위치 포인터
+    CHANGELOG.md                                         # 변경 이력
     README.md                                            # 사용자용 개요 + 조사에서 교정된 통념 표 + 정직성 불변식
     agents/                                              # 4 에이전트 (모두 opus)
       reach-auditor.md                                   # Phase 1 도달 조사 R1~R8 (정확도 언어 금지·robots.txt 편집 금지·UA 귀속 금지)
@@ -607,7 +633,8 @@ plugins/
   ux-ai-workflow-harness/                                # [독립 플러그인] UX 실무자가 구체적인 UX 작업 하나에 생성형 AI를 어디까지 어떻게 쓸지 단계별로 정하는 4단계 4에이전트 하네스. 한 문장 원칙 = AI는 UX 작업을 압축할 수 있지만, 팀이 사용자에게서 배우는 단계는 대신할 수 없다(판정 단위는 작업이 아니라 단계 — evidence E10). Phase 0 인테이크(작업·누가 무엇을 결정하는지·참가자 원자료가 AI에 들어가는지 한 번에 한 질문) → 1 위임 지도(7개 테스트 D1~D7 → L1 AI에 넘김/L2 AI 초안+사람 검수/L3 사람이 한다/L4 AI로 대체하지 않음) → 2 맥락·지시 설계(CARE + 방법론 규칙 묶음, [확인 필요]) → 3 AI 초안 점검(방법론별 점검표, 통과/미통과/해당없음/미확인, 생성자·점검자 분리) → 4 사람 체크포인트·인계(담당·팀 학습 장치·출처 라벨 11종·데이터 보호). 8불변식: INV-1 학습 단계 기본 사람 · INV-2 출처 섞지 않음 · INV-3 AI 초안은 초안 · INV-4 행동≠텍스트 · INV-5 발명 금지 · INV-6 효과 약속·점수 금지 · INV-7 경고이지 거부권 아님 · INV-8 참가자 데이터 보호(하네스 자신도 외부 AI). NN/g 'Using AI for UX Work' 스터디 가이드 + 링크 원문 약 40편 + 1차 연구 대조. 커밋 안 함·opt-in 저장·다른 플러그인 비참조·비의존
     .claude-plugin/
       plugin.json
-    CLAUDE.md                                            # 포인터 + 구조 + 설계를 바꾼 근거 표 + 출발점 대비 교정 + 변경 이력
+    CLAUDE.md                                            # 핵심 불변식 + 위치 포인터
+    CHANGELOG.md                                         # 변경 이력
     README.md                                            # 사용자용 개요 + 4레인·7테스트 + 근거 대조로 고친 통념 표 + 정직성 불변식
     agents/                                              # 4 에이전트 (모두 opus)
       delegation-mapper.md                               # Phase 1 위임 지도 D1~D7 → L1~L4 (위임하면 잃는 것·L4 대안 경로·압축 vs 생략·점수 금지)

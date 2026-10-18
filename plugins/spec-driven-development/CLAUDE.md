@@ -4,43 +4,7 @@
 생성한 뒤 **명세 대비 자기검증**하게 하는 도메인 무관 멀티 에이전트 하네스.
 워크플로를 *코드 우선*에서 *명세 우선*으로 역전한다 — 명세가 1차 산출물, 코드는 그로부터 생성·검증되는 2차 산출물이다.
 
-사용자용 개요·사용법은 [README.md](README.md) 참조.
-
-## Structure
-
-```
-spec-driven-development/
-├── .claude-plugin/
-│   └── plugin.json
-├── CLAUDE.md                        # (이 문서) 하네스 포인터 + Phase 요약 + 변경 이력
-├── README.md                        # 사용자용 개요·사용법·도구 경계·근거 논문
-├── agents/                          # 모두 model: "opus"
-│   ├── spec-author.md               # Phase 0 — 실행 가능 명세 작성(source of truth; 구조·계획·반복)
-│   ├── acceptance-designer.md       # Phase 1 — 인수기준 + 테스트 계획 + 자기검증 체크 설계
-│   ├── spec-implementer.md          # Phase 2 — 명세대로 코드 생성(또는 구현 가이드)
-│   └── spec-verifier.md             # Phase 3 — 명세 부합 검증 + comprehension 게이트
-├── skills/
-│   └── spec-driven-development/
-│       ├── SKILL.md                 # 오케스트레이터(진입점, 명세 승인 게이트 → 4단계 플로우)
-│       └── references/
-│           ├── spec-driven-development-principles.md   # 명세 우선 원리·spec 구성요소·anti-pattern·comprehension 게이트 설계
-│           └── spec-driven-development-research.md      # 설계 근거 deep-research dossier (출처·인용·신뢰도·caveat)
-└── evals/
-    ├── evals.json                   # 수용 평가 (design-conformance dry-run — 핵심 불변식 file:section 인용 채점)
-    └── trigger-eval.json            # 트리거 경계 평가 (should_trigger 9 / should_not 14, 인접 도메인 경계 가드)
-```
-
-## Phase 요약
-
-| Phase | 이름 | 호출 에이전트 | 핵심 산출물 | 게이트 |
-|-------|------|---------------|-------------|--------|
-| 0 | 명세 작성 (Author Spec) | spec-author | Executable Spec (목표·범위·구조화 contract·인터페이스·제약·반복 메모) | **명세 승인 게이트** (구현 착수 전) |
-| 1 | 인수 설계 (Acceptance) | acceptance-designer | 인수기준 + 테스트 계획 + 자기검증 체크(self-verification) | 인수기준이 명세를 falsifiable하게 덮는지 확인 |
-| 2 | 명세 대비 구현 (Generate-against-spec) | spec-implementer | 명세를 구현한 코드(또는 구현 가이드) + 추적성(어느 spec 조항을 어디서 구현했는지) | — |
-| 3 | 명세 대비 검증 (Verify-against-spec) | spec-verifier | 명세 부합 Verdict(조항별 충족/미충족 + 증거) + **comprehension 게이트** | diff를 읽고 무엇이 왜 바뀌었는지 확인(comprehension debt 방지) |
-
-매 단계 보고: `[Phase n] {산출물}: {핵심} — {다음 단계|보정 필요}`.
-최종: `[SDD 완료] 명세 {조항 수}개 중 {충족}/{전체} 충족 — comprehension 게이트 {통과|미통과} → {산출물 경로}`
+사용자용 개요·사용법은 [README.md](README.md), Phase 흐름·게이트·에이전트 팀의 정본은 [SKILL.md](skills/spec-driven-development/SKILL.md), 방법론·근거는 [references/](skills/spec-driven-development/references/)다.
 
 ## Conventions
 
@@ -56,6 +20,4 @@ spec-driven-development/
 
 ## Change History
 
-| 날짜 | 변경 | 내용 |
-|------|------|------|
-| 2026-06-25 | 플러그인 신설 | spec-driven-development(엔지니어용 실행 가능 명세=source of truth + 명세 대비 생성·자기검증 + comprehension 게이트) 멀티 에이전트 하네스. deep-research 3-vote 적대 검증 근거 + 2025+ 출처(arXiv:2602.00180 'Spec-Driven Development: From Code to Contract' + Addy Osmani 'How to write a good spec for AI agents'·'The 80% Problem in Agentic Coding', 2026-01) |
+변경 이력은 [CHANGELOG.md](CHANGELOG.md)에 있다. 변경 시 그 표 맨 아래에 행을 추가한다.

@@ -6,42 +6,7 @@ CI 파이프라인(build/test 게이트) → IaC·환경(**terraform plan + OPA 
 4단계를 매 단계 승인 게이트로 묶는다. **defense-in-depth** — 기본 읽기 전용, 어떤 쓰기/apply/deploy도 사람 사전
 승인 후 *제안→사람 집행*. 에이전트가 인프라를 직접 변경하거나 배포를 자동 실행하지 않는다.
 
-사용자용 개요·사용법은 [README.md](README.md) 참조.
-
-## Structure
-
-```
-cicd-harness/
-├── .claude-plugin/
-│   └── plugin.json
-├── CLAUDE.md                       # (이 문서) 하네스 포인터 + 4단계 요약 + 변경 이력
-├── README.md                       # 사용자용 개요·사용법·도구 경계
-├── agents/                         # 모두 model: "opus"
-│   ├── pipeline-architect.md       # Phase 1 — CI 파이프라인·릴리스 전략 설계/검수(build/test 게이트, 제안만)
-│   ├── iac-reviewer.md             # Phase 2 — IaC 검증(terraform plan 실행검증 + OPA policy-as-code 결정론적 게이트)
-│   ├── release-gatekeeper.md       # Phase 3 — 배포/릴리스 결정(flaky·rollback·feature-flag·canary, trust-tier 단계적 자율)
-│   └── delivery-verifier.md        # Phase 4 — 전달 안정성 가드(DORA 통제: 테스트 자동화·작은 배치, defense-in-depth 승인)
-├── skills/
-│   └── cicd-harness/
-│       ├── SKILL.md                # 오케스트레이터(진입점, Phase 0 범위·trust-tier 확보 → P1→P4 게이트 진행)
-│       └── references/
-│           ├── cicd-harness-principles.md   # 4단계·defense-in-depth·policy-as-code·trust-tier·DORA·anti-pattern
-│           └── cicd-harness-research.md      # 설계 근거 dossier (출처·등급·CAVEAT·DORA 반증 nuance)
-└── evals/
-    └── trigger-eval.json           # 트리거 경계 평가 (should_trigger / should_not, 인접 하네스 reciprocal 가드)
-```
-
-## 4단계 요약
-
-| Phase | 단계 | 호출 에이전트 | 핵심 산출물 | 게이트 |
-|-------|------|---------------|-------------|--------|
-| 0 | 범위·trust-tier 확보 | (오케스트레이터) | 대상 파이프라인·산출물 유무·trust-tier·슬러그 | 승인 게이트(없는 단계는 건너뜀) |
-| 1 | CI 파이프라인 | pipeline-architect | Pipeline Plan(build/test 게이트·릴리스 전략, 제안) | 승인 게이트 |
-| 2 | IaC·환경 | iac-reviewer | IaC Verdict(terraform plan + OPA 결정론적 통과/실패) | PASS=다음 / FAIL=결정론적 게이트 차단 |
-| 3 | 릴리스·배포 결정 | release-gatekeeper | Release Decision(승격/보류·trust-tier·safe-outputs 대기) | 승인 게이트, 고위험=사람 필수 |
-| 4 | 전달 안정성 가드 | delivery-verifier | Delivery Guard(DORA 통제 점검·defense-in-depth 승인 목록) | 승인 게이트(사람 집행 대기) |
-
-매 Phase 보고: `[Phase N] {핵심결정} — 다음: {다음}. 진행할까요?`. 최종: `[CICD 종료] {파이프라인·게이트 요약} → 배포 결정 {승격|보류}(trust-tier {tier}, 사람 집행 대기) → .claude/cicd-delivery/{slug}/`
+사용자용 개요·사용법은 [README.md](README.md), Phase 흐름·게이트·에이전트 팀의 정본은 [SKILL.md](skills/cicd-harness/SKILL.md), 방법론·근거는 [references/](skills/cicd-harness/references/)다.
 
 ## Conventions
 
@@ -57,6 +22,4 @@ cicd-harness/
 
 ## Change History
 
-| 날짜 | 변경 | 내용 |
-|------|------|------|
-| 2026-06-19 | 플러그인 신설 | cicd-harness(코드 커밋→프로덕션 전달 파이프라인) CI/CD·DevOps·릴리스·IaC 멀티 에이전트 하네스. 4단계(CI 파이프라인 → IaC·환경 → 릴리스·배포 결정 → 전달 안정성 가드) 오케스트레이션 + 4개 전문 에이전트(pipeline-architect/iac-reviewer/release-gatekeeper/delivery-verifier). defense-in-depth(읽기전용·사람 사전승인), policy-as-code 결정론적 게이트(terraform plan + OPA), trust-tier 단계적 자율, DORA 통제 프레이밍. 근거: DORA 2025[GOLD]·DORA AI Capabilities Model[GOLD]·AI-Augmented CI/CD(arXiv:2508.11867)[SILVER]·GitHub Agentic Workflows[SILVER]·MACOG(arXiv:2510.03902)[SILVER], CAVEAT·DORA 반증 nuance 동반 |
+변경 이력은 [CHANGELOG.md](CHANGELOG.md)에 있다. 변경 시 그 표 맨 아래에 행을 추가한다.

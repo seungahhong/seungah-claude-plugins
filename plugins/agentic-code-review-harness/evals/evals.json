@@ -153,7 +153,7 @@
       {
         "text": "[independence] references 5종과 근거 정본을 플러그인 안에 내재화해 단독 설치로 동작하며 외부 스킬·플러그인에 의존하지 않는다.",
         "passed": true,
-        "evidence": "skills/agentic-code-review/references/ 5파일(risk-tiering·agent-failure-signatures·review-lenses·finding-triage·evidence). SKILL.md '참조 문서' 전부 상대 경로 `./references/`. README.md 마지막 문단. CLAUDE.md Structure 트리."
+        "evidence": "skills/agentic-code-review/references/ 5파일(risk-tiering·agent-failure-signatures·review-lenses·finding-triage·evidence). SKILL.md '참조 문서' 전부 상대 경로 `./references/`. README.md 마지막 문단. CLAUDE.md 포인터 절."
       },
       {
         "text": "[agents/opus] 5개 에이전트 정의 파일이 존재하고 모든 Agent 호출에 model \"opus\"를 명시한다.",

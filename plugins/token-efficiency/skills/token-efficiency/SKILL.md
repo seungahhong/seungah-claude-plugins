@@ -1,7 +1,7 @@
 ---
 name: token-efficiency
-description: Claude Code 세션 JSONL 로그를 파싱해 레포 단위 토큰/컨텍스트 효율을 정량 측정·시각화하고 $ 절감안을 내는 결정론적 스킬. 4축 가중 점수(cache/redundancy/density/tool)와 8개 비효율 탐지기(context-bloat·giant-tool·poor-cache·duplicate·subagent + 신규 stale-observation·cache-invalidation-churn·read-exploration-heavy), 세션별 실제 모델가 기반 낭비 추정, 오프라인/CSP 안전 HTML 대시보드를 생성한다. '토큰 효율 분석', '세션 효율', '비용 분석', 'Claude Code usage report', 'analyze token efficiency', 'show session cost', 'improve token efficiency', 'efficiency score', 'how much did I spend on Claude', 'session report', '캐시 적중률', '토큰 낭비' 등에 반드시 트리거. 단일 세션이 아니라 여러 세션 전체의 집계·점수화·시각화가 필요할 때. 새 앱 코드 작성·PR 리뷰·하네스 진단에는 트리거하지 않는다.
-allowed-tools: Bash, Read
+description: Claude Code 세션 JSONL 로그를 파싱해 레포 단위 토큰/컨텍스트 효율을 정량 측정·시각화하고 $ 절감안을 내는 결정론적 스킬. 4축 가중 점수(cache/redundancy/density/tool), 8개 비효율 탐지기, 세션별 실제 모델가 기반 낭비 추정, 오프라인 HTML 대시보드를 낸다. "토큰 효율 분석", "세션 효율", "비용 분석", "Claude Code usage report", "analyze token efficiency", "show session cost", "improve token efficiency", "efficiency score", "how much did I spend on Claude", "캐시 적중률", "토큰 낭비"처럼 여러 세션 전체의 집계·점수화·시각화를 요청할 때 반드시 사용한다. 측정·제안만 하고 코드를 자동 수정하지 않는다. 새 앱 코드 작성, PR 리뷰, 저장소 정적 구조 측정, 하네스 진단에는 쓰지 않는다.
+allowed-tools: Bash(python3:*), Read
 ---
 
 # Token Efficiency

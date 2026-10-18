@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "분석 → 설계 → 개발 → 리뷰 → 검증까지, 소프트웨어 개발 전 과정을 지원하는 멀티 에이전트 스킬·커맨드·훅 모음. 정적 분석 5개 관점(간소화·코드 리뷰·보안·성능·정합성) 중 사용자 선택 항목 병렬 + 재리뷰 루프와 E2E·타입/빌드 검증, 그리고 코드 착수 *전* 상류 산출물(기획·디자인·API 계약·QA 인수조건) 핸드오프 게이트 검수를 포함합니다.",
-    "version": "1.52.1",
+    "version": "1.53.0",
     "homepage": "https://github.com/seungahhong/seungah-claude-plugins"
   },
   "plugins": [
@@ -41,7 +41,7 @@
       "name": "harness-generator",
       "description": "도메인 무관 하네스(에이전트 팀 + 스킬 + 오케스트레이터)를 사람이 단계별로 직접 같이 설계·생성하는 수동·인터랙티브 메타 플러그인. 7단계 메타 프로세스(감사 → 도메인 분석 → 아키텍처 → 에이전트 정의 → 스킬 작성 → 오케스트레이션 → 검증/진화)를 매 Phase 사용자 확인과 함께 진행해 다단계 워크플로우를 체계적으로 구성·검증·진화시킵니다. 후보 N개 자동 탐색·Pareto 채점 생성과 기존 하네스의 trace 기반 진단·개선은 모두 본 플러그인의 범위가 아닙니다(각각 자동 탐색·Pareto 도메인 / trace 진단 도메인).",
       "source": "./plugins/harness-generator",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "author": {
         "name": "seungah.hong"
       },
@@ -60,9 +60,9 @@
     },
     {
       "name": "git-harness",
-      "description": "Git 워크플로우 단일 파이프라인 스킬(`/commit-pr`). 저장소 상태(변경·미push 커밋·열린 PR)를 먼저 읽어 진입점(commit / push / pr)을 추천·선택받고, 고른 지점부터 끝까지 이어서 진행합니다. 커밋 전 리뷰(code-simplifier + correctness·security·performance·readability 코드리뷰 서브에이전트)와 차단 게이트(correctness이거나 CONFIRMED면 커밋 보류), 한국어 커밋 메시지(`이슈번호 type: 제목`), push, PR 생성, PR 리뷰를 포함합니다. 진입점 선택 = 이후 단계 승인(예외: 커밋 메시지·PR 본문 프리뷰, PR 리뷰 실행 여부).",
+      "description": "Git 워크플로우 단일 파이프라인 스킬. 저장소 상태를 먼저 읽어 진입점(commit / push / pr)을 추천·선택받고, 커밋 전 리뷰(code-simplifier + 코드리뷰 서브에이전트, correctness·CONFIRMED 차단 게이트) → 한국어 커밋 메시지(`이슈번호 type: 제목`) → push → PR 생성 → PR 리뷰까지 한 흐름으로 진행합니다.",
       "source": "./plugins/git-harness",
-      "version": "0.3.0",
+      "version": "0.3.1",
       "author": {
         "name": "seungah.hong"
       },
@@ -83,9 +83,9 @@
     },
     {
       "name": "meta-harness",
-      "description": "Meta-Harness 논문(arXiv 2603.28052v1) 기반 메타 하네스 엔지니어링 플러그인. 하네스(루트 CLAUDE.md + SKILL.md + agents + commands + hooks = 'LLM 주위의 코드')의 결함을, 압축 요약이 아닌 full-trace experience store를 grep/cat로 직접 조회해 causal reasoning(confound 격리 → additive-first → compose → transfer)으로 진단합니다. 현 세션 redirect·보강(R1), 플러그인 자체 개선(R2), 외부 .md 산출물의 생산 에이전트/skill 역추적(R3)을 트리거로 받아, behavior-alignment·rule-body-cost·trigger-precision·generalization 4축 Pareto frontier를 후퇴시키지 않는 패치를 사용자 승인 게이트 하에서만 제안·적용하고, 무엇을/왜/어디를 고도화했는지 보고합니다(R4). 진단은 근거의 enforcement 성격을 먼저 분류(deterministic-enforce/deterministic-record/judgment)해, 매번 반드시 일어나야/막혀야 하는 결정론적 근거는 advisory 본문(CLAUDE.md/Skill)이 아니라 hook/permission으로 첫 발생부터 라우팅하고(라이프사이클 event 선택은 자족 reference hook-lifecycle.md), 배치는 패치 경계를 따릅니다(플러그인 hook=plugin 모드, .claude/settings.json은 직접 수정 않고 update-config 핸드오프; .claude/rules는 결정론이 아니라 advisory). 라이프사이클 훅 2종(UserPromptSubmit self-heal-capture가 '수정/보강/방향전환' 발화를 signals 레인에 원형 적재, SessionStart warm-start-nudge가 미소비 신호를 세션 시작 시 표면화)이 모두 캡처/주입 전용·비차단(exit 0)으로 동작하고, 추후 회차의 healer가 그 누적 신호를 진단·패치에 사용합니다(적용은 항상 승인 게이트 후). 데이터 적재·지침 보강은 자족 reference(C1~C9 + 메커니즘 선택 결정 절차, 1차 출처 인라인)를 따릅니다.",
+      "description": "하네스(루트 CLAUDE.md + 각 SKILL.md + agents·commands·hooks)의 결함을 full-trace experience store 기반 causal 진단으로 찾고, Pareto frontier를 후퇴시키지 않는 패치를 사용자 승인 게이트 뒤에만 적용하는 메타 하네스 엔지니어링 플러그인. 현 세션의 redirect·보강 발화(R1), plugin 자체(R2), 외부 .md 역추적(R3)을 트리거로 진단은 결함별 병렬, 개선은 진단별 순차로 진행한다. 라이프사이클 훅 2종(UserPromptSubmit 신호 캡처·SessionStart 미소비 신호 표면화)은 캡처·주입 전용이고 적용은 승인 뒤에만 한다.",
       "source": "./plugins/meta-harness",
-      "version": "0.4.1",
+      "version": "0.4.2",
       "author": {
         "name": "seungah.hong"
       },
@@ -145,9 +145,9 @@
     },
     {
       "name": "loop-engineering",
-      "description": "검증 가능한 목표를 향해 한 작업을 자율 반복(loop)으로 완성하는 도메인 무관 멀티 에이전트 하네스. 실행 루프(Goal → Execute → Verify → Diagnose → Improve)와 지속학습 루프(Fail → Investigate → Verify → Distill → Consult)를 결합해, 사람이 프롬프트를 직접 고치는 대신 에이전트가 실패 원인을 진단하고 다음 시도의 접근을 스스로 작성하며, 검증된 교훈을 루프 메모리에 distill해 같은 실수를 반복하지 않는다. 통과·최대 반복·무진전·예산을 명시적 중단조건으로 무한 루프를 막는다. 경계: 하네스 자체 진단·개선(meta-harness)·새 하네스 생성(harness-generator)·기획문서(product-spec/frontend)·커밋/PR 리뷰(git-harness)·native /loop(시간 간격 폴링)는 범위가 아니며, 작업 산출물(코드·문서 등)을 검증 루프로 완성하는 데 특화한다.",
+      "description": "검증 가능한 목표를 향해 작업을 자율 반복으로 완성하는 멀티 에이전트 하네스. 실행 루프(Goal → Execute → Verify → Diagnose → Improve)와 지속학습 루프(Fail → Investigate → Verify → Distill → Consult)를 결합해, 에이전트가 실패 원인을 진단하고 다음 시도의 접근을 스스로 쓰며 검증된 교훈을 루프 메모리에 쌓는다. Goal Card 승인 게이트로 시작하고 통과·최대 반복·무진전·예산을 명시적 중단조건으로 둔다.",
       "source": "./plugins/loop-engineering",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "author": {
         "name": "seungah.hong"
       },
@@ -169,9 +169,9 @@
     },
     {
       "name": "review-harness",
-      "description": "개발 착수 *전* 상류 산출물(기획·디자인·API 계약·QA 인수조건)을 핸드오프 시점에 '착수 게이트'로 검수하는 도메인 무관 멀티 에이전트 하네스. AI가 코드 작성을 자동화할수록 병목은 '작성'이 아니라 상류 스펙 품질·리뷰로 이동한다는 전제 아래, 4개 게이트 스킬(dor-review·design-handoff-review·contract-review·test-coverage-review)과 handoff-review 오케스트레이터로 모호성·누락·사각지대·breaking change를 코드 착수 전에 잡아 다운스트림 재작업을 줄인다. 정량 수치는 검증된 2025+ 근거만 등급(GOLD/SILVER/BRONZE)과 함께 인용하고 '개선 N%'를 약속하지 않는다(baseline-before-target). 경계: 완성된 코드 리뷰(frontend-harness)·PRD/스토리 작성(product-spec-harness)·커밋/PR 리뷰(git-harness)·하네스 진단(meta-harness)은 범위가 아니며, 상류 산출물의 준비도/완결성 게이트 검수에 특화한다.",
+      "description": "개발 착수 전 상류 산출물(기획·디자인·API 계약·QA 인수조건)을 핸드오프 시점에 착수 게이트로 검수하는 멀티 에이전트 하네스. 4개 게이트 스킬(dor-review 기획 DoR·design-handoff-review 디자인 사각지대·contract-review API 계약 완결성/breaking change·test-coverage-review 인수조건↔테스트 커버리지)을 handoff-review 오케스트레이터가 병렬 실행해 착수 준비도 통합 리포트로 묶는다. 산출물을 직접 수정하지 않는 읽기 위주 검수이며, 정량 수치는 2025+ 근거만 등급과 함께 인용하고 '개선 N%'를 약속하지 않는다.",
       "source": "./plugins/review-harness",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "author": {
         "name": "seungah.hong"
       },
@@ -193,9 +193,9 @@
     },
     {
       "name": "ops-harness",
-      "description": "프로덕션 운영·인시던트 대응·관측성 멀티 에이전트 하네스. traces+logs+metrics 텔레메트리를 기반으로 인시던트 전 생애주기를 AIOpsLab 4단계(탐지 → 국소화 → 근본원인분석(RCA) → 완화+위험평가)로 분해해, 진단/조치계획/위험평가를 역할 분리한 4개 전문 에이전트로 오케스트레이션합니다. 인프라는 중재된 읽기 액션(get_logs/get_metrics/get_traces/exec_shell)으로만 관측하고 완화는 사람 승인 후 제안하며(휴먼-인-더-루프), RCA는 anchoring·정체·임의 증거선택·신념 미갱신을 경계하고 단순 케이스엔 Straight-Shot 폴백을 둡니다. 검증된 2025+ 근거(AIOpsLab·역할분리 오케스트레이션·RCA 실패모드)를 등급·CAVEAT와 함께 인용합니다(개선 N% 약속 없음). 배포 이후 런타임 운영에 특화하며, 하네스 진단(meta-harness)·검증 루프 완성(loop-engineering)·완성 코드 리뷰(frontend/git-harness)·상류 핸드오프 게이트 검수(review-harness)·PRD 작성(product-spec-harness)은 범위가 아닙니다.",
+      "description": "프로덕션 운영·인시던트 대응·관측성 멀티 에이전트 하네스. traces+logs+metrics 텔레메트리로 인시던트를 AIOpsLab 4단계(Detection → Localization → Root Cause Analysis → Mitigation+위험평가)로 분해해 진행하고, 인프라는 중재된 읽기 액션으로만 관측하며 완화는 사람 승인 후 제안으로만 낸다. RCA는 anchoring·정체·임의 증거선택을 경계하고 단순 케이스에는 Straight-Shot 폴백을 둔다. 배포 이후 런타임 인시던트에 특화한다.",
       "source": "./plugins/ops-harness",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "author": {
         "name": "seungah.hong"
       },
@@ -218,9 +218,9 @@
     },
     {
       "name": "backend-harness",
-      "description": "백엔드/API를 '실행 기반 검증'으로 구현하는 멀티 에이전트 하네스. 범위/계약 → 설계(서비스 경계·API·데이터 모델) → 환경 구성(빌드·실행 가능 상태 확보, 1급 시민) → 구현(API·DB 스키마/마이그레이션) → 실행 검증(빌드·테스트가 실제로 통과해야만 PASS)의 5단계를 매 단계 승인 게이트로 묶습니다. 핵심 차별점은 ① 에이전트 자기보고를 불신하고 빌드·테스트의 실제 실행 결과로만 통과를 인정(reward-hacking 가드), ② 환경 구성이 저장소 단위 BE 작업의 최대 병목이라는 근거(arXiv:2512.06915)에 따라 env-provisioner를 독립 단계로 두는 것입니다. 같은 플러그인에 기존 코드의 실행기반 테스트를 generate→compile→execute→repair 공진화 루프로 생성·수리하는 test-generator 스킬을 둡니다(QA 탈-FE편중). 검증된 2025+ 근거(저장소 단위 작업 난도·환경 병목·자기보고 불일치·TestART)를 등급·CAVEAT와 함께 인용합니다. 경계: API 계약 검수(review-harness/contract-review), FE 화면 구현(frontend-harness), PRD/스토리 작성(product-spec-harness), 커밋/PR(git-harness), 하네스 진단(meta-harness), 단발 자율 반복 루프(loop-engineering)는 범위가 아닙니다.",
+      "description": "백엔드/API를 실행 기반 검증으로 구현하는 멀티 에이전트 하네스. 범위·계약 → 설계 → 환경 구성(1급) → 구현 → 실행 검증의 5단계를 매 단계 승인 게이트로 진행하고, 통과는 에이전트 자기보고가 아니라 빌드·테스트의 실제 통과로만 인정한다(reward-hacking 가드). 같은 플러그인에 기존 코드의 실행기반 테스트를 generate→compile→execute→repair 루프로 생성·수리하는 test-generator 스킬을 둔다.",
       "source": "./plugins/backend-harness",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "author": {
         "name": "seungah.hong"
       },
@@ -242,9 +242,9 @@
     },
     {
       "name": "cicd-harness",
-      "description": "코드 커밋부터 프로덕션까지의 전달(delivery) 파이프라인을 오케스트레이션하는 CI/CD·DevOps·릴리스·IaC 멀티 에이전트 하네스. CI 파이프라인(build/test 게이트) → IaC·환경(terraform plan + OPA policy-as-code 결정론적 검증) → 릴리스·배포 결정(canary 승격·rollback·feature-flag·flaky 해석, trust-tier 단계적 자율) → 전달 안정성 가드(DORA 통제: 강한 테스트 자동화·작은 배치)의 4단계를 매 단계 승인 게이트로 묶습니다. 세 가지 안전장치: ① defense-in-depth(기본 읽기 전용, 모든 쓰기/apply/deploy는 사람 사전 승인(safe-outputs) 후 제안→사람 집행, 에이전트가 인프라를 직접 변경하거나 배포를 자동 실행하지 않음), ② policy-as-code 결정론적 게이트(IaC는 terraform plan + OPA 통과 필수, LLM 판단만으로 통과 금지), ③ trust-tier 단계적 자율(의사결정 위험도별 자율 수준, 높은 위험은 사람 필수). 4개 전문 에이전트(pipeline-architect / iac-reviewer / release-gatekeeper / delivery-verifier)가 역할 분리로 협업합니다. 검증된 2025+ 근거(DORA 2025·DORA AI Capabilities Model·AI-Augmented CI/CD·GitHub Agentic Workflows·MACOG)를 등급·CAVEAT와 함께 인용하며, DORA의 AI-불안정 통제책은 small batches + robust test automation만 사실로 인용하고 '버전관리·느슨한 결합도 통제요소'·'긴밀결합 팀 무이득'은 반증된 신화로만 표기합니다. 경계: 배포 이후 런타임 인시던트(ops-harness)·BE 코드 구현(backend-harness)·빌드 그린까지 자율 반복(loop-engineering)·커밋/PR(git-harness)·계약 검수(review-harness/contract-review)·PRD(product-spec-harness)·하네스 진단(meta-harness)은 범위가 아닙니다.",
+      "description": "코드 커밋부터 프로덕션까지의 전달(delivery) 파이프라인을 오케스트레이션하는 CI/CD·릴리스·IaC 멀티 에이전트 하네스. CI 파이프라인(build/test 게이트) → IaC·환경(terraform plan + OPA policy-as-code 결정론 검증) → 릴리스·배포 결정(canary·rollback·feature-flag, trust-tier 단계적 자율) → 전달 안정성 가드(DORA 통제)의 4단계를 매 단계 승인 게이트로 진행한다. 기본 읽기 전용이며 어떤 쓰기·apply·deploy도 사람 사전 승인 후 제안→사람 집행이다.",
       "source": "./plugins/cicd-harness",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "author": {
         "name": "seungah.hong"
       },
@@ -268,9 +268,9 @@
     },
     {
       "name": "context-engineering",
-      "description": "LLM·에이전트에 전달할 컨텍스트 페이로드를 체계적으로 조립·최적화하는 도메인 무관 멀티 에이전트 하네스. 단순 프롬프트 설계를 넘어 '무엇을 왜 모델에 넣는가'를 Scope(예산·도달 정보) → Retrieve/Generate(후보 수집) → Process(압축·정렬·중복제거, brevity bias·lost-in-the-middle 대응) → Manage(playbook 큐레이션·context-collapse 가드·최종 조립)의 4단계로 설계하고, 멀티 에이전트 컨텍스트면 per-agent 격리(REGISTRY/FOCUS) 패턴으로 cross-agent 오염(context pollution)을 막는다. 모든 단계는 토큰 예산과 검증 가능한 'retrieval need'를 못 박고 사람 승인 게이트로 시작한다. 검증된 2025+ 논문(arXiv:2507.13334 컨텍스트 엔지니어링 서베이·arXiv:2510.04618 ACE·arXiv:2604.07911 DACS)을 vote/CAVEAT와 함께 인용한다. 경계: 작업의 에이전트 병렬화 판단·AI 산출물 평가(judge 구성)·엔지니어용 실행 명세 작성·기획자용 PRD·하네스 자체 진단·단발 코드 수정은 범위 밖이며 '모델에 들어갈 정보 페이로드의 조립·최적화'에 특화한다.",
+      "description": "LLM·에이전트에 전달할 컨텍스트 페이로드를 체계적으로 조립·최적화하는 멀티 에이전트 하네스. Scope(예산·도달 정보·retrieval need) → Retrieve(후보 수집) → Process(압축·정렬·중복제거, brevity bias·lost-in-the-middle 대응) → Manage(playbook 큐레이션·context-collapse 가드·검증·조립)의 4단계를 Scope 승인 게이트로 시작하고, 멀티 에이전트 컨텍스트면 per-agent 격리(REGISTRY/FOCUS)로 cross-agent 오염을 막는다. 더 많은 토큰이 아니라 필요한 정보가 모델에 닿는 것이 목표다.",
       "source": "./plugins/context-engineering",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "author": {
         "name": "seungah.hong"
       },
@@ -292,9 +292,9 @@
     },
     {
       "name": "agent-orchestration",
-      "description": "한 작업을 여러 에이전트로 병렬화할지·어떻게 협업시킬지를 판단 규칙으로 결정하고, 그 협업이 단일 에이전트 baseline을 실제로 능가하는지 적대적으로 검증하는 도메인 무관 멀티 에이전트 하네스. 작업의 분해 가능성(decomposability)·도구 밀도(tool density)를 평가해 단일 baseline을 추정하고(Phase 0), architecture-task alignment·capability-ceiling 휴리스틱으로 single vs multi와 토폴로지(centralized/independent)를 권고하며(Phase 1), communication·commitment·expectation 협업 실패와 context-pollution을 막는 coordination 가드를 설계하고(Phase 2), 계획이 baseline을 능가하는지 검증해 능가 못 하면 단일 에이전트를 권고한다(Phase 3). 핵심 메시지는 '에이전트를 더 붙인다고 항상 이득이 아니다 — 성패는 수가 아니라 architecture-task alignment가 결정한다'이다. 검증된 2025+ 논문(arXiv:2512.08296 Science of Scaling Agent Systems·arXiv:2601.13295 CooperBench·arXiv:2604.07911 DACS)을 vote/CAVEAT와 함께 인용한다. 경계: 컨텍스트 페이로드 조립·AI 출력 평가·엔지니어용 구현 명세 작성·단일 자율 반복 루프·새 하네스 생성·프로덕션 장애 대응은 범위 밖이다.",
+      "description": "한 작업을 여러 에이전트로 병렬화할지·어떻게 협업시킬지를 판단 규칙으로 결정하고, 그 협업이 단일 에이전트 baseline을 실제로 능가하는지 적대적으로 검증하는 멀티 에이전트 하네스. 분해 가능성·도구 밀도 평가 → 아키텍처 결정(single/multi·토폴로지) → 협업 가드 설계(communication·commitment·expectation·컨텍스트 격리) → baseline 능가 검증의 4단계를 승인 게이트로 진행한다. 에이전트를 더 붙인다고 항상 이득이 아니며, 순이득을 증명하지 못하면 단일 에이전트를 권고한다.",
       "source": "./plugins/agent-orchestration",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "author": {
         "name": "seungah.hong"
       },
@@ -315,9 +315,9 @@
     },
     {
       "name": "eval-harness",
-      "description": "AI 생성물(코드·에이전트 출력·산출 텍스트)을 엄밀하게 평가하는 도메인 무관 멀티 에이전트 하네스. 핵심 질문은 '점수가 몇 점인가'가 아니라 '이 점수를 믿어도 되는가'다. LLM-as-a-Judge를 단일 샷이 아니라 다중 표본(≥3)으로 돌리고, MCTS식 다관점 분해와 가능하면 실행 grounding으로 판정을 강화하며, agentic benchmark의 task validity·outcome validity 결함과 shortcut(풀지 않고 만점)·harness≠model 귀인 혼동·instruction density를 ABC 체크리스트로 감사한 뒤, 다중 표본을 집계해 confidence·CAVEAT와 함께 보고한다. 검증된 1차 논문(arXiv:2507.02825 ABC·arXiv:2412.12509 LLM-judge 신뢰성(2024-12 제출·2025 개정)·arXiv:2502.12468 MCTS-Judge·arXiv:2507.11538 IFScale·arXiv:2606.17799 harness≠model)을 vote/CAVEAT와 함께 인용한다('개선 N% 보장' 금지). 경계: 컨텍스트 페이로드 조립·작업 병렬화 판단·엔지니어용 구현 명세 작성·기존 코드의 일반 실행 테스트 생성·커밋/PR 코드 리뷰는 범위 밖이며 '판정의 신뢰성'을 설계·감사하는 데 특화한다.",
+      "description": "AI 생성물(코드·에이전트 출력·산출 텍스트)을 엄밀하게 평가하는 멀티 에이전트 하네스. 정의·validity(승인 게이트) → judge 구성(다중 표본 ≥3·다관점 분해·실행 grounding) → validity 감사(task/outcome validity·shortcut·harness≠model 귀인) → 실행·집계의 4단계로 진행하고, 결과는 confidence·CAVEAT·baseline 대비와 함께 보고한다. 점수가 몇 점인가가 아니라 이 점수를 믿어도 되는가를 묻는다.",
       "source": "./plugins/eval-harness",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "author": {
         "name": "seungah.hong"
       },
@@ -339,9 +339,9 @@
     },
     {
       "name": "spec-driven-development",
-      "description": "엔지니어용 실행 가능 명세(spec)를 source of truth로 작성하고, 에이전트가 그 명세대로 코드를 생성한 뒤 명세 대비 자기검증하게 하는 도메인 무관 멀티 에이전트 하네스. 워크플로를 코드 우선에서 명세 우선으로 역전한다 — 명세가 1차 산출물이고 코드는 그로부터 생성·검증되는 2차 산출물이다(Spec-Driven Development). 4단계(명세 작성 → 인수기준·자기검증 설계 → 명세 대비 구현 → 명세 대비 검증)로 진행하며, Phase 0 명세 승인 게이트를 두고, 마지막 Phase 3에 comprehension 게이트(diff를 읽고 무엇이 왜 바뀌었는지 확인 — comprehension debt 방지)를 둔다. 검증된 2025+ 근거(arXiv:2602.00180 'Spec-Driven Development: From Code to Contract' + Addy Osmani 'How to write a good spec for AI agents'(2026-01) + 'The 80% Problem in Agentic Coding'(2026-01) comprehension debt)를 vote/CAVEAT와 함께 인용한다. 경계: 기획자용 PRD·사용자 스토리(문제정의·비즈니스 요구) 작성·AI 출력 평가용 judge 구성·컨텍스트 페이로드 조립·완성 코드 리뷰·커밋/PR·하네스 자체 진단은 범위가 아니며 에이전트가 코드를 생성할 '실행 가능한 구현 명세 contract'에 특화한다.",
+      "description": "엔지니어용 실행 가능 명세(spec)를 source of truth로 작성하고, 에이전트가 그 명세대로 코드를 생성한 뒤 명세 대비 자기검증하게 하는 멀티 에이전트 하네스. 명세 작성(승인 게이트) → 인수기준·자기검증 설계 → 명세 대비 구현 → 명세 대비 검증 + comprehension 게이트(diff를 읽고 무엇이 왜 바뀌었는지 확인)의 4단계로 진행한다. 명세가 1차 산출물이고 코드는 그로부터 생성·검증되는 2차 산출물이다.",
       "source": "./plugins/spec-driven-development",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "author": {
         "name": "seungah.hong"
       },
@@ -363,9 +363,9 @@
     },
     {
       "name": "human-agent-teaming",
-      "description": "사람과 AI 에이전트가 한 팀으로 효과적으로 협업하도록 분업·공통기반·감독/신뢰·검증/지속을 설계하는 도메인 무관 멀티 에이전트 하네스. 핵심 축은 AI끼리의 병렬화·토폴로지가 아니라 사람↔에이전트의 분업과 감독이며, 산출물은 프롬프트가 아니라 협업 설계(teaming playbook)다. 일이 단일 플레이어에서 멀티플레이어(사람이 전략을 세우고 에이전트가 실행)로 옮겨갔다는 전제에서, 4단계로 진행한다: (Phase 0) 분업(사람=전략·하드 트레이드오프·최종 검증·책임 / 에이전트=전문 실행)·위임(human/agent/co-delegation·conditional delegation·trustworthy region)·자율 수준(작업 종류별 보수적 기본, 미입증이면 전수 검토)·운영 모드(human-in-the-loop vs human-on-the-loop)·고위험/비가역 결정점·역할 경계를 정하고(승인 게이트) → (Phase 1) '적혀 있지 않으면 에이전트엔 존재하지 않는다'는 전제로 팀원 온보딩식 공통기반·AI 오류 경계 노출·workspace awareness·재정렬 루프(SMM은 영속 협상, 일회성 설정 아님)를 세우며 → (Phase 2) 모든 행동을 일일이 승인하지 않는 모니터링 기반 감독(투명성·개입/스티어링·단계적 가역 권한 read-only→쓰기 전 승인→영속·위험 트리거)·적절한 의존으로의 신뢰 보정(신뢰 최대화가 아님)·특징적 실패모드(over-reach·조기 완료 선언)·자동화 편향 가드를 설계하고 → (Phase 3) 인간 검증을 요구되는 마지막 층으로 운영화(코드=테스트·그 외=루브릭·Doer-Verifier fresh-context)·검증 스캐폴딩·핸드오프 연속성·후속 재정렬(After-Action)·책임(moral crumple zone 금지)을 설계한다. 핵심 메시지는 '에이전트는 도구가 아니라 팀원이고, 자율성과 인간 통제의 균형을 작업 종류별로 잡는다'이다. 검증된 근거(Anthropic 'Building Effective Human-Agent Teams' 블로그 정독 + 'Building Effective Agents'·'Our framework for safe and trustworthy agents'·'Measuring Agent Autonomy'·'Effective harnesses for long-running agents' 1차 자료 + arXiv:2504.10918 Adaptive Human-Agent Teaming(133개 경험 연구 리뷰)·arXiv:2602.05987 Human-Agent Collaboration(CHI EA '26))를 vote/CAVEAT와 함께 인용하되, 벤더 1차 자료는 설계 의도로(크기 주장 미인용)·학술은 권장 메커니즘으로 쓰고 '개선 N% 보장'을 금지하며 반박된 패턴(에이전트 자기제한을 1차 감독으로)을 쓰지 않고 반례(METR RCT 경험 개발자 감속)도 정직히 기록한다. 경계: 여러 AI 에이전트로 병렬화할지·토폴로지(single/multi·centralized/independent) 결정·모델에 넣을 컨텍스트 페이로드 조립·압축·AI 출력의 엄밀한 평가(judge 구성)·한 목표를 통과까지 한 흐름으로 자율 반복·상류 산출물 핸드오프 게이트 검수·새 하네스 생성·하네스 자체 진단·PRD 작성·커밋/PR 리뷰·settings.json 설정은 범위가 아니며 '사람과 에이전트가 한 팀으로 어떻게 협업할지 설계'에 특화한다. 다른 마켓플레이스 플러그인에 의존하지 않는 독립 플러그인이다.",
+      "description": "사람과 AI 에이전트가 한 팀으로 협업하도록 분업·공통기반·감독/신뢰·검증/지속을 설계하는 멀티 에이전트 하네스. 분업·위임(자율 수준·HITL/HOTL·고위험 결정점) → 공통기반(온보딩 브리핑·AI 오류 경계·재정렬 루프) → 모니터링 기반 감독·신뢰 보정(전수 승인 아님·단계적 가역 권한) → 비례 검증(루브릭·Doer-Verifier)·핸드오프 연속성·책임의 4단계를 승인 게이트로 진행한다. 축은 AI 간 토폴로지가 아니라 사람↔에이전트의 분업과 감독이고, 산출물은 협업 설계(teaming playbook)다.",
       "source": "./plugins/human-agent-teaming",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "author": {
         "name": "seungah.hong"
       },
@@ -388,9 +388,9 @@
     },
     {
       "name": "code-as-harness",
-      "description": "코드를 단순 산출물이 아니라 실행 가능(executable)·검사 가능(inspectable)·상태 보존(stateful)한 운영 기반(operational substrate)으로 다루고, 한 번의 거버넌스된 Plan→Execute→Verify 제어 루프로 코드 변경을 안전하고 검증 가능하게 수행하는 도메인 무관 멀티 에이전트 하네스. 근거 논문은 arXiv:2605.18747 'Code as Agent Harness: Toward Executable, Verifiable, and Stateful Agent Systems'(2026-05)다. 핵심 메시지는 '코드는 에이전트가 추론·행동·검증하는 실행 기반이다 — 계획은 변경 계약이고, 실행은 권한·샌드박스로 게이트되며, 검증은 자기보고가 아니라 결정적 센서(실행)로 한다'이다. 4단계로 진행한다: (Phase 0) 작업을 계획 계약(Plan Contract)으로 변환 — 의도한 변경(파일·동작·불변식)·성공을 판정할 결정적 센서(테스트·빌드·타입·린트·실행)·각 행동의 위험(가역 vs 안전임계/비가역: 삭제·마이그레이션·스키마·네트워크 egress·시크릿·프로덕션)을 사전 분류한다(승인 게이트) → (Phase 1) 권한 실행 — 계약을 실현하는 최소 변경을 권한·샌드박스 경계에서 가역 우선으로 적용하고 안전임계 행동은 실행 전 사람 승인 게이트(전수 승인 아님)로 막으며 계획조항→diff→관측 피드백을 구조화된 실행 trace로 남긴다 → (Phase 2) 실행 검증 — 계약의 결정적 센서를 실제로 돌려 조항별로 PASS/FAIL/UNVERIFIED를 센서 증거와 함께 판정하고, 자기보고를 불신하며 reward-hacking·verifier-gaming(테스트 약화·하드코딩·형식 우회)을 가드하고 불완전 피드백에서는 PASS를 단정하지 않으며(UNVERIFIED) 최종 성공 너머 불변식·부작용도 본다 → (Phase 3) 텔레메트리 진단·수렴 — 검사 가능한 trace를 최적화 substrate로 읽어 root cause를 trace 인용으로 진단하고 통과한 것을 깨지 않는 regression-free 차기 수정안을 제안하며 CONVERGED/ITERATE/ESCALATE를 결정한다(무진전이면 ESCALATE). 검증된 근거(arXiv:2605.18747 정독 + 인접 1차 2604.08224 Externalization·2506.11442 ReVeal·2604.20801 AgentFlow·2508.00083 code-gen 서베이·2512.14012 developer-control + 보강 2604.15149 verifier reward-hacking·2603.07084 sandbox)를 vote/CAVEAT와 함께 인용하되, 서베이는 개념 프레임(벤치마크 결과 아님)으로 쓰고 인접 논문 기법을 대상 서베이에 귀속하지 않으며 'several-fold' 민감도는 특정 세팅값으로 한정하고 반박된 주장(AgentFlow 4-phase 루프)은 본문 근거로 쓰지 않으며 '개선 N% 보장'을 금지한다. 경계: 통과까지 자율 반복+교차세션 학습 메모리(자율 반복 도메인)·백엔드 환경 provisioning 1급 구현(백엔드 구현 도메인)·실행 가능 명세 작성(명세 우선 도메인)·AI 에이전트 병렬화·토폴로지(멀티 에이전트 오케스트레이션 도메인)·컨텍스트 페이로드 조립(컨텍스트 설계 도메인)·AI 출력 평가(평가 도메인)·하네스 자체 진단(메타 도메인)·상류 핸드오프 검수(핸드오프 리뷰 도메인)·프로덕션 인시던트 대응(운영 도메인)·PRD·커밋/PR·settings는 범위가 아니며 '코드를 실행·검증 가능한 하네스로 다루는 거버넌스된 Plan→Execute→Verify 제어 사이클'에 특화한다. 다른 마켓플레이스 플러그인에 의존하지 않는 독립 플러그인이다.",
+      "description": "코드를 실행 가능·검사 가능·상태 보존한 운영 기반으로 다루고, 한 번의 거버넌스된 Plan→Execute→Verify 제어 루프로 코드 변경을 안전하고 검증 가능하게 수행하는 멀티 에이전트 하네스. 계획 계약(의도한 변경·결정적 센서·행동 위험 분류) → 권한·샌드박스 실행(가역 우선·안전임계 사람 게이트) → 실행 검증(자기보고 불신·UNVERIFIED 정직성) → 텔레메트리 진단·수렴(CONVERGED/ITERATE/ESCALATE)의 4단계로 진행한다. 통과까지 자율 반복하는 루프가 아니라 단일 거버넌스 사이클이며, 근거는 arXiv 2605.18747 'Code as Agent Harness'다.",
       "source": "./plugins/code-as-harness",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "author": {
         "name": "seungah.hong"
       },
@@ -413,9 +413,9 @@
     },
     {
       "name": "llm-guardrails-harness",
-      "description": "LLM/에이전트 애플리케이션의 안전을 모델의 자기 정렬이나 시스템 프롬프트에 대한 신뢰가 아니라, 모델 바깥을 감싸는 외부·인라인 제어 평면(external control plane)으로 요청 시점에 강제하는 도메인 무관 멀티 에이전트 런타임 가드레일 하네스. 핵심 메시지는 '안전은 모델을 믿는 게 아니라 모델 주위에 별도의 정책 계층을 두고 요청 시점에 입력·출력·검색·행동을 검사·거부·재작성하는 것이다 — prompt injection은 LLM의 근본 설계를 악용하므로 정렬·지시만으로는 닫히지 않고, 가드레일 자체도 공격 가능한 LLM이라 단일 레일은 충분치 않다'이다. 4단계로 진행한다: (Phase 0) 위협 모델링·정책 정의(Threat-Model & Policy Definition) — 대상 앱을 OWASP LLM Top 10 2025 위험에 매핑하고 콘텐츠 카테고리(PII 클래스·독성/폭력/불법·off-policy 주제)와 행동 위험(excessive agency·시스템 프롬프트 유출)을 목록화해 fail-closed 정책과 레일 배치 결정으로 명문화한다(승인 게이트) → (Phase 1) 입력 레일(Input Rails) — 모델 호출 전에 jailbreak/prompt-injection 탐지, Llama-Guard 스타일 입력 분류(SAFE/UNSAFE+카테고리 ID), 요청 검증으로 입력을 거부하거나 재작성/마스킹한다 → (Phase 2) 출력·검색 레일(Output & Retrieval Rails) — 생성 후 PII 리댁션·독성/정책 필터·grounding/환각 점검과 검색 시점의 untrusted 청크 필터링(indirect prompt injection)을 모델·사용자 도달 전에 별도 계층으로 둔다 → (Phase 3) 에이전트 행동 강제·적대 검증(Agent-Action Enforcement & Adversarial Verification) — 최소 권한 tool 스코핑·인자/결과 검증(execution rails)·비가역 행동 사람 승인 게이트를 외부 정책 엔진으로 강제하고, 모든 레일을 적대적으로 red-team해 ASR(놓친 공격)과 FPR(과차단)을 함께 측정하며 우회를 반복 보강한다. 핵심 안전장치: 외부 강제 우선(시스템 프롬프트 신뢰 금지)·전체 레일 taxonomy(input/dialog/output/retrieval/execution) 커버·fail-closed 기본값(레일 오류/타임아웃/불확실 시 차단·강등, fail-open 금지)·다층 방어(단일 신뢰점 가드레일 금지)·excessive agency 최소 권한+비가역 행동 사람 게이트(LLM05→LLM06)·검색/도구 반환 콘텐츠 불신(LLM08)·safety-utility(ASR↔FPR) 트레이드오프 명시·오염된 정적 벤치마크 불신(미지 적대 공격 일반화 평가). 근거는 OWASP Top 10 for LLM Applications 2025·NVIDIA NeMo Guardrails(input/dialog/output/retrieval/execution 5 rail types)·Llama Guard(arXiv:2312.06674)·SoK: Evaluating Jailbreak Guardrails(arXiv:2506.10597, ASR/FPR·adaptive-attack bypass)·OWASP LLM Prompt Injection Prevention Cheat Sheet·Adaptive Evaluation of Out-of-Band Defenses(arXiv:2606.26479)이며, Tech-Verse 2026 S04 세션의 이전 가능한 코어(레일 taxonomy+OWASP 매핑+외부강제 원칙)만 일반화하고 특정 사내 게이트웨이 구현이나 '개선 N% 보장'·보편 ASR/FPR 수치는 주장하지 않는다(가드레일은 위험을 줄이는 방어심층이지 위험 제거가 아니며 적응형 공격자는 개별 레일을 우회한다). 경계: 오프라인으로 AI 출력 품질을 LLM judge로 사후 채점·평가하는 일(eval-harness), 프로덕션 LLM 서비스의 사후 장애 탐지·국소화·RCA(ops-harness), 코드 착수 전 상류 산출물(PRD·디자인·API 계약·QA) 핸드오프 게이트 검수(review-harness), 사람↔에이전트 분업·공통기반·감독/신뢰를 설계(human-agent-teaming), 작업을 여러 에이전트로 병렬화할지·토폴로지 결정(agent-orchestration), 일반 API/백엔드 기능 구현·실행 검증(backend-harness), 코딩 에이전트 자신의 코드 변경 권한·샌드박스 거버넌스(code-as-harness), 프런트엔드 소스 코드의 웹 취약점(XSS/CSRF) 스캔(frontend-harness), 토큰·스코프·위임·동의 등 아이덴티티/인가 아키텍처 설계(agent-authorization-harness)는 범위 밖이며, 이 하네스는 '런타임에 LLM I/O와 tool 호출의 콘텐츠·행동 정책을 외부에서 인라인 강제하는 방어심층(defense-in-depth)'에 특화한다. excessive agency(LLM06)는 agent-authorization-harness와 공유 이음매다 — 본 하네스는 런타임 콘텐츠·행동 레일, agent-authorization은 그 아래의 자격증명·아이덴티티·스코프 계층이다. 다른 마켓플레이스 플러그인에 의존하지 않는 독립 플러그인이다.",
+      "description": "LLM/에이전트 애플리케이션의 안전을 모델의 자기 정렬이나 시스템 프롬프트 신뢰가 아니라 모델 바깥의 외부·인라인 제어 평면으로 요청 시점에 강제하는 런타임 가드레일 하네스. 위협 모델링·정책(OWASP LLM Top 10 2025) → 입력 레일(주입·탈옥 탐지) → 출력·검색 레일(PII·독성·grounding·untrusted 청크) → 행동 강제·적대 검증(최소 권한 tool 스코핑·사람 게이트·ASR/FPR)의 4단계를 매 단계 승인 게이트로 진행한다. fail-closed·다층 방어가 기본이며, 가드레일은 위험을 줄이지 제거하지 않는다.",
       "source": "./plugins/llm-guardrails-harness",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "author": {
         "name": "seungah.hong"
       },
@@ -441,9 +441,9 @@
     },
     {
       "name": "qa-agent-harness",
-      "description": "에이전트가 '커버리지를 채우는' 것이 아니라 리스크 노출(발생확률 × 영향)을 커버리지 우선순위로 변환하고, 각 시나리오에 진짜 판정 오라클을 명시한 뒤, 테스트를 생성·실행하되 실패를 맹목 재시도하지 않고 결함/플래키/환경으로 먼저 분류하도록 묶은 도메인 무관(FE+API) 에이전틱 소프트웨어 QA 하네스. 핵심 메시지는 '커버리지 극대화나 그린 신호 자체가 reward-hacking 가능한 대리지표다 — 오라클이 약하면 연기만 나고 경보는 울리지 않는다(All Smoke, No Alarm). 테스트의 가치는 실행 경로 수가 아니라 어서션(오라클)의 강도에 있다'이다. 4단계로 진행한다: (Phase 0) 리스크 기반 테스트 전략(Risk-Driven Test Strategy) — 요구사항·최근 변경·비즈니스/기술 리스크를 리스크 노출(확률×영향) 등급으로 정규화하고 무엇을 어느 깊이로 테스트할지 커버리지 우선순위와 판정 기준을 담은 전략을 산출한다(균일 커버리지가 아니라 리스크 노출도가 노력을 배분, 승인 게이트) → (Phase 1) 시나리오 설계·살아있는 시나리오 라이브러리(Scenario Design) — 스토리/API/도메인 규칙을 리스크에 매핑된 시나리오로 번역하되 각 시나리오에 '무엇이 성공/실패인가'의 명시적 오라클(기대 상태·불변식)을 부착하고 요구사항·리스크로 추적 가능하며 제품과 함께 진화하는 라이브러리를 유지한다(정적 회귀팩 지양) → (Phase 2) 오라클 우선 생성 + 자가치유 실행(Generation + Self-Healing Execution) — 실행 가능한 테스트를 생성하되 스모크/동어반복 어서션을 금지하고 진짜 오라클을 넣으며, 실행 중 로케이터/DOM 드리프트는 role→data-testid→접근성 트리→가시 텍스트 우선순위로 점수화된 후보 비교로 자가치유하되 치유는 로깅·게이트되어 실제 회귀를 초록으로 은폐하지 않는다 → (Phase 3) 실패 트리아지 & 근본원인(Intelligent Failure Triage) — 실패를 재시도하기 전에 실제 결함 vs 플래키 vs 환경으로 분류하고 공유 근본원인(네트워킹·외부 의존 등)으로 클러스터링해 하나의 수정으로 다수 플래키를 해소하며, 변경 영향과 리스크로 재실행/회귀 범위를 우선순위화하고 결정을 설명 가능하게 로깅한다. 전 과정은 '행동 전 제안(suggest-before-act)' 점진적 자율성, 파괴적/고위험 행동에 대한 HITL 승인 게이트, 설명 가능한 로깅된 결정으로 관통된다. 검증된 근거(arXiv:2601.02454 'The Rise of Agentic Testing'(멀티에이전트 QA)·arXiv:2506.02943 CANDOR(오라클 다중표본 합의)·arXiv:2606.18168 'All Smoke, No Alarm'(오라클 신호)·arXiv:2504.16777 'Systemic Flakiness'(공동발생 플래키 클러스터)·arXiv:2601.05542 LLM 오라클 생성·Requirements-based test prioritization(리스크 인자) 산업연구·Katalon Agentic QA 운영모델)를 등급(HIGH/MEDIUM)·CAVEAT와 함께 인용하되, S06 세션의 헤드라인 신규성인 조직 도입·AI 성숙도 5단계 모델·변경관리 층은 하네스화 불가로 명시적으로 제외하고, 보고된 회사별 수치(1.54x QA 산출·~49% AI 대체·68% 시간 절감)와 CANDOR 오라클 정확도(0.834→0.971)는 특정 세팅 관찰값으로만 인용하며 '개선 N% 보장'을 쓰지 않는다. 경계: 넓은 프론트엔드 개발 워크플로우 안의 FE 한정 QA 단계(FE 개발 도메인), 구현 흐름 내부의 좁은 test-generator 스킬(백엔드 구현 도메인), AI 출력을 오프라인 LLM-as-a-Judge로 채점·측정하는 일(평가 도메인), 라이브 텔레메트리로 프로덕션 인시던트를 RCA하는 일(운영 도메인), 코딩 착수 전 상류 인수조건↔테스트 커버리지를 핸드오프 게이트로 검수하는 일(핸드오프 리뷰 도메인), 검증 가능한 목표로의 도메인 무관 자율 반복 루프(자율 반복 도메인), 작업을 여러 AI 에이전트로 병렬화할지·토폴로지 결정(멀티 에이전트 오케스트레이션 도메인), 사람↔에이전트 분업·감독 설계(사람-에이전트 협업 도메인), LLM 입출력 안전 가드레일(주입·PII·독성)은 범위가 아니며 '리스크 기반 전략→오라클 명시 시나리오→오라클 우선 생성·게이트된 자가치유 실행→결함 vs 플래키 지능형 트리아지의 독립 end-to-end 에이전틱 QA 라이프사이클'에 특화한다. 다른 마켓플레이스 플러그인에 의존하지 않는 독립 플러그인이다.",
+      "description": "리스크 노출(발생확률 × 영향)을 커버리지 우선순위로 변환하고, 시나리오마다 진짜 판정 오라클을 명시한 뒤, 테스트를 생성·실행하되 실패를 결함/플래키/환경으로 먼저 분류하는 도메인 무관(FE+API) 에이전틱 QA 하네스. 리스크 기반 전략 → 오라클 명시 시나리오 → 오라클 우선 생성·게이트된 자가치유 실행 → 지능형 실패 트리아지의 4단계를 승인 게이트로 진행한다. 커버리지·그린 신호는 reward-hacking 가능한 대리지표로 보고, 파괴적·고위험 행동은 사람 승인을 거친다.",
       "source": "./plugins/qa-agent-harness",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "author": {
         "name": "seungah.hong"
       },
@@ -466,9 +466,9 @@
     },
     {
       "name": "agent-authorization-harness",
-      "description": "에이전트/MCP 도구/에이전트간(A2A) 시스템을 만들거나 배선할 때, 행동 아래에 깔리는 '머신 아이덴티티·인가(authorization)' 아키텍처를 벤더 무관하게 설계하고 적대적으로 red-team하는 도메인 무관 멀티 에이전트 하네스. 핵심 메시지는 '네트워크·공유 API 키·LLM의 자체 판단을 접근 결정의 근거로 신뢰하지 말고, 최소 권한(least-privilege) 스코프와 감사 대상(audience-bound) 단명 토큰, 사용자 위임(on-behalf-of)과 deny-by-default 집행을 설계로 못 박은 뒤 confused-deputy·토큰 재생/passthrough·스코프 크리프·무제한 위임을 적대적으로 검증한다'이다. 산출물은 인가 설계 + 위협/red-team 분석(advisory + 설계 산출물)이며, 특정 IdP/Keycloak/Athenz 배포가 아니다. 4단계로 진행한다: (Phase 0) 신뢰·스코프 모델링(Trust & Scope Modeling) — 참여자(subject/resource-owner·actor/agent·client·resource server·인증 authority(IdP) vs 인가 authority(PDP/resource server))를 열거하고 시스템이 접촉하는 모든 도구·리소스·에이전트를 매핑해 상호작용마다 실제로 필요한 최소 스코프를 배정하고 신뢰 경계를 긋는다(승인 게이트) → (Phase 1) 그랜트·위임 설계(Grant & Delegation Design) — 장수 공유 자격증명 대신 단명·audience-bound(RFC 8707 resource/aud) 스코프 토큰을, 사용자 위임은 토큰 교환(RFC 8693 subject_token/actor_token/may_act)으로 매 신뢰 경계마다 fresh exchange하고 절대 passthrough하지 않으며, 표준 그랜트(OAuth 2.1·ID-JAG 크로스앱)를 자체 키보다 우선한다 → (Phase 2) 동의·집행 설계(Consent & Enforcement Design) — 인증(IdP=누구인가)과 인가(resource server/PDP=허가되는가)를 분리하고 deny-by-default 정책·민감/비가역 스코프의 사람 동의 게이트·모든 resource server에서의 end-to-end audience 검증·감사 로깅을 설계한다(인가는 LLM에 위임하지 않고 외부 시스템에서) → (Phase 3) 적대적 인가 검증(Adversarial Authorization Verification) — confused-deputy(prompt-injection→특권 도구 호출, ASI01→ASI03)·토큰 재생/passthrough·과대/ambient 스코프·무제한 위임 체인·네트워크를 신뢰로 착각하는 안티패턴을 상대로 모델이 어디서 버티고 어디서 무너지는지 위협 분석을 낸다(산출물은 분석이지 통과하는 라이브 배포가 아니다). 근거는 published Standards-Track RFC 8707(Resource Indicators)·RFC 8693(Token Exchange)와 OWASP LLM06:2025(Excessive Agency)로 discipline은 HIGH 신뢰이고, ID-JAG(draft-ietf-oauth-identity-assertion-authz-grant-04)·MCP Authorization draft·A2A spec·OWASP Agentic ASI01/ASI03는 in-flux 초안이라 framing은 MEDIUM으로 등급·명시하며(벤더 Okta XAA는 예시일 뿐 필수 아님), '개선 N% 보장'을 쓰지 않고 최소권한 설계도 스코프 내 prompt-injection엔 여전히 뚫릴 수 있음을 정직하게 못 박는다. 경계: 런타임 콘텐츠·행동 레일(jailbreak·PII·toxicity·출력·과대행위 행동 제한)로 요청 시점에 무엇을 통과시킬지 집행하는 일은 llm-guardrails-harness(공유 이음새=OWASP LLM06 과대행위 — guardrails는 행동 한계를 요청 시점에 집행하고 이 하네스는 그 한계가 존재·최소권한이 되게 하는 자격/스코프/위임을 설계, 합성하되 중복 아님), 사람↔에이전트의 업무 분업·감독·핸드오프 설계는 human-agent-teaming, 파이프라인/릴리스 인프라의 policy-as-code(OPA·terraform plan·trust-tier)는 cicd-harness, 코딩 에이전트 자신의 파일수정 권한·샌드박스 거버넌스는 code-as-harness, 일반 API/엔드포인트 구현·실행검증은 backend-harness, 사후 프로덕션 인시던트 탐지·국소화·RCA는 ops-harness, 코드 착수 전 상류 산출물 핸드오프 게이트 검수는 review-harness, 오프라인 LLM-as-a-judge 출력 채점은 eval-harness, 작업을 병렬화할지·토폴로지 결정은 agent-orchestration의 몫이며 본 하네스는 '만들어지는 에이전트/도구/A2A 시스템의 머신 아이덴티티·인가 모델을 설계하고 적대적으로 검증'하는 사전예방 설계+red-team에 특화한다. 다른 마켓플레이스 플러그인에 의존하지 않는 독립 플러그인이다.",
+      "description": "에이전트·MCP 도구·A2A 시스템의 머신 아이덴티티·인가(authorization) 아키텍처를 벤더 무관하게 설계하고 적대적으로 red-team하는 멀티 에이전트 하네스. 신뢰·스코프 모델링 → 그랜트·위임 설계(단명 audience-bound 토큰·RFC 8693 토큰 교환) → 동의·집행(인증/인가 분리·deny-by-default·audience 검증) → 적대 검증(confused-deputy·토큰 재생·스코프 크리프)의 4단계를 매 단계 승인 게이트로 진행한다. 산출물은 인가 설계와 위협 분석이지 특정 IdP 배포가 아니며, 근거 등급(RFC·OWASP는 HIGH, MCP·A2A 초안은 MEDIUM)을 명시한다.",
       "source": "./plugins/agent-authorization-harness",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "author": {
         "name": "seungah.hong"
       },
@@ -493,9 +493,9 @@
     },
     {
       "name": "ai-readiness-cartography",
-      "description": "git 저장소가 'AI 코딩 에이전트가 읽고 안전하게 기여할 수 있는 코드베이스'인지를 측정하고 개선하는 도메인 무관 단일 스킬. 자유 조합하는 세 모드 — ① 측정: score.py(stdlib-only)로 100점·9카테고리(E 검증 22/D 의존그래프 18/B 문맥품질 15/C 암묵지 12/H 피드백루프 9/A 네비게이션 8/F 신선도 8/I 환경재현 5/G 성과 3) + 3 blocking gate를 결정론 채점해 JSON 점수표·HTML 대시보드·ROI 가이드를 낸다(코드 수정 없음). ② 진단·개선: 그 측정을 센서로 2축(코드품질 Q/AI접근성 A) 진단 → 빌드 가드레일(의존 방향 물리 강제) → standalone 독립 실행 → 계획·개별 승인 게이트 뒤 코드 적용(위험 등급 S/M/L·고위험 구조 리팩터 opt-in·리네임은 AST/LSP 위임·behavior 센서 관측) → 수용 증명·재측정을 4 에이전트(opus)로 수행. ③ 코드 본문: legibility_scan.py census(등급 없음)를 seed로 주석·명명·구조를 진단하고 3게이트 승인(계획→개별→최종) 뒤에만 단계별로 수정(C0 오도 주석 삭제 → C2 안전 리네임 → C1 계약·'왜' 주석 → C3 구조 opt-in). 집계는 순수 가중합이 아니라 gating — Gate-1 참조 무결성·Gate-2 실행 검증 실패 시 상한 AI-Fragile, Gate-3 아키텍처 강제(개선 모드 전용) 실패 시 상한 AI-Assisted. 등급은 단일 5밴드(AI-Native/Ready/Assisted/Fragile/Hostile). 정직성: 모든 지표에 auto/heuristic/manual 라벨 + 근거 등급, '개선 N% 보장' 금지, 구조 리팩터 효과는 추론(측정 아님)·'테스트 통과 ≠ 동작 보존', 본문 층은 등급을 만들지 않고 마크업·테스트 설명 신호는 census 전용(개입 없음·자동 ARIA/alt/어서션 생성 금지). 위험은 경고하되 감수 결정은 사용자이며(승인된 고위험 변경의 조용한 보류 금지·무테스트는 거부가 아니라 행위 센서 승격 사유), 커밋은 하지 않는다(git-harness 핸드오프). 근거: ORACLE-SWE 2604.07789(E 최상위)·LocAgent 2503.09089(D 기계 판독 그래프)·ETH Zurich 2602.11988(보유율 폐기)·USENIX 2025 slopsquatting(Gate-1)·RepoMirage 2605.26177(structure-first anchor) + 개선 원리 flex.team 5부작·arXiv:2505.10443·2602.11481·2306.09896.",
+      "description": "git 저장소가 AI 코딩 에이전트가 읽고 안전하게 기여할 수 있는 코드베이스인지를 결정론 스코어러로 측정하고 승인 게이트 뒤에 개선을 적용하는 단일 스킬. ① 측정(score.py 100점·9카테고리·3 gate → JSON 점수표·HTML 대시보드·ROI 가이드) ② 진단·개선(2축 진단 → 빌드 가드레일 → standalone → 계획·개별 승인 뒤 코드 적용 → 재측정) ③ 코드 본문(주석·명명·구조 census → 3게이트 승인 뒤 단계별 수정)의 세 모드를 자유 조합한다. 위험은 경고하되 수용은 사용자가 결정하고, 커밋하지 않는다.",
       "source": "./plugins/ai-readiness-cartography",
-      "version": "0.6.0",
+      "version": "0.6.1",
       "author": {
         "name": "seungah.hong"
       },
@@ -524,9 +524,9 @@
     },
     {
       "name": "token-efficiency",
-      "description": "Claude Code 세션 JSONL 로그를 파싱해 레포 단위 토큰/컨텍스트 효율을 정량 측정·시각화하고 $ 절감안을 내는 결정론적 단일 스킬. 4축 가중 점수(cache 35 / redundancy 30 / density 15 / tool 20, 각 축에 근거 등급 CONFIRMED/PLAUSIBLE/HEURISTIC)와 8개 비효율 탐지기(context-bloat·giant-tool·poor-cache·duplicate·subagent + 신규 stale-observation·cache-invalidation-churn·read-exploration-heavy), 세션별 실제 모델가 기반 낭비 추정, 오프라인/CSP 안전 인라인-SVG HTML 대시보드를 낸다. 외부 스킬 improve-token-efficiency를 기반으로 deep-research(5 세션 적대 검증)의 2025~2026 1차 근거로 개선했다 — PRICING 현행화(Opus $15/$75 폐기가→$5/$25·Fable 5 추가·캐시배수 입력가 파생 read 0.1×/write5m 1.25×/write1h 2×, Anthropic 캐싱 1차), giant-tool fix 교정(blind head/tail 절단 금지: Squeez 2604.04979 Last-N 0.05 recall), 신규 탐지기 3종(AgentDiet 2509.23586 궤적낭비 3분류 expired·session-2 exact-prefix churn·arXiv:2606.14066 읽기가 코딩 에이전트 토큰 76.1%), redundancy 축 0.20→0.30 상향, model-routing을 세션별 후보 판별로 재조작화(cost-of-pass 2508.02694 작업 의존·플랫 30% 폐기), compact 권고에 캐시-깨짐 caveat(ACON 2510.00615 history 압축은 KV/prompt 캐시를 깸), 점수=효율 프록시(≠cost-of-pass·task success 미관측) 정직성 명시, 대시보드 CDN 제거(인라인 SVG), test_efficiency 신설(60건, 양방향 가격 동기화·탐지기 회귀·세션별 모델가·사이드체인 배제·경로 인코딩). 측정·시각화·제안만 하고 코드를 자동 수정하지 않는다. 경계: 정적 저장소 AI 준비도는 ai-readiness-cartography(런타임 세션 로그 vs 정적 구조·상보), 새 코드·PR 리뷰(frontend/git-harness), 하네스 진단(meta-harness), AI 생성물 judge(eval-harness), 컨텍스트 조립(context-engineering)은 범위 밖.",
+      "description": "Claude Code 세션 JSONL 로그를 파싱해 레포 단위 토큰/컨텍스트 효율을 정량 측정·시각화하고 $ 절감안을 내는 결정론적 단일 스킬. 4축 가중 점수(cache·redundancy·density·tool)와 8개 비효율 탐지기, 세션별 실제 모델가 기반 낭비 추정, 오프라인/CSP 안전 HTML 대시보드를 낸다. 점수는 효율 프록시이지 cost-of-pass가 아니며, 측정·제안만 하고 코드를 자동 수정하지 않는다.",
       "source": "./plugins/token-efficiency",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "author": {
         "name": "seungah.hong"
       },
@@ -583,9 +583,9 @@
     },
     {
       "name": "methodology-advisor",
-      "description": "팀의 현행 개발·회사·사업 프로세스를 먼저 진단(intake)하고, frontend-harness의 grill-me 인터뷰를 개발 방법론 선택에 특화·확장한 도메인 무관 다각도 문진(개발/회사/사업 3축·한 번에 한 질문·답변 분기·충돌 감지)을 거쳐, 여러 개발 방법론을 내장한 카탈로그와 컨틴전시(맥락 적합) 프레임워크에 근거해 상황에 맞는 방법론을 순위 shortlist + 1순위로 제안하는 인터랙티브 멀티 에이전트 하네스. 4단계(Phase 0 현행 진단 → Phase 1 다각도 문진 → Phase 2 방법론 매칭·제안 → Phase 3 적대적 적합성 검증) + 4 에이전트(process-cartographer/context-interviewer/methodology-matcher/fit-critic)로 진행하며 매 Phase 승인 게이트를 둔다. 첫 행동은 반드시 '현재 개발/회사/사업 프로세스가 어떻게 구성되어 있는지' 진단 질문이다(발명 금지·현행 먼저 관측). 내장 방법론(14): Waterfall/V-Model, Scrum, Kanban, Scrumban, XP, Lean SD, Crystal, FDD, DSDM, Shape Up, 스케일드 애자일(SAFe/LeSS/Nexus), Spotify model(복제 주의), DevOps/DORA/CD, Wagile·하이브리드 — 각 방법론의 핵심 원칙·의식·아티팩트·적합 조건·안티패턴을 담는다. 선택 근거는 Cynefin·Stacey matrix·Boehm & Turner home ground 5인자(risk-based balancing 5단계)로 맥락 적합성(팀 규모·요구 불확실성·규제/안전·릴리스 주기·조직 성숙도·사업 모델)을 매핑한다. 정직성: 방법론 우열이 아니라 맥락 적합성·트레이드오프·안티패턴, 은탄환·'N% 개선' 약속 금지(수치는 SOURCE-TIER·출처와 함께 관찰값으로만), 제안만 하고 조직 변경을 자동 실행하지 않는다(도입은 사람 결정). 근거는 deep-research 하네스로 24소스·75주장을 적대 검증(70 confirmed/5 refuted; DORA 2025 채택률 90%·Boehm-Turner 위험기반 5단계 교정 반영, PRIMARY: Boehm&Turner IEEE 2003·Clarke&O'Connor 2012·Ahimbisibwe 2015·DORA 2024/2025). 산출물은 사용자가 저장을 선택할 때만 `.claude/_docs/<슬러그>/`에 기록한다. 경계: 기획문서(PRD)·사용자 스토리 작성(product-spec-harness), 하네스 생성(harness-generator)·진단(meta-harness), 상류 핸드오프 게이트 검수(review-harness), 사람↔AI 에이전트 협업 설계(human-agent-teaming), AI 에이전트 병렬화(agent-orchestration), 코드 구현/리뷰/커밋(frontend/backend/git-harness)은 범위가 아니며 '사람 개발팀이 어떤 개발 방법론/프로세스로 일할지'를 현행 진단 → 다각도 문진 → 근거 기반 제안하는 데 특화한다. 다른 마켓플레이스 플러그인에 의존하지 않는 독립 플러그인이다.",
+      "description": "팀의 현행 개발·회사·사업 프로세스를 먼저 진단하고, 다각도 문진(3축·한 번에 한 질문) 뒤 내장 방법론 카탈로그(14종)와 컨틴전시 프레임워크(Cynefin·Stacey·Boehm-Turner)에 근거해 상황에 맞는 개발 방법론을 순위 shortlist + 1순위로 제안하는 인터랙티브 멀티 에이전트 하네스. 현행 진단 → 문진 → 방법론 매칭 → 적대적 적합성 검증의 4단계를 매 Phase 승인 게이트로 진행한다. 방법론 우열·은탄환·N% 개선 약속을 하지 않고 트레이드오프와 안티패턴을 함께 내며, 도입은 사람이 결정한다.",
       "source": "./plugins/methodology-advisor",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "author": {
         "name": "seungah.hong"
       },
@@ -611,9 +611,9 @@
     },
     {
       "name": "meta-prompting-harness",
-      "description": "메타 프롬프팅(AI에게 입력할 프롬프트를 AI가 최적화해서 생성하게 하고 그 결과 프롬프트를 새 컨텍스트에 주입해 실제 작업을 돌리는 기법)을 4단계 인터랙티브 멀티 에이전트로 수행하는 도메인 무관 하네스. 널리 쓰이는 메타 프롬프팅 실천 방법론을 각 기법마다 1차 문헌과 대조해 근거 등급을 붙였다. 프로세스: Phase 0 인테이크(무엇을 만들지 + 어느 실행 환경에 넣을 프롬프트인지 한 번에 한 질문씩 확정, 컨텍스트는 있으면 정제 없이 붙여넣는 선택지·덤프 강요 안 함) → Phase 1 질문 유도(context-elicitor: 빠진 요소를 AI가 한 번에 하나씩 되묻기·번호 선택지·직전 답이 다음 질문 결정, 전부 위임 방지) → Phase 2 성공·검증 조건 명시(success-definer: 외부 성공 기준 대비 검증) → Phase 3 환경 맞춤 깎아내기(prompt-carver: execution-environments·carving-principles 참조, 큰그림→상한 내 축소) → Phase 4 적대 점검 + fresh context 주입 안내(prompt-critic: 모호·과대·환경 부적합·미검증·전부위임 점검, 완성 프롬프트만 새 창 주입). 4개 에이전트(context-elicitor/success-definer/prompt-carver/prompt-critic, 모두 model opus)·매 Phase 승인 게이트. 근거 등급(핵심 정직성): STRONG — 메타프롬프팅이 직접 프롬프팅을 상회(Suzgun&Kalai 2401.12954·OPRO 2309.03409·PromptAgent 2310.16427, 단 모델/과제 조건부·전이 불안정), 생성 전 명확화 질문이 정확도 상승(ClarifyGPT FSE2024·Orchid 2604.21505, 단 명확화는 코딩/추론과 분리된 모델 의존 역량이라 명시 유도 필요), 성공+검증 조건 명시는 Anthropic 공식 권고(외부 기준 대비 검증·순진한 자기수정 아님), fresh 컨텍스트 주입은 lost-in-the-middle 2307.03172·Chroma context-rot로 뒷받침(방향성 추론), 은탄환 아님도 Anthropic 공식. report-only(1차 근거 약함·folklore로만 제시) — 실행 환경 맞춤 변환·큰그림→축소는 실증 근거 생존 못 함. REFUTED(미사용) — '메타프롬프팅=지휘자가 전문가 인스턴스 생성' 프레이밍(0-3)·'LLM은 스스로 명확화 불가'(1-2). 정직성 가드: 최적화 프롬프트는 자기보고·불안정하므로 보편 법칙으로 서술 금지, 전부 위임 금지, AI가 깎은 프롬프트는 사용자 도메인 검증 필수, 이 하네스는 프롬프트 생성만 하고 실제 실행(새 창 주입·/goal·이미지 생성)은 사용자가 한다, 커밋 안 함. 경계: 이미 목표가 있는 컨텍스트 페이로드 조립·압축·리트리벌·Claude 에이전트 하네스/스킬 자체를 생성·진단·개선·기획문서(PRD)·사용자 스토리 작성·계획/방법론 정렬 인터뷰·자율 반복 루프 실행·코드 구현/리뷰/커밋은 범위 밖이며, 다른 도구에 주입할 '지시 프롬프트 자체'를 질문 유도·성공조건·환경 맞춤으로 깎아내는 데 특화한다. 다른 플러그인을 참조하거나 의존하지 않고 자족하는 독립 플러그인이다(references 3종·근거 dossier 내재화).",
+      "description": "메타 프롬프팅(AI에게 입력할 프롬프트를 AI가 최적화해 생성하고 그 결과를 새 컨텍스트에 주입해 실제 작업을 돌리는 기법)을 4단계 인터랙티브 멀티 에이전트로 수행하는 하네스. 인테이크(목표·실행 환경을 한 번에 한 질문씩) → 질문 유도 → 성공·검증 조건 → 환경 맞춤 깎아내기 → 적대 점검으로 진행하며 매 Phase 승인 게이트를 둔다. 각 기법에 1차 문헌 대조 근거 등급을 붙였고, 프롬프트 생성만 하며 실행은 사용자가 한다.",
       "source": "./plugins/meta-prompting-harness",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "author": {
         "name": "seungah.hong"
       },
@@ -637,9 +637,9 @@
     },
     {
       "name": "org-transformation-harness",
-      "description": "회사/팀을 목적조직·AI native 방향으로 바꾸려는 실무자·리더를 인터뷰해, 현행 조직을 진단하고 목표(목적조직·스프린트/일하는 방식·AI native)를 질문으로 함께 구체화한 뒤 '무엇부터 시작할지'를 단계별 할 일로 정리하는 도메인 무관 인터랙티브 멀티 에이전트 하네스. 4단계(Phase 0 현행 조직 진단 → Phase 1 목표 구체화 문진(한 번에 한 질문·답변 분기·목표 임의 정의 금지) → Phase 2 현재→목표 간극 진단표+우선순위 할 일(영향·노력·의존성)+3~4단계 로드맵 → Phase 3 적대적 검증+경영진/팀 공유용 요약)로 진행하며 매 Phase 승인 게이트를 둔다. 첫 행동은 반드시 '지금 회사/팀이 어떻게 구성되어 일하는지' 진단 질문이다(목표를 먼저 그리지 않고 현행을 먼저 관측·발명 금지·지금 할 수 있는 업무·강점도 함께 관측). 산출물은 간극 진단표, '지금 바로 시작 가능한 것'을 맨 위로 정렬한 우선순위 할 일 리스트, 단계별 실행 로드맵, 공유용 5~7줄 요약. 근거는 조직 변화관리(current-state diagnosis)·목적조직(target/product operating model·Team Topologies)·AI native 도입·애자일 일하는 방식·변화 시퀀싱(quick-wins/additive-first)·우선순위화(RICE/ICE/WSJF)를 /deep-research(6각도)로 2023~2026 1차 문헌 적대 검증해 근거 등급(STRONG 조건부/MEDIUM 컨센서스/report-only folklore)을 부여했다. 정직성 가드레일: '목적조직/AI native면 다 해결된다'는 은탄환·'N% 개선' 약속 금지(수치는 출처·등급과 함께 관찰값으로만 — DORA 2024/2025 PRIMARY상 AI 도입은 개인 체감 생산성↑과 시스템 delivery 안정성↓이 갈리며 이득은 팀 조건(테스트·피드백·플랫폼)에 좌우, 'GenAI 파일럿 95% 실패'는 반박된 유행 수치라 미인용), 목적조직·AI native를 AI가 임의 정의하지 않고 질문으로 함께 정의, 현행 미관측은 '미확인'으로 남김(발명 금지), 잘 되는 현행 보존하는 additive-first·quick-wins 우선, 조직 변경 자동 실행 안 함(제안만·도입은 사람 결정·점수화 안 함·커밋 안 함). 4개 에이전트(org-cartographer/vision-elicitor/gap-planner/plan-critic, 모두 model opus). 경계: 개발 방법론(Scrum/Kanban) 선택·추천, 기획문서(PRD)·사용자 스토리 작성, 하네스 자체 생성·진단, 사람↔AI 협업 토폴로지 설계, 작업을 여러 AI 에이전트로 병렬화, CI/CD·IaC 구축, 코드 구현·리뷰·커밋은 범위가 아니며, '사람 조직의 목적조직·AI native 전환을 현행 진단→목표 구체화→간극→실행 할 일'로 정리하는 데 특화한다(명명된 개발 방법론 선택과 달리 이 하네스는 조직 목표 전환 실행계획). 경계는 범주로만 서술하고 다른 마켓플레이스 플러그인을 이름으로 참조하거나 의존하지 않는 독립 플러그인이다.",
+      "description": "회사/팀을 목적조직·AI native 방향으로 바꾸려는 실무자·리더를 인터뷰해 현행 진단 → 목표 구체화 문진 → 간극 진단·실행계획 → 적대 검증·공유 요약의 4단계로 \"무엇부터 시작할지\"를 단계별 할 일로 정리하는 인터랙티브 멀티 에이전트 하네스. 첫 행동은 반드시 현행 조직 진단이고 목표를 AI가 임의로 정의하지 않으며 매 Phase 승인 게이트를 둔다. 은탄환·N% 개선 약속·점수화를 하지 않고 지금 바로 시작 가능한 것을 맨 위에 두며, 도입은 사람이 결정한다.",
       "source": "./plugins/org-transformation-harness",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "author": {
         "name": "seungah.hong"
       },
@@ -665,9 +665,9 @@
     },
     {
       "name": "spec-to-figma-harness",
-      "description": "유저스토리·인수조건(AC)을 입력으로 받아, 프론트엔드가 되묻지 않고 개발할 수 있도록 'Figma에 무엇을 어떻게 반영해야 하는지'를 설계해 디자이너·FE 핸드오프 패키지로 내보내는 도메인 무관 인터랙티브 멀티 에이전트 하네스. 한 문장 원칙은 '기획서의 시나리오는 상태 프레임으로, 기획서의 규칙은 레이어 어노테이션으로'이며, 4단계(Phase 0 스펙 인테이크(한 번에 한 질문·스토리 없이 화면부터 설계 금지) → Phase 1 AC를 시나리오/규칙으로 이분 분해하고 상태 카탈로그 6축(데이터·진행/전이·입력/검증·권한/세션·콘텐츠 경계·반응형)을 역방향 호명해 누락 상태를 도출 → Phase 2 페이지=에픽/섹션=스토리/프레임=상태 명명·프레임 목록·프로토타입 flow·Variables/컴포넌트/Auto Layout 요구·Code Connect·Ready for dev 계획·기존 파일 델타(읽기 전용) → Phase 3 레이어별 어노테이션 6분류(인터랙션·데이터 바인딩·검증 규칙·모션·트래킹·참조/예외)를 복붙 가능한 문안으로 작성하고 확정(어노테이션)/논의중(댓글) 분리 → Phase 4 FE 1인칭 적대 검증·준비도 owner별 판정·남은 질문 목록)로 진행하며 매 Phase 승인 게이트를 둔다. 정직성 가드레일 5종: INV-1 발명 금지(사용자 노출 문구 원문·API 필드·트래킹 이벤트명·수치 경계·권한 정의는 입력에 있는 것만 쓰고 없으면 '[기획 확인 필요]' + 되물음 — 지어낸 마이크로카피는 디자이너가 그리고 FE가 구현해 틀린 값이 스펙이 된다), INV-2 커버리지 ≠ 품질('AC 전수 매핑하면 FE 질문 0'·'재작업 N% 감소' 류는 측정 근거가 없어 인용 금지, 점수화·백분율 금지), INV-3 디자인 결정 대행 금지(무엇이 필요한가만 명세하고 레이아웃·비주얼·톤은 디자이너 몫이며 Figma 파일을 생성·수정하지 않고 기존 파일은 읽기 전용 참조만), INV-4 도구 제약 정직(Code Connect = Dev/Full seat + Organization/Enterprise, 어노테이션 생성 = Full seat + 편집 권한, Ready for dev view·Completed = Org/Enterprise — 팀이 못 쓰는 기능을 전제하지 않고 대체 경로 병기), INV-5 되물음은 1급 산출물(빈칸이 있는 정직한 문서가 채워진 추측보다 낫다). 근거는 Figma 공식 문서(Annotations·Dev status·Code Connect·Variables·MCP 도구)를 GOLD로 검증하고, 티켓 ID 명명·어노테이션 vs 댓글 분기는 공식 근거가 없는 실무 관행으로만 표기하며, 핸드오프 품질↔재작업의 피어리뷰 근거는 확인 실패임을 밝힌다(인용 가능한 유일한 근접 수치는 Telerik/Progress 2025 자기선택 표본 n=225의 상관관계뿐). 4개 에이전트(state-cartographer/figma-blueprinter/annotation-writer/handoff-critic, 모두 model opus). 경계: 이미 존재하는 디자인의 누락·사각지대를 읽기 전용으로 검수해 게이트 판정하기, Figma 링크에서 디자인 컨텍스트를 추출해 코드 작업용 파일로 내리기, 기획안에서 PRD·유저스토리를 처음부터 작성하기, 인수조건을 테스트 계층·QA 시나리오로 전개하기, 화면을 코드로 구현·리뷰·커밋하기는 범위가 아니며, '요구는 있는데 디자인이 무엇이어야 하는가'를 생성하는 데 특화한다. 경계는 범주로만 서술하고 다른 마켓플레이스 플러그인을 이름으로 참조하거나 의존하지 않는 독립 플러그인이다(references 5종 전부 내재화·단독 설치로 동작).",
+      "description": "유저스토리·인수조건(AC)을 입력으로 받아, 프론트엔드가 되묻지 않고 개발할 수 있도록 Figma에 무엇을 어떻게 반영해야 하는지를 설계해 디자이너·FE 핸드오프 패키지로 내보내는 인터랙티브 멀티 에이전트 하네스. 기획서의 시나리오는 상태 프레임으로, 규칙은 레이어 어노테이션으로 옮긴다 — AC 분해·상태 카탈로그 역방향 호명 → 반영 설계도 → 어노테이션 스펙 → FE 1인칭 적대 검증의 4단계를 승인 게이트로 진행한다. 입력에 없는 문구·수치·필드를 발명하지 않고 되물음을 1급 산출물로 두며, Figma 파일을 만들거나 고치지 않는다.",
       "source": "./plugins/spec-to-figma-harness",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "author": {
         "name": "seungah.hong"
       },
@@ -695,9 +695,9 @@
     },
     {
       "name": "agentic-code-review-harness",
-      "description": "이미 만들어진 코드 변경(PR·브랜치 diff·로컬 변경) — 특히 AI 에이전트가 작성한 것 — 을 수신자(리뷰어)의 자리에서 읽고 '머지해도 되는지'를 근거와 함께 판정하는 도메인 무관 인터랙티브 멀티 에이전트 하네스. 한 문장 원칙은 '코드를 쓰는 비용은 싸졌지만 그것을 믿어도 되는지 판단하는 비용은 그대로다'이며, 5단계(Phase 0 리뷰 인테이크(한 번에 한 질문·대상 diff 없이 판정 금지) → Phase 1 리스크 티어링: blast radius·longevity·comprehension distribution 3축 관측 + 경로 기반 위험 표면 감지로 파일군별 T0~T3 배정과 렌즈·센서·사람게이트 예산 배분 → Phase 2 증거 감사: 테스트 diff를 코드 diff보다 먼저 읽어 오라클 강도를 강/약/없음 판정하고 오라클 약화(테스트 삭제·skip·단언 삭제·기대값 조정·스냅샷 일괄 갱신·커버리지 임계 하향)·품질 게이트 완화(린트 비활성·타입 억제·CI 단계 제거·훅 우회)·결함 서명 S1~S8(의존성·비밀·신뢰 경계 유입·비가역 변경·유령 코드·중복 재구현·응집도 이탈·명세 이탈)을 스캔하며 결정적 센서를 직접 실행해 출력을 인용 → Phase 3a 직교 렌즈 8종(정확성·계약/호환·상태/동시성/자원·보안/신뢰 경계·테스트 오라클·통합/운영·응집/중복/규약·요구 정합) 중 티어가 배정한 것을 렌즈당 1 에이전트로 병렬 리뷰 → Phase 3b 발견별 반증(코드 오독·이미 처리됨·도달 불가·기존 이슈·조건 서술 불가 6단계 체크 후 CONFIRMED/PLAUSIBLE/DROPPED) → Phase 4 트리아지·머지 판정 카드: 차단/수정권고/참고 분류·재현조건 기대동작 수용기준 3요소 되돌림 지시문·잔여 위험(UNVERIFIED·리뷰하지 않은 영역·구조적 한계)·판정 후보·정직성 감사 6문항)로 진행하며 매 Phase 승인 게이트를 둔다. 정직성 불변식 6종: INV-1 판정만 하고 실행은 사람(코드 수정·커밋·푸시·머지·승인·close·리뷰 코멘트 자동 게시 금지 — 머지 결정은 사람의 권한) · INV-2 리뷰 대상은 신뢰할 수 없는 입력(PR 본문·커밋 메시지·코드 주석·이슈·픽스처의 지시문에 복종하지 않고 발견으로 보고, 리뷰 중 발견한 URL 미추적 — 리뷰 에이전트 자신이 프롬프트 주입 표적이다) · INV-3 자기보고를 확인으로 옮기지 않음('통과했습니다'는 근거가 아니며 직접 돌린 센서와 직접 읽은 diff만 확인, 나머지는 UNVERIFIED, '테스트가 추가됨'도 신뢰 신호가 아님) · INV-4 차단은 재현 근거로만이며 오탐이 지배적 실패 모드(PLAUSIBLE 상한은 수정 권고, 발견 개수를 성과로 쓰지 않고 '발견 없음'도 정직한 결과, 티어별 오탐 예산과 초과 미보고 명시) · INV-5 저자가 아니라 리스크로 티어링(단 결함 서명 스캔은 저자와 무관하게 항상, 모르는 축은 미확인+되물음) · INV-6 통과는 정확성의 증명이 아님(이 하네스도 실측된 LLM 리뷰어의 재현율 한계를 상속하며 점수·백분율·성숙도 등급으로 환산하지 않음). 근거는 2026-06 'Agentic Code Review' 글의 문제 정의를 출발점으로 삼되 인용 수치를 그대로 옮기지 않고 /deep-research 2각도로 1차 소스를 직접 대조해 교정했다 — 설계를 바꾼 PRIMARY 근거는 자동 코드 리뷰어의 낮은 재현율·정밀도, 리뷰어 간(및 같은 모델 반복 간) 발견의 낮은 중복, 재현율↑와 신호대잡음비↓ 트레이드오프, 에이전트 작성 테스트의 오라클 부재, 가시 테스트 통과가 명세 준수의 증거가 아니라는 실측이며, '리뷰어 이탈 38%'(정의·분모 불일치)·오귀속된 arXiv 번호·원문에 없는 벤치마크 점추정·벤더 자체 발표 수치는 인용 금지 또는 벤더 등급으로 강등했다. 효과 약속('결함 N% 감소'·'오탐 N% 이하'·'이 하네스를 쓰면 안전하다')을 하지 않는다. 5개 에이전트(risk-tierer/evidence-auditor/lens-reviewer/finding-refuter/merge-arbiter, 모두 model opus — 찾는 역할과 반증하는 역할을 의도적으로 분리). 경계: 내 변경을 수정 적용해 커밋 메시지·PR을 작성해 올리는 저작 워크플로우, 코드 착수 전 기획·디자인·계약·인수조건의 준비도 게이트 검수, 인수조건을 테스트 계층으로 전개해 새 테스트를 계획·생성하기, 저장소 전체를 정적 점수·성숙도로 측정하기, 프로덕션 장애 탐지·국소화·완화, 하네스·스킬 자체의 진단·개선은 범위가 아니며, '이미 존재하는 변경을 수신자 자리에서 읽고 머지 가능성을 판정'하는 데 특화한다. 경계는 범주로만 서술하고 다른 마켓플레이스 플러그인을 이름으로 참조하거나 의존하지 않는 독립 플러그인이다(references 5종 전부 내재화·단독 설치로 동작).",
+      "description": "이미 만들어진 코드 변경(PR·브랜치 diff·로컬 변경), 특히 AI 에이전트가 작성한 것을 리뷰어의 자리에서 읽고 머지해도 되는지 근거와 함께 판정하는 인터랙티브 멀티 에이전트 하네스. 리스크 티어링 → 증거 감사(테스트 오라클 강도·게이트 완화·결함 서명) → 직교 렌즈 병렬 리뷰 → 발견별 반증 → 트리아지·판정의 5단계를 매 단계 승인 게이트로 진행한다. 코드를 고치거나 커밋·푸시·승인·머지하지 않으며, 차단은 재현 근거로만 하고 발견 개수를 성과로 쓰지 않는다.",
       "source": "./plugins/agentic-code-review-harness",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "author": {
         "name": "seungah.hong"
       },
@@ -725,9 +725,9 @@
     },
     {
       "name": "comprehension-harness",
-      "description": "에이전트가 쓴 코드 변경을 사람이 실제로 이해하고 있는지 실측하고 그 이해를 자산으로 남기는 도메인 무관 인터랙티브 멀티 에이전트 하네스. 한 문장 원칙은 '이해했다는 느낌은 이해의 증거가 아니다'이며, 검증을 위한 이해(맞았나? 에이전트가 점점 잘한다)가 아니라 참여를 위한 이해(다음 아이디어를 낼 수 있는가)를 만든다. 6단계(Phase 0 이해 인테이크(**최대 두 번만 묻는다** — 대상 변경과 '다음에 이 영역에서 무엇을 할 것인가'=참여 목적. 사전지식·에이전트 역할·산출물 위치·동시 대기는 관측해 잠정값으로 카드에 적고 게이트 A에서 한 번에 정정받는다. 마찰 예산을 인테이크에서 소진하면 정작 예측 커밋에서 형식적 통과를 부른다. 사용자가 한 산출물을 지목해 들어오면 단축 경로 제시 — 축약해도 예측 커밋은 유지하고 '이해를 실측하지 않았다'를 적는다) → Phase 1 이해 부채 지도: 6표면(새 개념·새 불변식·지시하지 않은 결정·멘탈모델 충돌·경계 이동·되돌리기 어려움) 관측 + 참여 목적 기준 스코프 확정 + 설명서 공개 전 예측 문항 출제(자유서술·메커니즘/반증·구문 아닌 의미/입출력) + 확신 평정 수집 → Phase 2 설명서 공개: 배경(사전지식 맞춤·접힘) → 직관(장난감 입력) → 검증 훅(입출력 쌍·실행 명령·grep 좌표·반증 좌표) → [확인]/[추론] 분리 → 변경 순서 안내, 그리고 예측 채점을 함께 공개 → Phase 3 이해 검증 게이트: 자유서술 회상 + 모든 오답에 diff 좌표가 붙은 교정 피드백 + 실측 초기 성공률 70~80% 관리 + 지각–실제 격차 + 묻지 않은 범위 명시적 열거 → Phase 4 마이크로월드(조건부·opt-in): 값싼 대안 먼저 제안 → 조건(변화의 구체 특성이 학습 대상일 것·사람이 입력 공급하고 예측 커밋·같은 정보량의 정적 대안 동시 제시·추상 표상 하위군임을 고지)을 관측해 무엇이 어긋났고 그 근거가 어디까지만 말하는지 고지 → 만들지 말지는 사용자 결정(기본값은 안 만듦, 만들면 예측 커밋 포함 자체완결 HTML) → Phase 5 공유 이해(조건부·opt-in): 산출물에서 복원되지 않는 것만 펌프(버린 대안·지시받지 않은 결정·암묵 가정·나만 아는 것·팀도 틀릴 항목·열린 질문))로 진행하며 매 Phase 승인 게이트를 둔다. 정직성 불변식 7종: INV-1 검증이 아니라 참여를 위한 이해(결함·리스크·머지 가능 여부를 판정하지 않고 이상한 점은 열린 질문으로 적으며 코드를 수정하지 않고 커밋·푸시·PR 생성·승인·머지를 하지 않는다) · INV-2 자기보고는 센서가 아니다('이해했습니까 y/n'을 게이트 조건으로도 지표로도 쓰지 않으며 자가평가의 판별력 상한은 우연 50% 대비 54.5%·R²≈5.9%이므로 확신 평정은 오직 지각–실제 격차의 한쪽 항으로만 쓴다) · INV-3 설명은 예측 뒤에 공개된다(AI가 쓴 설명은 이해 도구이기 전에 과확신 장치이므로 사람의 예측이 제출된 뒤에만 공개하고 diff나 실행 가능한 검사로 대조할 수 없는 것을 단언하지 않으며 그 자체로는 어떤 게이트도 통과시키지 못한다) · INV-4 퀴즈 통과는 이해의 증명이 아니다(통과는 '물어본 것에 답했다'이며 점수·백분율·성숙도 등급을 만들지 않고 묻지 않은 범위를 반드시 열거한다) · INV-5 마이크로월드는 기본값이 아니라 명시된 가설(우리 도메인은 측정된 적이 없고 인접한 네 하위군 전부에서 메타분석 추정치가 0 또는 음수다 — 추상 표상 g=0.006 n.s.·정보학 g=0.108 n.s.·완전 학습자 통제 −0.120·이해/전이 결과변수 최소 · opt-in·값싼 대안 먼저·조건을 관측해 고지(스크러빙은 '근거 없음'이 아니라 점추정이 음수인 구간, 구조/배치는 정적 1장이 이김 d=1.30, 사전지식은 조건 아님)·폐기 전제·제품 코드에 섞지 않음. **단 조건은 게이트가 아니라 권고이며 사용자의 명시 요청을 기각하지 않는다** — 전이되지 않는다고 스스로 적어 둔 근거를 거부권으로 승격시키지 않는다(INV-6와 같은 규칙)) · INV-6 게이트는 경고이지 거부권이 아니다(못 맞혀도 사용자가 진행을 선택하면 따르고 무엇을 모르는 채로 가는지 한 줄로 알린다·승인된 진행의 조용한 보류 금지) · INV-7 효과를 약속하지 않는다(정직하게 주장 가능한 것은 리뷰되지 않던 변경을 사람이 읽고 답한 변경으로 바꾼다와 과확신을 낮추고 빈틈을 드러낸다 둘뿐이며 '이해를 보장한다'·'다음 아이디어를 빠르게 한다'·'결함 N% 감소'·'이해도 N% 향상'은 어느 것도 측정된 적이 없다). 근거는 2026년 강연 'Understanding is the new bottleneck'의 문제 정의와 기법 목록을 출발점으로 삼되 강연의 규정을 그대로 옮기지 않고 8각도 1차 문헌 수집 + 적대적 반증 2라운드로 대조해 교정했다 — 설계를 바꾼 PRIMARY 근거는 표준 단일 에이전트 설명이 '체감 이해 최고·객관 학습 최저'를 만들었다는 것(그래서 예측을 먼저 받고 설명은 나중에 공개), 시험을 치는 것만으로는 과확신이 안 꺼지고 채점 결과 열람이 꺼뜨렸다는 것(그래서 채점을 동시 공개), 설명이 과의존을 줄인 유일한 조건이 검증 비용을 낮춘 경우라는 것(그래서 성공 기준은 명료함이 아니라 검증 가능성), 초기 성공률 50% 이하에서 무피드백 인출은 효과가 사실상 0이라는 것(그래서 교정 피드백 강제), 퀴즈하지 않은 재료로의 전이가 신뢰할 수 없다는 것(그래서 묻지 않은 범위 열거), 목적 제작 스크러빙 마이크로월드의 유일한 선행 실증이 학습 null이자 사용률 null이었다는 것(그래서 조건 검사 후 opt-in), 커뮤니케이션 매체가 고유정보 풀링에 영향이 없었다는 것(그래서 공유 공간은 나만 아는 것을 뽑는 펌프로만)이다. 검증은 2라운드로 했고 2라운드에서 1라운드가 '아무도 1차를 열지 못했다'고 표시한 항목을 실제로 개봉해 설계를 교정했다 — 애니메이션 vs 정적 판정이 뒤집혔고(우위는 있으나 하네스가 만들려는 네 하위군 전부에서 0 또는 음수), literate diff는 '미확인'에서 '직접 시험되었고 결론에 도달하지 못했다'(n=50·저자 자인)로 정정되어 '위험한 것 먼저'만 근거를 인정하며, 예측 커밋의 근거가 새로 확보됐다(답을 산출할 때만 효과 g=0.65 vs 문항만 읽힘 0.22, 공개는 예측 직후, 확신 평정이 메커니즘 조건, 이득은 예측이 빗나간 항목에만). 또 문항을 A형(적혀 있는 것의 회상, 게이트 판정 가능)·B형(구조 도출, 이득 없음~해로움 d=−0.37, 빈틈 노출 전용)·C형(적용, 통과를 적용 능력의 증거로 금지)으로 3분류하고 cloze를 금지하며, 즉시 1회 게이트는 '약한 구성'이 아니라 '역전이 보고된 창'이라 A형으로 한정한다. 2라운드의 감사 레인(설계 규칙 재감사·인용 금지 재검증·완전성 비평)은 세션 한도로 실행되지 못했고 그 사실을 근거 정본에 명기한다. '5문항 중간 난이도'·'퀴즈=속도 조절기'·EEG 기반 cognitive debt 수치·'200~400 LOC 리뷰 시 결함 70~90% 발견'·철회된 메타분석·벤더 자체보고는 인용 금지 목록으로 강등했고, cognitive debt는 데이터 없는 입장 논문의 프레임으로만 쓴다. 전문 엔지니어가 diff를 읽고 이해했는지를 측정한 연구가 0건이고 40년 95개 코드 이해 실험 중 '이해가 무엇을 낳는가'를 조사한 것도 0건이라는 사실을 하네스 문서 본문에 적는다. 5개 에이전트(debt-cartographer/explainer-architect/comprehension-examiner/microworld-builder/shared-context-curator, 모두 model opus — 설명을 쓰는 역할과 이해를 캐묻는 역할을 의도적으로 분리해 문항이 설명서의 요약이 되는 것을 막는다). 경계: 변경을 읽고 결함을 찾아 머지 가능 여부를 판정하기, 코드 착수 전 기획·디자인·계약·인수조건의 준비도 게이트 검수, 실행 가능한 명세를 작성해 그 명세대로 구현·검증시키기, 인수조건을 테스트 계층으로 전개해 새 테스트를 계획·생성하기, 저장소 전체를 정적 점수·성숙도로 측정하기, 사람과 에이전트의 분업·자율 수준·감독 체계를 설계하기, 프로덕션 장애 탐지·국소화·완화, 하네스·스킬 자체의 진단·개선은 범위가 아니며, '사람의 이해를 산출물로 만들고 실측'하는 데 특화한다. 경계는 범주로만 서술하고 다른 마켓플레이스 플러그인을 이름으로 참조하거나 의존하지 않는 독립 플러그인이다(references 6종 전부 내재화·단독 설치로 동작).",
+      "description": "에이전트가 쓴 코드 변경을 사람이 실제로 이해하고 있는지 실측하고 그 이해를 자산으로 남기는 인터랙티브 멀티 에이전트 하네스. 이해 부채 지도와 설명 공개 전 예측 → 검증 훅이 붙은 설명서 공개와 예측 채점 → 자유서술 회상·교정 피드백으로 이해 검증과 묻지 않은 범위 열거 → (조건부) 마이크로월드 → (조건부) 공유 이해 추출의 단계를 매 단계 승인 게이트로 진행한다. 결함·머지 가능 여부를 판정하지 않고, 코드를 고치거나 커밋하지 않으며, 점수·백분율·등급을 만들지 않는다.",
       "source": "./plugins/comprehension-harness",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "author": {
         "name": "seungah.hong"
       },
@@ -754,9 +754,9 @@
     },
     {
       "name": "aeo-harness",
-      "description": "AEO(Agentic Engine Optimization) 하네스. 기술 문서를 **AI 코딩 에이전트**가 찾고·적은 왕복으로 읽고·정확히 쓸 수 있게 만드는 것을 결정론 센서로 측정하고 승인 게이트 뒤에 개선합니다. 검색엔진·답변엔진 노출 최적화(SEO/GEO)가 아닙니다 — 소비자가 사람이 아니라 코딩 에이전트입니다. Phase 0 인테이크(대상 문서·소비 경로) → 1 도달 조사(링크 지도·JS 없는 본문·`.md`/`Accept` 협상·죽은 링크·벤더 UA replay 오차단·robots.txt 보고·토큰 census) → 2 내용 조사(심볼별 예제·예제 실행 검증·시그니처 드리프트·거짓으로 판정되는 서술·낯섦 판정·주입 표면) → 3 개입 계획(T-A 위험0 거짓 제거 / T-B 검증 통과분만 / T-C report-only) → 4 재측정 수용 판정. 4에이전트(opus)·매 Phase 승인 게이트. 한 문장 원칙은 '에이전트가 문서에 도달했다는 것과 그 문서로 코드가 맞아졌다는 것은 다른 사건이다'.",
+      "description": "AEO(Agentic Engine Optimization) 하네스. 기술 문서를 AI 코딩 에이전트가 찾고·적은 왕복으로 읽고·정확히 쓸 수 있게 만드는 것을 결정론 센서로 측정하고 승인 게이트 뒤에 개선합니다. 도달 조사(링크 지도·JS 없는 본문·마크다운 협상·오차단·죽은 링크·토큰 census)와 내용 조사(심볼별 예제·예제 실행 검증·시그니처 드리프트·거짓 서술·주입 표면)를 분리해 재고, 재측정된 태스크 결과로만 수용을 판정합니다. 검색엔진·답변엔진 노출 최적화(SEO/GEO)가 아닙니다.",
       "source": "./plugins/aeo-harness",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "author": {
         "name": "seungah.hong"
       },
@@ -776,9 +776,9 @@
     },
     {
       "name": "ux-ai-workflow-harness",
-      "description": "UX 실무자(리서처·디자이너·UX 라이터·서비스 디자이너)가 **구체적인 UX 작업 하나에 생성형 AI를 어디까지 어떻게 쓸지** 단계별로 정하는 하네스. NN/g 'Using AI for UX Work' 스터디 가이드와 링크 원문 약 40편을 읽고 인용된 1차 연구와 대조해 근거 등급을 붙였습니다. Phase 0 인테이크(어떤 작업·누가 무엇을 결정하는지·참가자 원자료가 AI에 들어가는지) → 1 위임 지도(단계마다 학습·진실 기준·데이터 종류(행동 vs 발화)·책임·반복성·도메인·검수 역량 7개 테스트로 L1 AI에 넘김 / L2 AI 초안+사람 검수 / L3 사람이 한다 / L4 AI로 대체하지 않음 판정) → 2 맥락·지시 설계(CARE 프롬프트 + 방법론 규칙 묶음) → 3 AI 초안 점검(방법론별 실패 패턴 점검표) → 4 사람 체크포인트·인계(담당·팀 학습 장치·출처 라벨·데이터 보호). 4에이전트(opus)·매 Phase 승인 게이트. 한 문장 원칙은 'AI는 UX 작업을 압축할 수 있지만, 팀이 사용자에게서 배우는 단계는 대신할 수 없다'.",
+      "description": "UX 실무자가 구체적인 UX 작업 하나에 생성형 AI를 어디까지 어떻게 쓸지 단계별로 정하는 인터랙티브 멀티 에이전트 하네스. 위임 지도(단계마다 7개 테스트로 L1 AI에 넘김 / L2 AI 초안+사람 검수 / L3 사람 / L4 대체 안 함 판정) → 맥락·지시 설계 → AI 초안 점검(방법론별 점검표) → 사람 체크포인트·인계의 4단계를 승인 게이트로 진행한다. AI는 UX 작업을 압축할 수 있지만 팀이 사용자에게서 배우는 단계는 대신할 수 없다는 원칙 아래, 합성 데이터를 실제 사용자 결과로 표기하지 않고 참가자 데이터를 보호하며 효과 수치·점수를 만들지 않는다.",
       "source": "./plugins/ux-ai-workflow-harness",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "author": {
         "name": "seungah.hong"
       },

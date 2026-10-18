@@ -18,7 +18,7 @@
       {
         "text": "[Mode/combination-invariants] 조합 실행 시 순서는 ①→②→③ 고정이고, 코드를 바꾸는 구간은 ②(구조·계획/개별 승인 후)·③(본문·3게이트 후)이며 ①은 측정만(②→③ 순차·게이트·AST/LSP로 충돌 흡수). 저장소 층 등급은 score.py(①②가 공유)에서만 나오고 ③ census를 총점에 접붙이지 않으며, ②③의 적용 효과를 강제 probe 없이 저장소 층 델타·툴그래프 수치(LocAgent·RepoGraph)로 귀속하지 않는다(효과=추론·오귀속·Goodhart 금지). ②③ 산출물은 같은 .claude/ai-readability/{대상-slug}/ 하위로 정렬한다.",
         "passed": true,
-        "evidence": "SKILL.md '### 조합 실행 규약' 항목(순서 고정·score.py 1회·Gate-3 표기 일원화·②+③ 구조=② 소유·③ C3 끔·등급 미합산/오귀속 금지·경로 분리) + '산출물 배치' ③항(조합 시 {대상-slug}/ 하위). CLAUDE.md 변경 이력 v0.4.0 + Conventions. plugin.json description 조합 절. test_score.py '총점=9카테고리 합' 불변식(design_signals report-only 유지)."
+        "evidence": "SKILL.md '### 조합 실행 규약' 항목(순서 고정·score.py 1회·Gate-3 표기 일원화·②+③ 구조=② 소유·③ C3 끔·등급 미합산/오귀속 금지·경로 분리) + '산출물 배치' ③항(조합 시 {대상-slug}/ 하위). CHANGELOG.md v0.4.0 + Conventions. plugin.json description 조합 절. test_score.py '총점=9카테고리 합' 불변식(design_signals report-only 유지)."
       },
       {
         "text": "[Improve/mode2-gated-apply] ② 진단·개선 모드는 설계 전용이 아니라, Phase 3에서 설계를 위험 등급별(S 안전 추가형/M 설정/L 구조 리팩터) 계획표로 전개해 계획 승인 게이트 → 개별 승인 게이트 뒤에만 코드를 적용한다. 이동/리네임은 AST/LSP 도구 위임(문자열 치환 금지), behavior-guard가 변경 클래스별 센서를 실행·관측(generator≠checker), 'test≠동작 보존'이라 구조 리팩터(L)는 UNVERIFIED 상한·기본 opt-in(효과=추론·LLM 리팩터 19~35% 비등가), 커밋 안 함. 설계 에이전트(guardrail/standalone)와 acceptance-verifier는 파일을 직접 수정하지 않는다.",
@@ -118,12 +118,12 @@
       {
         "text": "[Orchestration/opus-and-routing] 진단·개선 모드는 4 에이전트(+ 적용 Phase 3에서 behavior-guard) 협업으로 SKILL.md의 모든 Agent 호출에 model:\"opus\"가 명시되고, 미해소 격차 시 해당 Phase(0/1/2/적용 Phase 3)로 라우팅하며 산출물을 .claude/ai-readability/{대상-slug}/에 둔다. 설계 에이전트는 파일을 직접 수정하지 않고, 코드 적용은 Phase 3 계획·개별 승인 게이트 뒤 오케스트레이터가 도구 위임으로 수행한다(커밋 안 함).",
         "passed": true,
-        "evidence": "SKILL.md '에이전트 팀' 표(Phase 3 Apply = 오케스트레이터 + behavior-guard) + '모든 Agent 호출은 model:\"opus\"' + Phase 0~4 각 Agent(model=\"opus\") + Phase 4 라우팅 + 산출물 배치. CLAUDE.md Structure(agents 모두 opus). 내재화 원칙 '제안만(사람 집행) — ②③은 승인 후 적용'."
+        "evidence": "SKILL.md '에이전트 팀' 표(Phase 3 Apply = 오케스트레이터 + behavior-guard) + '모든 Agent 호출은 model:\"opus\"' + Phase 0~4 각 Agent(model=\"opus\") + Phase 4 라우팅 + 산출물 배치. CLAUDE.md Conventions(모든 Agent 호출 model: opus). 내재화 원칙 '제안만(사람 집행) — ②③은 승인 후 적용'."
       },
       {
         "text": "[Authority/decision-and-sensor-escalation] 고위험 변경(②의 L 구조 리팩터·③의 C3)에서 위험은 경고하되 감수 결정은 사용자의 것이다 — opt-in·개별 승인된 항목을 에이전트가 회귀 위험을 이유로 조용히 보류·S/M로 강등·'제안만'으로 되돌리지 않고(승인 게이트≠에이전트 veto), 적용 중 새 차단 요인은 execute-or-escalate로 사용자에게 되돌린다. 자동 테스트 부재는 L/C3 거부 사유가 아니라 행위 센서(영향 표면 실제 실행·렌더로 baseline 대조·verify/run)로 승격하는 사유이며, 테스트·컴파일/타입체크·행위 실행·diff 어느 것으로도 관측 불가할 때만 사용자에게 결정을 넘긴다(조용한 거부 금지). UNVERIFIED는 관측 한계 라벨이지 적용 거부 신호가 아니다(red 센서만 롤백). 리팩토링 요청을 S 툴링으로 대체 충족하지 않고 요청 vs 적용 클래스를 정직히 보고한다(과소 인도 금지).",
         "passed": true,
-        "evidence": "SKILL.md 내재화 원칙 '결정 권한(위험은 경고, 수용은 사용자) — 승인된 고위험 변경을 임의 보류 금지' + Phase 3 3a('L 켜면 경고(경고이지 거부가 아니다)'·'센서 확인=등가성 관측 수단'·'리팩토링 요청이면 L 전면화')·3b(execute-or-escalate·추출/이동/분할 도구 부재 강등 아님·행위 센서·UNVERIFIED 조용한 보류 금지) + 마무리 '인도 정합 점검(요청 vs 적용 클래스)' + ③ B0(C3 켜면 경고·등가성 센서 승격)·B3·'B-모드 불변식'(결정 권한) + Common pitfalls('승인된 고위험 변경 조용히 보류(권한 전도)'·'리팩토링 요청을 S 툴링으로 대체'). references/intervention-catalog.md C3(거부 조건 (1) 등가성 센서·행위 센서 1급·적용 도구 수작업·게이트 결정 권한). agents/structure-cartographer.md(위험 경고≠veto·테스트 부재 거부 아님·행위 센서·등가성 관측 schema). agents/behavior-guard.md(C3 행위 센서 매트릭스·행위 센서 승격·UNVERIFIED는 관측 한계 라벨·센서 부재로 임의 보류 금지). CLAUDE.md Conventions '결정 권한' + Change History v0.4.1. plugin.json description '위험은 경고·수용은 사용자'."
+        "evidence": "SKILL.md 내재화 원칙 '결정 권한(위험은 경고, 수용은 사용자) — 승인된 고위험 변경을 임의 보류 금지' + Phase 3 3a('L 켜면 경고(경고이지 거부가 아니다)'·'센서 확인=등가성 관측 수단'·'리팩토링 요청이면 L 전면화')·3b(execute-or-escalate·추출/이동/분할 도구 부재 강등 아님·행위 센서·UNVERIFIED 조용한 보류 금지) + 마무리 '인도 정합 점검(요청 vs 적용 클래스)' + ③ B0(C3 켜면 경고·등가성 센서 승격)·B3·'B-모드 불변식'(결정 권한) + Common pitfalls('승인된 고위험 변경 조용히 보류(권한 전도)'·'리팩토링 요청을 S 툴링으로 대체'). references/intervention-catalog.md C3(거부 조건 (1) 등가성 센서·행위 센서 1급·적용 도구 수작업·게이트 결정 권한). agents/structure-cartographer.md(위험 경고≠veto·테스트 부재 거부 아님·행위 센서·등가성 관측 schema). agents/behavior-guard.md(C3 행위 센서 매트릭스·행위 센서 승격·UNVERIFIED는 관측 한계 라벨·센서 부재로 임의 보류 금지). CLAUDE.md Conventions '결정 권한' + CHANGELOG.md v0.4.1. plugin.json description '위험은 경고·수용은 사용자'."
       },
       {
         "text": "[Boundary/three-modes-and-neighbors] ① 측정 모드는 코드를 자동 수정하지 않고 측정·시각화만 내며, ②③은 제안·설계 후 승인 게이트(②=계획·개별, ③=3게이트) 뒤에 코드를 수정한다(커밋 안 함). 인접 도메인(backend-harness 기능 구현·meta-harness 하네스 진단·eval-harness judge·cicd-harness 파이프라인·spec-driven 명세·context-engineering 조립·frontend/git 완성 코드 리뷰·PR)과 경계를 명시한다. 측정/개선/본문은 별도 플러그인이 아니라 한 스킬의 세 모드다(자유 조합).",

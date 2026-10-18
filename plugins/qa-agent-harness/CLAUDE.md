@@ -8,42 +8,7 @@
 근거: **arXiv:2601.02454 "The Rise of Agentic Testing" · arXiv:2506.02943 CANDOR · arXiv:2606.18168 "All Smoke, No Alarm" ·
 arXiv:2504.16777 "Systemic Flakiness"**.
 
-사용자용 개요·사용법은 [README.md](README.md) 참조.
-
-## Structure
-
-```
-qa-agent-harness/
-├── .claude-plugin/
-│   └── plugin.json
-├── CLAUDE.md                          # (이 문서) 하네스 포인터 + Phase 요약 + 변경 이력
-├── README.md                          # 사용자용 개요·언제 쓰나·4단계 사용법·도구 경계·근거 자료
-├── agents/                            # 모두 model: "opus"
-│   ├── test-architect.md              # Phase 0 — 요구사항·변경·리스크 → 리스크 노출 등급·커버리지 우선순위 전략
-│   ├── scenario-designer.md           # Phase 1 — 스토리/API → 리스크 매핑 시나리오 + 명시적 오라클(살아있는 라이브러리)
-│   ├── test-engineer.md               # Phase 2 — 오라클 우선 생성·실행·로케이터/DOM 드리프트 점수화·로깅된 자가치유
-│   └── failure-triager.md             # Phase 3 — 결함/플래키/환경 분류·공유 근본원인 클러스터링·변경 기반 재실행 우선순위
-├── skills/
-│   └── qa-agent-harness/
-│       ├── SKILL.md                   # 오케스트레이터(진입점, Phase 0 전략 게이트 → 시나리오 → 실행 → 트리아지)
-│       └── references/
-│           ├── qa-agent-harness-principles.md   # 원칙·anti-pattern·결정 신호표
-│           └── qa-agent-harness-research.md      # 설계 근거 deep-research dossier(출처·등급·인용·CAVEAT·제외 범위·방법론)
-└── evals/
-    ├── evals.json                     # 수용 평가(design-conformance dry-run — 핵심 불변식 file:section 인용 채점)
-    └── trigger-eval.json              # 트리거 경계 평가(should_trigger 9 / should_not 16, 인접 도메인 reciprocal 가드)
-```
-
-## Phase 요약
-
-| Phase | 이름 | 호출 에이전트 | 핵심 산출물 | 게이트 |
-|-------|------|---------------|-------------|--------|
-| 0 | 리스크 기반 테스트 전략 (Risk-Driven Test Strategy) | test-architect | Test Strategy(리스크 노출 등급·커버리지 우선순위·판정 기준) | 승인 게이트 |
-| 1 | 시나리오 설계·살아있는 라이브러리 (Scenario Design) | scenario-designer | Scenario Library(리스크 매핑 시나리오 + 명시적 오라클) | 1줄 보고 |
-| 2 | 오라클 우선 생성 + 자가치유 실행 (Generation + Self-Healing Execution) | test-engineer | Execution Report(생성 테스트·실행 결과·점수화·로깅된 자가치유) | 파괴적/고위험 HITL 게이트 / 1줄 보고 |
-| 3 | 실패 트리아지 & 근본원인 (Intelligent Failure Triage) | failure-triager | Triage Report(결함/플래키/환경 분류·클러스터·재실행 우선순위) | 트리아지 사람 게이트 |
-
-최종 보고: `[QA-Agent-Harness] 리스크전략 {등급수} · 시나리오 {오라클수} · 실행 {PASS/FAIL·자가치유 게이트} · 트리아지 {결함|플래키|환경·클러스터수}`
+사용자용 개요·사용법은 [README.md](README.md), Phase 흐름·게이트·에이전트 팀의 정본은 [SKILL.md](skills/qa-agent-harness/SKILL.md), 방법론·근거는 [references/](skills/qa-agent-harness/references/)다.
 
 ## Conventions
 
@@ -64,6 +29,4 @@ qa-agent-harness/
 
 ## Change History
 
-| 날짜 | 변경 | 내용 |
-|------|------|------|
-| 2026-07-02 | 플러그인 신설 | 리스크 기반 전략→오라클 명시 시나리오→오라클 우선 생성·게이트된 자가치유 실행→결함 vs 플래키 지능형 트리아지의 독립 end-to-end 에이전틱 QA 하네스. Tech-Verse 2026 S06 "10x Speed With QA Agent Platform" 세션의 harnessable core만 추출(조직 도입·성숙도 모델·변경관리 층은 제외). 1차 근거: arXiv:2601.02454(Agentic Testing)·arXiv:2506.02943(CANDOR)·arXiv:2606.18168(All Smoke, No Alarm)·arXiv:2504.16777(Systemic Flakiness), 보강: arXiv:2601.05542(LLM 오라클)·Requirements-based test prioritization 산업연구·Katalon Agentic QA 운영모델 |
+변경 이력은 [CHANGELOG.md](CHANGELOG.md)에 있다. 변경 시 그 표 맨 아래에 행을 추가한다.

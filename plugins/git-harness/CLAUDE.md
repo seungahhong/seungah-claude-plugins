@@ -1,19 +1,8 @@
 # git-harness
 
-커밋·push·PR 생성·PR 리뷰를 하나의 파이프라인으로 처리하는 Git 워크플로우 플러그인. 사용자용 개요·사용법은 [README.md](README.md) 참조.
+커밋·push·PR 생성·PR 리뷰를 하나의 파이프라인으로 처리하는 Git 워크플로우 플러그인.
 
-## Structure
-
-```
-.claude-plugin/plugin.json         # 플러그인 메타데이터 (v0.3.0)
-skills/
-  commit-pr/
-    SKILL.md                       # §0 진입점 → §9 리뷰 레인 → §1~§5 커밋 → §6 push → §7 PR → §8 PR 리뷰
-    references/
-      commit-message.md            # §1~§4 커밋 메시지 사양 (`이슈번호 type: 제목`, 본문 판단 프로세스, Validation)
-      review-lane.md               # §9 리뷰 레인 (code-simplifier·코드리뷰 서브에이전트, 커밋 게이트 severity 환산)
-      pr-creation.md               # §7 PR 생성 (타겟 추천·검증, 변경 분석, 제목·본문 포맷)
-```
+사용자용 개요·사용법은 [README.md](README.md), 파이프라인(§0~§9)·게이트의 정본은 [SKILL.md](skills/commit-pr/SKILL.md)다.
 
 ## Conventions
 
@@ -27,7 +16,4 @@ skills/
 
 ## Change History
 
-| Date | Change | Reason |
-|------|--------|--------|
-| 2026-06-03 | 플러그인 CLAUDE.md/README.md 신설 | 플러그인 단위 문서·사용법 분리 |
-| 2026-08-02 | `commit`·`review-to-pr` 삭제, `commit-pr` 단일 스킬로 통합 (v0.3.0) | 커밋~PR은 한 줄기 작업인데 스킬이 쪼개져 매번 다음 스킬을 다시 불러야 했다. 상태 기반 진입점 추천 + 진입점 승인 원칙 + 커밋 차단 게이트를 도입 |
+변경 이력은 [CHANGELOG.md](CHANGELOG.md)에 있다. 변경 시 그 표 맨 아래에 행을 추가한다.

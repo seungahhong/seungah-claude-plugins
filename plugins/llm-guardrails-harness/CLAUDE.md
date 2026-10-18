@@ -9,42 +9,7 @@ LLM/에이전트 애플리케이션의 안전을 모델의 자기 정렬이나 �
 근거: **OWASP Top 10 for LLM Applications 2025 · NVIDIA NeMo Guardrails(input/dialog/output/retrieval/execution 5 rail
 types) · Llama Guard(arXiv:2312.06674) · SoK: Evaluating Jailbreak Guardrails(arXiv:2506.10597)**.
 
-사용자용 개요·사용법은 [README.md](README.md) 참조.
-
-## Structure
-
-```
-llm-guardrails-harness/
-├── .claude-plugin/
-│   └── plugin.json
-├── CLAUDE.md                          # (이 문서) 하네스 포인터 + Phase 요약 + 변경 이력
-├── README.md                          # 사용자용 개요·언제 쓰나·4단계 사용법·도구 경계·근거 자료
-├── agents/                            # 모두 model: "opus"
-│   ├── threat-modeler.md              # Phase 0 — 앱 → OWASP LLM Top 10 매핑·fail-closed 정책·레일 배치 결정
-│   ├── input-rail-engineer.md         # Phase 1 — 모델 호출 전 jailbreak/injection 탐지·Llama-Guard 분류·요청 검증
-│   ├── output-rail-engineer.md        # Phase 2 — PII 리댁션·독성/정책 필터·grounding·untrusted 검색 청크 필터링
-│   └── enforcement-redteamer.md       # Phase 3 — 최소 권한 tool 스코핑·사람 승인 게이트·red-team(ASR/FPR)
-├── skills/
-│   └── llm-guardrails-harness/
-│       ├── SKILL.md                   # 오케스트레이터(진입점, Phase 0 정책 게이트 → 입력 → 출력/검색 → 행동/검증)
-│       └── references/
-│           ├── llm-guardrails-harness-principles.md   # 원칙·anti-pattern·결정 신호표
-│           └── llm-guardrails-harness-research.md      # 설계 근거 deep-research dossier(출처·신뢰도·인용·CAVEAT·방법론)
-└── evals/
-    ├── evals.json                     # 수용 평가(design-conformance dry-run — 핵심 불변식 file:section 인용 채점)
-    └── trigger-eval.json              # 트리거 경계 평가(should_trigger 9 / should_not 14, 인접 도메인 reciprocal 가드)
-```
-
-## Phase 요약
-
-| Phase | 이름 | 호출 에이전트 | 핵심 산출물 | 게이트 |
-|-------|------|---------------|-------------|--------|
-| 0 | 위협 모델링·정책 정의 (Threat-Model & Policy Definition) | threat-modeler | Guardrail Policy(OWASP 매핑·콘텐츠/행동 카테고리·레일 배치·fail-closed) | 승인 게이트 |
-| 1 | 입력 레일 (Input Rails) | input-rail-engineer | Input Rail Design(jailbreak/injection 탐지·Llama-Guard 분류·거부/재작성) | 1줄 보고 |
-| 2 | 출력·검색 레일 (Output & Retrieval Rails) | output-rail-engineer | Output/Retrieval Rail Design(PII 리댁션·독성/정책·grounding·untrusted 청크) | 1줄 보고 |
-| 3 | 행동 강제·적대 검증 (Agent-Action Enforcement & Adversarial Verification) | enforcement-redteamer | Enforcement + Red-Team Report(최소 권한 스코핑·사람 게이트·ASR/FPR) | 배포 사람 게이트 |
-
-최종 보고: `[LLM-Guardrails] 정책 {OWASP매핑·카테고리수} · 입력레일 {탐지/분류/검증} · 출력·검색레일 {PII/독성/grounding/untrusted} · 강제·검증 {최소권한·사람게이트 · ASR/FPR}`
+사용자용 개요·사용법은 [README.md](README.md), Phase 흐름·게이트·에이전트 팀의 정본은 [SKILL.md](skills/llm-guardrails-harness/SKILL.md), 방법론·근거는 [references/](skills/llm-guardrails-harness/references/)다.
 
 ## Conventions
 
@@ -64,6 +29,4 @@ llm-guardrails-harness/
 
 ## Change History
 
-| 날짜 | 변경 | 내용 |
-|------|------|------|
-| 2026-07-02 | 플러그인 신설 | LLM I/O·tool 호출을 외부·인라인 제어 평면으로 런타임 강제하는 방어심층 가드레일 하네스(Phase 0 위협모델·정책 → Phase 1 입력 레일 → Phase 2 출력·검색 레일 → Phase 3 행동 강제·적대 검증). Tech-Verse 2026 S04 "Beyond Intelligence to Safety: External AI Guardrails" 세션의 전이 가능한 코어(레일 taxonomy+OWASP 매핑+외부강제 원칙)를 일반화하고, 1차 근거 OWASP Top 10 for LLM Applications 2025 · NVIDIA NeMo Guardrails(5 rail types) · Llama Guard(arXiv:2312.06674) · SoK: Evaluating Jailbreak Guardrails(arXiv:2506.10597) · OWASP LLM Prompt Injection Prevention Cheat Sheet · Adaptive Evaluation of Out-of-Band Defenses(arXiv:2606.26479)를 직접 인용. 사내 게이트웨이 구현 비귀속·보편 ASR/FPR·개선 N% 미주장 정직성 가드 포함 |
+변경 이력은 [CHANGELOG.md](CHANGELOG.md)에 있다. 변경 시 그 표 맨 아래에 행을 추가한다.

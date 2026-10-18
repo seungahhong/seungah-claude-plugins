@@ -7,42 +7,7 @@
 권한·샌드박스로 게이트되며, 검증은 자기보고가 아니라 결정적 센서(실행)로 한다"** 이다.
 근거 논문: **arXiv:2605.18747 "Code as Agent Harness: Toward Executable, Verifiable, and Stateful Agent Systems"**(2026-05).
 
-사용자용 개요·사용법은 [README.md](README.md) 참조.
-
-## Structure
-
-```
-code-as-harness/
-├── .claude-plugin/
-│   └── plugin.json
-├── CLAUDE.md                          # (이 문서) 하네스 포인터 + Phase 요약 + 변경 이력
-├── README.md                          # 사용자용 개요·언제 쓰나·4단계 사용법·도구 경계·근거 논문
-├── agents/                            # 모두 model: "opus"
-│   ├── plan-contractor.md             # Phase 0 — 작업 → 변경 계약(의도·센서·행동 위험 분류)
-│   ├── permissioned-executor.md       # Phase 1 — 권한·샌드박스 실행·가역 우선·안전임계 사람 게이트·trace 적재
-│   ├── execution-verifier.md          # Phase 2 — 결정적 센서 실행·조항별 PASS/FAIL/UNVERIFIED·reward-hacking·불완전 피드백 가드
-│   └── telemetry-diagnostician.md     # Phase 3 — trace 인용 진단·regression-free 수정안·CONVERGED/ITERATE/ESCALATE
-├── skills/
-│   └── code-as-harness/
-│       ├── SKILL.md                   # 오케스트레이터(진입점, Phase 0 계약 게이트 → 실행 → 검증 → 진단·수렴)
-│       └── references/
-│           ├── code-as-harness-principles.md   # 원칙·anti-pattern·결정 신호표
-│           └── code-as-harness-research.md      # 설계 근거 deep-research dossier(출처·인용·vote·CAVEAT·반박된 주장·방법론)
-└── evals/
-    ├── evals.json                     # 수용 평가(design-conformance dry-run — 핵심 불변식 file:section 인용 채점)
-    └── trigger-eval.json              # 트리거 경계 평가(should_trigger 9 / should_not 14, 인접 도메인 reciprocal 가드)
-```
-
-## Phase 요약
-
-| Phase | 이름 | 호출 에이전트 | 핵심 산출물 | 게이트 |
-|-------|------|---------------|-------------|--------|
-| 0 | 계획 계약 (Plan Contract) | plan-contractor | Plan Contract(의도한 변경·판정 센서·행동 위험 분류) | 승인 게이트 |
-| 1 | 권한 실행 (Permissioned Execute) | permissioned-executor | Execution Trace + 적용 요약(가역 우선·안전임계 사람 게이트) | 안전임계 사람 게이트 / 1줄 보고 |
-| 2 | 실행 검증 (Execution Verify) | execution-verifier | Verification Report(조항별 PASS/FAIL/UNVERIFIED + 센서 증거) | 1줄 보고 |
-| 3 | 텔레메트리 진단·수렴 (Telemetry Diagnose & Converge) | telemetry-diagnostician | Diagnosis & Convergence(trace 진단·regression-free 수정·결정) | 수렴 사람 게이트 |
-
-최종 보고: `[Code-as-Harness] 계획계약 {조항수} · 실행 {권한/샌드박스·안전임계 게이트} · 검증 {PASS/FAIL/UNVERIFIED} · 결정 {CONVERGED|ITERATE|ESCALATE}`
+사용자용 개요·사용법은 [README.md](README.md), Phase 흐름·게이트·에이전트 팀의 정본은 [SKILL.md](skills/code-as-harness/SKILL.md), 방법론·근거는 [references/](skills/code-as-harness/references/)다.
 
 ## Conventions
 
@@ -63,6 +28,4 @@ code-as-harness/
 
 ## Change History
 
-| 날짜 | 변경 | 내용 |
-|------|------|------|
-| 2026-06-25 | 플러그인 신설 | 코드를 operational substrate로 다루는 거버넌스된 Plan→Execute→Verify 하네스. arXiv:2605.18747 'Code as Agent Harness' 정독 + deep-research 3-vote 적대 검증(5각도·20소스·96주장·24 confirmed/1 refuted) 근거. 인접 1차: arXiv:2604.08224·2506.11442·2604.20801·2508.00083·2512.14012, 보강: 2604.15149·2603.07084 |
+변경 이력은 [CHANGELOG.md](CHANGELOG.md)에 있다. 변경 시 그 표 맨 아래에 행을 추가한다.

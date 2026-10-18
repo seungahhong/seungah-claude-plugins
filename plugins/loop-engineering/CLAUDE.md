@@ -4,42 +4,7 @@
 실행 루프(Goal→Execute→Verify→Diagnose→Improve)와 지속학습 루프(Fail→Investigate→Verify→Distill→Consult)를
 결합해, 에이전트가 스스로 검증·진단·개선하고 검증된 교훈을 메모리에 쌓아 같은 실수를 반복하지 않는다.
 
-사용자용 개요·사용법은 [README.md](README.md) 참조.
-
-## Structure
-
-```
-loop-engineering/
-├── .claude-plugin/
-│   └── plugin.json
-├── CLAUDE.md                       # (이 문서) 하네스 포인터 + 루프 요약 + 변경 이력
-├── README.md                       # 사용자용 개요·사용법·도구 경계
-├── agents/                         # 모두 model: "opus"
-│   ├── goal-setter.md              # Goal — 검증 가능한 목표 + 검증 방법 + 중단조건 설계
-│   ├── loop-executor.md            # Execute — 목표를 향한 1회 반복(메모리 consult + 최소 변경)
-│   ├── loop-verifier.md            # Verify — 검증 방법 실행 → 엄격 PASS/FAIL + 증거
-│   ├── failure-analyst.md          # Investigate — root cause 진단 + 다음 접근 작성 + 무진전 감지
-│   └── memory-curator.md           # Distill/Consult — 검증된 교훈 distill, 관련 규칙 surface, raw trace 보존
-├── skills/
-│   └── loop-engineering/
-│       ├── SKILL.md                # 오케스트레이터(진입점, Goal 게이트 → 자율 반복 루프)
-│       └── references/
-│           ├── loop-engineering-principles.md   # 두 루프·7원칙·검증기/중단조건 설계·anti-pattern·여섯 빌딩블록(factory §8)·참고문헌
-│           ├── loop-memory-format.md            # goal.md / iterations.jsonl / lessons.md 포맷
-│           └── loop-engineering-research.md     # 설계 근거 deep-research dossier (출처·인용·신뢰도·caveat)
-└── evals/
-    ├── evals.json                  # 수용 평가 (design-conformance dry-run — 핵심 불변식 file:section 인용 채점)
-    └── trigger-eval.json           # 트리거 경계 평가 (should_trigger 10 / should_not 19, 인접 도메인 경계 가드)
-```
-
-## 루프 요약
-
-| Phase | 이름 | 호출 에이전트 | 핵심 산출물 | 게이트 |
-|-------|------|---------------|-------------|--------|
-| 0 | 목표 설계 (Goal) | goal-setter | Goal Card (성공기준·검증 방법·중단조건·범위) | 승인 게이트 + 자율모드(auto/gated) 확정 |
-| 1 | 루프 (Execute→Verify→Diagnose→Distill) | loop-executor → loop-verifier →(FAIL) failure-analyst → memory-curator | 반복별 verdict·진단·distill된 교훈 | 매 회 verdict 보고, gated면 반복 사이 승인 |
-
-매 반복 보고: `[Iter n] {PASS|FAIL}: {증거/원인} — {계속|종료 사유}`. 최종: `[Loop 종료] {성공|중단:사유} — 반복 {n}/{N}, 교훈 {k}건 → .claude/loop-memory/{goal-slug}/`
+사용자용 개요·사용법은 [README.md](README.md), Phase 흐름·게이트·에이전트 팀의 정본은 [SKILL.md](skills/loop-engineering/SKILL.md), 방법론·근거는 [references/](skills/loop-engineering/references/)다.
 
 ## Conventions
 
@@ -58,9 +23,4 @@ loop-engineering/
 
 ## Change History
 
-| 날짜 | 변경 | 내용 |
-|------|------|------|
-| 2026-06-14 | 플러그인 신설 | loop engineering(목표 기반 자율 반복 + 지속학습 메모리) 멀티 에이전트 하네스. deep-research(loop engineering 1차 자료) 근거 |
-| 2026-06-15 | 2라운드 적대적 검증 후 29건 보강 | iterations.jsonl 단일 writer(memory-curator)·run-id/ts/goal.md/goal-slug 발급 주체 명시(SKILL Phase 1 초기화), BLOCKED verdict 분기 신설(검증 인프라≠작업 결함), consult-before-execute·재실행 1회차 consult, 무진전 단일 권위(failure-analyst)·예산 집행(SDK 캡/N 프록시), N/M 기호·중단조건·상태값(active/candidate/conflict/retired)·보고 문자열 정합, 인접 도메인 트리거 변별 강화 + native /goal 경계, evals.json 수용 평가 신설 |
-| 2026-06-21 | 다른 플러그인 참조 제거·독립화 | 경계·마켓플레이스 네비·evals 진술에서 다른 플러그인명·상대경로 참조를 제거하고 일반 개념(범위 밖 진술)으로 일반화해 단독 사용 가능하게 정리 |
-| 2026-06-23 | Loop Engineering 원전 심화 반영 (additive, 현재 기능 전부 보존) | Osmani substack "Loop Engineering" deep-research(62 confirmed/16 killed) 기반 비파괴 보강 — principles §1 포지셔닝(prompt→context→harness→loop, Cherny 앵커)·§5 이해/머지 게이트(green CI≠구현)·병렬 maker review-bandwidth·§6 사람-쪽 3결함(comprehension rot·cognitive surrender·orchestration tax)·§7 자동화 프론트엔드·act 레이어·**신규 §8 여섯 빌딩블록(factory model) 표** + research dossier §9. SKILL 내재화 원칙 stay-the-engineer + PASS 이해 게이트 + /loop 합성 명료화 + factory 전체그림. loop-verifier green-CI≠구현(reward-hacking) 가드, loop-executor worktree 격리 옵션, memory-format "state file is the spine". 코어 흐름(Phase 0/1)·기존 §1~§8 번호·evals 불변 |
+변경 이력은 [CHANGELOG.md](CHANGELOG.md)에 있다. 변경 시 그 표 맨 아래에 행을 추가한다.

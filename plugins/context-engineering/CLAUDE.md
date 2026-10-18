@@ -4,42 +4,7 @@ LLM·에이전트에 전달할 **컨텍스트 페이로드를 체계적으로 �
 단순 프롬프트 설계를 넘어 "무엇을 왜 모델에 넣는가"를 **Scope → Retrieve → Process → Manage**의 4단계로 설계하고,
 멀티 에이전트 컨텍스트면 per-agent 격리 패턴으로 cross-agent 오염을 막은 뒤, 검증된 최종 페이로드와 재사용 playbook을 낸다.
 
-사용자용 개요·사용법은 [README.md](README.md) 참조.
-
-## Structure
-
-```
-context-engineering/
-├── .claude-plugin/
-│   └── plugin.json
-├── CLAUDE.md                       # (이 문서) 하네스 포인터 + Phase 요약 + 변경 이력
-├── README.md                       # 사용자용 개요·사용법·도구 경계·근거 논문
-├── agents/                         # 모두 model: "opus"
-│   ├── context-scoper.md           # Phase 0 Scope — 도달 정보·토큰 예산·retrieval need 명세
-│   ├── context-retriever.md        # Phase 1 Retrieve/Generate — 후보 컨텍스트 수집·생성(RAG식)
-│   ├── context-processor.md        # Phase 2 Process — 압축·정렬·중복제거(brevity bias·lost-in-the-middle 대응)
-│   └── context-curator.md          # Phase 3 Manage — playbook 큐레이션·collapse 가드·격리·최종 조립·검증
-├── skills/
-│   └── context-engineering/
-│       ├── SKILL.md                # 오케스트레이터(진입점, Scope 게이트 → 4단계 조립 파이프라인)
-│       └── references/
-│           ├── context-engineering-principles.md  # 4 components·anti-pattern·격리 패턴·설계 지침
-│           └── context-engineering-research.md     # 설계 근거 deep-research dossier (출처·인용·신뢰도·caveat)
-└── evals/
-    ├── evals.json                  # 수용 평가 (design-conformance dry-run — 핵심 불변식 file:section 인용 채점)
-    └── trigger-eval.json           # 트리거 경계 평가 (should_trigger 9 / should_not 15, 인접 도메인 경계 가드)
-```
-
-## Phase 요약
-
-| Phase | 이름 | 호출 에이전트 | 핵심 산출물 | 게이트 |
-|-------|------|---------------|-------------|--------|
-| 0 | 범위 설계 (Scope) | context-scoper | Context Brief (도달해야 할 정보·토큰 예산·retrieval need·범위 In/Out) | 승인 게이트 — 무엇을 왜 넣는지 확정 |
-| 1 | 수집·생성 (Retrieve/Generate) | context-retriever | 출처 표기된 후보 컨텍스트 풀(relevance·예산 대비 표시) | — |
-| 2 | 처리 (Process) | context-processor | 압축·정렬·중복제거된 컨텍스트(구조적 증분, 핵심 위치 배치) | — |
-| 3 | 관리·조립 (Manage) | context-curator | 검증된 최종 페이로드 + 재사용 playbook(+멀티 에이전트면 격리 설계) | 예산·collapse·근거 검증 |
-
-각 단계 1줄 보고: `[Phase n] {산출 요약} — 토큰 {사용/예산}`. 최종: `[Context 조립 완료] 페이로드 {토큰}/{예산}, 출처 {k}건, playbook → {경로}`.
+사용자용 개요·사용법은 [README.md](README.md), Phase 흐름·게이트·에이전트 팀의 정본은 [SKILL.md](skills/context-engineering/SKILL.md), 방법론·근거는 [references/](skills/context-engineering/references/)다.
 
 ## Conventions
 
@@ -56,6 +21,4 @@ context-engineering/
 
 ## Change History
 
-| 날짜 | 변경 | 내용 |
-|------|------|------|
-| 2026-06-25 | 플러그인 신설 | context engineering(정보 페이로드 체계적 조립·최적화 Scope→Retrieve→Process→Manage + per-agent 격리) 멀티 에이전트 하네스. deep-research 3-vote 적대 검증 근거 + 2025+ 논문 출처(arXiv:2507.13334·2510.04618·2604.07911) |
+변경 이력은 [CHANGELOG.md](CHANGELOG.md)에 있다. 변경 시 그 표 맨 아래에 행을 추가한다.

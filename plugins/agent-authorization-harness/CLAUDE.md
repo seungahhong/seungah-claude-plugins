@@ -8,42 +8,7 @@ deny-by-default로 일어난다"** 이다. 산출물은 *인가 설계 + 위협 
 근거: **published RFC 8707(Resource Indicators)·RFC 8693(Token Exchange)·OWASP LLM06:2025(Excessive Agency)**(discipline HIGH)
 + **ID-JAG draft-04·MCP Authorization draft·A2A spec·OWASP Agentic ASI01/ASI03**(framing MEDIUM, in-flux).
 
-사용자용 개요·사용법은 [README.md](README.md) 참조.
-
-## Structure
-
-```
-agent-authorization-harness/
-├── .claude-plugin/
-│   └── plugin.json
-├── CLAUDE.md                              # (이 문서) 하네스 포인터 + Phase 요약 + 변경 이력
-├── README.md                             # 사용자용 개요·언제 쓰나·4단계 사용법·도구 경계·근거 자료
-├── agents/                               # 모두 model: "opus"
-│   ├── trust-scope-modeler.md            # Phase 0 — 참여자·authN vs authZ authority·접촉면 인벤토리·최소 스코프·신뢰 경계
-│   ├── grant-delegation-designer.md      # Phase 1 — 단명 audience-bound 토큰(RFC 8707)·토큰 교환 위임(RFC 8693 may_act)·no passthrough
-│   ├── consent-enforcement-designer.md   # Phase 2 — 인증/인가 분리·deny-by-default·동의 게이트·end-to-end audience 검증·감사 로깅
-│   └── authorization-redteamer.md        # Phase 3 — confused-deputy·토큰재생·스코프크리프·무제한위임 적대 검증·위협 분석
-├── skills/
-│   └── agent-authorization-harness/
-│       ├── SKILL.md                      # 오케스트레이터(진입점, Phase 0 모델링 게이트 → 그랜트·위임 → 집행 → red-team)
-│       └── references/
-│           ├── agent-authorization-harness-principles.md   # 원칙·anti-pattern·결정 신호표
-│           └── agent-authorization-harness-research.md      # 설계 근거 deep-research dossier(출처·인용·신뢰도 등급·CAVEAT·정직성·방법론)
-└── evals/
-    ├── evals.json                        # 수용 평가(design-conformance dry-run — 핵심 불변식 file:section 인용 채점)
-    └── trigger-eval.json                 # 트리거 경계 평가(should_trigger 9 / should_not 14, 인접 도메인 reciprocal 가드)
-```
-
-## Phase 요약
-
-| Phase | 이름 | 호출 에이전트 | 핵심 산출물 | 게이트 |
-|-------|------|---------------|-------------|--------|
-| 0 | 신뢰·스코프 모델링 (Trust & Scope Modeling) | trust-scope-modeler | Actor & Scope Model(역할별 참여자·authN vs authZ·접촉면 인벤토리·최소 스코프·신뢰 경계) | 승인 게이트 |
-| 1 | 그랜트·위임 설계 (Grant & Delegation Design) | grant-delegation-designer | Grant & Delegation Design(단명 aud 토큰·토큰 교환 위임·경계별 fresh exchange·표준 그랜트) | 1줄 보고 |
-| 2 | 동의·집행 설계 (Consent & Enforcement Design) | consent-enforcement-designer | Consent & Enforcement Design(authN/authZ 분리·deny-by-default·audience 검증·동의 게이트·감사) | 민감 스코프 동의 게이트 / 1줄 보고 |
-| 3 | 적대적 인가 검증 (Adversarial Authorization Verification) | authorization-redteamer | Authorization Threat Analysis(공격면별 RESISTS/PARTIAL/FAILS·잔여 위험·런타임 레일 합성 권고) | 1줄 보고 |
-
-최종 보고: `[Agent-Auth-Harness] 액터/스코프 {참여자·최소스코프} · 그랜트/위임 {단명 aud토큰·may_act} · 집행 {deny-by-default·audience검증·동의} · red-team {RESISTS|PARTIAL|FAILS}`
+사용자용 개요·사용법은 [README.md](README.md), Phase 흐름·게이트·에이전트 팀의 정본은 [SKILL.md](skills/agent-authorization-harness/SKILL.md), 방법론·근거는 [references/](skills/agent-authorization-harness/references/)다.
 
 ## Conventions
 
@@ -64,6 +29,4 @@ agent-authorization-harness/
 
 ## Change History
 
-| 날짜 | 변경 | 내용 |
-|------|------|------|
-| 2026-07-02 | 플러그인 신설 | 에이전트/MCP 도구/A2A 시스템의 머신 아이덴티티·인가 모델을 벤더 무관하게 설계·red-team하는 하네스. LY Corporation Tech-Verse 2026 S07 "ID-JAG: The Enterprise-Ready Standard for AI Agent Authorization in the MCP and A2A Era" 세션에서 *배포 사례(Keycloak/Athenz/MCP 데모)* 가 아니라 *이전 가능한 설계 규율*을 추출해 접지. 1차 근거(discipline HIGH): published RFC 8707(Resource Indicators)·RFC 8693(Token Exchange)·OWASP LLM06:2025(Excessive Agency). framing(MEDIUM, in-flux): ID-JAG draft-ietf-oauth-identity-assertion-authz-grant-04·MCP Authorization draft·A2A spec·OWASP Agentic ASI01/ASI03. 벤더(Okta XAA)·LY blog/deck은 illustrative, AIP arXiv:2603.24775는 academic 보강. "개선 N% 보장" 금지·스코프 내 injection은 런타임 레일과 합성 명시. |
+변경 이력은 [CHANGELOG.md](CHANGELOG.md)에 있다. 변경 시 그 표 맨 아래에 행을 추가한다.

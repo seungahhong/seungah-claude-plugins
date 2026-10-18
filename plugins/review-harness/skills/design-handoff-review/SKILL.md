@@ -2,7 +2,7 @@
 name: design-handoff-review
 description: "디자인 핸드오프 산출물(Figma 파일/프레임, 디자인 스펙)을 개발 착수 전에 완결성·사각지대 관점으로 검수하고 누락을 디자인팀에 피드백하는 스킬. happy-path만 그린 디자인을 잡아 프론트엔드의 추측 구현과 재작업을 막는다. 사용자가 \"디자인 핸드오프\", \"Figma 리뷰\", \"피그마 리뷰\", \"디자인 검수\", \"디자인 점검\", \"디자인 스펙 점검\", \"사각지대\", \"상태 누락\", \"에러 상태\", \"로딩 상태\", \"빈 상태\", \"empty state\", \"엣지 케이스 디자인\", \"디자인 토큰\", \"토큰 바인딩\", \"Code Connect\", \"컴포넌트 매핑\", \"핸드오프 게이트\" 등을 언급할 때 사용한다."
 disable-model-invocation: true
-allowed-tools: Bash, Read, Grep, Glob
+allowed-tools: Read, Grep, Glob
 ---
 
 # 디자인 핸드오프 검수

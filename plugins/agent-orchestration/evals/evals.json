@@ -58,7 +58,7 @@
       {
         "text": "[Approval/observability] Phase 0 직후 승인 게이트는 항상이고 각 Phase는 1줄로 보고하며(single 권고면 Phase 2 skip), 요청되지 않은 사이드 에이전트나 중복 실행을 만들지 않고 최종 결정·근거·남은 불확실성을 요약 보고해야 한다.",
         "passed": true,
-        "evidence": "SKILL.md Phase 0 승인 게이트 + Phase 1 'single 권고면 → Phase 2를 건너뛰고 Phase 3로' + 각 Phase 1줄 보고 문자열 + 내재화 원칙 '관찰 가능성·승인 ... 요청되지 않은 사이드 에이전트나 중복 실행을 만들지 않는다' + 마무리 보고 '[Orchestration 결정] {단일 | 멀티:토폴로지} — 순이득 {…}, 근거 {…}'. CLAUDE.md Phase 요약 표·Conventions."
+        "evidence": "SKILL.md Phase 0 승인 게이트 + Phase 1 'single 권고면 → Phase 2를 건너뛰고 Phase 3로' + 각 Phase 1줄 보고 문자열 + 내재화 원칙 '관찰 가능성·승인 ... 요청되지 않은 사이드 에이전트나 중복 실행을 만들지 않는다' + 마무리 보고 '[Orchestration 결정] {단일 | 멀티:토폴로지} — 순이득 {…}, 근거 {…}'. SKILL.md Phase 표·CLAUDE.md Conventions."
       },
       {
         "text": "[Boundary/domain-guard] agent-orchestration은 '여러 에이전트를 쓸지/어떻게 협업시킬지 결정'에 특화하고, 컨텍스트 페이로드 조립·압축·AI 출력 평가(judge 구성)·엔지니어용 구현 명세 작성·단일 자율 반복 루프·새 하네스 생성·프로덕션 장애 대응과 경계를 두며 인접 도메인 요청에는 발동하지 않도록 should-not 가드를 둔다.",
@@ -68,7 +68,7 @@
       {
         "text": "[Independence/self-contained] 하네스는 다른 마켓플레이스 플러그인을 dependency로 참조하지 않고 경계의 '범위 밖' 진술을 일반 개념(컨텍스트 설계·평가·명세·반복·운영 도메인)으로만 서술하며, 각 논문(2512.08296·2601.13295·2604.07911)을 primary로 직접 인용해 단독으로 사용 가능해야 한다.",
         "passed": true,
-        "evidence": "SKILL.md 경계 섹션이 타 플러그인명 없이 '컨텍스트 설계 도메인'·'평가 도메인'·'명세 도메인'·'운영 도메인' 등 일반 개념으로만 변별. references/agent-orchestration-research.md §1·§3·§5가 각 arXiv 논문을 제목·저자·ID·연도·인용문으로 primary 직접 인용. principles.md 참고 문헌·CLAUDE.md Change History가 세 arXiv ID를 직접 명시. plugin.json·README.md 어디에도 타 플러그인 경로 의존 없음."
+        "evidence": "SKILL.md 경계 섹션이 타 플러그인명 없이 '컨텍스트 설계 도메인'·'평가 도메인'·'명세 도메인'·'운영 도메인' 등 일반 개념으로만 변별. references/agent-orchestration-research.md §1·§3·§5가 각 arXiv 논문을 제목·저자·ID·연도·인용문으로 primary 직접 인용. principles.md 참고 문헌·CHANGELOG.md가 세 arXiv ID를 직접 명시. plugin.json·README.md 어디에도 타 플러그인 경로 의존 없음."
       }
     ]
   }

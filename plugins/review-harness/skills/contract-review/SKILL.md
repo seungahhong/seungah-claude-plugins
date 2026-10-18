@@ -2,7 +2,7 @@
 name: contract-review
 description: "BE의 API 계약(OpenAPI/스키마)을 FE 착수 전에 완결성·호환성·소비자 요구 충족 관점으로 리뷰하는 게이트 스킬. 계약을 구현 후 산출물이 아니라 선합의 SoT로 끌어올려 FE가 mock으로 병렬 착수하게 한다. 사용자가 '계약 리뷰', 'OpenAPI 점검', 'API 계약', '스펙 완결성', 'breaking change', '계약 깨짐', 'Pact', '소비자 계약', 'consumer-driven', 'FE 착수 준비', 'contract-first', '계약 우선', 'API 스펙 검수', 'oasdiff', 'spectral' 등을 언급할 때 사용한다. 읽기 위주 정적 분석이며, 실제 API 호출·계약 합의 자체는 범위 밖이다."
 disable-model-invocation: true
-allowed-tools: Bash, Read, Grep, Glob
+allowed-tools: Bash(find:*), Bash(grep:*), Read, Grep, Glob
 ---
 
 # Contract Review — API 계약 핸드오프 게이트

@@ -2,7 +2,7 @@
 name: dor-review
 description: "기획 산출물(PRD/유저스토리/인수조건/Jira 티켓/요구사항 문서)을 '착수 게이트(Definition of Ready)' 관점에서 리뷰하고, 무엇이 모호하거나 빠졌는지 구체적으로 짚어 기획에 되돌리는 스킬. FE/BE 착수 전, QA 막바지 재작업 전에 모호성과 누락을 잡는 것이 목적이다. 사용자가 'DoR', 'Definition of Ready', '착수 준비', '착수 게이트', '인수조건 리뷰', '기획 리뷰', 'PRD 점검', '유저스토리 검토', '요구사항 모호성', '스토리 준비됐나', 'INVEST', 'Given-When-Then', 'GWT', '인수조건 검수', '요구사항 검토' 등을 언급할 때 사용한다."
 disable-model-invocation: true
-allowed-tools: Bash, Read, Grep, Glob
+allowed-tools: Bash(find:*), Bash(grep:*), Read, Grep, Glob
 ---
 
 # DoR Review — 착수 게이트(Definition of Ready) 리뷰

@@ -2,42 +2,7 @@
 
 유저스토리·인수조건(AC)을 입력으로 받아, **프론트엔드가 되묻지 않고 개발할 수 있도록 Figma에 무엇을 어떻게 반영해야 하는지**를 설계해 디자이너·FE 핸드오프 패키지로 내보내는 도메인 무관 인터랙티브 멀티 에이전트 하네스. 한 문장 원칙은 **"기획서의 시나리오는 상태 프레임으로, 기획서의 규칙은 레이어 어노테이션으로"** 이며, AC를 이분 분해하고 상태 카탈로그를 역방향 호명해 누락을 드러낸 뒤(Phase 1), Figma 구조·명명·flow·토큰 요구를 설계하고(Phase 2), 레이어별 어노테이션 문안을 쓰고(Phase 3), FE 1인칭으로 "여기서 멈춘다" 지점을 적대 검증한다(Phase 4). **Figma 파일을 만들거나 고치지 않는다** — 설계도까지가 산출이고 반영은 디자이너가 한다.
 
-사용자용 개요·사용법은 [README.md](README.md), 근거 정본은 [skills/spec-to-figma/references/evidence.md](skills/spec-to-figma/references/evidence.md) 참조.
-
-## Structure
-
-```
-spec-to-figma-harness/
-├── .claude-plugin/plugin.json
-├── CLAUDE.md                        # (이 문서) 포인터 + 불변식 요약 + 변경 이력
-├── README.md                        # 사용자용 개요·사용법·산출물·경계
-├── agents/                          # 4 에이전트 (모두 model: "opus")
-│   ├── state-cartographer.md        # Phase 1 — AC 이분 분해 + 상태 카탈로그 역방향 호명 + 되물음
-│   ├── figma-blueprinter.md         # Phase 2 — 구조·명명·프레임 목록·**레이어 지목**·flow·토큰 요구·델타(읽기 전용)
-│   ├── annotation-writer.md         # Phase 3 — 레이어별 6분류 핀 문안(5필드)·확정/잠정/미확정·댓글 분리
-│   └── handoff-critic.md            # Phase 4 — FE 1인칭 적대 검증·owner별 준비도·정직성 감사
-├── evals/
-│   ├── evals.json                   # 수용 평가(불변식 file:section 인용 채점)
-│   └── trigger-eval.json            # 트리거 경계 평가(true 9 / false 11, 인접 도메인 역방향 가드)
-└── skills/spec-to-figma/
-    ├── SKILL.md                     # 오케스트레이터(Phase 0 인테이크 + 1~4, 매 Phase 승인 게이트)
-    └── references/
-        ├── ac-to-state-matrix.md    # AC 이분 분류 규칙 · 상태 카탈로그 6축 · 커버리지 매트릭스 · 되물음 규칙
-        ├── annotation-templates.md  # 어노테이션 6분류 템플릿 · 복붙 문안 · 좋은/나쁜 예 · 안티패턴
-        ├── figma-blueprint.md       # 구조·명명 · 프레임 목록 스키마 · 델타 진단 · flow · Inspect 신뢰성 · 플랜 제약
-        ├── handoff-readiness.md     # owner별 체크리스트 · FE 1인칭 시뮬레이션 · 틈 유형 · 정직성 감사
-        └── evidence.md              # 근거 정본(GOLD/SILVER/BRONZE/[관행] · 인용 금지 목록 · 재검증 주기)
-```
-
-## 4단계 Phase 요약
-
-| Phase | 에이전트 | 산출 | 게이트 |
-|-------|----------|------|--------|
-| 0 인테이크 | (오케스트레이터) | 스토리·AC 원문·티켓 체계·기존 파일·플랜 조건 — **한 번에 한 질문** | A |
-| 1 AC 분해 | `state-cartographer` | AC 이분 분해 + 상태 목록 + **역방향 호명 결과** + **커버리지 매트릭스** + 되물음 | B |
-| 2 반영 설계 | `figma-blueprinter` | 명명·프레임 목록·**레이어 지목(Phase 3 입력)**·flow·토큰 요구·Ready for dev 계획·기존 파일 델타 | C |
-| 3 어노테이션 | `annotation-writer` | 레이어별 핀 6분류 복붙 문안(5필드) + 확정/잠정/미확정 + 댓글 분리 + AC·규칙 역참조 | D |
-| 4 적대 검증 | `handoff-critic` | FE가 멈추는 지점 · 상충 5쌍 · owner별 준비도(4그룹) · 남은 질문 · 정직성 감사 5문항 | E |
+사용자용 개요·사용법은 [README.md](README.md), Phase 흐름·게이트·에이전트 팀의 정본은 [SKILL.md](skills/spec-to-figma/SKILL.md), 근거 정본은 [evidence.md](skills/spec-to-figma/references/evidence.md)다.
 
 ## Conventions (핵심 불변식)
 
@@ -55,7 +20,4 @@ spec-to-figma-harness/
 
 ## Change History
 
-| 날짜 | 변경 | 내용 |
-|------|------|------|
-| 2026-07-26 | 적대 검증 반영 (v0.1.0) | 4렌즈(정직성·일관성·규약·경계/드라이런) 독립 검증 + 판정자 교차 확인으로 나온 BLOCKER 2건·MAJOR 9건 수정. **BLOCKER** — ⓐ Phase 2가 레이어를 지목하지 않아 Phase 3이 레이어명을 *발명해야* 하던 INV-1 연쇄 구멍(→ `figma-blueprinter` 출력에 **레이어 지목 표** 신설, 실물 없는 이름은 `(제안)` 표기, `annotation-writer`는 그 경로만 사용), ⓑ 참조 문서가 "Phase 1 산출물의 핵심"이라 부르고 하류 3곳이 소비하는 **커버리지 매트릭스가 실제로 산출되지 않던** 것(→ `state-cartographer` 출력에 추가하고 **Phase 간 ID 소유권** 확립 — 프레임명=Phase 2·`P#`=Phase 3·Phase 1은 `S-*`/`R#`/`Q#`만). **MAJOR** — 프레임명 구분자 하이픈↔가운뎃점 혼용, 핀 형식·확정 어휘 4갈래(→ 5필드 블록 + 확정/잠정/미확정 단일화), 프레임 목록 `비고` 열 소실, **하네스 자체 owner 그룹이 최종 판정에서 증발**(→ 4그룹 강제 + INV-3 자체감사 5번째 문항), 등급 없는 제품 동작 단정, **좋은 예가 스스로 INV-1을 어긴 것**(수치·필드가 확정값처럼), 개수 임계("멈춤 3건 이상=착수 불가")로 등급 만들기, **인용 금지된 인과 예측의 재진술**(체크리스트가 "재작업·급조" 결과를 예측 → "무엇을 추측하게 되는가"로 전환), 무근거 최상급. 그 밖에 게이트 E 보고 형식·쓰기 도구 5종·ToolSearch 목록·상충 5쌍·Telerik 4조건·카탈로그 개방성(축 밖 상태는 새 코드 발급)·INV-1 예외 명문화(표준 상태명은 발명 아님)·Phase 0 질문 분해(7→9)·산출물 파일명이 references와 충돌하던 것(`blueprint.md`/`readiness-report.md`) 정리. 수용 평가 21→24 assertion. |
-| 2026-07-26 | 플러그인 신설 (v0.1.0) | 사용자 제공 핸드오프 가이드(기획→디자인→FE 자율개발)를 하네스로 승격. 가이드의 실천 규칙(스토리 단위 파일 구조·AC 전수 상태 변환·Dev Mode 어노테이션·프로토타입/디자인 시스템·Definition of Ready 체크리스트)을 4 Phase·4 에이전트·references 5종으로 재구성하고, **웹 1차 검증으로 사실관계를 교정**했다 — ⓐ Code Connect는 Dev/Full seat + **Organization/Enterprise 전용**(가이드에 없던 제약), ⓑ 어노테이션은 자유 텍스트 + **선택형 속성**이며 "CSS 자동 부착"이 아님·기본 카테고리 4종·**생성은 Full seat + can edit**, ⓒ `Ready for dev` view·`Completed`는 Org/Ent 전용, ⓓ **티켓 ID 명명·어노테이션 vs 댓글 분기는 Figma 공식 근거가 없는 실무 관행**, ⓔ **"AC 전수 매핑 → FE 질문 0"·"happy path가 재작업 유발"·"재작업 비용 68%"는 측정 근거 부재 → 인용 금지 목록**에 등재(인용 가능한 유일한 근접 수치는 Telerik/Progress 2025 n=225 자기선택·상관관계). 가이드에 없던 **INV-1 발명 금지**(문구·필드·이벤트명·수치 경계 추론 금지 → `[기획 확인 필요]`)를 최강 불변식으로 신설하고, 상태 카탈로그를 6축(데이터·진행/전이·입력/검증·권한/세션·콘텐츠 경계·반응형)으로 확장해 **역방향 호명** 절차를 도입. Figma는 **읽기 전용**으로 못 박고 쓰기 MCP 도구 호출을 금지(INV-3). |
+변경 이력은 [CHANGELOG.md](CHANGELOG.md)에 있다. 변경 시 그 표 맨 아래에 행을 추가한다.

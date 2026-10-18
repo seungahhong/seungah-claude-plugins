@@ -5,42 +5,7 @@ traces+logs+metrics 3종 텔레메트리를 기반으로 인시던트 전 생애
 Localization L2 → Root Cause Analysis L3 → Mitigation L4)** 로 분해해 오케스트레이션한다. 인프라는
 중재된 읽기 액션으로만 관측하고 직접 변경하지 않으며, 완화는 사람 승인 후 *제안* 형태로만 낸다(휴먼-인-더-루프).
 
-사용자용 개요·사용법은 [README.md](README.md) 참조.
-
-## Structure
-
-```
-ops-harness/
-├── .claude-plugin/
-│   └── plugin.json
-├── CLAUDE.md                       # (이 문서) 하네스 포인터 + 단계 요약 + 변경 이력
-├── README.md                       # 사용자용 개요·사용법·도구 경계
-├── agents/                         # 모두 model: "opus"
-│   ├── incident-detector.md        # L1 Detection — 이상 탐지·트리아지(RED/USE, 범인 지목 아님)
-│   ├── incident-localizer.md       # L2 Localization — traces 우선으로 범인 후보 국소화
-│   ├── root-cause-analyst.md       # L3 RCA — 인과사슬 확정(anti-anchoring 가드레일 + Straight-Shot 폴백)
-│   └── mitigation-planner.md       # L4 Mitigation — 완화안 + 위험/롤백/blast radius + DQ 채점(제안·사람 집행)
-├── skills/
-│   └── ops-harness/
-│       ├── SKILL.md                # 오케스트레이터(진입점, Phase 0 substrate 확보 → L1→L4 게이트 진행)
-│       └── references/
-│           ├── ops-harness-principles.md          # 4단계·역할분리·DQ·RCA 가드레일·anti-pattern
-│           └── incident-response-research.md       # 설계 근거 dossier (출처·등급·인용·CAVEAT)
-└── evals/
-    └── trigger-eval.json           # 트리거 경계 평가 (should_trigger / should_not, 인접 하네스 reciprocal 가드)
-```
-
-## 단계 요약
-
-| Phase | 단계 | 호출 에이전트 | 핵심 산출물 | 게이트 |
-|-------|------|---------------|-------------|--------|
-| 0 | 텔레메트리 입력 확보 | (오케스트레이터) | substrate 확정·슬러그·Straight-Shot 판정 | 승인 게이트 |
-| 1 | L1 Detection | incident-detector | 증상·영향·심각도·시작시각(RED/USE) | 승인(이상 없으면 종료) |
-| 2 | L2 Localization | incident-localizer | 범인 후보 순위·traces/metrics/logs 증거 | 승인 |
-| 3 | L3 RCA | root-cause-analyst | 인과사슬·확정 근거·경쟁 가설(확정/가설) | 승인 |
-| 4 | L4 Mitigation+위험 | mitigation-planner | 완화안·위험/롤백·DQ 점수(사람 집행 대기) | 승인 |
-
-매 Phase 보고: `[Phase N] {핵심결정} — 다음: {다음}. 진행할까요?`. 최종: `[Ops 종료] {원인 확정|가설}: {root cause} → 완화 {top1}(DQ {점수}, 사람 집행 대기) → .claude/ops-incidents/{slug}/`
+사용자용 개요·사용법은 [README.md](README.md), Phase 흐름·게이트·에이전트 팀의 정본은 [SKILL.md](skills/ops-harness/SKILL.md), 방법론·근거는 [references/](skills/ops-harness/references/)다.
 
 ## Conventions
 
@@ -56,7 +21,4 @@ ops-harness/
 
 ## Change History
 
-| 날짜 | 변경 | 내용 |
-|------|------|------|
-| 2026-06-19 | 플러그인 신설 | ops-harness(프로덕션 운영·인시던트 대응·관측성) 멀티 에이전트 하네스. AIOpsLab 4단계(L1–L4) 오케스트레이션 + 4개 전문 에이전트(detector/localizer/root-cause-analyst/mitigation-planner). RCA anti-anchoring 가드레일·Straight-Shot 폴백, DQ 품질 게이트, 중재 읽기 액션·휴먼-인-더-루프. 근거: AIOpsLab(arXiv:2501.06706)[GOLD/SILVER]·역할분리 오케스트레이션(arXiv:2511.15755)[SILVER]·RCA 추론 실패모드(arXiv:2601.22208)[SILVER], CAVEAT 동반 |
-| 2026-06-21 | 독립화 | 다른 플러그인 참조를 제거하고 경계/네비게이션 진술을 '이 하네스 범위 밖' 일반 표현으로 일반화해 단독 사용 가능하게 정리(plugin.json description·SKILL.md·README.md·CLAUDE.md). 범위/비범위 의미는 보존 |
+변경 이력은 [CHANGELOG.md](CHANGELOG.md)에 있다. 변경 시 그 표 맨 아래에 행을 추가한다.
