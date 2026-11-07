@@ -2,6 +2,7 @@
 
 | Date | Change | Reason |
 |------|--------|--------|
+| 2026-11-08 | /doctor 전수 점검 — README 설치 줄 + 리스팅 아이콘 | (1) README `## 설치`에 원스텝 설치 줄 `/plugin install ux-ai-workflow-harness --marketplace seungahhong/seungah-claude-plugins` + 2단계(marketplace add → install) 추가 — 기존 `claude plugin add`는 존재하지 않는 명령이라 교체. (2) 디렉터리 리스팅 아이콘 `.claude-plugin/icon.png`(1024×1024 PNG, 기존 frontend-harness·test-layering-harness 아이콘과 같은 톤: 네이비 그라데이션 + 밝은 도형 + #3D5AFE 포인트) 추가 — 기본 경로라 plugin.json `icon` 불필요. 기능 변경 없음·버전 유지 |
 | 2026-10-18 | **/doctor 점검 — 설명 축약·CLAUDE.md 경량화** | v0.1.1. (1) 스킬 description `ux-ai-workflow` 683자 → 573자 — 발동 문구와 범주 경계만 남기고 절차 서술은 본문에 맡김. (2) plugin.json description 864자 → 322자, marketplace.json 항목을 같은 문구로 통일, 미사용 `tags` 제거. (3) 플러그인 CLAUDE.md 6,651자 → 3,027자 — `Structure` 절 삭제(SKILL.md·references·README가 정본), 변경 이력은 이 파일로 이관. 트리거 평가 재실행은 미수행 |
 | 2026-10-17 | 플러그인 신설 (v0.1.0) | NN/g "Using AI for UX Work" 스터디 가이드를 플러그인에 반영해 달라는 요청. 가이드는 링크 색인이라 링크 원문 약 40편과 그 1차 연구를 대조했고, "어디에 AI를 쓸까"를 **단계 단위 판정**으로 바꾸는 하네스로 구성했다 |
 | 2026-10-17 | Phase 1 드라이런 반영 | 1인 PM·검수자 없음·합성 사용자 컨셉 검증·녹취를 ChatGPT로 보내는 사례로 `delegation-mapper`를 돌린 결과, D7이 검수자 부재 시 L2를 대부분 L3로 올려 지도가 과중해졌다. D7은 레인을 올리지 않고 `L2 · 검수자 미정`으로 이름 붙여 Phase 4로 넘기게 바꿨다(발산 산출물에는 미적용, 검수자 경력 임계값은 만들지 않음). 함께 고친 것 — D5 '반복' 기준(계획이 있으면 반복), PII 정제는 외부 AI에 넣기 전에, 템플릿 없을 때 동의 범위 결정은 L3, 암묵적 생략 감지, 게이트 B는 레인을 바꾸는 미확인만 한 번에 하나씩, 대안 경로에 권장 표본 수를 만들지 않음 |

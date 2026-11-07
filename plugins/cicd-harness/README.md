@@ -30,6 +30,15 @@ DORA 2025[GOLD, dora.dev/cloud.google.com 2025]는 AI 도입이 **전달 처리�
 
 ## 설치
 
+```bash
+# 한 번에 설치 (Claude Code 2.1.275+)
+/plugin install cicd-harness --marketplace seungahhong/seungah-claude-plugins
+
+# 또는 마켓플레이스 등록 후 설치
+/plugin marketplace add seungahhong/seungah-claude-plugins
+/plugin install cicd-harness@seungah-claude-plugins
+```
+
 이 저장소를 Claude Code 플러그인 마켓플레이스로 추가한 뒤 `cicd-harness` 플러그인을 활성화하면,
 `cicd-harness` 스킬이 자동 트리거되거나 직접 호출할 수 있습니다.
 

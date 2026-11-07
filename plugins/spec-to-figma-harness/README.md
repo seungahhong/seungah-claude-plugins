@@ -4,6 +4,17 @@
 
 > **한 문장 원칙** — 기획서의 **시나리오**는 *상태 프레임*으로, 기획서의 **규칙**은 *레이어 어노테이션*으로.
 
+## 설치
+
+```bash
+# 한 번에 설치 (Claude Code 2.1.275+)
+/plugin install spec-to-figma-harness --marketplace seungahhong/seungah-claude-plugins
+
+# 또는 마켓플레이스 등록 후 설치
+/plugin marketplace add seungahhong/seungah-claude-plugins
+/plugin install spec-to-figma-harness@seungah-claude-plugins
+```
+
 ## 무엇을 하나
 
 FE가 개발하다 멈추는 지점은 기획 문서와 Figma 사이에 남은 **추측해야 하는 틈**이다. 이 하네스는 그 틈을 **착수 전에 목록으로 드러내는** 절차를 4단계로 돌린다(틈을 메우는 것은 사람의 답변이지 AI의 추측이 아니다).

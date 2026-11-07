@@ -5,6 +5,17 @@
 > 코드를 **쓰는** 비용은 싸졌지만, 그것을 **믿어도 되는지 판단하는** 비용은 그대로다.
 > 그래서 리뷰는 "코드가 예쁜가"가 아니라 **"터지면 무엇이 무너지고, 그것을 확인할 증거가 있는가"** 를 묻는 절차여야 한다.
 
+## 설치
+
+```bash
+# 한 번에 설치 (Claude Code 2.1.275+)
+/plugin install agentic-code-review-harness --marketplace seungahhong/seungah-claude-plugins
+
+# 또는 마켓플레이스 등록 후 설치
+/plugin marketplace add seungahhong/seungah-claude-plugins
+/plugin install agentic-code-review-harness@seungah-claude-plugins
+```
+
 ## 이 하네스가 하는 일 / 하지 않는 일
 
 | 한다 | 하지 않는다 |

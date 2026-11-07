@@ -2,6 +2,17 @@
 
 > 다른 도구에 넣을 **프롬프트를 AI가 최적화해 만들게** 하고, 그 프롬프트를 새 컨텍스트에 주입해 실제 작업을 돌리는 **메타 프롬프팅**을 4단계 인터랙티브로 수행하는 하네스.
 
+## 설치
+
+```bash
+# 한 번에 설치 (Claude Code 2.1.275+)
+/plugin install meta-prompting-harness --marketplace seungahhong/seungah-claude-plugins
+
+# 또는 마켓플레이스 등록 후 설치
+/plugin marketplace add seungahhong/seungah-claude-plugins
+/plugin install meta-prompting-harness@seungah-claude-plugins
+```
+
 ## 메타 프롬프팅이란
 
 "X 만들어줘"라고 직접 지시하는 대신 → **"X를 만들 좋은 프롬프트를 최적화해 만들어줘"** 로 AI에게 프롬프트를 짓게 하고, 그 결과 프롬프트를 **새 창(fresh context)에 주입**해 실제 작업을 돌린다. 며칠 도는 Goal/loop, 많은 토큰을 태우는 긴 작업에서 **처음부터 명확한 프롬프트**를 넣어 시간·토큰 낭비를 막는 게 목적이다.

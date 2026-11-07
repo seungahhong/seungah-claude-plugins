@@ -7,6 +7,17 @@
 근거: **arXiv:2601.02454 "The Rise of Agentic Testing" · arXiv:2506.02943 CANDOR · arXiv:2606.18168 "All Smoke, No Alarm" ·
 arXiv:2504.16777 "Systemic Flakiness"**.
 
+## 설치
+
+```bash
+# 한 번에 설치 (Claude Code 2.1.275+)
+/plugin install qa-agent-harness --marketplace seungahhong/seungah-claude-plugins
+
+# 또는 마켓플레이스 등록 후 설치
+/plugin marketplace add seungahhong/seungah-claude-plugins
+/plugin install qa-agent-harness@seungah-claude-plugins
+```
+
 ## 핵심 아이디어
 
 **커버리지 극대화나 그린 신호 자체가 reward-hacking 가능한 대리지표다.** 실행 경로는 많이 밟지만 어서션이 약하면

@@ -2,6 +2,17 @@
 
 > git 저장소가 **AI 코딩 에이전트가 읽고 안전하게 기여할 수 있는 코드베이스**인지를 **측정하고(결정론 스코어러) 승인 게이트 뒤에 개선을 적용하는(멀티 에이전트)** Claude Code 스킬. 100점·9 카테고리 + 3 blocking gate로 채점해 **JSON 점수표 · HTML 대시보드 · ROI 가이드**를 내고, 그 측정을 센서로 **빌드 가드레일·standalone·수용 증명** 개선을 설계해 **계획·개별 승인 뒤 적용**하며, 코드 본문(주석·명명·구조)을 census로 진단해 **3게이트 승인 뒤 단계별로 수정**한다.
 
+## 설치
+
+```bash
+# 한 번에 설치 (Claude Code 2.1.275+)
+/plugin install ai-readiness-cartography --marketplace seungahhong/seungah-claude-plugins
+
+# 또는 마켓플레이스 등록 후 설치
+/plugin marketplace add seungahhong/seungah-claude-plugins
+/plugin install ai-readiness-cartography@seungah-claude-plugins
+```
+
 ## 세 모드 (자유 조합 · 발동 시 스코프 확정)
 
 세 모드는 **배타 택일이 아니다** — ① 측정은 값싼 측정 레인, ②·③은 두 개선 층(② 저장소/구조 · ③ 코드 본문). 원하는 **부분집합**을 골라 함께 돌릴 수 있고, 여러 개면 **①→②→③ 순**으로 이어 수행한다.

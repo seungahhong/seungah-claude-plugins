@@ -2,6 +2,17 @@
 
 > 회사/팀을 **목적조직·AI native** 방향으로 바꾸려는 실무자·리더를 인터뷰해, **현행을 진단**하고 **목표를 함께 구체화**한 뒤 **"무엇부터 시작할지"를 단계별 할 일**로 정리하는 도메인 무관 인터랙티브 멀티 에이전트 하네스.
 
+## 설치
+
+```bash
+# 한 번에 설치 (Claude Code 2.1.275+)
+/plugin install org-transformation-harness --marketplace seungahhong/seungah-claude-plugins
+
+# 또는 마켓플레이스 등록 후 설치
+/plugin marketplace add seungahhong/seungah-claude-plugins
+/plugin install org-transformation-harness@seungah-claude-plugins
+```
+
 ## 무엇을 하나
 
 조직 전환을 "이상적 모델 그리기"가 아니라 **현행에서 출발하는 진단·계획**으로 다룬다. 4단계로:

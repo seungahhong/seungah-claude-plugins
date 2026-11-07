@@ -6,6 +6,17 @@
 근거: **OWASP Top 10 for LLM Applications 2025 · NVIDIA NeMo Guardrails(5 rail types) · Llama Guard(arXiv:2312.06674) ·
 SoK: Evaluating Jailbreak Guardrails(arXiv:2506.10597)**.
 
+## 설치
+
+```bash
+# 한 번에 설치 (Claude Code 2.1.275+)
+/plugin install llm-guardrails-harness --marketplace seungahhong/seungah-claude-plugins
+
+# 또는 마켓플레이스 등록 후 설치
+/plugin marketplace add seungahhong/seungah-claude-plugins
+/plugin install llm-guardrails-harness@seungah-claude-plugins
+```
+
 ## 핵심 아이디어
 
 AI 에이전트가 LLM/에이전트 앱을 *만들거나 강화*할 때, 안전은 모델의 자기 정렬이나 시스템 프롬프트에 대한 신뢰가 아니라

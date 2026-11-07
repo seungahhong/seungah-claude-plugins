@@ -5,7 +5,12 @@
 ## 설치
 
 ```bash
-claude plugin add seungahhong/seungah-claude-plugins
+# 한 번에 설치 (Claude Code 2.1.275+)
+/plugin install git-harness --marketplace seungahhong/seungah-claude-plugins
+
+# 또는 마켓플레이스 등록 후 설치
+/plugin marketplace add seungahhong/seungah-claude-plugins
+/plugin install git-harness@seungah-claude-plugins
 ```
 
 ## 스킬

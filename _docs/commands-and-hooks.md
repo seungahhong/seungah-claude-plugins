@@ -2,6 +2,8 @@
 
 ## Commands
 
+frontend-harness 7종 + review-harness 1종. 본문은 `plugins/<plugin>/commands/<name>.md`.
+
 | Command | File | Description |
 |---------|------|-------------|
 | Orchestrator | `/orchestrator` | research → prd → develop → **review → verify** 6단계 순차 실행 후 통합 리포트 생성. Review는 /simplify + /review + security-audit + lighthouse + qa-inspector 5개 관점 중 사용자 선택 항목만 병렬 + 재리뷰 루프. Verify는 **인수조건(AC) 단위 E2E** + 타입/빌드이며, **인수조건 충족률<100%면 Develop→Review→Verify 수렴 루프**(미충족 AC만 재구현, 매 라운드 사용자 게이트·소프트 캡 5회). 정적 분석을 먼저 끝낸 뒤 비싼 E2E를 실행. 커밋은 git-harness로 별도 진행 |
@@ -11,8 +13,11 @@
 | Verifier | `/verifier` | e2e-verifier 스킬을 로드하여 PRD **인수조건(AC) 단위** E2E 브라우저 검증 수행(AC별 PASS/FAIL·충족률) |
 | Verify | `/verify` | **인수조건 단위 E2E**(verifier.md 활용) + 타입/빌드 검사(`tsc --noEmit`, `npm run build`) 통합 실행. 인수조건 충족률<100%면 Develop 회귀 수렴 루프로 안내 |
 | Review | `/review` | /simplify(간소화) + 빌트인 /review(PR 리뷰) + security-audit(보안) + lighthouse-performance(성능) + qa-inspector(정합성) 5개 관점 중 **사용자가 선택한 항목만 병렬 spawn**(단일 메시지 동시 실행) → 통합 결과 통보 → 수정 적용 → 재리뷰 루프(최대 3회). 커밋은 git-harness `/commit` |
+| Handoff Review (review-harness) | `/handoff-review` | 개발 착수 *전* 상류 산출물 핸드오프 게이트 4종(dor-review 기획 DoR · design-handoff-review 디자인 사각지대 · contract-review API 계약 완결성/breaking change · test-coverage-review 인수조건↔테스트 커버리지) 중 넘어온 산출물에 해당하는 항목을 선택받아 병렬 실행 → '착수 준비도(Readiness)' 통합 리포트 + 기획·디자인·BE에 되돌릴 질문 목록. 완성 코드 리뷰·PRD 작성·커밋/PR 리뷰는 범위 밖 |
 
 ## Hooks
+
+frontend-harness 6종(`hooks/hooks.json`, 공용 파서 `lib.sh`) + meta-harness 2종. 모두 advisory·비차단이 기본이며 차단은 guard·write-guard·skill-dedup(PreToolUse)과 incremental-lint 잔여 에러(exit 2)뿐이다.
 
 | Hook | Trigger | Description |
 |------|---------|-------------|

@@ -2,6 +2,17 @@
 
 Claude Code **세션 JSONL 로그**를 파싱해 레포 단위 **토큰/컨텍스트 효율**을 정량 측정·시각화하고 $ 절감안을 내는 결정론적 단일 스킬. `~/.claude/projects/<encoded>/*.jsonl`의 `usage` 필드만으로 별도 API 호출 없이 전체 비용 구조·캐시 효율·비효율 패턴을 재구성한다.
 
+## 설치
+
+```bash
+# 한 번에 설치 (Claude Code 2.1.275+)
+/plugin install token-efficiency --marketplace seungahhong/seungah-claude-plugins
+
+# 또는 마켓플레이스 등록 후 설치
+/plugin marketplace add seungahhong/seungah-claude-plugins
+/plugin install token-efficiency@seungah-claude-plugins
+```
+
 ## 무엇을 하나
 
 1. **4축 가중 점수** (cache 35% / redundancy 30% / density 15% / tool 20%) — 각 축에 근거 등급(CONFIRMED/PLAUSIBLE/HEURISTIC).

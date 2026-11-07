@@ -1,5 +1,16 @@
 # meta-harness
 
+## 설치
+
+```bash
+# 한 번에 설치 (Claude Code 2.1.275+)
+/plugin install meta-harness --marketplace seungahhong/seungah-claude-plugins
+
+# 또는 마켓플레이스 등록 후 설치
+/plugin marketplace add seungahhong/seungah-claude-plugins
+/plugin install meta-harness@seungah-claude-plugins
+```
+
 ## 무엇인가
 
 `meta-harness`는 하네스(루트 CLAUDE.md + 각 SKILL.md + agents/*.md + commands/*.md + hooks, 즉 "LLM 주위의 코드")를 스스로 개선하는 메타 하네스 엔지니어링 플러그인이다. 압축 요약이 아니라 **full-trace experience store**를 grep/cat로 직접 조회해 결함의 root cause를 causal reasoning(confound 격리 → 단독검증 → 위험평가)으로 진단하고, behavior-alignment·rule-body-cost·trigger-precision·generalization 4축 Pareto frontier를 후퇴시키지 않는 패치를 **사용자 승인 게이트** 하에서만 제안·적용한다.

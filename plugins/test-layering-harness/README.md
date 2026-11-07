@@ -2,6 +2,17 @@
 
 > 인수조건(AC)을 **방법론 × 계층 택소노미**로 계층별 테스트 스위트로 계획하고, **사람이 하나씩 승인**하며 순차 적용하는 독립 플러그인.
 
+## 설치
+
+```bash
+# 한 번에 설치 (Claude Code 2.1.275+)
+/plugin install test-layering-harness --marketplace seungahhong/seungah-claude-plugins
+
+# 또는 마켓플레이스 등록 후 설치
+/plugin marketplace add seungahhong/seungah-claude-plugins
+/plugin install test-layering-harness@seungah-claude-plugins
+```
+
 ## 무엇을 하나
 
 인수조건(Acceptance Criteria, Given-When-Then)을 입력받아:

@@ -4,6 +4,17 @@
 
 `methodology-advisor`는 frontend-harness의 `grill-me` 인터뷰 스킬을 **개발 방법론 선택**에 특화·확장한 도메인 무관 멀티 에이전트 플러그인이다. "무조건 스크럼 쓰세요" 같은 은탄환을 팔지 않는다 — **방법론에는 우열이 없고 맥락 적합성만 있다**는 전제에서, 지금 팀 상황을 진단해 **상황에 맞는 방법론을 트레이드오프·안티패턴과 함께** 제안한다.
 
+## 설치
+
+```bash
+# 한 번에 설치 (Claude Code 2.1.275+)
+/plugin install methodology-advisor --marketplace seungahhong/seungah-claude-plugins
+
+# 또는 마켓플레이스 등록 후 설치
+/plugin marketplace add seungahhong/seungah-claude-plugins
+/plugin install methodology-advisor@seungah-claude-plugins
+```
+
 ## 무엇을 하나
 
 4단계로 진행하고, **매 단계 결과를 보여주고 승인받은 뒤에만** 다음으로 넘어간다.

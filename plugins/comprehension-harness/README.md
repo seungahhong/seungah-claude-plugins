@@ -7,6 +7,17 @@
 
 출발점은 Geoffrey Litt(Notion)의 강연 *"Understanding is the new bottleneck"*(2026)이 세운 구분이다 — **검증을 위한 이해**(맞았나? 에이전트가 점점 잘한다)와 **참여를 위한 이해**(다음 아이디어를 낼 수 있는가? 대체되지 않는다). 이 하네스는 **후자**를 만든다.
 
+## 설치
+
+```bash
+# 한 번에 설치 (Claude Code 2.1.275+)
+/plugin install comprehension-harness --marketplace seungahhong/seungah-claude-plugins
+
+# 또는 마켓플레이스 등록 후 설치
+/plugin marketplace add seungahhong/seungah-claude-plugins
+/plugin install comprehension-harness@seungah-claude-plugins
+```
+
 ## 이 하네스가 하는 일 / 하지 않는 일
 
 | 한다 | 하지 않는다 |

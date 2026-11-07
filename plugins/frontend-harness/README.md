@@ -1,11 +1,16 @@
 # frontend-harness
 
-분석 → 설계 → 개발 → 리뷰 → 검증까지 프론트엔드 개발 전 과정을 지원하는 Claude Code 멀티 에이전트 플러그인입니다. 12개 스킬, 7개 커맨드, 5개 훅으로 구성됩니다.
+분석 → 설계 → 개발 → 리뷰 → 검증까지 프론트엔드 개발 전 과정을 지원하는 Claude Code 멀티 에이전트 플러그인입니다. 13개 스킬, 7개 커맨드, 6개 훅으로 구성됩니다.
 
 ## 설치
 
 ```bash
-claude plugin add seungahhong/seungah-claude-plugins
+# 한 번에 설치 (Claude Code 2.1.275+)
+/plugin install frontend-harness --marketplace seungahhong/seungah-claude-plugins
+
+# 또는 마켓플레이스 등록 후 설치
+/plugin marketplace add seungahhong/seungah-claude-plugins
+/plugin install frontend-harness@seungah-claude-plugins
 ```
 
 설치 후 모든 스킬·커맨드를 슬래시 커맨드로 사용할 수 있습니다.

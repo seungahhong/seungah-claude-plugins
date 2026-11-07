@@ -5,6 +5,17 @@
 
 근거 논문: **arXiv:2605.18747 "Code as Agent Harness: Toward Executable, Verifiable, and Stateful Agent Systems"**(2026-05).
 
+## 설치
+
+```bash
+# 한 번에 설치 (Claude Code 2.1.275+)
+/plugin install code-as-harness --marketplace seungahhong/seungah-claude-plugins
+
+# 또는 마켓플레이스 등록 후 설치
+/plugin marketplace add seungahhong/seungah-claude-plugins
+/plugin install code-as-harness@seungah-claude-plugins
+```
+
 ## 핵심 아이디어
 
 코드는 더 이상 *최종 산출물*만이 아니다 — 에이전트가 추론·행동·검증하는 **운영 기반(operational substrate)** 이다.

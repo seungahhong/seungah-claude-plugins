@@ -6,6 +6,17 @@
 근거: **published RFC 8707(Resource Indicators)·RFC 8693(Token Exchange)·OWASP LLM06:2025(Excessive Agency)**(discipline
 HIGH) + **ID-JAG draft-04·MCP Authorization draft·A2A spec·OWASP Agentic ASI01/ASI03**(framing MEDIUM, in-flux 초안).
 
+## 설치
+
+```bash
+# 한 번에 설치 (Claude Code 2.1.275+)
+/plugin install agent-authorization-harness --marketplace seungahhong/seungah-claude-plugins
+
+# 또는 마켓플레이스 등록 후 설치
+/plugin marketplace add seungahhong/seungah-claude-plugins
+/plugin install agent-authorization-harness@seungah-claude-plugins
+```
+
 ## 핵심 아이디어
 
 AI 에이전트가 도구를 쓰고 다른 에이전트와 협업하는 시스템을 만들 때, **접근을 결정하는 근거로 *네트워크·공유 API 키·LLM의

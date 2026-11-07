@@ -1,6 +1,6 @@
 # Skills
 
-### Plugin: `frontend-harness`
+## Plugin: `frontend-harness`
 
 | Skill | Command | Description |
 |-------|---------|-------------|
@@ -18,13 +18,13 @@
 | Security Audit | `/security-audit` | OWASP Top 10 코드 분석, npm audit 의존성 스캔, 보안 헤더·시크릿 탐지 |
 | Figma-Extract | `/figma-extract` | Figma 링크→디자인 컨텍스트 추출/파일화 (metadata 노드맵 우선→대상 노드만 get_design_context/variable_defs/screenshot 상세 추출→`.claude/design/`에 json·spec·png 산출, 부모엔 경로+요약만 반환해 토큰 폭주 차단; 코드 생성 안 함, 단독 동작) |
 
-### Plugin: `harness-generator`
+## Plugin: `harness-generator`
 
 | Skill | Command | Description |
 |-------|---------|-------------|
 | Harness Generator | `/harness-generator` | 도메인 무관 하네스(에이전트팀 + 스킬 + 오케스트레이터) **수동·인터랙티브** 생성 — 7단계 메타 프로세스 (감사 → 도메인 분석 → 아키텍처 → 에이전트 정의 → 스킬 작성 → 오케스트레이션 → 검증/진화) |
 
-### Plugin: `git-harness`
+## Plugin: `git-harness`
 
 | Skill | Command | Description |
 |-------|---------|-------------|
@@ -32,7 +32,7 @@
 
 > **(2026-08-02 v0.3.0)** 기존 `commit`·`review-to-pr` 두 스킬을 `commit-pr` 하나로 통합했다. 커밋~PR은 원래 한 줄기 작업인데 스킬이 쪼개져 있어 사용자가 매번 다음 스킬을 다시 불러야 했다. 핵심 변경 — ① **상태 기반 진입점 추천**(질문 전에 `git status`/`branch`/`log`/`log @{u}..HEAD`/`gh pr view`를 조용히 실행하고 **명령 실패도 판단 근거**로 읽어 각 항목에 (추천)+이유 한 줄) ② **진입점 선택 = 이후 단계 승인**(중간에 "push할까요?"·"PR 만들까요?"를 되묻지 않음 — 흐름만 끊고 정보를 더하지 않으므로. 예외는 되돌리기 어려운 행위 직전의 *내용* 확인과 §8 PR 리뷰 실행 여부뿐) ③ **커밋 차단 게이트**(리뷰어에겐 흔들리는 5단계 severity 대신 답할 수 있는 2값 verdict만 요구하고, severity 환산은 결정론 표가 맡는다. correctness이거나 CONFIRMED면 차단 → 수정·재스테이징 후 **재리뷰**로만 통과 판정, 자기보고 불신) ④ **게이트는 경고이지 거부권이 아님**(사용자가 의도된 것이라며 진행을 택하면 무엇을 안고 가는지 남기고 따른다) ⑤ 모드별 전제 조건만 검사(기존 PR 리뷰엔 보호 브랜치 검사 미적용 — 쓰기가 아니므로) ⑥ 커밋은 `--cleanup=whitespace -F -`(본문 `# 요약` 헤딩이 주석으로 삭제되는 것과 고정 경로 임시파일의 병렬 세션 충돌 방지). 스킬 본문은 흐름·게이트만 담고 상세는 references 3종(`commit-message.md`·`review-lane.md`·`pr-creation.md`)에 둔다. **경계** — 저장소 상태를 바꾸지 않는 상류 산출물 검수(`review-harness`)·완성 코드 정적 리뷰(`frontend-harness` `/review`)·하네스 자체 진단(`meta-harness`)은 범위가 아니다.
 
-### Plugin: `meta-harness`
+## Plugin: `meta-harness`
 
 | Skill | Command | Description |
 |-------|---------|-------------|
@@ -45,7 +45,7 @@
 
 > **루트 CLAUDE.md 「플러그인 한눈에 보기」 원문** (2026-10-18 루트에서는 한 줄 요약으로 교체, 원문은 여기로 이관) — full-trace experience store 기반 메타 하네스 엔지니어링 (causal 진단 + Pareto 비후퇴 패치, 사용자 승인 게이트) + 라이프사이클 훅 2종(UserPromptSubmit self-heal-capture가 '수정/보강' 발화를 signals 레인에 원형 적재, SessionStart warm-start-nudge가 미소비 신호를 세션 시작 시 표면화 → healer가 소비, 적용은 승인 게이트 후). 데이터 적재·지침 보강은 자족 reference의 데이터 적재 기준(C1~C9) + 메커니즘 선택 결정 절차를 따른다 — enforcement 성격 분류 후 **결정론적 근거는 advisory 본문이 아니라 hook/permission으로 첫 발생부터 라우팅**(hook이면 자족 hook-lifecycle.md로 상황에 맞는 lifecycle event 선택), 배치는 경계 유지(.claude/settings.json은 직접 수정 않고 update-config 핸드오프; .claude/rules는 결정론 아닌 advisory)
 
-### Plugin: `product-spec-harness`
+## Plugin: `product-spec-harness`
 
 | Skill | Command | Description |
 |-------|---------|-------------|
@@ -68,7 +68,7 @@
 
 > **루트 CLAUDE.md 「플러그인 한눈에 보기」 원문** (2026-10-18 루트에서는 한 줄 요약으로 교체, 원문은 여기로 이관) — 기획자용 기획문서(PRD)+사용자스토리+**인수조건** 7단계 인터랙티브 하네스 (기획안 인자 입력 → 카드 추출 → 생성 전 기획 완성도 점검(DoR) 내재화 → **기획안 보완 문답(생성 전 필수 문의)** → 보강점 반영 **PRD 작성·확정(계획→설계→비평 3서브에이전트 루프)** → 스토리 생성 → **1차 적대적 검증(PRD↔스토리)** → **인수조건 작성(acceptance-writer → `acceptance-criteria.md` 최종 산출물)** → **2차 적대적 검증(스토리↔인수조건)**; **인수조건 단일 원본**(조건·행동·결과 Given-When-Then 문장은 `acceptance-criteria.md`에만·`user-stories.md`는 `[인수조건 인계]` 메모만)·1개=단일 관심사·흐름 커버리지 6종(정상+경계·에러·빈 상태·권한·상태 전이, `해당 없음`은 사유 병기로 누락과 구분)·관찰 가능한 Then·`AC-n.m`↔`US-n` 추적·**예외 흐름 정책/수치 발명 금지**(`[확인필요]`로 되돌림); **섹션 소유권 분리**(계획 §1~§3 / 설계 §4~§6 / 비평 쓰기권한 0)·**회차당 승인 게이트 1개**(+확인 질문 최대 1개)·루프 중 파일 생성 금지·**차단 사유 닫힌 4종**·처리분류 A/B/C(발명 방지)·정체 가드 G1~G3·**비평에 확정 거부권 없음**(잔존은 부록 B 알려진 제한사항). 네 점검(Phase 1 원본 기획안 / 2.3 확정 전 PRD 초안 / 4 PRD↔스토리 / 6 스토리↔인수조건)은 대상·축이 달라 중복 금지. 설계는 *기획 설계*(여정·상황·예외 제품규칙·정책·권한·정보항목·의존성)이고 기술 아키텍처·스토리 문장은 산출 금지. 정직성: 루프 효과 미측정 — '지적과 처리 결과가 문서에 남는다'까지만 주장, 점수·백분율·성숙도 등급 금지(유일 예외 = Phase 1 INVEST 점수표와 그 총점에서 나오는 3단 착수 판정; 금지 대상은 하네스가 매기는 평가 점수이지 PRD 본문 성공지표 수치가 아님); **산출 파일은 정확히 4개**(`PRD.md`·`user-stories.md`·`acceptance-criteria.md`·`product-spec-review.md`) — 1·2차 적대적 검증 리포트는 채팅 제시만 하고 파일로 남기지 않음, 기획 완성도 점검 결과는 opt-in 저장(**건너뜀 1건 이상이면 Phase 1 직후, 0건이면 마무리** — 한 번 물은 질문은 반복 안 함), 기획자용 용어 순화. **① 생성 전 보완 문답**: Phase 1 종료 게이트를 3지선다로 *교체*(게이트 총량 불변)해 PRD·스토리·인수조건 중 **어느 것도 만들기 전에** 기획안 보완 여부를 묻고, 미충족 항목을 **하나씩**(묶음 질문 금지) 물으며 매 질문에 `건너뛰기`·`전부 건너뛰기`를 준다 — 답변 처리는 닫힌 5종(응답 / 건너뜀+사유 / 일괄 건너뜀 / 모호는 1회 재질문 후 건너뜀 / 게이트 (3) '나중에 보완' → `건너뜀(나중에 보완)` 일괄), **건너뜀을 '보완됨'으로 승격 금지**, 진척은 `응답 n건·건너뜀 n건` 계수뿐('해소' 아님 — 충족 판정 권한은 `dor-evaluator` 단독이고 재호출 안 함), 보완 대장은 반영 대장 4열에 흡수(원문은 각주·**대장에 Given-When-Then 문장 금지**), **보완 후 INVEST 총점·3단 판정 재산출 금지**(재채점=성숙도 등급화). 모드 B는 Phase 0 카드 게이트 문장이, 평가 거절 경로는 §1.1-N 게이트가 그 자리를 대신함. **② 생성 후 재갱신 경로**(마무리 §1 · 새 세션은 **입력 모드 R**이 A/B보다 먼저 판별): Phase를 새로 만들지 않고 기존 2·3·5를 **지정 범위 재호출** — 영향 범위 **닫힌 4라벨 R-A/R-B/R-C/R-0**(경계 모호 시 상위로 승격), 순서 **상류→하류 고정**(PRD→스토리→인수조건), **ID 동결**(`FR-n`/`NFR-n`/`US-n`/`AC-n.m`은 주소라 재번호·재사용 금지 — 스토리가 갈려도 AC ID 불변이고 현재 출처는 `출처: US-n`이 정본), **델타 모드 계약**(전체 재생성 금지·변경 블록만·`story-writer` 재조립은 `[재조립 제안]`으로 반환 후 승인 시에만), 재검증 **쌍 규칙**(PRD·스토리 중 한쪽이라도 갱신되면 1차 / 스토리·인수조건 중 한쪽이라도면 2차 · 전수 전환은 닫힌 3종), 재갱신 비평은 지정 항목 + **C-2·C-4·C-6**(발명 감사 강제 ON — 새 값이 문서에 처음 들어오는 유일한 통로), 종료 조건 **T1~T6**(자발 발화 세션당 1회·고정점·빈 델타·사용자 요청엔 상한 없음). **참조 대조(ID 기계 대조)는 오케스트레이터 자기보고이며 Phase 4·6 독립 판정을 대체하지 않음**. **재갱신해도 파일은 여전히 4개** — 이력은 `PRD.md` 부록 A(정본)·부록 B 후행 표기·세 문서 머리 `기준 입력: v{N}`(식별자이지 등급 아님)·`product-spec-review.md` §8 3값/§9 보완 문답 기록에 분산. 정직성: 보완·재갱신의 품질 효과 미측정 — '무엇이 채워지고 무엇이 [확인필요]로 남았는지가 문서에 남는다'까지만 주장)
 
-### Plugin: `loop-engineering`
+## Plugin: `loop-engineering`
 
 | Skill | Command | Description |
 |-------|---------|-------------|
@@ -84,7 +84,7 @@
 
 > `loop-engineering`은 **주어진 작업을 검증 루프로 완성**하는 데 특화한 도메인 무관 멀티 에이전트 하네스다. 5명의 에이전트를 서브에이전트로 spawn한다(모두 `model: "opus"`). 루프 메모리는 `.claude/loop-memory/{goal-slug}/`(goal.md / iterations.jsonl / lessons.md)에 누적되어 회차·세션을 넘어 학습한다(continual learning). **경계** — 하네스 자체 진단·개선(meta-harness)·새 하네스 생성(harness-generator)·기획문서(product-spec/frontend)·커밋/PR 리뷰(git-harness)·native `/loop`(시간 간격 폴링)은 범위가 아니다. native `/goal` 위에 검증기 설계·재시도 전 진단·지속학습 메모리·무진전 감지를 구조화해 얹은 버전으로 위치한다. **(2026-06 심화)** Osmani "Loop Engineering" 원전을 additive 반영 — 여섯 빌딩블록(factory model: automations·worktrees·skills·plugins/connectors·sub-agents·external memory) 중 skills(하네스 자체)·sub-agents·external memory를 *기본 구현*으로(sub-agents는 실제 검증을 실행하는 강한 verifier로), 나머지를 코어 흐름 불변의 *opt-in 레인*으로 framing하고, 기계 검증이 막지 못하는 사람-쪽 결함(comprehension rot·cognitive surrender·orchestration tax)에 stay-the-engineer 가드(merge 전 diff 이해 게이트 green CI≠구현·병렬 review-bandwidth 상한·loop-verifier reward-hacking 경계)를 더했다(현재 기능 전부 보존, principles §8 / research dossier §9).
 
-### Plugin: `review-harness`
+## Plugin: `review-harness`
 
 | 스킬·커맨드 | Command | Description |
 |-------------|---------|-------------|
@@ -96,7 +96,7 @@
 
 > `review-harness`는 코드 착수 *전* **상류 산출물(기획·디자인·API 계약·QA 인수조건)** 을 핸드오프 시점에 '착수 게이트'로 검수하는 데 특화한 도메인 무관 하네스다. 4개 게이트 스킬은 모두 `disable-model-invocation: true`(명시 호출 또는 `handoff-review`가 spawn)·`allowed-tools`에 Edit/Write 없음(읽기 위주, 산출물 직접 수정 금지)이다. `handoff-review` 오케스트레이터는 선택된 게이트를 한 메시지에서 병렬 spawn한다(`frontend-harness`의 `/review` 패턴과 동일). **내재화 원칙** — Shift-Left(상류 게이트) · Honesty Guardrail(검증된 2025+ 근거만 등급과 함께 인용, '개선 N%' 약속 금지, baseline-before-target, 반증된 신화 수치 인용 금지) · LLM 자동탐지는 사람 검토를 보조(이상적 템플릿 과대탐지 경향 인지). **경계** — 완성된 코드 리뷰(`frontend-harness` `/review`·qa-inspector·security-audit) · PRD·스토리 *작성*(`product-spec-harness`) · 커밋/PR 리뷰(`git-harness`) · 하네스 자체 진단(`meta-harness`)은 범위가 아니며, 트리거 충돌 방지를 위해 description·`evals/trigger-eval.json`에 명시한다.
 
-### Plugin: `ops-harness`
+## Plugin: `ops-harness`
 
 | Skill | Command | Description |
 |-------|---------|-------------|
@@ -111,7 +111,7 @@
 
 > `ops-harness`는 **배포 이후 런타임** 인시던트(탐지·국소화·RCA·완화)에 특화한 도메인 무관 하네스다. 4개 에이전트를 서브에이전트로 spawn한다(모두 `model: "opus"`; L1→L4 순차). **내재화 원칙** — 단계 분해(직전 증거만 입력) · 진단(L1–L3)↔조치/위험(L4) 역할 분리 · 중재 읽기·휴먼-인-더-루프 · DQ 품질 게이트 · RCA anti-anchoring 가드 · Honesty Guardrail(역할분리 100%/1.7%·RCA 15%p/45%는 한계 동반 인용, 일반화·인과 단정 금지). **경계** — 하네스 자체 진단(`meta-harness`)·검증 루프 완성(`loop-engineering`)·완성 코드 리뷰(`frontend-harness`/`git-harness`)·상류 핸드오프 게이트(`review-harness`)·PRD 작성(`product-spec-harness`)은 범위가 아니다. 근거: AIOpsLab(arXiv:2501.06706)[GOLD/SILVER] · 역할분리 오케스트레이션(arXiv:2511.15755)[SILVER] · RCA 추론 실패모드(arXiv:2601.22208)[SILVER].
 
-### Plugin: `backend-harness`
+## Plugin: `backend-harness`
 
 | Skill | Command | Description |
 |-------|---------|-------------|
@@ -127,7 +127,7 @@
 
 > `backend-harness`는 **백엔드/API 구현을 실행 기반 검증으로 완성**하는 데 특화한 도메인 무관 하네스다. 4개 에이전트를 서브에이전트로 spawn한다(모두 `model: "opus"`; Phase 순차). **내재화 원칙** — 실행 기반 검증(증거 없는 PASS 금지) · 환경 우선(1급 시민) · generator/checker 분리 · reward-hacking 가드 · 계약 준수 · 승인 게이트 · Honesty Guardrail(TestART 수치는 2024 데이터·효과크기 단정 금지). **경계** — API 계약 *검수*(`review-harness/contract-review`)·FE 화면 구현(`frontend-harness`)·PRD 작성(`product-spec-harness`)·커밋/PR(`git-harness`)·하네스 진단(`meta-harness`)·단발 자율 반복(`loop-engineering`)은 범위가 아니며, `test-generator`는 FE Red-Green-Refactor(`frontend-harness/tdd`)와 구분된다. 근거: 저장소 단위 작업 난도·환경 병목·자기보고 불일치(arXiv:2510.04852·2505.09569·2505.07473·2512.06915)[GOLD] · TestART(arXiv:2408.03095, ACM TOSEM 2025)[SILVER].
 
-### Plugin: `cicd-harness`
+## Plugin: `cicd-harness`
 
 | Skill | Command | Description |
 |-------|---------|-------------|
@@ -142,7 +142,7 @@
 
 > `cicd-harness`는 **코드 커밋→프로덕션의 전달 파이프라인(CI/CD·릴리스·IaC·배포 게이트)**에 특화한 도메인 무관 하네스다. 4개 에이전트를 서브에이전트로 spawn한다(모두 `model: "opus"`; Phase 순차, 없는 단계는 Phase 0에서 건너뜀). **내재화 원칙** — defense-in-depth(읽기전용·쓰기/apply/deploy는 사람 사전 승인 후 제안→집행) · policy-as-code 결정론적 게이트(terraform plan + OPA) · trust-tier 단계적 자율 · DORA 통제 프레이밍 · 역할 분리 · Honesty Guardrail. **DORA 정직성(필수)** — AI-불안정 통제책으로 사실 인용 가능한 것은 **small batches + robust test automation 두 가지뿐**이며, '버전관리·느슨한 결합도 통제요소'·'긴밀결합 팀 무이득'은 반증된 신화로만 표기한다. **경계** — 배포 *이후* 런타임 인시던트(`ops-harness`)·BE 코드 *구현*(`backend-harness`)·빌드 그린까지 자율 반복(`loop-engineering`)·커밋/PR(`git-harness`)·계약 검수(`review-harness/contract-review`)·PRD(`product-spec-harness`)·FE(`frontend-harness`)·하네스 진단(`meta-harness`)은 범위가 아니다. 근거: DORA 2025·DORA AI Capabilities Model[GOLD] · AI-Augmented CI/CD(arXiv:2508.11867)·GitHub Agentic Workflows·MACOG(arXiv:2510.03902)[SILVER].
 
-### Plugin: `context-engineering`
+## Plugin: `context-engineering`
 
 | Skill | Command | Description |
 |-------|---------|-------------|
@@ -157,7 +157,7 @@
 
 > `context-engineering`은 **모델에 들어갈 정보 페이로드의 조립·최적화**에 특화한 도메인 무관 하네스다. 4개 에이전트를 서브에이전트로 spawn한다(모두 `model: "opus"`; Scope→Retrieve→Process→Manage 순차). 산출물은 `.claude/context-engineering/{slug}/`(context-brief.md / payload.md / playbook.md)에 모이고 같은 slug 재실행 시 playbook을 먼저 참조한다. **내재화 원칙** — Scope 우선(retrieval need 먼저) · 체계적 최적화≠더 채우기 · 구조적 증분(brevity bias·context collapse 가드) · 위치 인지 배치(lost-in-the-middle) · playbook 큐레이션 · 사실 보존·환각 컨텍스트 금지 · 멀티 에이전트 per-agent 격리(opt-in) · 검증 없는 출하 금지 · 승인 게이트. **경계** — 작업의 에이전트 병렬화 판단 · AI 산출물 평가(judge 구성) · 엔지니어용 실행 명세 작성 · 기획자용 PRD · 하네스 자체 진단 · 단발 코드 수정은 범위가 아니며(일반 개념으로만 변별, 타 플러그인 비의존), description·trigger-eval에 명시한다. 근거: A Survey of Context Engineering(arXiv:2507.13334)[정의·taxonomy, vote 3-0] · ACE: Agentic Context Engineering(arXiv:2510.04618, ICLR 2026)[진화 playbook·brevity bias·context collapse, vote 3-0] · DACS: Dynamic Attentional Context Scoping(arXiv:2604.07911)[context pollution·REGISTRY/FOCUS, vote 2-1 medium — 정량수치 비인용, 질적 패턴만].
 
-### Plugin: `agent-orchestration`
+## Plugin: `agent-orchestration`
 
 | Skill | Command | Description |
 |-------|---------|-------------|
@@ -172,7 +172,7 @@
 
 > `agent-orchestration`은 **여러 에이전트를 쓸지/어떻게 협업시킬지 결정·설계·검증**에 특화한 도메인 무관 하네스다. 4개 에이전트를 서브에이전트로 spawn한다(모두 `model: "opus"`; Phase 0→3 순차, single이면 Phase 2 skip). 핵심 메시지는 **"에이전트를 더 붙인다고 항상 이득이 아니다 — 성패는 수가 아니라 architecture-task alignment가 결정한다"**. **내재화 원칙** — 에이전트 수≠이득 · capability ceiling(경험적 임계, over-rule 금지) · 협업에는 비용(curse of coordination) · 실패는 root-cause(communication/commitment/expectation) · baseline 대비 순이득 검증 · falsifiable·over-rule 금지 · 승인 게이트. **경계** — 컨텍스트 페이로드 조립·압축 · AI 출력 평가(judge 구성) · 엔지니어용 구현 명세 작성 · 단일 자율 반복 루프 · 새 하네스 생성 · 프로덕션 장애 대응은 범위가 아니다. 근거: Towards a Science of Scaling Agent Systems(arXiv:2512.08296, Google/MIT/DeepMind/Anthropic)[+80.8%~−70.0% architecture-task alignment·45% capability ceiling, vote 3-0] · CooperBench(arXiv:2601.13295)[curse of coordination·communication/commitment/expectation 3실패모드, vote 3-0/2-1] · DACS(arXiv:2604.07911)[context pollution, vote 2-1 medium — 수치 비인용].
 
-### Plugin: `eval-harness`
+## Plugin: `eval-harness`
 
 | Skill | Command | Description |
 |-------|---------|-------------|
@@ -187,7 +187,7 @@
 
 > `eval-harness`는 **AI 생성물의 판정 신뢰성**(누가·어떻게·몇 번 채점하면 결과를 믿을 수 있는가)을 설계·감사·실행하는 데 특화한 도메인 무관 하네스다. 4개 에이전트를 서브에이전트로 spawn한다(모두 `model: "opus"`; Phase 0→3 순차). **내재화 원칙** — validity 우선(상대 최대 100% 왜곡, 상한치) · single-shot 금지(다중 표본 ≥3) · 다관점 분해·실행 grounding · shortcut 적대 감사 · harness≠model 귀인 · instruction density 절제 · confidence·CAVEAT·baseline 대비 · 승인 게이트. **경계** — 컨텍스트 페이로드 조립 · 작업의 에이전트 병렬화 판단 · 엔지니어용 구현 명세 작성 · 기존 코드의 일반 실행 테스트 생성 · 커밋/PR 코드 리뷰는 범위가 아니다. 근거: Establishing Best Practices for Building Rigorous Agentic Benchmarks(ABC, arXiv:2507.02825)[task/outcome validity·상대 최대 100% 왜곡, vote 3-0] · Can You Trust LLM Judgments?(arXiv:2412.12509)[single-shot 위험·다중 표본, vote 3-0] · MCTS-Judge(arXiv:2502.12468)[test-time 다관점 분해, vote 2-1 — '41%→80%' 수치는 반박되어 비인용] · IFScale(arXiv:2507.11538)[instruction density 68%@500, vote 2-1] · Coding Benchmarks Are Misaligned(arXiv:2606.17799)[harness≠model 20+pp, vote 3-0].
 
-### Plugin: `spec-driven-development`
+## Plugin: `spec-driven-development`
 
 | Skill | Command | Description |
 |-------|---------|-------------|
@@ -202,7 +202,7 @@
 
 > `spec-driven-development`는 에이전트가 코드를 생성할 **엔지니어용 실행 가능 구현 명세 contract**에 특화한 도메인 무관 하네스다. 4개 에이전트를 서브에이전트로 spawn한다(모두 `model: "opus"`; Phase 0→3 순차). **내재화 원칙** — 명세=source of truth · 명세 승인 게이트(구현 착수 전) · 구조화된 contract · 인수기준+자기검증 내재화 · 명세 대비 검증(추적성) · comprehension 게이트(comprehension debt 방지) · 과장 금지(정직성, 비판도 dossier에 기록). **경계** — 기획자용 PRD·사용자 스토리(문제정의·비즈니스 요구) 작성 · AI 출력 평가 judge 구성 · 컨텍스트 페이로드 조립 · 완성 코드 리뷰·커밋/PR · 하네스 자체 진단은 범위가 아니다(일반 개념으로 변별, 타 플러그인 의존 금지). 근거: Spec-Driven Development: From Code to Contract in the Age of AI Coding Assistants(arXiv:2602.00180)[명세=source of truth·워크플로 역전, vote 3-0; Martin Fowler의 non-determinism·overhead 비판 동반 — 'super-prompt' 주장은 반박되어 비인용] · Addy Osmani "How to write a good spec for AI agents"(2026-01, addyo.substack)[구조화·계획·반복, vote 3-0] · "The 80% Problem in Agentic Coding"(2026-01)[comprehension debt, vote 3-0].
 
-### Plugin: `human-agent-teaming`
+## Plugin: `human-agent-teaming`
 
 | Skill | Command | Description |
 |-------|---------|-------------|
@@ -219,7 +219,7 @@
 
 > **루트 CLAUDE.md 「플러그인 한눈에 보기」 원문** (2026-10-18 루트에서는 한 줄 요약으로 교체, 원문은 여기로 이관) — 사람과 AI 에이전트가 *한 팀으로* 협업하도록 분업·공통기반·감독/신뢰·검증을 설계하는 하네스 (분업·위임(human/agent/co-delegation·자율 수준·HITL/HOTL)→공통기반(온보딩 브리핑·AI 오류 경계·workspace awareness·재정렬 루프)→모니터링 기반 감독(전수 승인 아님·단계적 가역 권한·적절한 의존)→비례 검증(루브릭·Doer-Verifier)·핸드오프 연속성·책임 4단계 + 4개 에이전트. 축은 AI↔AI 토폴로지가 아니라 사람↔에이전트 분업·감독. 근거 Anthropic 'Building Effective Human-Agent Teams' 정독 + 1차 자료 + arXiv:2504.10918·2602.05987, 벤더=설계 의도·반박된 패턴(자기제한 1차 감독) 미사용)
 
-### Plugin: `code-as-harness`
+## Plugin: `code-as-harness`
 
 | Skill | Command | Description |
 |-------|---------|-------------|
@@ -236,7 +236,7 @@
 
 > **루트 CLAUDE.md 「플러그인 한눈에 보기」 원문** (2026-10-18 루트에서는 한 줄 요약으로 교체, 원문은 여기로 이관) — 코드를 *실행 가능·검사 가능·상태 보존* 한 운영 기반으로 다루고 한 번의 거버넌스된 Plan→Execute→Verify 제어 루프로 코드 변경을 안전·검증 가능하게 수행하는 하네스 (계획 계약(의도·결정적 센서·행동 위험 분류)→권한·샌드박스 실행(가역 우선·안전임계 사람 게이트·실행 trace)→실행 검증(자기보고 불신·결정적 센서 실행·reward-hacking·불완전 피드백 UNVERIFIED·최종 너머)→텔레메트리 진단·수렴(trace 인용 진단·regression-free 수정·CONVERGED/ITERATE/ESCALATE) 4단계 + 4개 에이전트. 근거 arXiv:2605.18747 'Code as Agent Harness' 정독 + 인접 1차(2604.08224·2506.11442·2604.20801·2508.00083·2512.14012)·보강(2604.15149·2603.07084), 서베이=개념 프레임·인접 기법 귀속 분리·반박된 AgentFlow 4-phase 미사용. 단일 거버넌스 사이클이지 통과까지 자율 반복(loop)이 아님)
 
-### Plugin: `llm-guardrails-harness`
+## Plugin: `llm-guardrails-harness`
 
 | Skill | Command | Description |
 |-------|---------|-------------|
@@ -253,7 +253,7 @@
 
 > **루트 CLAUDE.md 「플러그인 한눈에 보기」 원문** (2026-10-18 루트에서는 한 줄 요약으로 교체, 원문은 여기로 이관) — LLM/에이전트 앱에 런타임 외부 가드레일을 설계·강제하는 하네스 (위협모델·정책(OWASP LLM Top 10)→입력 레일(주입/탈옥 탐지)→출력·검색 레일(PII·독성·grounding·untrusted 청크)→행동 강제·적대검증(최소권한 tool 스코핑·사람 게이트·ASR/FPR red-team) 4단계 + 4개 에이전트. 외부강제>시스템프롬프트·fail-closed·다층방어. eval-harness(오프라인 채점)와 구분되는 인라인 런타임 집행. 근거 OWASP LLM Top 10 2025·NeMo Guardrails·Llama Guard(arXiv:2312.06674)·SoK Jailbreak Guardrails(arXiv:2506.10597). Tech-Verse 2026 S04)
 
-### Plugin: `qa-agent-harness`
+## Plugin: `qa-agent-harness`
 
 | Skill | Command | Description |
 |-------|---------|-------------|
@@ -270,7 +270,7 @@
 
 > **루트 CLAUDE.md 「플러그인 한눈에 보기」 원문** (2026-10-18 루트에서는 한 줄 요약으로 교체, 원문은 여기로 이관) — 리스크 기반 전략→오라클 명시 시나리오→오라클 우선 생성·게이트된 자가치유 실행→결함 vs 플래키 지능형 트리아지의 독립 end-to-end 에이전틱 QA 하네스 (4단계 + 4개 에이전트, 커버리지≠결함탐지·오라클 강도·점진 자율성·HITL. FE 한정 qa-inspector·단일 test-generator와 구분. 근거 arXiv:2601.02454·2506.02943(CANDOR)·2606.18168(All Smoke No Alarm)·2504.16777(Systemic Flakiness). 조직 도입·성숙도 모델 층은 제외. Tech-Verse 2026 S06)
 
-### Plugin: `agent-authorization-harness`
+## Plugin: `agent-authorization-harness`
 
 | Skill | Command | Description |
 |-------|---------|-------------|
@@ -287,7 +287,7 @@
 
 > **루트 CLAUDE.md 「플러그인 한눈에 보기」 원문** (2026-10-18 루트에서는 한 줄 요약으로 교체, 원문은 여기로 이관) — 에이전트/MCP 도구/A2A 시스템의 머신 아이덴티티·인가를 벤더 무관하게 설계·red-team하는 하네스 (신뢰·스코프 모델링→그랜트·위임 설계(단명 audience-bound 토큰·on-behalf-of)→동의·집행(authN/authZ 분리·deny-by-default·audience 검증)→적대 인가 검증(confused-deputy·토큰 재생·스코프 크리프) 4단계 + 4개 에이전트. 설계+red-team 산출물이지 IdP 배포가 아님. discipline HIGH(RFC 8707·8693·OWASP LLM06)·framing MEDIUM(ID-JAG/MCP draft). llm-guardrails와 LLM06 공유 이음매(런타임 레일 vs 그 아래 자격·스코프 계층). Tech-Verse 2026 S07)
 
-### Plugin: `ai-readiness-cartography`
+## Plugin: `ai-readiness-cartography`
 
 | Skill | Command | Description |
 |-------|---------|-------------|
@@ -304,7 +304,7 @@
 
 > **루트 CLAUDE.md 「플러그인 한눈에 보기」 원문** (2026-10-18 루트에서는 한 줄 요약으로 교체, 원문은 여기로 이관) — git 저장소가 'AI 코딩 에이전트가 읽고 안전하게 기여할 수 있는 코드베이스'인지를 **측정하고(결정론 스코어러) 승인 게이트 뒤에 개선을 적용하는(멀티 에이전트)** 도메인 무관 단일 스킬(**3모드·자유 조합**). **① 측정**: `score.py`(stdlib-only) 100점·9카테고리(E22/D18/B15/C12/H9/A8/F8/I5/G3) + 3 blocking gate(Gate-1 참조 무결성·Gate-2 실행 검증=Auto·상한 AI-Fragile / Gate-3 아키텍처 강제=Heuristic·개선 모드 전용·상한 AI-Assisted, 순수 가중합 아닌 gating) → JSON 점수표·HTML 대시보드·ROI 가이드(코드 수정 없음). **② 진단·개선**: score.py를 결정론 센서로 2축(Q 코드품질/A AI접근성) 진단(승인 게이트) → 빌드 가드레일(의존 방향 물리 강제) → standalone → **계획·개별 승인 뒤 코드 적용**(S/M/L·고위험 구조 리팩터 opt-in·리네임 AST/LSP 위임·behavior 센서·"테스트 통과≠동작 보존") → 수용 증명·재측정을 4에이전트(opus)로 수행. **③ 코드 본문**: `legibility_scan.py` census(등급 없음)를 seed로 주석·독스트링·변수명/함수명/클래스·컴포넌트명·함수/모듈 granularity를 다각도 진단하고 **3게이트 승인(계획→개별→최종) 뒤에만** 단계별 수정(P1 오도 주석 제거 C0 → P2 안전 리네임 C2 → P3 검증된 계약·'왜' 주석 C1 → P4 고위험 구조 C3 opt-in). **문의는 한 번에 하나씩**(모드→경로→축→클래스→고위험 opt-in·덤프 금지). 등급은 단일 5밴드(L1~L5 폐기·`점수/20=L` 금지·enforcement는 Gate-3로 흡수). 발동 시 실행할 모드 부분집합을 먼저 확정하고(자유 조합·여러 개면 ①→②③ 순·`score.py`는 ①②가 1회 공유·②+③이면 구조 리팩터는 ②가 소유하고 ③의 C3는 끔), ③은 저장소 층 등급을 만들지 않는다(census만). **정직성**: 본문 신호는 거의 report-only(주석↔코드 정합성 정밀 0.39·자동 주석 ~20~45% 부정확·구조 리팩터 효과=추론)이고 **명명 채널만 실측 인과**(난독화 −11~−29pt)·오도 주석 삭제만 위험 0, 툴그래프 델타(LocAgent·RepoGraph)를 본문 수정 효과로 **오귀속 금지**, 설계 원칙(SOLID·복잡도·중복)은 report-only(준수도 점수화=Goodhart), **마크업 시맨틱·테스트 설명은 census 전용 축**(격리 근거 부재 O-6·접근성은 이 하네스 표적 아님 → 개입 카드 없음·볼륨 가점 및 자동 ARIA/alt/어서션 생성 금지), "개선 N% 보장" 금지. **결정 권한**: 고위험 변경 위험은 경고하되 감수는 사용자 결정(승인된 변경의 조용한 보류 금지·무테스트는 거부 아니라 행위 센서 승격)·커밋 안 함. 근거: ORACLE-SWE 2604.07789·LocAgent 2503.09089·ETH Zurich 2602.11988·USENIX 2025 slopsquatting·RepoMirage 2605.26177 + 개선 flex.team 5부작·arXiv:2505.10443·2602.11481·2306.09896. 별도 `ai-readable-codebase`(v0.2.0)·`code-legibility-harness`(v0.3.0)·`design-principle-harness` 고유 자산(v0.5.0)을 흡수해 마켓플레이스 단일화
 
-### Plugin: `token-efficiency`
+## Plugin: `token-efficiency`
 
 | Skill | Command | Description |
 |-------|---------|-------------|
@@ -322,7 +322,7 @@
 
 > **루트 CLAUDE.md 「플러그인 한눈에 보기」 원문** (2026-10-18 루트에서는 한 줄 요약으로 교체, 원문은 여기로 이관) — Claude Code **세션 JSONL 로그**를 파싱해 레포 단위 토큰/컨텍스트 효율을 정량 측정·시각화하고 $ 절감안을 내는 결정론적 단일 스킬 (4축 가중 점수(cache 35·redundancy 30·density 15·tool 20, 각 축 근거 등급) + 8개 비효율 탐지기(context-bloat·giant-tool·poor-cache·duplicate·subagent + 신규 stale-observation·cache-invalidation-churn·read-exploration-heavy) + 세션별 실제 모델가 낭비 추정 + 오프라인/CSP 안전 인라인-SVG 대시보드. 외부 스킬 improve-token-efficiency를 deep-research(5 세션 적대 검증)의 2025~2026 근거로 개선 — PRICING 현행화(Opus 폐기가 $15/$75→$5/$25·Fable 5·캐시배수 입력가 파생), giant-tool fix 교정(blind 절단 금지: Squeez 2604.04979), 신규 탐지기 3종(AgentDiet 2509.23586 expired·exact-prefix churn·2606.14066 읽기 76.1%), model-routing 세션별 후보 판별(cost-of-pass 2508.02694), compact 캐시-깨짐 caveat(ACON 2510.00615), 효율≠cost-of-pass 정직성, 테스트 신설. 측정·제안만·자동수정 없음. **ai-readiness-cartography와 상보**(런타임 세션 로그 vs 정적 저장소 구조))
 
-### Plugin: `test-layering-harness`
+## Plugin: `test-layering-harness`
 
 | Skill | Command | Description |
 |-------|---------|-------------|
@@ -342,7 +342,7 @@
 
 ---
 
-## methodology-advisor
+## Plugin: `methodology-advisor`
 
 팀의 **현행 개발·회사·사업 프로세스를 먼저 진단**하고, frontend-harness `grill-me`를 **개발 방법론 선택**에 특화·확장한 다각도 문진 뒤, 내장 방법론 카탈로그 + 컨틴전시 프레임워크에 근거해 상황 적합 방법론을 **순위 shortlist + 1순위**로 제안하는 도메인 무관 인터랙티브 멀티 에이전트 하네스.
 
@@ -360,7 +360,7 @@
 
 ---
 
-## meta-prompting-harness
+## Plugin: `meta-prompting-harness`
 
 **메타 프롬프팅**(AI에게 입력할 프롬프트를 AI가 최적화해 생성하게 하고, 그 결과 프롬프트를 새 컨텍스트에 주입해 실제 작업을 돌리는 기법)을 4단계 인터랙티브 멀티 에이전트로 수행하는 도메인 무관 하네스. 널리 쓰이는 메타 프롬프팅 실천 방법론을, 각 기법을 `/deep-research`(6각도·25소스·23 confirmed/2 refuted)로 2023~2026 1차 문헌과 대조해 근거 등급을 붙여 재구성했다.
 
@@ -378,7 +378,7 @@
 
 > **루트 CLAUDE.md 「플러그인 한눈에 보기」 원문** (2026-10-18 루트에서는 한 줄 요약으로 교체, 원문은 여기로 이관) — 메타 프롬프팅(AI에게 입력할 프롬프트를 AI가 최적화해서 생성하게 하고 그 결과 프롬프트를 새 컨텍스트에 주입해 실제 작업을 돌리는 기법)을 4단계 인터랙티브 멀티 에이전트로 수행하는 도메인 무관 하네스. 널리 쓰이는 메타 프롬프팅 실천 방법론을, 각 기법을 `/deep-research`(6각도·25소스·23 confirmed/2 refuted)로 2023~2026 1차 문헌과 대조해 근거 등급을 붙여 재구성했다. **Phase 0** 인테이크(목표+실행 환경을 **한 번에 한 질문씩** 확정·컨텍스트는 있으면 붙여넣는 선택지·덤프 강요 안 함) → **1** 질문 유도(context-elicitor: 빠진 요소를 AI가 **한 번에 하나씩** 되묻기·번호 선택지·직전 답이 다음 질문 결정·한꺼번에 안 쏟음·전부위임 방지) → **2** 성공·검증 조건(success-definer: specific 성공+외부 기준 대비 검증·순진한 자기수정 아님) → **3** 환경 맞춤 깎아내기(prompt-carver: execution-environments·carving-principles 참조, 길이 상한 시 큰그림→축소, 최종 프롬프트 산출) → **4** 적대 점검·주입(prompt-critic: 모호·과대·환경 부적합·미검증·전부위임 점검, 사용자 도메인 수정 후 완성 프롬프트만 fresh 창 주입). 4에이전트(context-elicitor/success-definer/prompt-carver/prompt-critic, opus)·**매 Phase 승인 게이트**. **근거 등급(정직성)**: **STRONG** — 메타프롬프팅>직접(Suzgun&Kalai 2401.12954·OPRO 2309.03409·PromptAgent 2310.16427·단 모델/과제 조건부·전이 불안정)·생성 전 명확화 질문(ClarifyGPT FSE2024·Orchid 2604.21505·단 명확화는 코딩/추론과 분리된 모델 의존 역량이라 명시 유도 필요·ClarifyCodeBench 2607.00711)·성공+검증 명시(Anthropic 공식·외부 기준 대비)·fresh context(lost-in-the-middle 2307.03172·Chroma context-rot·방향성)·은탄환 아님(Anthropic). **report-only(folklore·근거 약함)** — 실행 환경 맞춤 변환·큰그림→축소는 1차 근거 생존 못 함(“실증” 표현 금지). **REFUTED(미사용)** — “메타프롬프팅=지휘자가 전문가 인스턴스 생성” 프레이밍(0-3)·“LLM 스스로 명확화 불가”(1-2). 최적화 프롬프트 보편 법칙 서술 금지·전부 위임 금지·AI가 깎은 프롬프트는 사용자 도메인 검증 필수·프롬프트 생성만·실행(새 창 주입·/goal·이미지 생성)은 사용자·커밋 안 함·점수화 안 함. **독립 플러그인**(references 3종 execution-environments/carving-principles/evidence + 근거 dossier 내재화). 경계: 이미 목표가 있는 컨텍스트 페이로드 조립·압축·리트리벌·하네스 자체 생성/진단·기획문서(PRD)·사용자 스토리·계획/방법론 인터뷰·자율 반복 루프 실행·코드 구현/리뷰/커밋 제외(산출물이 프롬프트가 아님) — *다른 도구에 주입할 지시 프롬프트 자체*를 질문 유도·성공조건·환경 맞춤으로 깎아내는 데 특화. 다른 플러그인 비참조·비의존
 
-## org-transformation-harness
+## Plugin: `org-transformation-harness`
 
 회사/팀을 **목적조직·AI native** 방향으로 바꾸려는 실무자·리더를 인터뷰해, **현행을 먼저 진단**하고 **목표를 질문으로 함께 구체화**한 뒤 **"무엇부터 시작할지"를 단계별 할 일**로 정리하는 도메인 무관 인터랙티브 멀티 에이전트 하네스. 시드 인터뷰 프롬프트를 메타 프롬프팅 기법으로 깎아낸 뒤 하네스로 승격, `/deep-research`(6각도)로 2023~2026 1차 문헌 적대 검증.
 
@@ -396,7 +396,7 @@
 
 > **루트 CLAUDE.md 「플러그인 한눈에 보기」 원문** (2026-10-18 루트에서는 한 줄 요약으로 교체, 원문은 여기로 이관) — 회사/팀을 **목적조직·AI native** 방향으로 바꾸려는 실무자·리더를 인터뷰해 **현행 진단 → 목표 구체화 → 간극·실행계획 → 적대 검증**의 4단계로 "무엇부터 시작할지"를 단계별 할 일로 정리하는 도메인 무관 인터랙티브 멀티 에이전트 하네스. **Phase 0** 현행 조직 진단(org-cartographer: 구조·일하는 방식·페인·지금 할 수 있는 강점 관측·발명 금지·미확인 표기) → **1** 목표 구체화 문진(vision-elicitor: 목적조직·스프린트/일하는 방식·AI native를 한 번에 한 질문으로 함께 정의·**임의 정의 금지**·트레이드오프·충돌 감지) → **2** 간극 진단·실행계획(gap-planner: 현재→목표 간극표+**'지금 바로 시작 가능한 것' 맨 위**로 영향·노력·의존성 우선순위 할 일+3~4단계 로드맵·quick-wins·additive-first) → **3** 적대 검증·공유 요약(plan-critic: 일반론·지어낸 사실·은탄환·우선순위 오류·숨은 가정 반증 후 경영진/팀 공유용 5~7줄). 4에이전트(opus)·**매 Phase 승인 게이트**. 시드 인터뷰 프롬프트를 meta-prompting-harness로 깎아낸 뒤 하네스로 승격, `/deep-research`(6각도)로 2023~2026 1차 문헌 적대 검증. **근거 등급(정직성)**: **STRONG(조건부)** — AI native는 은탄환 아님(DORA 2024/2025 PRIMARY ~5,000명: AI 도입이 개인 체감 생산성↑이나 **delivery 안정성↓**, 이득은 팀 조건(테스트·피드백·플랫폼)에 좌우·프로세스 개선은 small batch·robust testing 없이는 delivery 자동 개선 안 함). **MEDIUM(컨센서스)** — 처방 전 현행 진단(학술지, 단 실패율 인과는 hedged·미측정)·목적조직(Cagan Transformed·Team Topologies: "단일 정답 없음"·"모델 아니라 시스템/경계/펀딩이 제약"·"많은 회사가 첫 시도 실패"). **report-only(folklore)** — quick-wins/additive-first(Kotter short-term wins)·우선순위화(RICE/ICE/WSJF)는 실무 프레임이지 측정된 우월성 아님(“실증” 금지). **REFUTED(미인용)** — "GenAI 파일럿 95% 실패"(MIT 인용, 표본·방법론 논란으로 반박)는 수치 미인용·방향성만·DORA tier는 고정 벤치마크 아님. 목표 임의 정의 금지·발명 금지·트레이드오프+안티패턴 동반·제안만·점수화 안 함·커밋 안 함·opt-in 저장. **독립 플러그인**(references 4종 interview-pillars/transformation-frames/prioritization/research + dossier 내재화, deep-research synthesize 중단으로 검증 통과 claim 6블록으로 직접 구성). 경계: 명명된 개발 방법론 선택·추천·PRD/스토리 작성·하네스 자체 생성/진단·사람↔AI 협업 토폴로지·작업의 AI 에이전트 병렬화·CI/CD 구축·코드 구현/리뷰/커밋 제외 — *사람 조직의 목적조직·AI native 전환 실행계획*에 특화. 경계는 범주로만 서술·다른 플러그인 이름 비참조·비의존
 
-## spec-to-figma-harness
+## Plugin: `spec-to-figma-harness`
 
 유저스토리·인수조건(AC)을 입력으로 받아, **프론트엔드가 되묻지 않고 개발할 수 있도록 Figma에 무엇을 어떻게 반영해야 하는지**를 설계해 디자이너·FE 핸드오프 패키지로 내보내는 도메인 무관 인터랙티브 멀티 에이전트 하네스. 한 문장 원칙은 **"기획서의 시나리오는 상태 프레임으로, 기획서의 규칙은 레이어 어노테이션으로"**. 실무 핸드오프 가이드를 하네스로 승격하면서 Figma 기능·플랜 제약을 1차 문서로 검증해 사실관계를 교정하고, 근거 없는 효과 주장을 인용 금지 목록으로 못 박았다.
 
@@ -414,7 +414,7 @@
 
 > **루트 CLAUDE.md 「플러그인 한눈에 보기」 원문** (2026-10-18 루트에서는 한 줄 요약으로 교체, 원문은 여기로 이관) — 기획(**유저스토리·인수조건**)을 **디자인에 어떻게 반영해야 FE가 되묻지 않고 개발할 수 있는지**로 옮기는 도메인 무관 인터랙티브 멀티 에이전트 하네스. 한 문장 원칙 = **기획서의 '시나리오'는 상태 프레임으로, '규칙'은 레이어 어노테이션으로**. **Phase 0** 스펙 인테이크(스토리·AC 원문·티켓 체계·기존 파일·디자인시스템/플랜·반응형·산출물 위치를 **한 번에 한 질문씩**·**스토리 없이 화면부터 설계 금지**) → **1** AC 분해(state-cartographer: AC를 시나리오(→프레임)/규칙(→핀)으로 **이분 분류**·**1 AC = 1 프레임 가정 금지**·상태 카탈로그 **6축**(데이터·진행/전이·입력/검증·권한/세션·콘텐츠 경계·반응형)을 **역방향 호명**해 AC에 없는 상태 도출·누락은 결함 아니라 **되물음**) → **2** 반영 설계도(figma-blueprinter: 페이지=에픽/섹션=스토리/프레임=상태 명명·프레임 목록·프로토타입 flow·Variables/컴포넌트/Auto Layout 요구(Inspect 정확도 근거)·Code Connect·Ready for dev 계획·**기존 파일 델타는 읽기 전용**(`get_metadata` → 좁힌 노드만)) → **3** 어노테이션 스펙(annotation-writer: 6분류(인터랙션·데이터 바인딩·검증 규칙·모션·트래킹·참조/예외) **복붙 문안**·**확정=어노테이션 / 논의중=댓글** 분리·AC 역참조·**Inspect에 있는 값(색·크기·간격) 재기재 금지**) → **4** 적대 검증(handoff-critic: **FE 1인칭**으로 진입→요청→분기→조작→실패→경계→재사용을 훑어 **멈추는 지점**·**상충**(AC↔AC·AC↔프레임·AC↔핀·프레임↔핀·핀↔핀 5쌍) 탐지·owner별 준비도(기획·디자이너·FE·**하네스 자체** 4그룹)·남은 질문·자체 정직성 감사). 4에이전트(opus)·**매 Phase 승인 게이트**. **정직성 5불변식**: **INV-1 발명 금지**(문구 원문·API 필드·트래킹 이벤트명·수치 경계·권한 정의는 입력에 있는 것만 — 없으면 `[기획 확인 필요]`+되물음. 지어낸 마이크로카피는 디자이너가 그리고 FE가 구현해 **틀린 값이 스펙이 됨**) / **INV-2 커버리지 ≠ 품질**("AC 전수 매핑 → FE 질문 0"·"재작업 N% 감소"·"happy path가 재작업 유발"·"재작업 비용 68%"는 **측정 근거 부재 → 인용 금지**·준비도 **점수화/백분율 금지**(통과/미통과/해당없음 3값)) / **INV-3 디자인 결정 대행 금지**(무엇이 필요한가만 명세·레이아웃·비주얼·톤은 디자이너 몫·**Figma 쓰기 MCP 도구 호출 금지**·파일 생성·수정 안 함) / **INV-4 플랜 제약 정직**(Code Connect=Dev/Full seat+**Org/Enterprise**·어노테이션 *생성*=Full seat+can edit·`Ready for dev` view·`Completed`=Org/Ent — 못 쓰는 팀엔 **대체 경로**, 판정은 '미통과' 아니라 **'해당없음'**) / **INV-5 되물음은 1급 산출물**(빈칸 있는 정직한 문서 > 채워진 추측). 근거: Figma 공식 문서 GOLD 검증(Annotations 카테고리 4종·**"CSS 자동 부착" 아님**·Dev status 3종·Variables Inspect·MCP 23도구 읽기/쓰기 분리), **티켓 ID 명명·어노테이션 vs 댓글 분기는 공식 근거 없는 `[관행]`**(메커니즘 설명만·효과 수치 금지), 인용 가능한 유일 수치는 Telerik/Progress 2025(n=225 **자기선택·상관관계**·4조건 충족 시만). 커밋 안 함·opt-in 저장. **독립 플러그인**(references 5종 ac-to-state-matrix/annotation-templates/figma-blueprint/handoff-readiness/**evidence 정본** 내재화). 경계: 이미 있는 디자인의 읽기전용 검수·게이트 판정, Figma 컨텍스트 추출·파일화, PRD/유저스토리 작성, AC의 테스트 계층·QA 시나리오 전개, 코드 구현/리뷰/커밋 제외 — ***요구는 있는데 디자인이 무엇이어야 하는가*** 생성에 특화. 경계는 범주로만 서술·다른 플러그인 이름 비참조·비의존
 
-## agentic-code-review-harness
+## Plugin: `agentic-code-review-harness`
 
 **이미 만들어진 코드 변경(PR·브랜치 diff·로컬 변경)** — 특히 AI 에이전트가 작성한 것 — 을 **수신자(리뷰어)의 자리에서 읽고 "머지해도 되는지"를 근거와 함께 판정**하는 도메인 무관 인터랙티브 멀티 에이전트 하네스. 한 문장 원칙은 **"코드를 쓰는 비용은 싸졌지만 그것을 믿어도 되는지 판단하는 비용은 그대로다"**. 2026-06 'Agentic Code Review' 글의 문제 정의를 하네스로 승격하되, **글이 인용한 수치를 그대로 옮기지 않고 `/deep-research` 2각도(1차 소스 직접 fetch + 적대 검증)로 대조해 교정**했다.
 
@@ -434,7 +434,7 @@
 
 > **루트 CLAUDE.md 「플러그인 한눈에 보기」 원문** (2026-10-18 루트에서는 한 줄 요약으로 교체, 원문은 여기로 이관) — **이미 만들어진 코드 변경(PR·브랜치 diff·로컬 변경)** — 특히 AI 에이전트가 작성한 것 — 을 **수신자(리뷰어) 자리에서 읽고 머지해도 되는지 판정**하는 도메인 무관 인터랙티브 멀티 에이전트 하네스. 한 문장 원칙 = **쓰는 비용은 싸졌지만 믿어도 되는지 판단하는 비용은 그대로다**. **Phase 0** 리뷰 인테이크(대상 diff·목적·저자·걸린 것·센서 가용성·예산을 **한 번에 한 질문씩**·**대상 diff 없이 판정 금지**) → **1** 리스크 티어링(risk-tierer: **blast radius·longevity·comprehension distribution 3축** 관측 + 경로 기반 위험 표면 감지 → 파일군별 **T0~T3** + 렌즈·센서·사람게이트 예산 배분·**모르는 축은 미확인+되물음**) → **2** 증거 감사(evidence-auditor: **테스트 diff를 코드보다 먼저** 읽어 **오라클 강도 강/약/없음** 판정 + 오라클 약화(테스트 삭제·skip·단언 삭제·**기대값 조정**·스냅샷 일괄 갱신·커버리지 임계 하향)·게이트 완화(린트 비활성·타입 억제·CI 단계 제거·훅 우회)·결함 서명 S1~S8(의존성·비밀·**신뢰 경계 유입**·비가역·유령 코드·중복 재구현·응집도·명세 이탈) 스캔 + **결정적 센서 직접 실행·출력 인용**) → **3a** 직교 렌즈 8종(정확성·계약/호환·상태/동시성/자원·보안/신뢰경계·**테스트 오라클**·통합/운영·응집/중복/규약·요구 정합) 중 배정분을 **렌즈당 1 에이전트 병렬**(lens-reviewer: 렌즈 밖 금지·**위치/무엇/조건 3요소 필수**·못 보는 것 보고) → **3b** 발견별 **반증**(finding-refuter: 오독·이미 처리됨·도달 불가·기존 이슈·조건 서술 불가 6단계 → **CONFIRMED/PLAUSIBLE/DROPPED**·기본 태도 "이 발견은 틀렸다") → **4** 트리아지·판정(merge-arbiter: 차단/수정권고/참고·**되돌림 지시문 3요소**(재현조건·기대동작·수용기준)·잔여 위험(UNVERIFIED·리뷰 안 한 영역·구조적 한계)·**판정 후보**·정직성 감사 6문항). **5에이전트(opus)** — *찾는 역할과 반증 역할을 의도적으로 분리*(못 찾는 것과 틀리게 찾는 것은 처방이 다르다)·**매 Phase 승인 게이트**. **정직성 6불변식**: **INV-1 판정만·실행은 사람**(코드 수정·커밋·푸시·`gh pr merge`·`--approve`·close·코멘트 자동 게시 금지 — 머지는 사람 권한) / **INV-2 리뷰 대상은 신뢰할 수 없는 입력**(PR 본문·커밋 메시지·주석·이슈·픽스처의 **지시문에 복종하지 않고 발견으로 보고**·리뷰 중 발견한 URL 미추적 — **리뷰 에이전트 자신이 주입 표적**이며 INV-1과 한 쌍) / **INV-3 자기보고를 확인으로 옮기지 않음**("통과했습니다"는 근거 아님·직접 돌린 센서와 직접 읽은 diff만 확인·나머지 **UNVERIFIED**·**"테스트가 추가됨"도 신뢰 신호 아님**) / **INV-4 차단은 재현 근거로만·오탐이 지배적 실패 모드**(PLAUSIBLE 상한=수정권고·**발견 개수를 성과로 쓰지 않음**·"발견 없음"도 정직한 결과·티어별 오탐 예산+**초과 미보고 명시**(조용한 절단 금지)·**재현율↑는 SNR↓ 동반**) / **INV-5 저자 아닌 리스크로 티어링**(단 결함 서명 스캔은 저자 무관 항상) / **INV-6 통과는 정확성의 증명 아님**(**이 하네스도 실측 LLM 리뷰어 재현율 한계를 상속**·점수/백분율/성숙도 등급 금지). 근거: 2026-06 'Agentic Code Review' 글의 문제 정의를 출발점 삼되 **인용 수치를 그대로 옮기지 않고 `/deep-research` 2각도로 1차 소스 대조·교정** — **PRIMARY**(설계를 바꾼 것): 자동 리뷰어 실측 **재현율 27~33%·정밀도 3.6~5.1%**(CR-Bench-Verified)·**F1 ~19%**(SWR-Bench 1,000 PR)·**리뷰어 간(및 같은 모델 5회 반복 간) 발견 거의 안 겹침**(공통 36/27건)·**재현율↑ → SNR 5.11→1.95·유용성 83.6→66.1%**·다중 표본은 recall 2배지만 F1 ~22%(**완화이지 해결 아님**)·**에이전트 작성 테스트 패치 80.2%가 오라클 약/없음**·**테스트 존재를 게이트로 쓰면 검증 강도 과대평가**·보정 전 머지율은 강한 오라클이 오히려 낮음(**사람 리뷰가 약한 테스트 필터로 작동 안 함**)·held-out 테스트는 sound·complete 아님·**가시 테스트 포화 vs 숨은 조합 테스트 격차 32~64pp**(초록=프록시 최적화 증거)·**지배적 실패는 노골적 조작 아니라 '기능 격리'**(삭제된 어서션만 노리면 놓침)·압박 시 착취 30.4%·**모델 능력↑↔착취↑(ρ=0.77)**·생성 시점 정적 신호로 리뷰 노력 예측 AUC 0.96(**단 '결함' 예측 아님**); **INDUSTRY**: 정적 분석 게이트 FP **76%**(맥락 포함 90%+)·LLM 필터가 FP 94~98% 제거하나 **진짜 결함도 12~25% 함께 소실**. **인용 금지**: **"리뷰어 이탈 38%"**(정의가 *중도 포기* 아니라 **"한 번도 리뷰되지 않음"**·분모는 수동 600건 중 228·층화표본·독립 연구는 17.3%·같은 논문 헤드라인은 **71.5% 머지**), **"AI slop 1,154 포스트=arXiv:2604.16754"**(**오귀속** — companion preprint의 수치·**종속변수 표본추출**이라 빈도 주장 불가), **벤치마크 점추정**(원문에 부재·저자가 정답세트 편향 자인 → 방향성만), **벤더 자체보고 오탐률·리뷰율 개선**(정의·대조군·기간 미공개·2차 매체가 등급 못 올림), 벤더 churn/결함률 수치(전사는 정확하나 **상관≠인과**), **"머지율=품질 지표"**(머지된 PR 15.4%가 리뷰어 개입·거절 33.1%는 근거 관측 불가 → 구성 타당도 무효), **"FP율 X% 넘으면 리뷰어가 무시"**(임계 미측정), **"리뷰 200~400줄 상한"**(1차 출처 추적 실패·메커니즘만), **"결함 N% 감소·안전 보증"**. **독립 플러그인**(references 5종 risk-tiering/agent-failure-signatures/review-lenses/finding-triage/**evidence 정본** 내재화). 경계: 내 변경을 수정 적용→커밋 메시지·PR 작성해 올리는 **저작 워크플로우**, 코드 착수 *전* 상류 산출물 준비도 게이트, 테스트 신규 계획·계층화·생성, 저장소 전체 정적 점수·성숙도 측정, 프로덕션 장애 대응, 하네스 자체 진단 제외 — ***이미 존재하는 변경을 수신자 자리에서 읽고 머지 가능성을 판정*** 에 특화. 경계는 범주로만 서술·다른 플러그인 이름 비참조·비의존
 
-## comprehension-harness
+## Plugin: `comprehension-harness`
 
 에이전트가 쓴 코드 변경을 **사람이 실제로 이해하고 있는지 실측하고 그 이해를 자산으로 남기는** 도메인 무관 인터랙티브 멀티 에이전트 하네스. 한 문장 원칙은 **"이해했다는 느낌은 이해의 증거가 아니다"**. 강연 *"Understanding is the new bottleneck"*(2026, 자막 원문 확보)이 세운 구분 — **검증을 위한 이해**(맞았나? 에이전트가 점점 잘한다) vs **참여를 위한 이해**(다음 아이디어를 낼 수 있는가) — 중 **후자**를 만든다. 강연의 기법 4종(설명서·퀴즈·마이크로월드·공유 공간)을 승격하되 **규정을 그대로 옮기지 않고 8각도 1차 문헌 수집 + 적대적 반증 2라운드로 대조해 교정**했다.
 
@@ -454,7 +454,7 @@
 
 > **루트 CLAUDE.md 「플러그인 한눈에 보기」 원문** (2026-10-18 루트에서는 한 줄 요약으로 교체, 원문은 여기로 이관) — **에이전트가 쓴 코드 변경을 사람이 실제로 이해하고 있는지 실측하고 그 이해를 자산으로 남기는** 도메인 무관 인터랙티브 멀티 에이전트 하네스. 한 문장 원칙 = **이해했다는 느낌은 이해의 증거가 아니다**. 강연 'Understanding is the new bottleneck'(2026, 자막 원문 확보)이 세운 구분 — **검증을 위한 이해**(맞았나? 에이전트가 점점 잘한다) vs **참여를 위한 이해**(다음 아이디어를 낼 수 있는가) — 중 **후자**를 만든다. **Phase 0** 이해 인테이크(**최대 두 번만 묻는다** — 대상 변경·**참여 목적**(=이해 범위 축). 사전지식·에이전트 역할·산출물 위치·동시대기는 **관측해 잠정값**으로 카드에 적고 게이트 A에서 일괄 정정. **참여 목적 없이 시작 금지**. 한 산출물을 지목해 들어오면 **단축 경로 제시**(예측 커밋은 유지·축약 시 '이해를 실측하지 않았다' 표기)) → **1** 이해 부채 지도(debt-cartographer: 6표면 S1~S6(새 개념·새 불변식·**지시하지 않은 결정**·멘탈모델 충돌·경계 이동·되돌리기 어려움) 관측 + 참여 목적 기준 스코프(**스코프 밖은 '안 봤다' 명시**) + **설명서 공개 전 예측 문항**(자유서술·메커니즘/반증·구문 아닌 의미/입출력) + 확신 평정) → **2** 설명서 공개(explainer-architect: 배경(사전지식 맞춤·접힘) → 직관(장난감 입력) → **검증 훅**(입출력 쌍·실행 명령·grep 좌표·반증 좌표) → **`[확인]`/`[추론]` 분리 + 추론 비율 상단 표기** → 변경 순서 안내, **예측 채점 동시 공개**) → **3** 이해 검증 게이트(comprehension-examiner: **자유서술 회상** + **모든 오답에 diff 좌표 교정 피드백** + 실측 초기 성공률 70~80% 관리 + **지각–실제 격차** + **묻지 않은 범위 명시적 열거**·문항 근거는 설명서가 아니라 diff) → **4** 마이크로월드(microworld-builder, **조건부·opt-in**: **값싼 대안 먼저** → 조건(변화의 **구체 특성**이 학습 대상일 것·사람이 입력 공급하고 **예측 커밋**·같은 정보량의 **정적 대안 동시 제시**·추상 표상 하위군 고지)을 **관측·고지** → **만들지 말지는 사용자 결정**(기본값은 안 만듦·**조건은 게이트가 아니라 권고**·명시 요청 기각 금지)·폐기 전제) → **5** 공유 이해(shared-context-curator, **조건부·opt-in**: 산출물에서 **복원되지 않는 것만** 펌프 — 버린 대안·지시받지 않은 결정·암묵 가정·**나만 아는 것**·팀도 틀릴 항목·열린 질문). **5에이전트(opus)** — *설명을 **쓰는** 역할과 이해를 **캐묻는** 역할을 의도적으로 분리*(같은 에이전트가 자기 설명서로 문항을 내면 문항이 설명서 요약이 되고 측정 대상이 '그 문서를 읽었는지'로 바뀐다)·**매 Phase 승인 게이트**. **정직성 7불변식**: **INV-1 검증 아닌 참여를 위한 이해**(결함·리스크·머지 가능 여부 **판정 안 함**·이상한 점은 **열린 질문**으로·코드 수정·커밋·푸시·PR 생성/승인/머지 금지) / **INV-2 자기보고는 센서가 아니다**('이해했습니까 y/n'을 게이트·지표로 쓰지 않음 — 자가평가 판별력 상한 우연 50% 대비 **54.5%**·R²≈5.9%·확신은 **격차 계산의 한쪽 항**으로만) / **INV-3 설명은 예측 뒤에 공개된다**(AI 설명은 이해 도구이기 전에 **과확신 장치** — ⓐ예측 제출 후에만 공개 ⓑdiff·실행 가능한 검사로 대조 불가능한 것 단언 금지 ⓒ**그 자체로는 어떤 게이트도 통과시키지 못함**. **강연 원안과 가장 크게 갈라지는 지점**) / **INV-4 퀴즈 통과는 이해의 증명이 아니다**(통과='물어본 것에 답했다'·**점수/백분율/성숙도 등급 금지**·**묻지 않은 범위 열거 필수**) / **INV-5 마이크로월드는 기본값 아닌 명시된 가설**(**인접한 네 하위군 전부에서 메타분석 추정치가 0 또는 음수**(추상 표상 g=0.006 n.s.·정보학 g=0.108 n.s.·완전 학습자 통제 −0.120·이해/전이 최소)·우리 도메인은 미측정·opt-in·조건 검사·**시청 전용/스크러빙 금지**(점추정이 음수인 구간)·**구조/배치 시각화 금지**(정적 1장이 이긴다)·**사전지식은 게이팅 조건 아님**·제품 코드에 안 섞음) / **INV-6 게이트는 경고이지 거부권이 아니다**(못 맞혀도 사용자가 진행 선택하면 **따르고 무엇을 모르는 채로 가는지 알림**·승인된 진행의 조용한 보류 금지) / **INV-7 효과를 약속하지 않는다**(주장 가능한 것은 **리뷰되지 않던 변경을 읽고 답한 변경으로 바꾼다**·**과확신을 낮추고 빈틈을 드러낸다** 둘뿐). 근거: 강연의 기법 4종을 승격하되 **규정을 그대로 옮기지 않고 8각도 1차 문헌 + 적대 반증 2라운드로 대조·교정** — **PRIMARY**(설계를 바꾼 것): 표준 단일 에이전트 설명이 **'체감 이해 최고·객관 학습 최저'**(N=85, Litt 기법 #1을 대안과 직접 비교한 유일 실험이며 결과가 불리)·**시험을 치는 것만으로는 과확신이 안 꺼지고 채점 결과 열람이 꺼뜨림**(예측 시험 단계 비유의 / 채점 열람 45~67% 하락)·설명은 **정오와 무관하게 수용률↑**·**검증 비용을 낮출 때만 과의존↓**(N=731)·**내용 없는 설명도 진짜와 비슷한 신뢰**·인출연습 **g=0.50**(159 ES) 수렴 **g=0.499**(222연구·48,478명)·**피드백 0.73 vs 무피드백 0.39**·**초기 성공률 ≤50%+무피드백은 g=0.03, p=.79**(리뷰어가 틀리는 바로 그 구간)·**재인 0.31 vs 단서회상 0.57**·**답 읽기 −0.095 vs 답 생성 +0.169·질문 생성 +0.042 n.s.**·**퀴즈하지 않은 재료 전이 d=0.16 n.s.**·**가장 유사 조건(밀도 높은 문서 1회 독해·성인 213명·1주 지연) BF01=7.52 null**·**즉시 1회는 가장 약한 프로토콜**(전문 성인 존재증명은 2주 간격 3회+매회 피드백 d=0.91)·**자가평가 판별력 R²≈5.9%**·시각화는 **'무엇을 보여주나'가 아니라 '학습자가 무엇을 하나'**(활동 조작 71% vs 표상 30%·노력 동등 시 33%로 하락·**예측 빼면 효과 소멸**)·**스크러빙 실행 마이크로월드의 유일 선행 실증은 학습 null이자 사용률 null**·**전문 환경 시각화 실증 연구체 부재**(2002 지적이 2026에도 미해소)·**커뮤니케이션 매체는 고유정보 풀링·결정 품질 어디에도 영향 없음**(3,189집단)·팀 인지-성과 **ρ≈.38이나 인과 아님**·TMS 자기보고 결과변수는 **약 2배 인플레**·**사람+AI 조합 g=−0.23**·**METR 지각–실제 격차**(사후 −20% vs 실제 +19%)·**에이전트 PR에서 사람 단독 리뷰 25.21%→8.08%**·**40년 95개 코드 이해 실험 중 '이해가 무엇을 낳는가' 연구 0건**(Litt 핵심 주장은 근거 약한 게 아니라 **미측정 가설**). **인용 금지**: **'5문항·중간 난이도'**(1차 출처 없음 → **개수 규정 버리고 실측 성공률로 대체**), **'퀴즈=속도 조절기'**(처리량·결함 유출 측정 0건 — 인접 근거는 인지적 강제 함수이며 *가장 효과적인 설계가 가장 미움받았다*를 병기), **EEG 기반 cognitive debt 수치·'LLM 사용자 뇌 연결성 최약'**(형식적 논평이 표본 미달·용량-반응 null·비교 계수 산물로 반증·저자 FAQ가 'brain rot' 표현 거부), **철회된 메타분석**(2026-04-22), **존재하지 않는 효과크기**, **'200~400 LOC 리뷰 시 결함 70~90% 발견'**(원 자료에 수율 백분율 부재), **벤더 자체보고**, **'AI가 개발자 이해를 침식한다'**(그런 연구 없음), **하네스 산출물에 효과크기 부착**. cognitive debt는 **데이터 없는 입장 논문의 프레임**으로만(개인·신경 계보와 팀·프로젝트 계보는 **다른 두 구성개념**·병합 금지)·Papert/Alan Kay/Naur/에세이류는 **계보·영감으로만**. **독립 플러그인**(references 6종 comprehension-debt/explainer-structure/quiz-design/microworld-patterns/shared-understanding/**evidence 정본** 내재화). 경계: 결함을 찾아 **머지 가능 여부 판정**, 코드 착수 *전* 상류 산출물 준비도 게이트, **명세**를 작성해 그대로 구현·검증, 테스트 신규 계획·계층화·생성, 저장소 전체 정적 점수·성숙도 측정, 사람↔에이전트 **분업·자율수준·감독 체계 설계**, 프로덕션 장애 대응, 하네스 자체 진단 제외 — ***사람의 이해를 산출물로 만들고 실측*** 에 특화. 경계는 범주로만 서술·다른 플러그인 이름 비참조·비의존
 
-## aeo-harness
+## Plugin: `aeo-harness`
 
 | Skill | Command | Description |
 |-------|---------|-------------|
@@ -471,7 +471,7 @@
 
 > **루트 CLAUDE.md 「플러그인 한눈에 보기」 원문** (2026-10-18 루트에서는 한 줄 요약으로 교체, 원문은 여기로 이관) — **AEO(Agentic Engine Optimization)** — 기술 문서를 **AI 코딩 에이전트**가 찾고·적은 왕복으로 읽고·정확히 쓸 수 있게 만드는 것을 결정론 센서로 측정하고 승인 게이트 뒤에 개선하는 도메인 무관 인터랙티브 멀티 에이전트 하네스. **검색엔진·답변엔진 노출 최적화(SEO/GEO)가 아니다** — 소비자가 사람이 아니라 코딩 에이전트다. 한 문장 원칙 = **에이전트가 문서에 도달했다는 것과 그 문서로 코드가 맞아졌다는 것은 다른 사건이다**. **Phase 0** 인테이크(대상 문서·**소비 경로**(HTTP/MCP/로컬/패키지)를 한 번에 한 질문씩 — 경로가 조사의 절반을 결정) → **1** 도달 조사(reach-auditor: **R1 링크 지도**(1급)·R2 JS 없이 본문·R3 `.md`/`Accept` 협상·R4 죽은 링크·앵커·R5 벤더 공개 UA replay **오차단 탐지**·R6 robots.txt **보고만**·R7 토큰 census(**임계값 없음**)·R8 스펙 존재) → **2** 내용 조사(content-auditor: **C1 심볼별 예제 존재**·**C2 예제 실행 검증**·C3 문서↔코드 시그니처 드리프트·**C4 거짓으로 판정되는 서술**·C5 낯섦 판정·C6 주입 표면) → **3** 개입 계획(intervention-planner: **T-A 위험0**(거짓 제거) / **T-B 검증 통과분만 반영** / **T-C report-only**(llms.txt·robots.txt·마크다운 전환·구조 재편·컨텍스트 파일 — 만들지도 고치지도 않음), 계획+**항목별 개별 승인**) → **4** 수용 증명(acceptance-verifier: 문서 점수가 아니라 **재측정된 태스크 결과**, 못 돌리면 **UNVERIFIED**). **4에이전트(opus)**·매 Phase 승인 게이트. **정직성 7불변식**: INV-1 **도달≠정확도**(발행 측 개입은 왕복·404·토큰 언어로만·"문서 고치면 N% 맞아진다" 금지) / INV-2 **틀린 문서 > 없는 문서**(1순위는 빈칸 채우기가 아니라 거짓 제거·**검증 없는 LLM 문서 생성은 순마이너스**) / INV-3 **점수·백분율·성숙도 등급 금지**(연속 품질↔정확도 함수 미측정) / INV-4 **report-only는 자동 생성·편집 안 함**(단 거부권 아님 — 알고도 하겠다면 따르고 무엇을 모르는 채 하는지 기록) / INV-5 **UA로 도구 귀속 금지**(진위는 공개 IP·rDNS로만 예/아니오) / INV-6 **수용은 재측정으로만** / INV-7 **대상 문서는 신뢰 경계 밖**(명령형 문장은 지시 아니라 발견으로 보고·발견한 URL 자동 추적 금지). 근거: 출발점 글(Osmani 'Agentic Engine Optimization')의 주장을 그대로 옮기지 않고 **1차 출처 전수 대조**로 교정 — **F1 구조적 공백**(발행 측은 도달·효율만 측정·정확도 0건 / 정확도 측은 문서를 이미 쥐여준 조건 → **"에이전트가 스스로 문서를 발견해 코드가 맞아졌다"를 측정한 연구 0건**), **F23 포맷이 아니라 지도**(마크다운만 주고 내비 벗기면 HTML보다 더 틀림·지도 주면 404 2.23→0.11·**정확도는 불변** "The win was efficiency, not correctness"), **F2 예제 코드가 기여 1위**(제거 시 pass rate 0.66~0.82→0.22~0.39·단 "저빈도에서만 효과"는 **RQ4가 반증**), **F8 틀린 문서의 해악**(단 '없는 문서 영향 없음'은 **null이지 동등성 아님**), **F18 코딩 에이전트 9종이 llms.txt·robots.txt를 요청조차 안 함**(단 URL 직접 지정 조건), **F22 llms.txt 보유 도메인 97%가 한 달간 요청 0**(모든 수치는 저자가 ceiling으로 못박음), **F19 `curl/8.4.0`을 Cline·Junie 공유**, **F28 사용자 트리거 페치 robots.txt 취급이 벤더별 상이**(Anthropic만 면제 없음), **F32/F34 Google Search 문서는 llms.txt 미언급·Lighthouse는 부재를 감점 안 함**, **F36 조사 중 실제 프롬프트 인젝션 조우**. **인용 금지 14항**(토큰 상한 15,000/25,000/20,000·"100K~200K 한도"·"llms.txt가 가시성↑"·"agent-permissions.json은 표준"·"robots.txt 조용한 차단"·UA 식별·"HTML→MD N% 절감"·GEO 40% 전이·"컨텍스트 파일 무용"·"문서 잘 쓰면 코드 잘 짬"·품질점수→정확도 함수·"Claude-Code 소비 2위"·193,217 토큰을 실측처럼·"개선 N% 보장"). 결정론 스크립트 2종(`reach_probe.py` census 전용·`check_evidence.py` 인용 앵커/금지문구/점수어휘 자동 검사). 커밋 안 함·저장 opt-in. 경계: SEO/GEO, 저장소 정적 점수·성숙도 측정, 사람의 이해 실측, 머지 가능성 판정, 테스트 계층 설계, `AGENTS.md`/`CLAUDE.md` 작성, 하네스 자체 진단 제외
 
-## ux-ai-workflow-harness
+## Plugin: `ux-ai-workflow-harness`
 
 | Skill | Command | Description |
 |-------|---------|-------------|

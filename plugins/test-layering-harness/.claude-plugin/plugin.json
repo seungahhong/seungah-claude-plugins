@@ -6,29 +6,5 @@
     "name": "seungah.hong",
     "email": "ssingah1030@gmail.com"
   },
-  "license": "MIT",
-  "tags": [
-    "claude-code",
-    "plugin",
-    "test-layering-harness",
-    "acceptance-criteria",
-    "given-when-then",
-    "test-pyramid",
-    "testing-trophy",
-    "test-methodology",
-    "smoke-sanity-regression",
-    "ci-stage-placement",
-    "test-oracle",
-    "human-in-the-loop",
-    "interactive",
-    "axis-cards",
-    "api-mocking",
-    "fixture",
-    "e2e-mode-tags",
-    "change-scoped-sanity",
-    "e2e-smoke-live",
-    "live-integration-check",
-    "selector-priority",
-    "testing-library-queries"
-  ]
+  "license": "MIT"
 }
