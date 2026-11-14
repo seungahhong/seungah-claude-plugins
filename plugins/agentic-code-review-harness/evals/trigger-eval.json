@@ -74,5 +74,9 @@
   {
     "query": "우리 팀에 맞는 개발 방법론 뭔지 문진하고 추천해줘",
     "should_trigger": false
+  },
+  {
+    "query": "이 PR 하나 말고 우리 팀 리뷰 체계 자체를 설계해줘. 위험 등급별 사람 승인 수랑 REVIEW.md, 라운드 상한까지",
+    "should_trigger": false
   }
 ]

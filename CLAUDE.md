@@ -1,6 +1,6 @@
 # Frontend Harness - Dev Workflow Multi-Agent Skills
 
-소프트웨어 개발 전 과정을 지원하는 Claude Code 스킬 플러그인 마켓플레이스(30개 플러그인, `seungahhong/seungah-claude-plugins`).
+소프트웨어 개발 전 과정을 지원하는 Claude Code 스킬 플러그인 마켓플레이스(31개 플러그인, `seungahhong/seungah-claude-plugins`).
 
 분석 → 설계 → 개발 → 리뷰 → 검증까지를 멀티 에이전트 스킬·커맨드·훅으로 묶고, 하네스 자체를 생성·개선하는 메타 플러그인을 포함한다.
 
@@ -37,6 +37,7 @@
 | `org-transformation-harness` | 목적조직·AI native 전환 인터뷰→진단→목표→간극·실행계획→적대 검증(제안만) |
 | `spec-to-figma-harness` | 유저스토리·인수조건을 Figma 상태 프레임·레이어 어노테이션 스펙으로 변환(Figma 쓰기 금지) |
 | `agentic-code-review-harness` | 코드 변경(특히 AI 작성)을 리뷰어 자리에서 읽고 머지 가능성 판정(판정만·실행은 사람) |
+| `review-pipeline-harness` | 팀·저장소 코드 리뷰 시스템 설계 — 방어 계층→변경 기반 승인 등급→AI 리뷰어(REVIEW.md)→수렴·노이즈→가드레일·circuit breaker→적대 검증(설계만) |
 | `comprehension-harness` | 에이전트 변경을 사람이 실제로 이해하는지 실측하고 자산으로 남김(결함·머지 판정 없음) |
 | `aeo-harness` | AEO — 기술 문서를 AI 코딩 에이전트가 찾고·읽고·정확히 쓰게 결정론 센서로 재고 개선(SEO/GEO 아님) |
 | `ux-ai-workflow-harness` | UX 작업 단계별 생성형 AI 위임 수준(L1~L4) 판정→맥락 설계→초안 점검→사람 체크포인트 |
@@ -45,7 +46,7 @@
 
 루트 `CLAUDE.md`는 100줄 이내 인덱스로 유지하고, 세부 내용은 아래 특징별 문서에 둔다. 작업 전 관련 문서를 먼저 참조할 것.
 
-- [`_docs/plugin-overview.md`](_docs/plugin-overview.md) — 30개 플러그인 「한눈에 보기」 확장 설명(단계·에이전트 수·가드·근거)
+- [`_docs/plugin-overview.md`](_docs/plugin-overview.md) — 31개 플러그인 「한눈에 보기」 확장 설명(단계·에이전트 수·가드·근거)
 - [`_docs/project-structure.md`](_docs/project-structure.md) — 전체 디렉토리 구조와 각 파일/스킬 역할 트리(파일 추가·삭제 시 같은 커밋에서 갱신)
 - [`_docs/skills.md`](_docs/skills.md) — 플러그인별 스킬·커맨드·에이전트 설명 + 2026-10-18 축약 전 「한눈에 보기」 원문
 - [`_docs/commands-and-hooks.md`](_docs/commands-and-hooks.md) — 커맨드(frontend-harness 7종·review-harness `/handoff-review`) + 훅(frontend-harness 6종·meta-harness 2종)

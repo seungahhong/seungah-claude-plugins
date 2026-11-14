@@ -130,5 +130,9 @@
   {
     "query": "PRD 초안을 만들고 확정 전에 계획·설계·비평 루프로 다듬어 확정해줘",
     "should_trigger": false
+  },
+  {
+    "query": "코드 리뷰 승인 정책이랑 AI 리뷰어 REVIEW.md, revert 가드레일까지 팀 리뷰 파이프라인 설계해줘",
+    "should_trigger": false
   }
 ]

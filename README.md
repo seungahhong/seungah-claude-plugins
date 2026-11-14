@@ -1,6 +1,6 @@
 # seungah-claude-plugins — Dev Workflow Multi-Agent Skills
 
-분석 → 설계 → 개발 → 리뷰 → 검증까지, 소프트웨어 개발 전 과정을 지원하는 **Claude Code 플러그인 마켓플레이스**입니다. 30개 플러그인이 멀티 에이전트 스킬·커맨드·훅으로 개발 워크플로우, 기획·설계 상류 검수, 품질·검증, 에이전트/LLM 엔지니어링, 그리고 하네스 자체를 만들고 고치는 메타 도구를 제공합니다.
+분석 → 설계 → 개발 → 리뷰 → 검증까지, 소프트웨어 개발 전 과정을 지원하는 **Claude Code 플러그인 마켓플레이스**입니다. 31개 플러그인이 멀티 에이전트 스킬·커맨드·훅으로 개발 워크플로우, 기획·설계 상류 검수, 품질·검증, 에이전트/LLM 엔지니어링, 그리고 하네스 자체를 만들고 고치는 메타 도구를 제공합니다.
 
 ## 설치
 
@@ -17,7 +17,7 @@
 
 터미널에서는 `claude plugin marketplace add …` / `claude plugin install …`로 동일하게 설치합니다. 설치 후 각 플러그인의 스킬은 자동 트리거되거나 `/<plugin>:<skill>`(예: `/git-harness:commit-pr`)로 직접 호출할 수 있습니다. 이미 설치한 플러그인은 `claude plugin update <plugin>@seungah-claude-plugins`로 최신 버전으로 갱신합니다.
 
-## 플러그인 (30)
+## 플러그인 (31)
 
 구성 열은 스킬 · 에이전트 · 커맨드 수입니다. 각 플러그인의 사용법·경계·근거는 링크된 README에 있습니다.
 
@@ -52,6 +52,7 @@
 | [`eval-harness`](plugins/eval-harness/README.md) | AI 생성물 엄밀 평가 — 정의·validity → judge 구성 → validity 감사 → 실행·집계 | 1 · 4 · – |
 | [`qa-agent-harness`](plugins/qa-agent-harness/README.md) | 리스크 기반 전략 → 오라클 명시 시나리오 → 게이트된 자가치유 실행 → 결함 vs 플래키 트리아지 | 1 · 4 · – |
 | [`agentic-code-review-harness`](plugins/agentic-code-review-harness/README.md) | 코드 변경(특히 AI 작성)을 리뷰어 자리에서 읽고 머지 가능성 판정(판정만·실행은 사람) | 1 · 5 · – |
+| [`review-pipeline-harness`](plugins/review-pipeline-harness/README.md) | 팀·저장소 코드 리뷰 시스템 설계 — 방어 계층·변경 기반 승인 등급·REVIEW.md·수렴·노이즈·가드레일·circuit breaker → 적대 검증(설계만) | 1 · 5 · – |
 | [`comprehension-harness`](plugins/comprehension-harness/README.md) | 에이전트 변경을 사람이 실제로 이해하는지 실측하고 자산으로 남김(결함·머지 판정 없음) | 1 · 5 · – |
 | [`ai-readiness-cartography`](plugins/ai-readiness-cartography/README.md) | 저장소 AI 준비도 결정론 스코어러(`score.py`) 측정 + 승인 게이트 뒤 개선(3모드 자유 조합) | 1 · 8 · – |
 | [`aeo-harness`](plugins/aeo-harness/README.md) | AEO — 기술 문서를 AI 코딩 에이전트가 찾고·읽고·정확히 쓰게 결정론 센서로 재고 개선(SEO/GEO 아님) | 1 · 4 · – |
@@ -81,7 +82,7 @@
 ## 문서
 
 - [`CLAUDE.md`](CLAUDE.md) — 저장소 작업용 인덱스(플러그인 한 줄 역할 + 핵심 규칙)
-- [`_docs/plugin-overview.md`](_docs/plugin-overview.md) — 30개 플러그인 확장 설명
+- [`_docs/plugin-overview.md`](_docs/plugin-overview.md) — 31개 플러그인 확장 설명
 - [`_docs/skills.md`](_docs/skills.md) — 플러그인별 스킬·커맨드·에이전트 설명
 - [`_docs/commands-and-hooks.md`](_docs/commands-and-hooks.md) — 커맨드·훅 한눈에 보기
 - [`_docs/project-structure.md`](_docs/project-structure.md) — 전체 디렉토리 트리
@@ -90,7 +91,7 @@
 ## 저장소 구조 (요약)
 
 ```
-.claude-plugin/marketplace.json        # 마켓플레이스 리스팅 (plugins 배열 = 30개, 버전·태그·카테고리)
+.claude-plugin/marketplace.json        # 마켓플레이스 리스팅 (plugins 배열 = 31개, 버전·태그·카테고리)
 plugins/<plugin>/
   .claude-plugin/plugin.json           # 플러그인 메타데이터 (설명은 marketplace.json 항목과 동일)
   CLAUDE.md · CHANGELOG.md · README.md # 유지보수 문서 · 변경 이력 · 사용자용 개요

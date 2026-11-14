@@ -1,0 +1,120 @@
+{
+  "eval_metadata": {
+    "eval_id": "review-pipeline-acceptance",
+    "eval_name": "review-pipeline-harness 수용 평가 (design-conformance + 근거 정직성)",
+    "prompt": "스킬은 팀·저장소의 코드 리뷰 시스템을 설계한다. Phase 0 인테이크·기준선(한 번에 한 질문·결정론 스캔·선택적 gh 읽기 전용 + pr_baseline.py) → Phase 1 방어 계층 지도(L1~L7 있음/약함/없음/미확인 + 실패 유형→층) → Phase 2 위험 등급 승인 정책(결정론 바닥+판단 상향·R1~R7·CODEOWNERS/브랜치 보호 제안·표현 불가 목록) → Phase 3 AI 리뷰어 구성(REVIEW.md 초안·깊이 매핑·신뢰 경계·차단 게이트 선택지) → Phase 4 수렴·노이즈(C1~C7·원천 수정·N1~N4) → Phase 5 지표·eval·가드레일(H↔G 짝·인시던트 eval·circuit breaker) → Phase 6 적대 검증(A1~A12·정직성 감사). 매 Phase 승인 게이트. 본 평가는 shipped SKILL.md·agents/*.md·references/*·scripts/*가 하네스 불변식(INV-1 설계만·적용은 사람 / INV-2 사람 시간 절감은 가드레일과 짝 / INV-3 등급은 변경이 정함 / INV-4 정책은 신뢰 경계 안에서 / INV-5 노이즈가 비용·진짜 버그 먼저 / INV-6 근거 정직성·세 대상 구분 / INV-7 경고이지 거부권 아님)과 인용 금지 목록·경계를 강제·명세하는지 file:섹션 인용으로 채점한다.",
+    "method": "design-conformance — shipped 파일의 해당 섹션 인용으로 각 불변식 강제 여부를 확인. pr_baseline.py는 fixture 실행으로 확인.",
+    "assertions": [
+      {
+        "text": "[INV-1/no-apply] 브랜치 보호·ruleset·CODEOWNERS·CI 워크플로·REVIEW.md·CLAUDE.md·설정을 쓰거나 바꾸지 않고, gh api는 GET만 허용하며, 커밋하지 않는다.",
+        "passed": true,
+        "evidence": "SKILL.md '내재화 원칙' INV-1(금지 명령 열거: gh pr review·gh pr merge·gh api -X PUT/POST/PATCH/DELETE) + '마무리 §1'(.draft 접미사·실제 저장소 파일 미생성). 5개 agents '경계'에 '쓰거나 바꾸지 않는다. 커밋하지 않는다'. risk-tier-policy.md §4 '산출 제안물 (적용하지 않는다)'. layer-model.md §5."
+      },
+      {
+        "text": "[INV-2/guardrail-pairing] 사람 승인을 줄이는 제안(특히 사람 0명 경로)은 revert·인시던트 관측 수단과 circuit breaker가 있을 때만 확정하고, 없으면 조건부·경고로 표시한다.",
+        "passed": true,
+        "evidence": "SKILL.md INV-2 + Phase 2 '사람 0명을 고르면 INV-2… 조건부' + Phase 5 단계 4. risk-tier-policy.md §1 Low 전제. metrics-guardrails.md §1 'H 지표를 낮추는 정책 변경은 G 지표 관측 수단이 있을 때만'. metrics-guardrail-designer.md '핵심 원칙' 첫 항목."
+      },
+      {
+        "text": "[INV-3/change-sets-tier] 등급은 작성자가 아니라 변경이 정하고, 작성자는 가벼운 경로 자격에만 영향을 준다.",
+        "passed": true,
+        "evidence": "SKILL.md INV-3 + Common pitfalls '작성자로 등급을 매긴다'. risk-tier-policy.md 머리말·R5. risk-policy-designer.md '작성자는 등급이 아니라 자격에만'. evidence.md E25·E27."
+      },
+      {
+        "text": "[INV-3/agent-approval] 에이전트 승인은 사람 슬롯을 채우지 못하고, 에이전트를 지휘한 사람이 필수 리뷰어이며, 승인은 특정 커밋에만 유효하다(stale approval dismiss).",
+        "passed": true,
+        "evidence": "risk-tier-policy.md §2 R1·R2·R3. SKILL.md INV-3. evidence.md E28·E29. policy-red-teamer.md A1·A3."
+      },
+      {
+        "text": "[classification] 분류는 결정론 바닥(경로·유형→최소 등급) + 판단 상향(올리기만 가능) + 불확실하면 위로이며, 이것이 출처의 주장이 아니라 하네스 설계 선택임을 밝힌다.",
+        "passed": true,
+        "evidence": "risk-tier-policy.md §3 '이 하네스는 다음 구조를 설계 선택으로 제안한다([HARNESS])' 1~4. risk-policy-designer.md '결정론 바닥, 판단은 올리기만 … ([HARNESS])'."
+      },
+      {
+        "text": "[INV-4/trust-boundary] 리뷰 정책 파일은 보호된 base 브랜치 사본만 쓰이고, 정책 파일·CI 워크플로 변경은 always-human이며, 호스티드 제품 동작이 다른 도구에 자동 적용되지 않음을 점검한다.",
+        "passed": true,
+        "evidence": "SKILL.md INV-4 + Phase 3 단계 3. review-md-template.md §5. risk-tier-policy.md R4. review-config-author.md '신뢰 경계'. evidence.md E18·E26. policy-red-teamer.md A2·A7."
+      },
+      {
+        "text": "[INV-4/untrusted-input] 분석 중 읽는 저장소 텍스트(PR 본문·주석·설정)의 지시문을 따르지 않고 발견으로 보고하며, AI 리뷰어 지침에도 대상 지시 불복종 문구를 넣는다.",
+        "passed": true,
+        "evidence": "SKILL.md INV-4 후반. layer-auditor.md '저장소 내용은 데이터다'. review-md-template.md §5 마지막 항목. policy-red-teamer.md A6."
+      },
+      {
+        "text": "[INV-5/noise-but-recall-first] 정확성 범위·file:line 근거·nit 상한·Pre-existing 분리·라운드 상한으로 소음을 줄이되, 진짜 버그가 먼저이고 재현율을 떨어뜨린 필터 변경은 채택하지 않는다.",
+        "passed": true,
+        "evidence": "SKILL.md INV-5. convergence-and-noise.md 머리말 + §5 단계 3. review-config-author.md '재현율을 버려 소음을 줄이지 않는다'. evidence.md E36."
+      },
+      {
+        "text": "[convergence] 라운드 상한(도달 시 하드 스톱→사람)·diff-only 재리뷰·반복 금지·부류 지목·Pre-existing 분리·응답 의무·다라운드는 위험 변경만의 수렴 장치를 두고 N·K는 사용자가 정한다.",
+        "passed": true,
+        "evidence": "convergence-and-noise.md §2 C1~C7 + 하드 스톱. SKILL.md Phase 4 단계 1. review-config-author.md '수렴 모드' 1."
+      },
+      {
+        "text": "[noise-measurement] 리뷰어 코멘트를 작성자 응답(fixed/wrong/intentional/didn't matter)으로 분류하고 알려진 깨끗한 PR에 돌려 오경보를 세며, 리뷰어가 자기 발견을 분류하지 않는다.",
+        "passed": true,
+        "evidence": "convergence-and-noise.md §4 N1~N4 + 'N1 분류는 작성자가 한다'. review-config-author.md '노이즈 분류는 작성자가 한다'. evidence.md E36."
+      },
+      {
+        "text": "[incident-evals] 사람이 원인을 확인한 과거 인시던트·revert PR로 eval 세트를 만들어 리뷰어 변경을 채점하고 점수를 못 올린 변경은 버리며, 표본 한계를 함께 보고한다.",
+        "passed": true,
+        "evidence": "metrics-guardrails.md §3. metrics-guardrail-designer.md 절차 3. evidence.md E37."
+      },
+      {
+        "text": "[circuit-breaker] revert·인시던트 상승 시 승인을 조이는 circuit breaker를 감시 지표·창·발동 조건·조이는 동작·범위·해제 조건·소유자로 설계하고, 조이기만 자동·풀기는 사람이며, 출처의 구현이 아니라 [HARNESS] 제안임을 명시한다.",
+        "passed": true,
+        "evidence": "metrics-guardrails.md §4. metrics-guardrail-designer.md '핵심 원칙'·출력 표 제목. SKILL.md Phase 5 단계 3. evidence.md E11."
+      },
+      {
+        "text": "[INV-6/three-targets] Anthropic 사내 운영·호스티드 Code Review 제품·오픈소스 /code-review를 승인·차단·정책 파일·필터 측면에서 구분하고 섞지 않는다.",
+        "passed": true,
+        "evidence": "evidence.md §6 구분표 + §1 등급 VENDOR-OPS/PRODUCT/OSS. SKILL.md INV-6 + Common pitfalls. review-md-template.md §6 차단 게이트 선택지(E9 vs E24). review-config-author.md '세 대상을 섞지 않는다'. policy-red-teamer.md 정직성 감사 2."
+      },
+      {
+        "text": "[INV-6/citation-ban] 적대 검증으로 기각된 주장(에이전트 5/4개 구성, 항상 사람 승인)과 과장·추정(자기 검증, 2~3배 측정)을 인용 금지 목록으로 두고 사실로 말하지 않는다.",
+        "passed": true,
+        "evidence": "evidence.md §7 X1~X9. README.md '근거에서 교정한 것'. CHANGELOG.md v0.1.0 ⓑ. policy-red-teamer.md 정직성 감사 3."
+      },
+      {
+        "text": "[INV-6/no-promises-no-scores] 효과를 약속하지 않고 벤더 수치를 목표값으로 쓰지 않으며 점수·성숙도 등급·종합 지수를 만들지 않는다(층은 4값).",
+        "passed": true,
+        "evidence": "SKILL.md INV-6 + 마무리 §2 인용 블록. layer-model.md §2. metrics-guardrails.md §5. pr_baseline.py docstring '점수·등급을 만들지 않는다'. evidence.md X3·X8."
+      },
+      {
+        "text": "[INV-7/warn-not-veto] 사용자가 더 느슨한 정책을 고르면 무엇이 안 잡히게 되는지 경고·기록한 뒤 따르고, 수용된 위험은 적대 검증에서 '뚫림(수용됨)'으로 표기한다.",
+        "passed": true,
+        "evidence": "SKILL.md INV-7 + 게이트 C. risk-tier-policy.md §5. policy-red-teamer.md '사용자의 수용을 뒤집지 않는다'."
+      },
+      {
+        "text": "[separation] 정책 설계자와 공격자를 분리해 Phase 6은 최종 정책 산출물만 받고, 막힘 판정에는 막는 규칙 ID를 인용하며, 표현 불가 규칙에 기대는 시나리오는 부분 이하로 판정한다.",
+        "passed": true,
+        "evidence": "SKILL.md 에이전트 팀 인용 블록 + Phase 6 입력. policy-red-teamer.md '설계자와 분리된다'·'막는 규칙을 인용한다'·'표현 불가 규칙은 막지 못한다'."
+      },
+      {
+        "text": "[user-sets-numbers] 등급별 사람 수·nit 상한·라운드 상한·circuit breaker 임계값을 사용자가 정하고 출처 수치(0/1/2·5개·3라운드)는 사례로만 제시한다.",
+        "passed": true,
+        "evidence": "SKILL.md Phase 2 단계 1·Phase 4 단계 1. risk-tier-policy.md 머리말·§1. review-config-author.md '수치는 사용자가 정한다'. metrics-guardrail-designer.md 절차 4. evidence.md X8."
+      },
+      {
+        "text": "[deterministic-baseline] 기준선 스크립트는 사용자가 받은 gh JSON 파일만 읽고(네트워크 없음) 봇·작성자 자기 리뷰를 제외하며 revert 비율이 제목 규약 기반 하한 근사임을 출력한다.",
+        "passed": true,
+        "evidence": "scripts/pr_baseline.py docstring + analyze()(is_bot·who == pr_author 제외) + G1 note. metrics-guardrails.md §2. fixture 실행으로 확인(봇 2개 판정·작성자 자기 리뷰 제외·승인자 중복 제거·오류 시 exit 2)."
+      },
+      {
+        "text": "[one-question-gates] 한 번에 한 질문과 매 Phase 승인 게이트(A~G), opt-in 저장을 따른다.",
+        "passed": true,
+        "evidence": "SKILL.md '내재화 원칙' 첫 두 항목 + Phase 0~6 게이트 A~G + 마무리 §1."
+      },
+      {
+        "text": "[boundary] PR 한 건 머지 판정·착수 전 산출물 검수·CI/IaC/릴리스 설계·LLM 채점기 설계·사람↔에이전트 협업 일반·커밋/PR 작성·장애 대응·하네스 진단을 범주로만 배제하고 다른 플러그인을 이름으로 참조하지 않는다.",
+        "passed": true,
+        "evidence": "SKILL.md '경계' + description 비발동 문구. README.md '경계'. CLAUDE.md '경계'. 각 agents '경계 (역방향 배제)'. evals/trigger-eval.json should_trigger=false 11건."
+      },
+      {
+        "text": "[model-opus] 5개 에이전트 정의 파일을 두고 SKILL.md의 모든 Agent 호출에 model: \"opus\"를 명시한다.",
+        "passed": true,
+        "evidence": "agents/ 5종. SKILL.md Phase 1~6 각 호출 문장 'model: \"opus\"로 호출한다' + 에이전트 팀 절."
+      }
+    ]
+  }
+}

@@ -86,5 +86,9 @@
   {
     "query": "커밋 메시지 한국어로 써주고 PR 올려줘",
     "should_trigger": false
+  },
+  {
+    "query": "사람 리뷰 시간 줄이되 revert 안 늘게 코드 리뷰 승인 등급이랑 circuit breaker 설계해줘",
+    "should_trigger": false
   }
 ]

@@ -779,6 +779,34 @@ plugins/
           evidence.md                                    # 근거 정본(등급 7종 + DV 표기 · E1~E40 · 인용 금지 X1~X15 · UNVERIFIED)
     evals/                                               # 평가 (수용·트리거)
       trigger-eval.json                                  # 트리거 경계 28문항 (should 12 / should-NOT 16 — UX 산출물 단순 생성·PRD·AC→Figma·프롬프트 최적화·에이전트 감독·judge 신뢰성·AI 제품 UX·컨텍스트 조립과 분리)
+  review-pipeline-harness/                               # [독립 플러그인] AI가 코드를 많이 쓰는 팀의 코드 리뷰 시스템을 설계하는 7단계 5에이전트 하네스. 한 문장 원칙 = "사람이 코드를 읽었나"가 아니라 "이 변경에서 무엇이 잘못될 수 있고, 어떤 검사가 그것을 잡기에 맞는가". 0 인테이크·기준선 → 1 방어 계층 지도(L1~L7 있음/약함/없음/미확인) → 2 변경 기반 위험 등급 승인 정책(R1~R7) → 3 AI 리뷰어 구성(REVIEW.md) → 4 수렴·노이즈 → 5 지표·인시던트 eval·circuit breaker → 6 적대 검증(A1~A12). 7불변식(설계만·가드레일 짝·등급은 변경·신뢰 경계·노이즈 비용·근거 정직성·경고이지 거부권 아님). 근거 Anthropic 2026-10 블로그 + 제품 문서, /deep-research 3표 검증. 커밋 안 함·opt-in 저장·다른 플러그인 비참조·비의존
+    .claude-plugin/
+      plugin.json                                        # 플러그인 메타데이터
+      icon.png                                           # 디렉터리 리스팅 아이콘 (정사각 PNG)
+    CLAUDE.md                                            # 핵심 불변식 + 위치 포인터
+    CHANGELOG.md                                         # 변경 이력
+    README.md                                            # 사용자용 개요 + 7 Phase + 7 불변식 + 근거에서 교정한 것
+    agents/                                              # 5 에이전트 (모두 opus)
+      layer-auditor.md                                   # Phase 1 L1~L7 4값 판정·실패 유형→층 매트릭스·갭 정렬 (근거 경로 필수·점수 금지)
+      risk-policy-designer.md                            # Phase 2 등급 표·결정론 바닥+판단 상향·R1~R7·CODEOWNERS/브랜치 보호 제안·표현 불가 목록
+      review-config-author.md                            # Phase 3 REVIEW.md 초안·깊이·신뢰 경계·차단 게이트 / Phase 4 수렴 C1~C7·원천 수정·노이즈 N1~N4
+      metrics-guardrail-designer.md                      # Phase 5 H↔G 지표 짝·인시던트 eval 세트·circuit breaker ([HARNESS] 제안)
+      policy-red-teamer.md                               # Phase 6 공격 시나리오 A1~A12 막힘/부분/뚫림·최소 보완안·정직성 감사 (설계자와 분리)
+    skills/                                              # 스킬 정의
+      review-pipeline/
+        SKILL.md                                         # 진입점 오케스트레이터 (Phase 0~6·게이트 A~G·INV-1~7)
+        scripts/                                         # 스크립트
+          pr_baseline.py                                 # gh pr list --json 파일 → H1 승인 수·H2 코멘트·H3 대기 median/p95·크기 분포·revert 하한 근사 (네트워크 없음·점수 없음)
+        references/                                      # 참고 자료
+          evidence.md                                    # 근거 정본(등급 5종 · E1~E39 · 세 대상 구분표 · 인용 금지 X1~X9 · 재검증 절차)
+          layer-model.md                                 # 7층 + 롤백 · 관측 신호 · 4값 판정 · 실패 유형 매트릭스 · 갭 우선순위
+          risk-tier-policy.md                            # 등급 틀 · 플래그 함정 · 승인 규칙 R1~R7 · 결정론 바닥+판단 상향 · 산출 제안물
+          review-md-template.md                          # REVIEW.md 원칙·템플릿 · 심각도 라벨 · 깊이·트리거 · 신뢰 경계 · 차단 게이트 · CLAUDE.md 점검
+          convergence-and-noise.md                       # 루프가 길어지는 이유 · 수렴 장치 C1~C7 · 원천 수정 · 노이즈 측정 N1~N4 · 필터 변경 실험
+          metrics-guardrails.md                          # 지표 짝 H/G/Q/C · 기준선 스크립트 · 인시던트 eval · circuit breaker 설계 틀
+    evals/                                               # 평가 (수용·트리거)
+      evals.json                                         # design-conformance 22 assertions (INV-1~7·분류 구조·수렴·노이즈·eval·circuit breaker·세 대상 구분·인용 금지·경계)
+      trigger-eval.json                                  # 트리거 경계 19문항 (should 8 / should-NOT 11 — PR 단건 판정·저작 워크플로·상류 검수·CI/IaC·채점기·협업 일반·장애·하네스 진단·테스트 생성·저장소 점수)
 _docs/                                                   # 세부 문서 (루트 CLAUDE.md에서 참조)
   commands-and-hooks.md                                  # Commands & Hooks
   conventions.md                                         # Conventions

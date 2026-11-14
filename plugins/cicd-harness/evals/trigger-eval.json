@@ -102,5 +102,9 @@
   {
     "query": "만들 에이전트의 최소 권한 인가·토큰·위임 모델을 설계하고 confused-deputy를 red-team해줘",
     "should_trigger": false
+  },
+  {
+    "query": "브랜치 보호랑 CODEOWNERS로 위험 등급별 사람 리뷰 승인 정책 짜고 AI 리뷰어 노이즈 측정 방법 설계해줘",
+    "should_trigger": false
   }
 ]

@@ -1,0 +1,78 @@
+[
+  {
+    "query": "우리 팀 코드 리뷰 체계를 다시 짜고 싶어. AI가 코드를 너무 많이 써서 사람 리뷰가 병목이야",
+    "should_trigger": true
+  },
+  {
+    "query": "변경 위험 등급별로 사람 승인이 몇 명 필요한지 정책 만들어줘. 봇 승인은 안 세게",
+    "should_trigger": true
+  },
+  {
+    "query": "우리 저장소에 맞는 REVIEW.md 초안 써줘. nit 상한이랑 건너뛸 경로도 넣어서",
+    "should_trigger": true
+  },
+  {
+    "query": "에이전트가 쓴 PR이랑 AI 리뷰어가 수정-리뷰를 끝없이 반복해. 라운드 상한 같은 수렴 정책 설계해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "AI 리뷰 코멘트가 너무 시끄러워. 노이즈를 어떻게 측정하고 줄일지 정책 짜줘",
+    "should_trigger": true
+  },
+  {
+    "query": "사람 리뷰 시간은 줄이고 싶은데 revert는 안 늘게 지표랑 가드레일, circuit breaker 설계해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "design our team's code review pipeline: risk tiers, required human approvals, AI reviewer config and guardrails",
+    "should_trigger": true
+  },
+  {
+    "query": "CI, AI 리뷰, 보안 리뷰, 사람 승인, 롤백까지 우리 리뷰 방어 계층 중 어디가 비었는지 지도 그려줘",
+    "should_trigger": true
+  },
+  {
+    "query": "이 PR 머지해도 되는지 판단해줘. 차단해야 할 발견만 골라줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 브랜치 diff 리뷰하고 오탐 걸러서 판정 카드 줘",
+    "should_trigger": false
+  },
+  {
+    "query": "지금 변경 리뷰해서 커밋 메시지 쓰고 PR까지 올려줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 기획서랑 API 계약이 개발 착수 준비됐는지 핸드오프 게이트로 검수해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "GitHub Actions CI 파이프라인 잡 구조랑 캐시, terraform plan 정책 설계해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "LLM-as-a-judge 채점기를 어떻게 구성하고 validity 감사할지 설계해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "사람과 AI 에이전트가 한 팀으로 일할 때 위임 수준이랑 감독 방식을 설계해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "프로덕션 장애 났어. 로그 보고 원인 찾아서 완화해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 스킬이 왜 이렇게 동작했는지 진단하고 SKILL.md 고도화해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "인수조건으로 unit, integration, E2E 테스트 계획 세워서 하나씩 생성해줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 저장소가 AI 에이전트가 기여하기 좋은 코드베이스인지 점수로 측정해줘",
+    "should_trigger": false
+  }
+]
